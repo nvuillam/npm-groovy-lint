@@ -24,8 +24,8 @@ For advanced usage,  you may need to define [RuleSet file(s)](http://codenarc.so
 
 You can use as starters :
 
-- [All rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/src/dist/test/RuleSet-All.groovy)
-- [Base rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/src/dist/test/RuleSet-Base.groovy)
+- [All rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/dist/test/RuleSet-All.groovy)
+- [Base rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/dist/test/RuleSet-Base.groovy)
 
 # USAGE
 

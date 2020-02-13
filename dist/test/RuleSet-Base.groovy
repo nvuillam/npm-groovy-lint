@@ -1,4 +1,6 @@
-ruleset {
+// More info there : http://codenarc.sourceforge.net/codenarc-creating-ruleset.html
+
+uleset {
   ruleset('rulesets/basic.xml') {}
   ruleset('rulesets/braces.xml') {}
   ruleset('rulesets/comments.xml') {

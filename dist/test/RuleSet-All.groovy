@@ -1,3 +1,5 @@
+// More info there : http://codenarc.sourceforge.net/codenarc-creating-ruleset.html
+
 ruleset {
 
     description '''
