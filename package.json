@@ -1,12 +1,12 @@
 {
   "name": "npm-groovy-lint",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "NPM CodeNarc wrapper to easily lint Groovy files",
   "main": "index.js",
   "scripts": {
     "prepare-package": "jdeploy install && node patch-jdeploy.js",
     "test": "npm run prepare-package && npm-groovy-lint -basedir=\"dist/test\" -rulesetfiles=\"file:dist/test/RuleSet-all.txt\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:dist/test/ReportTest.html\"",
-    "publish-to-npm": "npm run prepare-package && jdeploy publish"
+    "publish-to-npm": "npm run prepare-package && npm publish"
   },
   "repository": {
     "type": "git",
