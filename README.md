@@ -22,7 +22,10 @@ Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your
 
 For advanced usage,  you may need to define [RuleSet file(s)](http://codenarc.sourceforge.net/codenarc-creating-rule.html)
 
-You can use [this one](https://github.com/nvuillam/npm-groovy-lint/blob/master/src/dist/test/RuleSet-All.txt) as a starter
+You can use as starters :
+
+- [All rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/src/dist/test/RuleSet-All.groovy)
+- [Base rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/src/dist/test/RuleSet-Base.groovy)
 
 # USAGE
 
@@ -36,9 +39,9 @@ See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc
 ```
     $ npm-groovy-lint -report="xml:MyGroovyLinterReport.xml"
 
-    $ npm-groovy-lint -includes=**/Jenkinsfile -rulesetfiles="file:config/codenarc/RuleSet-all.txt" -title="MyJenkinsfileLinterReport" -maxPriority1Violations=0 -report="html:MyJenkinsfileLinterReport.html"
+    $ npm-groovy-lint -includes=**/Jenkinsfile -rulesetfiles="file:config/codenarc/RuleSet-All.groovy" -title="MyJenkinsfileLinterReport" -maxPriority1Violations=0 -report="html:MyJenkinsfileLinterReport.html"
 
-    $ npm-groovy-lint -basedir="src" -rulesetfiles="file:config/codenarc/RuleSet-all.txt" -title="MyGroovyLinterReport" -maxPriority1Violations=0 -report="html:MyGroovyLinterReport.html"
+    $ npm-groovy-lint -basedir="src" -rulesetfiles="file:config/codenarc/RuleSet-Base.groovy" -title="MyGroovyLinterReport" -maxPriority1Violations=0 -report="html:MyGroovyLinterReport.html"
 ```
 
 # CONTRIBUTE
