@@ -17,7 +17,7 @@ Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...)
 # INSTALLATION
 
 ```
-    npm install -g npm-groovy-lint
+    $ npm install -g npm-groovy-lint
 ```
 
 For advanced usage,  you may need to define [RuleSet file(s)](http://codenarc.sourceforge.net/codenarc-creating-rule.html)
@@ -27,16 +27,16 @@ You can use [this one](https://github.com/nvuillam/npm-groovy-lint/blob/master/s
 # USAGE
 
 ```
-    npm-groovy-lint OPTIONS
+    $ npm-groovy-lint OPTIONS
 ```
 See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc-command-line.html)
 
 # EXAMPLES
 
 ```
-    $npm-groovy-lint -report="xml:MyGroovyLinterReport.xml"
+    $ npm-groovy-lint -report="xml:MyGroovyLinterReport.xml"
 
-    $npm-groovy-lint -basedir="src" -rulesetfiles="file:config/codenarc/RuleSet-all.txt" -title="MyGroovyLinterReport" -maxPriority1Violations=0 -report="html:MyGroovyLinterReport.html"
+    $ npm-groovy-lint -basedir="src" -rulesetfiles="file:config/codenarc/RuleSet-all.txt" -title="MyGroovyLinterReport" -maxPriority1Violations=0 -report="html:MyGroovyLinterReport.html"
 ```
 
 # CONTRIBUTE
@@ -46,4 +46,15 @@ Contributions are very welcome !
 - Fork the repo and clone it on your computer
 - Run `npm run test` to check your updates (jdeploy.js is manually updated by `npm run prepare-package` script)
 - Once your code is ready, documented and linted, please make a pull request :)
+
+# THANKS
+
+This package is just a bundle with a little script, it relies on :
+
+- CodeNarc: https://github.com/CodeNarc/CodeNarc
+- jdeploy : https://github.com/shannah/jdeploy
+- slf4j : http://www.slf4j.org/
+- log4j : https://logging.apache.org/log4j/2.x/
+- GMetrics : https://dx42.github.io/gmetrics/
+
 
