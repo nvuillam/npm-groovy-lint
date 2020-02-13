@@ -1,6 +1,6 @@
 {
   "name": "npm-groovy-lint",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "NPM CodeNarc wrapper to easily lint Groovy files",
   "main": "index.js",
   "scripts": {
@@ -15,6 +15,7 @@
   "keywords": [
     "groovy",
     "lint",
+    "jenkinsfile",
     "codenarc",
     "npm",
     "linter",

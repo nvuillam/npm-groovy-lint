@@ -12,7 +12,7 @@ Wrapper for excellent groovy linter [CodeNarc](http://codenarc.sourceforge.net/)
 
 **npm-groovy-lint** allows you to run CodeNarc via command line without any installation issue
 
-Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...)
+Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile :)
 
 # INSTALLATION
 
@@ -35,6 +35,8 @@ See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc
 
 ```
     $ npm-groovy-lint -report="xml:MyGroovyLinterReport.xml"
+
+    $ npm-groovy-lint -includes=**/Jenkinsfile -rulesetfiles="file:config/codenarc/RuleSet-all.txt" -title="MyJenkinsfileLinterReport" -maxPriority1Violations=0 -report="html:MyJenkinsfileLinterReport.html"
 
     $ npm-groovy-lint -basedir="src" -rulesetfiles="file:config/codenarc/RuleSet-all.txt" -title="MyGroovyLinterReport" -maxPriority1Violations=0 -report="html:MyGroovyLinterReport.html"
 ```
