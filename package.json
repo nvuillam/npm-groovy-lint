@@ -1,0 +1,52 @@
+{
+  "name": "npm-groovy-lint",
+  "version": "1.0.0",
+  "description": "NPM CodeNarc wrapper to easily lint Groovy files",
+  "main": "index.js",
+  "scripts": {
+    "prepare-package": "jdeploy install && node patch-jdeploy.js",
+    "test": "npm run prepare-package && npm-groovy-lint -basedir=\"dist/test\" -rulesetfiles=\"file:dist/test/RuleSet-all.txt\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:dist/test/ReportTest.html\"",
+    "publish-to-npm": "npm run prepare-package && jdeploy publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nvuillam/npm-groovy-lint.git"
+  },
+  "keywords": [
+    "groovy",
+    "lint",
+    "codenarc",
+    "npm",
+    "package",
+    "wrapper"
+  ],
+  "author": "Nicolas Vuillamy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nvuillam/npm-groovy-lint/issues"
+  },
+  "homepage": "https://github.com/nvuillam/npm-groovy-lint#readme",
+  "bin": {
+    "npm-groovy-lint": "jdeploy-bundle/jdeploy.js"
+  },
+  "dependencies": {
+    "shelljs": "^0.7.5"
+  },
+  "devDependencies": {
+    "fs-extra": "^8.1.0",
+    "jdeploy": "^1.0.21"
+  },
+  "jdeploy": {
+    "jar": "dist/CodeNarc-1.4.jar",
+    "mainClass": "org.codenarc.CodeNarc",
+    "classPath": "lib/groovy-3.0.0/lib/groovy-3.0.0.jar:lib/groovy-3.0.0/lib/groovy-templates-3.0.0.jar:lib/groovy-3.0.0/lib/groovy-xml-3.0.0.jar:lib/slf4j-api-1.7.9.jar:lib/log4j-slf4j-impl-2.13.0.jar:lib/log4j-api-2.13.0.jar:lib/log4j-core-2.13.0.jar:lib/GMetrics-0.7.jar:lib",
+    "files": [
+      {
+        "dir": "dist"
+      }
+    ]
+  },
+  "files": [
+    "jdeploy-bundle"
+  ]
+}
