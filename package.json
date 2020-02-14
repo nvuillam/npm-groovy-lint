@@ -7,7 +7,8 @@
     "debug": "SET JDEPLOY_ROOT_PATH=jdeploy-bundle && node --inspect-brk src/index.js -basedir=\"test\" -rulesetfiles=\"file:test/RuleSet-Base.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:test/ReportTestJsDebug.html\"",
     "lint": "eslint **/*.js --ignore-pattern /jdeploy-bundle/* --ignore-pattern /dist/*",
     "lint:fix": "eslint **/*.js --ignore-pattern jdeploy-bundle --ignore-pattern dist --fix && prettier --write \"./src/**/*.{js,jsx,json}\" --tab-width 4 --print-width 150",
-    "prepare-package": "npm uninstall -g npm-groovy-lint --force && node patch-jdeploy-before.js && jdeploy install && node patch-jdeploy-after.js && node jdeploy-bundle/patch-jdeploy-bin.js",
+    "postinstall": "node jdeploy-bundle/patch-jdeploy-bin.js",
+    "prepare-package": "npm uninstall -g npm-groovy-lint --force && node patch-jdeploy-before.js && jdeploy install && node patch-jdeploy-after.js",
     "test-codenarc": "npm run prepare-package && npm-groovy-lint -basedir=\"jdeploy-bundle\" -rulesetfiles=\"file:jdeploy-bundle/test/RuleSet-All.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:jdeploy-bundle/test/ReportTestCodeNarc.html\"",
     "test-javascript": "SET JDEPLOY_ROOT_PATH=jdeploy-bundle && node src/index.js -basedir=\"dist/test\" -rulesetfiles=\"file:dist/test/RuleSet-Base.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:dist/test/ReportTestJs.html\"",
     "test": "npm run test-codenarc && npm run test-javascript",
@@ -37,8 +38,6 @@
     "npm-groovy-lint": "jdeploy-bundle/jdeploy.js"
   },
   "dependencies": {
-    "glob": "^7.1.6",
-    "npm": "^6.13.7",
     "shelljs": "^0.7.5"
   },
   "devDependencies": {
