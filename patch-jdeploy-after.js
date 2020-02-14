@@ -1,4 +1,7 @@
-"use strict"
+#! /usr/bin/env node
+// Update jdeploy.js with correct arguments to call CodeNarc without calling a jar
+"use strict";
+
 // Imports
 const fse = require('fs-extra');
 
@@ -6,8 +9,8 @@ const fse = require('fs-extra');
 const jdeployFile = './jdeploy-bundle/jdeploy.js';
 const packageJsonFile = 'package.json';
 
-console.info('npm-groovy-lint: Patching ' + jdeployFile + '...');
-
+// Process
+console.info('NPL: Patching ' + jdeployFile + '...');
 const packageJsonConfig = fse.readJsonSync(packageJsonFile);
 
 const jarFileName = packageJsonConfig.jdeploy.jar.slice(packageJsonConfig.jdeploy.jar.lastIndexOf('/') + 1);
@@ -27,6 +30,10 @@ for (const replacement of replacements) {
 }
 
 fse.writeFileSync(jdeployFile, jdeployFileContent);
+console.info('NPL: ' + jdeployFile + ' has been updated.');
 
-console.info('npm-groovy-lint: ' + jdeployFile + ' has been updated.');
+
+
+
+
 

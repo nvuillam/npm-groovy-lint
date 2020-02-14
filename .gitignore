@@ -104,3 +104,5 @@ typings/
 .tern-port
 
 jdeploy-bundle/
+
+dist/test/ReportTest.html
