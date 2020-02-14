@@ -25,5 +25,6 @@ try {
 
 } catch (e) {
     console.warn('Unable to redirect npm-groovy-lint to node_modules/jdeploy-bundle/index.js. Only CodeNarc OPTIONS will be available');
+    console.log(e);
 }
 process.exit(0);
