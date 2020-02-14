@@ -12,7 +12,8 @@
     "test-codenarc": "npm run prepare-package && npm-groovy-lint -basedir=\"jdeploy-bundle\" -rulesetfiles=\"file:jdeploy-bundle/test/RuleSet-All.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:jdeploy-bundle/test/ReportTestCodeNarc.html\"",
     "test-javascript": "SET JDEPLOY_ROOT_PATH=jdeploy-bundle && node src/index.js -basedir=\"dist/test\" -rulesetfiles=\"file:dist/test/RuleSet-Base.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:dist/test/ReportTestJs.html\"",
     "test": "npm run test-codenarc && npm run test-javascript",
-    "publish-to-npm": "npm run prepare-package && npm publish"
+    "publish-to-npm": "npm run prepare-package && npm publish",
+    "publish-beta-to-npm": "npm run prepare-package && npm publish --tag beta"
   },
   "repository": {
     "type": "git",
