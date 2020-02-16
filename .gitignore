@@ -112,3 +112,5 @@ dist/test/ReportTestJs.html
 dist/index.js
 
 dist/patch-jdeploy-bin.js
+
+dist/

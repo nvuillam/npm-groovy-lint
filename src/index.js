@@ -9,6 +9,7 @@ const xml2js = require("xml2js");
 
 // Config
 const jDeployRootPath = process.env.JDEPLOY_ROOT_PATH || __dirname;
+const originalJdeployFile = process.env.JDEPLOY_FILE || "originaljdeploy.js";
 const tempXmlFile = os.tmpdir() + "/CodeNarcReportXml_" + Math.random() + ".xml";
 
 // Process
@@ -25,8 +26,8 @@ async function run() {
     }
 
     // Build command
-    const jDeployCommand = '"' + process.argv[0] + '" "' + jDeployRootPath.trim() + '/jdeploy.js" ' + userArgs.join(" ");
-    console.debug(jDeployCommand);
+    const jDeployCommand = '"' + process.argv[0] + '" "' + jDeployRootPath.trim() + "/" + originalJdeployFile + '" ' + userArgs.join(" ");
+    //console.debug(jDeployCommand);
 
     // Run jdeploy as child process
     console.info("NGL: Running CodeNarc with arguments " + userArgs.join(" "));
@@ -48,11 +49,33 @@ async function run() {
 // Reformat output if requested in command line
 async function reformatOutput(reformat) {
     if (reformat === "ngl-console") {
-        const parser = new xml2js.Parser();
-        const tempXmlFileContent = await parser.parseStringPromise(fse.readFileSync(tempXmlFile), { attrkey: "nglbase" });
-        const files = {};
-        for (const fileInfo of tempXmlFileContent.CodeNarc.Package[0].File) {
-            const fileNm = fileInfo["$"].name;
+        const files = await parseResult();
+        // Display as console log
+        for (const fileNm of Object.keys(files)) {
+            const fileErrors = files[fileNm].errors;
+            console.log(fileNm);
+            for (const err of fileErrors) {
+                console.log("  " + err.line.padEnd(4, " ") + "  " + err.severity.padEnd(7, " ") + "  " + err.rule.padEnd(24, " ") + "  " + err.msg);
+            }
+            console.log("");
+        }
+    }
+}
+
+async function parseResult() {
+    const parser = new xml2js.Parser();
+    const tempXmlFileContent = await parser.parseStringPromise(fse.readFileSync(tempXmlFile), {});
+    if (!tempXmlFileContent || !tempXmlFileContent.CodeNarc || !tempXmlFileContent.CodeNarc.Package) {
+        console.log(tempXmlFileContent.CodeNarc.Package[0]);
+        throw new Error("Unable to parse temporary codenarc xml report file " + tempXmlFile);
+    }
+    const files = {};
+    for (const folderInfo of tempXmlFileContent.CodeNarc.Package) {
+        if (!folderInfo.File) {
+            continue;
+        }
+        for (const fileInfo of folderInfo.File) {
+            const fileNm = folderInfo["$"].path + "/" + fileInfo["$"].name;
             if (files[fileNm] == null) {
                 files[fileNm] = { errors: [] };
             }
@@ -72,19 +95,15 @@ async function reformatOutput(reformat) {
                 };
                 files[fileNm].errors.push(err);
             }
-
-            // Display as console log
-            for (const fileNm of Object.keys(files)) {
-                const fileErrors = files[fileNm].errors;
-                console.log(fileNm);
-                for (const err of fileErrors) {
-                    console.log("  " + err.line + "  " + err.severity + "  " + err.rule + "  " + err.msg);
-                }
-                console.log("");
-            }
-            fse.removeSync(tempXmlFile);
         }
     }
+    fse.removeSync(tempXmlFile);
+    return files;
 }
 
-run();
+try {
+    run();
+} catch (e) {
+    console.error("NGL: Error :( \n" + e.message);
+    process.exit(99);
+}
