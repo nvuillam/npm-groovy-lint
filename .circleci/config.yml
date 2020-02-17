@@ -16,7 +16,7 @@
             command: npm install
         - run:
             name: Testing
-            command: npm test:coverage
+            command: npm run test:coverage
         - run:
             name: Submitting code coverage to codecov
             command: |
@@ -46,11 +46,11 @@
   
   workflows:
     version: 2
-    "te-scan-plugin":
+    "npm-groovy-lint-build-test":
       jobs:
         - node-latest
 #        - node-8
-        - node-10
+#        - node-10
         - cache:
             filters:
               tags:
