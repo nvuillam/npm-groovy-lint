@@ -4,7 +4,6 @@
     node-12-jdk-8: 
       docker:
         - image: openjdk:8-jdk-stretch
-        - user: root
       working_directory: ~/cli
       steps:
         - checkout
