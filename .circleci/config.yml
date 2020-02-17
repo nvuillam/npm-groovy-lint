@@ -3,7 +3,7 @@
   jobs:
     node-latest: &test
       docker:
-        - image: rowanto/docker-java8-mvn-nodejs-npm
+        - image: openjdk:8-jdk-stretch
       working_directory: ~/cli
       steps:
         - checkout
@@ -11,6 +11,12 @@
             keys:
               - v1-npm-{{checksum ".circleci/config.yml"}}-{{checksum "package-lock.json"}}
               - v1-npm-{{checksum ".circleci/config.yml"}}
+        - run: 
+            name: Install base tools
+            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip && apt-get clean && echo 'Installed wget zip unzip' 
+        - run:
+            name: Install node
+            command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
             command: npm install && npm install jdeploy -g
