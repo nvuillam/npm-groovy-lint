@@ -3,7 +3,7 @@
   jobs:
     node-latest: &test
       docker:
-        - image: timbru31/java-node
+        - image: zazukoians/node-java
       working_directory: ~/cli
       steps:
         - checkout
