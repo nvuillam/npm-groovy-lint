@@ -14,14 +14,11 @@
             name: Install node
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
-            name: Rights
-            command: npm config get prefix
-        - run:
             name: Install dependencies
             command: npm install && sudo npm install jdeploy -g
         - run: 
             name: Build
-            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chown -R $(whoami) /usr/bin/npm-groovy-lint
+            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chown -R $(whoami) /usr/bin/npm-groovy-lint && sudo chmod /usr/bin/npm-groovy-lint
         - run:
             name: Testing
             command: npm run test:coverage
