@@ -15,10 +15,10 @@
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
-            command: sudo npm install && sudo npm install jdeploy -g
+            command: npm install && sudo npm install jdeploy -g
         - run:
             name: Testing
-            command: sudo npm run test:coverage
+            command: npm run test:coverage
         - run:
             name: Submitting code coverage to codecov
             command: |
