@@ -9,12 +9,13 @@
     "prebuild": "npm uninstall -g npm-groovy-lint --force && node patch-jdeploy-before.js",
     "build": "jdeploy install",
     "postbuild": "node patch-jdeploy-after.js",
-    "test:codenarc": "npm run build && npm-groovy-lint -basedir=\"jdeploy-bundle\" -rulesetfiles=\"file:jdeploy-bundle/lib/example/RuleSet-Base.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:jdeploy-bundle/lib/example/ReportTestCodeNarc.html\" --ngl-console",
-    "test:js": "SET JDEPLOY_ROOT_PATH=jdeploy-bundle && node src/index.js -basedir=\"jdeploy-bundle/lib/example\" -rulesetfiles=\"file:jdeploy-bundle/lib/example/RuleSet-Base.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:jdeploy-bundle/lib/example/ReportTestJs.html\" --ngl-console",
-    "test:js:debug": "SET JDEPLOY_ROOT_PATH=jdeploy-bundle && node --inspect-brk src/index.js -basedir=\"jdeploy-bundle/lib/example\" -rulesetfiles=\"file:jdeploy-bundle/lib/example/RuleSet-Base.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:jdeploy-bundle/lib/example/ReportTestJsDbg.html\" --ngl-console",
-    "test": "npm run test:codenarc && npm run test:js",
-    "publish-to-npm": "npm run build && npm publish",
-    "publish-beta-to-npm": "npm run build && npm publish --tag beta"
+    "test:codenarc": "npm run build && npm-groovy-lint -basedir=\"jdeploy-bundle\" -rulesetfiles=\"file:jdeploy-bundle/lib/example/RuleSet-Base.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:jdeploy-bundle/lib/example/ReportTestCodeNarc.html\" --ngl-output=json",
+    "pretest": "npm run build",
+    "test": "mocha \"test/**/*.test.js\"",
+    "test:coverage": "nyc npm run test",
+    "test:debug": "mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
+    "publish:release": "npm run build && npm publish",
+    "publish:beta": "npm run build && npm publish --tag beta"
   },
   "repository": {
     "type": "git",
@@ -41,10 +42,12 @@
   },
   "dependencies": {
     "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
     "shelljs": "^0.7.5",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.3",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.20.1",
@@ -53,8 +56,12 @@
     "eslint-plugin-standard": "^4.0.1",
     "jdeploy": "^1.0.21",
     "mocha": "^7.0.1",
+    "nyc": "^15.0.0-beta.3",
     "prettier": "1.19.1",
     "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=8.0.0"
   },
   "jdeploy": {
     "jar": "dist/lib/CodeNarc-1.4.jar",
@@ -68,5 +75,28 @@
   },
   "files": [
     "jdeploy-bundle"
-  ]
+  ],
+  "mocha": {
+    "require": [
+      "test/helpers/init.js"
+    ],
+    "watch-extensions": [
+      "js"
+    ],
+    "recursive": true,
+    "reporter": "spec",
+    "timeout": "300000"
+  },
+  "nyc": {
+    "include": [
+      "src/**"
+    ],
+    "extension": [
+      ".js"
+    ],
+    "reporter": [
+      "html"
+    ],
+    "all": true
+  }
 }

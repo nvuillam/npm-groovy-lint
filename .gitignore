@@ -114,3 +114,7 @@ dist/index.js
 dist/patch-jdeploy-bin.js
 
 dist/
+
+ReportTestCodenarc.html
+
+ReportTestCodenarc.xml

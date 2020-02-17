@@ -19,6 +19,9 @@ else {
 fse.copyFileSync('src/index.js', 'dist/index.js');
 console.info('NGL: Copied src/index.js into dist folder');
 
+fse.copyFileSync('src/groovy-lint.js', 'dist/groovy-lint.js');
+console.info('NGL: Copied src/index.js into dist folder');
+
 fse.copySync('lib', 'dist/lib');
 console.info('NGL: Copied lib files into dist/lib');
 
