@@ -1,17 +1,13 @@
 ---
   version: 3
   jobs:
-    node-12-jdk-8: &test
+    node-12-jdk-8: 
       docker:
         - image: openjdk:8-jdk-stretch
         - user: root
       working_directory: ~/cli
       steps:
         - checkout
-        - restore_cache: &restore_cache
-            keys:
-              - v1-npm-{{checksum ".circleci/config.yml"}}-{{checksum "package-lock.json"}}
-              - v1-npm-{{checksum ".circleci/config.yml"}}
         - run: 
             name: Install base tools
             command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip && apt-get clean && echo 'Installed wget zip unzip' 
@@ -29,28 +25,9 @@
             command: |
               ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
               curl -s https://codecov.io/bash | bash
-    cache:
-      <<: *test
-      steps:
-        - checkout
-        - run:
-            name: Install dependencies
-            command: npm install
-        - save_cache:
-            key: v1-npm-{{checksum ".circleci/config.yml"}}-{{checksum "package-lock.json"}}
-            paths:
-              - ~/cli/node_modules
-              - /usr/local/share/.cache/npm
-              - /usr/local/share/.config/npm
-  
+ 
   workflows:
     version: 2
     "npm-groovy-lint-build-test":
       jobs:
         - node-12-jdk-8
-        - cache:
-            filters:
-              tags:
-                only: /^v.*/
-              branches:
-                ignore: /.*/
