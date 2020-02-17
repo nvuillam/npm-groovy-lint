@@ -4,7 +4,7 @@
     node-12-jdk-8: 
       docker:
         - image: openjdk:8-jdk-stretch
-      working_directory: ~/cli
+     # working_directory: ~/cli
       steps:
         - checkout
         - run: 
@@ -18,7 +18,7 @@
             command: npm install && sudo npm install jdeploy -g
         - run: 
             name: Build
-            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chown -R $(whoami) /usr/bin/npm-groovy-lint -v && sudo chmod /usr/bin/npm-groovy-lint -v
+            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chown -R $(whoami) /usr/bin/npm-groovy-lint -v
         - run:
             name: Testing
             command: npm run test:coverage
