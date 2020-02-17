@@ -12,6 +12,7 @@ let cmdPrfx = '';
 if (os.type().toLowerCase().includes('linux')) {
     cmdPrfx = 'sudo ';
 }
+console.log('OS TYPE :' + os.type())
 
 describe('NPM GROOVY LINT with jdeploy-bundle', () => {
     it('should run with NGL option: --ngl-output=text', async () => {
