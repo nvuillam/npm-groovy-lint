@@ -9,16 +9,16 @@
         - checkout
         - run: 
             name: Install base tools
-            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip && apt-get clean && echo 'Installed wget zip unzip' 
+            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
         - run:
             name: Install node
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
-            command: npm install && npm install jdeploy -g
+            command: sudo npm install && sudo npm install jdeploy -g
         - run:
             name: Testing
-            command: npm run test:coverage
+            command: sudo npm run test:coverage
         - run:
             name: Submitting code coverage to codecov
             command: |
