@@ -5,7 +5,7 @@ let assert = require('assert');
 const fse = require("fs-extra");
 
 describe('NPM GROOVY LINT with sources', () => {
-    it('should run with NGL option: --ngl-output=text', async () => {
+    it('(SRC) should run with NGL option: --ngl-output=text', async () => {
         const res = await new NpmGroovyLint({ jdeployRootPath: 'jdeploy-bundle' }, [
             process.execPath,
             '',
@@ -18,7 +18,7 @@ describe('NPM GROOVY LINT with sources', () => {
         assert(res.status === 0 && res.nglOutputString.includes('warning'), 'Script failure');
     });
 
-    it('should run with NGL option: --ngl-output=json', async () => {
+    it('(SRC) should run with NGL option: --ngl-output=json', async () => {
         const res = await new NpmGroovyLint({ jdeployRootPath: 'jdeploy-bundle' }, [
             process.execPath,
             '',
@@ -31,7 +31,7 @@ describe('NPM GROOVY LINT with sources', () => {
         assert(res.status === 0 && res.nglOutputString.includes('{"files":{'), 'Script failure');
     });
 
-    it('should run with only codenarc options: HTML', async () => {
+    it('(SRC) should run with only codenarc options: HTML', async () => {
         const res = await new NpmGroovyLint({ jdeployRootPath: 'jdeploy-bundle' }, [
             process.execPath,
             '',
@@ -44,7 +44,7 @@ describe('NPM GROOVY LINT with sources', () => {
         fse.removeSync('ReportTestCodenarc.html');
     });
 
-    it('should run with only codenarc options: XML', async () => {
+    it('(SRC) should run with only codenarc options: XML', async () => {
         const res = await new NpmGroovyLint({ jdeployRootPath: 'jdeploy-bundle' }, [
             process.execPath,
             '',
@@ -57,7 +57,7 @@ describe('NPM GROOVY LINT with sources', () => {
         fse.removeSync('ReportTestCodenarc.xml');
     });
 
-    it('should run with only codenarc options: HELP', async () => {
+    it('(SRC) should run with only codenarc options: HELP', async () => {
         const res = await new NpmGroovyLint({ jdeployRootPath: 'jdeploy-bundle' }, [
             process.execPath,
             '',

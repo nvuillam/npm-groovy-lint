@@ -7,7 +7,7 @@ const fse = require("fs-extra");
 const exec = util.promisify(require("child_process").exec);
 
 describe('NPM GROOVY LINT with jdeploy-bundle', () => {
-    it('should run with NGL option: --ngl-output=text', async () => {
+    it('(EXE) should run with NGL option: --ngl-output=text', async () => {
         const params = [
             '-basedir="jdeploy-bundle/lib/example"',
             '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
@@ -18,7 +18,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
         assert(stdout && stdout.includes('warning'), 'Script failure');
     });
-    it('should run with NGL option: --ngl-output=json', async () => {
+    it('(EXE) should run with NGL option: --ngl-output=json', async () => {
         const params = [
             '-basedir="jdeploy-bundle/lib/example"',
             '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
@@ -30,7 +30,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
         assert(stdout && stdout.includes('{"files":{'), 'Script failure');
     });
 
-    it('should run with only codenarc options: HTML', async () => {
+    it('(EXE) should run with only codenarc options: HTML', async () => {
         const params = [
             '-basedir="jdeploy-bundle/lib/example"',
             '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
@@ -42,7 +42,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
         fse.removeSync('ReportTestCodenarc.html');
     });
 
-    it('should run with only codenarc options: XML', async () => {
+    it('(EXE) should run with only codenarc options: XML', async () => {
         const params = [
             '-basedir="jdeploy-bundle/lib/example"',
             '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
@@ -54,7 +54,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
         fse.removeSync('ReportTestCodenarc.xml');
     });
 
-    it('should run with only codenarc options: HELP', async () => {
+    it('(EXE) should run with only codenarc options: HELP', async () => {
         const params = [
             '-help'
         ];

@@ -117,10 +117,10 @@ class NpmGroovyLint {
                             violation["$"].priority == "1"
                                 ? "error"
                                 : violation["$"].priority == "2"
-                                    ? "warning"
-                                    : violation["$"].priority == "3"
-                                        ? "warning"
-                                        : "unknown",
+                                ? "warning"
+                                : violation["$"].priority == "3"
+                                ? "warning"
+                                : "unknown",
                         msg: violation.Message ? violation.Message[0] : "NGL: No message"
                     };
                     files[fileNm].errors.push(err);
