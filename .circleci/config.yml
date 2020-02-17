@@ -18,7 +18,7 @@
             command: npm install && sudo npm install jdeploy -g
         - run: 
             name: Build
-            command: sudo npm run build
+            command: npm run build
         - run:
             name: Testing
             command: npm run test:coverage
