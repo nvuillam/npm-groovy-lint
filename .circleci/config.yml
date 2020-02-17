@@ -1,7 +1,7 @@
 ---
   version: 3
   jobs:
-    node-latest: &test
+    node-12-jdk-8: &test
       docker:
         - image: openjdk:8-jdk-stretch
       working_directory: ~/cli
@@ -19,23 +19,15 @@
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
-            command: npm install && npm install jdeploy -g
+            command: sudo npm install && sudo npm install jdeploy -g
         - run:
             name: Testing
-            command: npm run test:coverage
+            command: sudo npm run test:coverage
         - run:
             name: Submitting code coverage to codecov
             command: |
               ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
               curl -s https://codecov.io/bash | bash
-#    node-8:
-#      <<: *test
-#      docker:
-#        - image: node:8
-    node-10:
-      <<: *test
-      docker:
-        - image: node:10
     cache:
       <<: *test
       steps:
@@ -54,9 +46,7 @@
     version: 2
     "npm-groovy-lint-build-test":
       jobs:
-        - node-latest
-#        - node-8
-#        - node-10
+        - node-12-jdk-8
         - cache:
             filters:
               tags:
