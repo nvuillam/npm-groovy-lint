@@ -14,17 +14,14 @@
             name: Install node
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
-            name: Set NPM config
-            command: npm config set user 0 && npm config set unsafe-perm true 
-        - run:
             name: Install dependencies
             command: npm install && sudo npm install jdeploy -g
         - run: 
             name: Build
-            command: npm run build --unsafe-perm=true
+            command: sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share} && npm run build
         - run:
             name: Testing
-            command: npm run test:coverage --unsafe-perm=true
+            command: npm run test:coverage
         - run:
             name: Submitting code coverage to codecov
             command: |
