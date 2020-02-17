@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 "use strict";
 
 // Imports
@@ -87,10 +88,10 @@ async function parseResult() {
                         violation["$"].priority == "1"
                             ? "error"
                             : violation["$"].priority == "2"
-                            ? "warning"
-                            : violation["$"].priority == "3"
-                            ? "warning"
-                            : "unknown",
+                                ? "warning"
+                                : violation["$"].priority == "3"
+                                    ? "warning"
+                                    : "unknown",
                     msg: violation.Message[0]
                 };
                 files[fileNm].errors.push(err);
