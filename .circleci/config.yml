@@ -22,7 +22,7 @@
             command: npm install && sudo npm install jdeploy -g
         - run: 
             name: Build
-            command: npm run build && ls /usr && ls /usr/sbin && ls /usr/lib && ls/usr/lib/node_modules
+            command: npm run build && ls /usr && ls /usr/sbin && ls /usr/bin 
         - run:
             name: Testing
             command: npm run test:coverage
