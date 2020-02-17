@@ -3,7 +3,7 @@
   jobs:
     node-latest: &test
       docker:
-        - image: webpackcontrib/circleci-jdk9-node10
+        - image: andonescu/jdk-8-node-docker-gcp
       working_directory: ~/cli
       steps:
         - checkout
