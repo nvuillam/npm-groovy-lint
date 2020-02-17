@@ -3,7 +3,7 @@
   jobs:
     node-latest: &test
       docker:
-        - image: andonescu/jdk-8-node-docker-gcp
+        - image: ringcentral/node
       working_directory: ~/cli
       steps:
         - checkout
