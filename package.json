@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint **/*.js --ignore-pattern /jdeploy-bundle/* --ignore-pattern /dist/*",
     "lint:fix": "eslint **/*.js --ignore-pattern jdeploy-bundle --ignore-pattern dist --fix && prettier --write \"./src/**/*.{js,jsx,json}\" --tab-width 4 --print-width 150",
-    "prebuild": "npm uninstall -g npm-groovy-lint --force && node patch-jdeploy-before.js",
+    "prebuild": "node patch-jdeploy-before.js",
     "build": "jdeploy install",
     "postbuild": "node patch-jdeploy-after.js",
     "test:codenarc": "npm run build && npm-groovy-lint -basedir=\"jdeploy-bundle\" -rulesetfiles=\"file:jdeploy-bundle/lib/example/RuleSet-Base.groovy\" -title=\"TestTitle\" -maxPriority1Violations=0 -report=\"html:jdeploy-bundle/lib/example/ReportTestCodeNarc.html\" --ngl-output=json",
