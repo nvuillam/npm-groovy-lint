@@ -3,7 +3,7 @@
   jobs:
     node-latest: &test
       docker:
-        - image: ringcentral/node
+        - image: dawnwords/docker-alpine-jdk8-node10-yarn
       working_directory: ~/cli
       steps:
         - checkout
