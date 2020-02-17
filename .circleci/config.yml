@@ -23,6 +23,7 @@
         - run: 
             name: Build
             command: npm run build
+                     ls /usr
         - run:
             name: Testing
             command: npm run test:coverage
