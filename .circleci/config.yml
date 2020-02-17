@@ -21,7 +21,7 @@
             command: npm run build
         - run:
             name: Testing
-            command: sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin/sh,share} && npm run test:coverage
+            command: sudo chown -R $(whoami) $(npm config get prefix) && npm run test:coverage
         - run:
             name: Submitting code coverage to codecov
             command: |
