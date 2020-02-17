@@ -83,6 +83,10 @@ See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc
     $ npm-groovy-lint -basedir="src" -rulesetfiles="file:config/codenarc/RuleSet-Base.groovy" -title="MyGroovyLinterReport" -maxPriority1Violations=0 -report="html:MyGroovyLinterReport.html"
 ```
 
+# TROUBLESHOOTING
+
+- Embedded Groovy 3.0.1 has issues with JDK12, please use JDK11 or a precedent version if possible
+
 # CONTRIBUTE
 
 Contributions are very welcome !

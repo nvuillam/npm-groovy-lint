@@ -3,7 +3,7 @@
   jobs:
     node-latest: &test
       docker:
-        - image: zazukoians/node-java
+        - image: webpackcontrib/circleci-node-jdk8
       working_directory: ~/cli
       steps:
         - checkout
