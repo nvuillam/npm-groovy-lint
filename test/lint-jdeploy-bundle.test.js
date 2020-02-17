@@ -3,8 +3,15 @@
 const util = require("util");
 let assert = require('assert');
 const fse = require("fs-extra");
+const os = require("os");
 
 const exec = util.promisify(require("child_process").exec);
+
+// Manage linux case (else CircleCI build fails)
+let cmdPrfx = '';
+if (os.type().toLowerCase().includes('linux')) {
+    cmdPrfx = 'sudo ';
+}
 
 describe('NPM GROOVY LINT with jdeploy-bundle', () => {
     it('should run with NGL option: --ngl-output=text', async () => {
@@ -15,7 +22,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
             '-maxPriority1Violations=0',
             '-report="html:toBeIgnoredAtRuntime.xxx"',
             '--ngl-output=text'];
-        const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
+        const { stdout } = await exec(cmdPrfx + 'npm-groovy-lint ' + params.join(' '));
         assert(stdout && stdout.includes('warning'), 'Script failure');
     });
     it('should run with NGL option: --ngl-output=json', async () => {
@@ -26,7 +33,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
             '-maxPriority1Violations=0',
             '-report="html:toBeIgnoredAtRuntime.zzz"',
             '--ngl-output=json'];
-        const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
+        const { stdout } = await exec(cmdPrfx + 'npm-groovy-lint ' + params.join(' '));
         assert(stdout && stdout.includes('{"files":{'), 'Script failure');
     });
 
@@ -37,7 +44,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="html:ReportTestCodenarc.html"'];
-        await exec('npm-groovy-lint ' + params.join(' '));
+        await exec(cmdPrfx + 'npm-groovy-lint ' + params.join(' '));
         assert(fse.existsSync('ReportTestCodenarc.html'), 'Script failure');
         fse.removeSync('ReportTestCodenarc.html');
     });
@@ -49,7 +56,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="xml:ReportTestCodenarc.xml"'];
-        await exec('npm-groovy-lint ' + params.join(' '));
+        await exec(cmdPrfx + 'npm-groovy-lint ' + params.join(' '));
         assert(fse.existsSync('ReportTestCodenarc.xml'), 'Script failure');
         fse.removeSync('ReportTestCodenarc.xml');
     });
@@ -58,7 +65,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
         const params = [
             '-help'
         ];
-        const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
+        const { stdout } = await exec(cmdPrfx + 'npm-groovy-lint ' + params.join(' '));
         assert(stdout.includes('where OPTIONS are zero or more command-line options'), 'Script failure');
     });
 });
