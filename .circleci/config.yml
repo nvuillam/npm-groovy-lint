@@ -3,7 +3,7 @@
   jobs:
     node-latest: &test
       docker:
-        - image: dawnwords/docker-alpine-jdk8-node10-yarn
+        - image: rowanto/docker-java8-mvn-nodejs-npm
       working_directory: ~/cli
       steps:
         - checkout
