@@ -51,7 +51,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
             '-report="xml:ReportTestCodenarc.xml"'];
         await exec('npm-groovy-lint ' + params.join(' '));
         assert(fse.existsSync('ReportTestCodenarc.xml'), 'Script failure');
-        fse.removeSync('ReportTestCodenarc.xml');
+        //       fse.removeSync('ReportTestCodenarc.xml');
     });
 
     it('(EXE) should run with only codenarc options: HELP', async () => {

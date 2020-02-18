@@ -11,7 +11,7 @@ describe('NPM GROOVY LINT with sources', () => {
             '-basedir="jdeploy-bundle/lib/example"',
             '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
             '--ngl-fix']).run();
-        assert(res.status === 0 && res.nglOutputString.includes('warning'), 'Script failure');
+        assert(res.status === 0 && res.fixer && res.fixer.fixedErrorsNumber > 0, 'Script failure');
     });
 
 });

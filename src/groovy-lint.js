@@ -5,7 +5,7 @@ const util = require("util");
 const fse = require("fs-extra");
 const os = require("os");
 const xml2js = require("xml2js");
-const c = require('ansi-colors');
+const c = require("ansi-colors");
 const NpmGroovyLintFix = require("./groovy-lint-fix.js");
 
 class NpmGroovyLint {
@@ -29,7 +29,7 @@ class NpmGroovyLint {
     // npm-groovy-lint
     nglFix = false;
     nglOutput;
-    nglOutputString = '';
+    nglOutputString = "";
     status = 0;
     fixer;
 
@@ -58,9 +58,8 @@ class NpmGroovyLint {
         // Define codeNarcBaseDir for later use ( postProcess )
         const codeNarcBaseDirInit = this.findArg(this.codenarcArgs, "-basedir", { stripQuotes: true });
         if (codeNarcBaseDirInit) {
-            this.codeNarcBaseDir = process.cwd() + '/' + codeNarcBaseDirInit;
-        }
-        else {
+            this.codeNarcBaseDir = process.cwd() + "/" + codeNarcBaseDirInit;
+        } else {
             this.codeNarcBaseDir = process.cwd();
         }
 
@@ -140,7 +139,7 @@ class NpmGroovyLint {
                 continue;
             }
             for (const fileInfo of folderInfo.File) {
-                const fileNm = this.codeNarcBaseDir + '/' + ((folderInfo["$"].path) ? (folderInfo["$"].path + "/") : '') + fileInfo["$"].name;
+                const fileNm = this.codeNarcBaseDir + "/" + (folderInfo["$"].path ? folderInfo["$"].path + "/" : "") + fileInfo["$"].name;
                 if (files[fileNm] == null) {
                     files[fileNm] = { errors: [] };
                 }
@@ -152,10 +151,10 @@ class NpmGroovyLint {
                             violation["$"].priority == "1"
                                 ? "error"
                                 : violation["$"].priority == "2"
-                                    ? "warning"
-                                    : violation["$"].priority == "3"
-                                        ? "warning"
-                                        : "unknown",
+                                ? "warning"
+                                : violation["$"].priority == "3"
+                                ? "warning"
+                                : "unknown",
                         msg: violation.Message ? violation.Message[0] : "NGL: No message"
                     };
                     files[fileNm].errors.push(err);
@@ -176,20 +175,33 @@ class NpmGroovyLint {
                 const fileErrors = this.codeNarcResult.files[fileNm].errors;
                 this.nglOutputString += c.underline(fileNm) + "\n";
                 for (const err of fileErrors) {
-                    let color = 'grey';
+                    let color = "grey";
                     switch (err.severity) {
-                        case 'error': color = 'red'; break;
-                        case 'warning': color = 'yellow'; break;
-                        default: color = 'magenta'; // should not happen
+                        case "error":
+                            color = "red";
+                            break;
+                        case "warning":
+                            color = "yellow";
+                            break;
+                        default:
+                            color = "magenta"; // should not happen
                     }
                     this.nglOutputString +=
-                        "  " + err.line.padEnd(4, " ") + "  " + c[color](err.severity.padEnd(7, " ")) + "  " + err.msg + "  " + err.rule.padEnd(24, " ") + "\n";
+                        "  " +
+                        err.line.padEnd(4, " ") +
+                        "  " +
+                        c[color](err.severity.padEnd(7, " ")) +
+                        "  " +
+                        err.msg +
+                        "  " +
+                        err.rule.padEnd(24, " ") +
+                        "\n";
                 }
                 this.nglOutputString += "\n";
             }
             // Fixes result
             if (this.fixer) {
-                this.nglOutputString += "\n\nnpm-groovy-lint fixed " + c.bold(this.fixer.fixedErrorsNumber) + ' errors';
+                this.nglOutputString += "\n\nnpm-groovy-lint fixed " + c.bold(this.fixer.fixedErrorsNumber) + " errors";
             }
 
             console.log(this.nglOutputString);
@@ -202,14 +214,14 @@ class NpmGroovyLint {
     }
 
     // Find argument (and associated value) in user args
-    findArg(args, name, options) {
+    findArg(args, name, options = {}) {
         const argsRes = args.filter(userArg => userArg.includes(name));
         if (argsRes.length > 0) {
             if (argsRes[0].includes("=")) {
                 let value = argsRes[0].split("=")[1];
                 if (options.stripQuotes) {
-                    value = value.replace(/^"(.*)"$/, '$1');
-                    value = value.replace(/^'(.*)'$/, '$1');
+                    value = value.replace(/^"(.*)"$/, "$1");
+                    value = value.replace(/^'(.*)'$/, "$1");
                 }
                 return value;
             } else return true;
