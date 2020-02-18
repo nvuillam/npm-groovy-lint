@@ -65,12 +65,12 @@ See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc
 ```
     // npm-groovy-lint output
 
-    $ npm-groovy-lint -report="xml:MyGroovyLinterReport.xml" --ngl-format=text
+    $ npm-groovy-lint -report="xml:MyGroovyLinterReport.xml" --ngl-output=text
 
 
     // npm-groovy-lint output
 
-    $ npm-groovy-lint -includes=**/Jenkinsfile -rulesetfiles="file:config/codenarc/RuleSet-Base.groovy" --ngl-format=json
+    $ npm-groovy-lint -includes=**/Jenkinsfile -rulesetfiles="file:config/codenarc/RuleSet-Base.groovy" --ngl-output=json
 
 
     // CodeNarc output
