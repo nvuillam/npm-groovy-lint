@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+"use strict";
 
 const NpmGroovyLint = require("./groovy-lint.js");
 

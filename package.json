@@ -39,6 +39,7 @@
     "npm-groovy-lint": "jdeploy-bundle/jdeploy.js"
   },
   "dependencies": {
+    "ansi-colors": "^4.1.1",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "shelljs": "^0.7.5",
