@@ -23,7 +23,6 @@ class NpmGroovyLint {
 
     // npm-groovy-lint
     nglOutput;
-    nglOutputObj;
     nglOutputString;
     status = 0;
 
