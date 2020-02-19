@@ -27,7 +27,7 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
             '-report="html:toBeIgnoredAtRuntime.zzz"',
             '--ngl-output=json'];
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
-        assert(stdout && stdout.includes('{"files":{'), 'Script failure');
+        assert(stdout && stdout.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
     });
 
     it('(EXE) should run with only codenarc options: HTML', async () => {

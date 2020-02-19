@@ -28,7 +28,7 @@ describe('NPM GROOVY LINT with sources', () => {
             '-maxPriority1Violations=0',
             '-report="html:toBeIgnoredAtRuntime.zzz"',
             '--ngl-output=json']).run();
-        assert(res.status === 0 && res.nglOutputString.includes('{"files":{'), 'Script failure');
+        assert(res.status === 0 && res.nglOutputString.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
     });
 
     it('(SRC) should run with only codenarc options: HTML', async () => {

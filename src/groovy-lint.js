@@ -213,7 +213,7 @@ class NpmGroovyLint {
                 this.nglOutputString += "\n";
             }
             // Summary
-            this.nglOutputString += "\nnpm-groovy-lint results in " + c.bold(this.lintResult.summary.totalFilesLinted) + " files:\n";
+            this.nglOutputString += "\nnpm-groovy-lint results in " + c.bold(this.lintResult.summary.totalFilesLinted) + " linted files:\n";
             this.nglOutputString += "- " + c.red("Error") + ": " + c.bold(this.lintResult.summary.totalErrorsNumber) + "\n";
             this.nglOutputString += "- " + c.yellow("Warning") + ": " + c.bold(this.lintResult.summary.totalWarningNumber) + "\n";
             this.nglOutputString += "- " + c.grey("Info") + ": " + c.bold(this.lintResult.summary.totalInfoNumber) + "\n";
