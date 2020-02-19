@@ -2,23 +2,21 @@
 "use strict";
 
 const npmGroovyLintRules = {
-
     // Consecutive blank lines
     ConsecutiveBlankLines: {
-        scope: 'file',
+        scope: "file",
         fixes: [
             {
                 type: "function",
                 func: fileLines => {
                     const newFileLines = [];
                     for (const line of fileLines) {
-                        if (line.trim() === '') {
+                        if (line.trim() === "") {
                             // Check if previous line is empty: if not, add empty line
-                            if (!(newFileLines.length > 0 && newFileLines[newFileLines.length - 1].trim() === '')) {
-                                newFileLines.push('');
+                            if (!(newFileLines.length > 0 && newFileLines[newFileLines.length - 1].trim() === "")) {
+                                newFileLines.push("");
                             }
-                        }
-                        else {
+                        } else {
                             newFileLines.push(line);
                         }
                     }
@@ -33,24 +31,14 @@ const npmGroovyLintRules = {
         variables: [
             {
                 name: "EXPECTED",
-                regex: /The statement on line (.*) in class (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
+                regex: /The (.*) in class (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
                 regexPos: 3
             },
             {
                 name: "FOUND",
-                regex: /The statement on line (.*) in class (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
+                regex: /The (.*) in class (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
                 regexPos: 4
-            },
-            {
-                name: "EXPECTED",
-                regex: /The method (.*) in class (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
-                regexPos: 3
-            },
-            {
-                name: "FOUND",
-                regex: /The method (.*) in class (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
-                regexPos: 4
-            },
+            }
         ],
         fixes: [
             {
@@ -58,11 +46,10 @@ const npmGroovyLintRules = {
                 func: (newLine, evaluatedVars) => {
                     const expectedIndent = parseInt(getVariable(evaluatedVars, "EXPECTED", { mandatory: true }), 10);
                     const foundIndent = parseInt(getVariable(evaluatedVars, "FOUND", { mandatory: true }));
-                    if (newLine.trim() === '}') {
+                    if (newLine.trim() === "}") {
                         // Manage Wrong info frrom codeNarc :/ {
                         newLine = newLine.replace(" ".repeat(foundIndent - 1), " ".repeat((expectedIndent - 1) * 2));
-                    }
-                    else {
+                    } else {
                         newLine = newLine.replace(" ".repeat(foundIndent - 1), " ".repeat(expectedIndent - 1));
                     }
                     return newLine.trimEnd();
@@ -156,7 +143,7 @@ const npmGroovyLintRules = {
                 type: "function",
                 func: newLine => {
                     newLine = newLine.trimEnd();
-                    if (newLine.lastIndexOf(";") === (newLine.length - 1)) {
+                    if (newLine.lastIndexOf(";") === newLine.length - 1) {
                         newLine = newLine.substring(0, newLine.length - 1).trimEnd();
                     }
                     return newLine;

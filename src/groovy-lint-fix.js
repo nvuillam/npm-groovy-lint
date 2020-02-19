@@ -48,10 +48,9 @@ class NpmGroovyLintFix {
             }
             // Sort errors putting scope = file at last
             this.fixableErrors[fileNm].sort((a, b) => {
-                if (a.rule.scope && a.rule.scope === 'file' && b.rule.scope == null) {
+                if (a.rule.scope && a.rule.scope === "file" && b.rule.scope == null) {
                     return -1;
-                }
-                else if (b.rule.scope && b.rule.scope === 'file' && a.rule.scope == null) {
+                } else if (b.rule.scope && b.rule.scope === "file" && a.rule.scope == null) {
                     return 1;
                 }
                 return 0;
@@ -66,13 +65,13 @@ class NpmGroovyLintFix {
             Object.keys(this.fixableErrors).map(async fileNm => {
                 // Read file
                 let fileContent = await fse.readFile(fileNm);
-                let fileLines = fileContent.toString().split('\n');
+                let fileLines = fileContent.toString().split("\n");
 
                 // Process fixes
                 let fixedInFileNb = 0;
                 for (const fileFixableError of this.fixableErrors[fileNm]) {
                     // File scope violation
-                    if (fileFixableError.rule.scope === 'file') {
+                    if (fileFixableError.rule.scope === "file") {
                         const fileLinesNew = this.applyFixRule(fileLines, fileFixableError);
                         if (fileLinesNew.toString() !== fileLines.toString()) {
                             fileLines = fileLinesNew;
@@ -128,9 +127,8 @@ class NpmGroovyLintFix {
                 // Process replacement with evualuated expressions (except if issue in evaluated expression)
                 if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
                     newLine = newLine.replace(strBefore, strAfter);
-                }
-                else {
-                    console.debug('NGL: missing replacement variable(s):\n' + strBefore + '\n' + strAfter + '\n');
+                } else {
+                    console.debug("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n");
                 }
             }
             // Replace regex
