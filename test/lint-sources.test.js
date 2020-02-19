@@ -4,9 +4,12 @@ const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
 
-describe('NPM GROOVY LINT with sources', () => {
+describe('TEST npm-groovy-lint with sources', () => {
     it('(SRC) should run with NGL option: --ngl-output=text', async () => {
-        const res = await new NpmGroovyLint({ jdeployRootPath: 'jdeploy-bundle' }, [
+        const res = await new NpmGroovyLint({
+            jdeployRootPath: 'jdeploy-bundle',
+            verbose: true
+        }, [
             process.execPath,
             '',
             '-basedir="jdeploy-bundle/lib/example"',
@@ -27,7 +30,8 @@ describe('NPM GROOVY LINT with sources', () => {
             '-title="TestTitle"',
             '-maxPriority1Violations=0',
             '-report="html:toBeIgnoredAtRuntime.zzz"',
-            '--ngl-output=json']).run();
+            '--ngl-output=json',
+            '--ngl-verbose']).run();
         assert(res.status === 0 && res.nglOutputString.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
     });
 

@@ -6,7 +6,7 @@ const fse = require("fs-extra");
 
 const exec = util.promisify(require("child_process").exec);
 
-describe('NPM GROOVY LINT with jdeploy-bundle', () => {
+describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
     it('(EXE) should run with NGL option: --ngl-output=text', async () => {
         const params = [
             '-basedir="jdeploy-bundle/lib/example"',
@@ -14,7 +14,8 @@ describe('NPM GROOVY LINT with jdeploy-bundle', () => {
             '-title="TestTitle"',
             '-maxPriority1Violations=0',
             '-report="html:toBeIgnoredAtRuntime.xxx"',
-            '--ngl-output=text'];
+            '--ngl-output=text',
+            '--ngl-verbose'];
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
         assert(stdout && stdout.includes('warning'), 'Script failure');
     });

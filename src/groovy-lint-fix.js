@@ -3,6 +3,7 @@
 // Imports
 //const util = require("util");
 const fse = require("fs-extra");
+const cliProgress = require('cli-progress');
 //const os = require("os");
 //const xml2js = require("xml2js");
 const { npmGroovyLintRules, npmGroovyLintGlobalReplacements } = require("./groovy-lint-rules.js");
@@ -12,32 +13,57 @@ class NpmGroovyLintFix {
 
     options = {};
 
-    codeNarcResult;
+    updatedLintResult;
     npmGroovyLintRules;
     fixableErrors = {};
     fixedErrorsNumber = 0;
 
-    // Construction: initialize options & args
-    constructor(codeNarcResultIn, optionsIn) {
-        this.codeNarcResult = codeNarcResultIn;
+    bar;
+    barTimer;
+
+    // Constructor: initialize options & args
+    constructor(lintResult, optionsIn) {
+        this.updatedLintResult = lintResult;
         this.options = optionsIn;
+        this.verbose = optionsIn.verbose || false;
+        // Load fix rules
         this.npmGroovyLintRules = this.options.groovyLintRulesOverride ? require(this.options.groovyLintRulesOverride) : npmGroovyLintRules;
+        // Initialize fix counters
+        this.updatedLintResult.summary.totalFixedErrorNumber = 0;
+        this.updatedLintResult.summary.totalFixedWarningNumber = 0;
+        this.updatedLintResult.summary.totalFixedInfoNumber = 0;
     }
 
+    // Fix errors using codenarc result and groovy lint rules
     async run() {
+        // Start progress bar
+        this.bar = new cliProgress.SingleBar({
+            format: 'NGL [{bar}] Fixing {file}',
+            clearOnComplete: true
+        }, cliProgress.Presets.shades_classic); this.bar.start(Object.keys(this.updatedLintResult.files).length, 0);
+
+        // Parse fixes and process them
         await this.parseFixableErrors();
         await this.fixErrors();
+
+        // Clear progress bar
+        this.bar.stop();
+
         return this;
     }
 
     // Extract fixable errors from definition file
     async parseFixableErrors() {
-        for (const fileNm of Object.keys(this.codeNarcResult.files)) {
+        for (const fileNm of Object.keys(this.updatedLintResult.files)) {
+            // Progress bar
+            this.bar.increment(); this.bar.update(null, { 'file': fileNm });
+            // Match found errors and fixable groovy lint rules
             this.fixableErrors[fileNm] = [];
-            const fileErrors = this.codeNarcResult.files[fileNm].errors;
+            const fileErrors = this.updatedLintResult.files[fileNm].errors;
             for (const err of fileErrors) {
                 if (this.npmGroovyLintRules[err.rule] != null && this.npmGroovyLintRules[err.rule].fixes != null) {
                     const fixableError = {
+                        id: err.id,
                         ruleName: err.rule,
                         lineNb: err.line,
                         msg: err.msg,
@@ -77,6 +103,7 @@ class NpmGroovyLintFix {
                             fileLines = fileLinesNew;
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
+                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
                         }
                     }
                     // Line scope violation
@@ -88,6 +115,7 @@ class NpmGroovyLintFix {
                             fileLines[lineNb] = fixedLine;
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
+                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
                         }
                     }
                 }
@@ -127,7 +155,7 @@ class NpmGroovyLintFix {
                 // Process replacement with evualuated expressions (except if issue in evaluated expression)
                 if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
                     newLine = newLine.replace(strBefore, strAfter);
-                } else {
+                } else if (this.options.verbose) {
                     console.debug("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n");
                 }
             }
@@ -145,7 +173,9 @@ class NpmGroovyLintFix {
                 try {
                     newLine = fix.func(newLine, evaluatedVars);
                 } catch (e) {
-                    console.error("NGL: Function error: " + e.message + " / " + JSON.stringify(fixableError));
+                    if (this.options.verbose) {
+                        console.error("NGL: Function error: " + e.message + " / " + JSON.stringify(fixableError));
+                    }
                 }
             }
         }
@@ -160,6 +190,21 @@ class NpmGroovyLintFix {
             newStr = newStr.replace(new RegExp("{{" + variable.name + "}}", "g"), variable.value);
         }
         return newStr;
+    }
+
+    // Update lint result of an identified error
+    updateLintResult(fileNm, errId, errDataToSet) {
+        const errIndex = this.updatedLintResult.files[fileNm].errors.findIndex(error => error.id === errId);
+        const error = this.updatedLintResult.files[fileNm].errors[errIndex];
+        Object.assign(error, errDataToSet);
+        this.updatedLintResult.files[fileNm].errors[errIndex] = error;
+        if (errDataToSet.fixed === true) {
+            switch (error.severity) {
+                case "error": this.updatedLintResult.summary.totalFixedErrorNumber++; break;
+                case "warning": this.updatedLintResult.summary.totalFixedWarningNumber++; break;
+                case "info": this.updatedLintResult.summary.totalFixedInfoNumber++; break;
+            }
+        }
     }
 }
 

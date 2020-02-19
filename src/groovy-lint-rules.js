@@ -58,6 +58,17 @@ const npmGroovyLintRules = {
         ]
     },
 
+    // Space after catch
+    SpaceAfterCatch: {
+        fixes: [
+            {
+                type: "replaceString",
+                before: "){",
+                after: ") {"
+            }
+        ]
+    },
+
     // Space after opening brace
     SpaceAfterOpeningBrace: {
         fixes: [
@@ -147,6 +158,18 @@ const npmGroovyLintRules = {
                         newLine = newLine.substring(0, newLine.length - 1).trimEnd();
                     }
                     return newLine;
+                }
+            }
+        ]
+    },
+
+    // Trailing Whitespaces
+    TrailingWhitespace: {
+        fixes: [
+            {
+                type: "function",
+                func: newLine => {
+                    return newLine.trimEnd();
                 }
             }
         ]

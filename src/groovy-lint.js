@@ -1,18 +1,19 @@
 #! /usr/bin/env node
 
 // Imports
-const util = require("util");
+const c = require("ansi-colors");
 const fse = require("fs-extra");
 const os = require("os");
+const cliProgress = require('cli-progress');
+const util = require("util");
 const xml2js = require("xml2js");
-const c = require("ansi-colors");
 const NpmGroovyLintFix = require("./groovy-lint-fix.js");
 
 class NpmGroovyLint {
     "use strict";
 
     options = {}; // NpmGroovyLint options
-    args = null; // Command line arguments
+    args = []; // Command line arguments
 
     // Config
     jdeployFile;
@@ -33,12 +34,17 @@ class NpmGroovyLint {
     status = 0;
     fixer;
 
+    bar;
+    barTimer;
+    verbose = false;
+
     // Construction: initialize options & args
     constructor(optionsIn, argsIn) {
         this.options = optionsIn;
         if (argsIn) {
             this.args = argsIn;
         }
+        this.verbose = this.options.verbose || this.findArg(this.args, "--ngl-verbose") || false;
         this.jdeployFile = this.options.jdeployFile || process.env.JDEPLOY_FILE || "originaljdeploy.js";
         this.jdeployRootPath = this.options.jdeployRootPath || process.env.JDEPLOY_ROOT_PATH || __dirname;
         this.tmpXmlFileName = this.options.tmpXmlFileName || os.tmpdir() + "/CodeNarcReportXml_" + Math.random() + ".xml";
@@ -65,14 +71,12 @@ class NpmGroovyLint {
 
         // Manage files prettifying ( not working yet)
         if (this.findArg(this.codenarcArgs, "--ngl-format")) {
-            this.codenarcArgs = this.removeArg(this.codenarcArgs, "--ngl-format");
             //await prettifyFiles(); // NV: not implemented yet
         }
 
         // Manage --ngl-fix option
         if (this.findArg(this.codenarcArgs, "--ngl-fix")) {
             this.nglFix = true;
-            this.codenarcArgs = this.removeArg(this.codenarcArgs, "--ngl-fix");
             this.codenarcArgs.push("--ngl-output:text");
         }
 
@@ -80,22 +84,37 @@ class NpmGroovyLint {
         this.nglOutput = this.findArg(this.codenarcArgs, "--ngl-output");
         // Remove -report userArg if existing, and add XML type to generate temp xml file that will be parsed later
         if (this.nglOutput !== false) {
-            this.codenarcArgs = this.removeArg(this.codenarcArgs, "-report");
-            this.codenarcArgs = this.removeArg(this.codenarcArgs, "--ngl-output");
+            this.codenarcArgs = this.codenarcArgs.filter(userArg => !userArg.includes("-report"));
             this.codenarcArgs.push("-report=xml:" + this.tmpXmlFileName);
         }
     }
 
     // Call CodeNard java class from renamed jdeploy.js
     async callCodeNarc() {
-        // Build command
+        // Build jdeploy codenarc command , filter non-codenarc arguments
+        this.codenarcArgs = this.codenarcArgs.filter(userArg => !userArg.includes("-ngl-"));
         const jDeployCommand = '"' + this.args[0] + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" ' + this.codenarcArgs.join(" ");
-        //console.debug(jDeployCommand);
 
-        // Run jdeploy as child process
-        console.info("NGL: Running CodeNarc with arguments " + this.codenarcArgs.join(" "));
+        // Start progress bar
+        this.bar = new cliProgress.SingleBar({
+            format: '[{bar}] Running CodeNarc with arguments ' + this.codenarcArgs.join(" "),
+            clearOnComplete: true
+        }, cliProgress.Presets.shades_classic); this.bar.start(10, 1);
+        this.barTimer = setInterval(() => {
+            this.bar.increment();
+            if (this.bar.value === 9) {
+                this.bar.update(1);
+            }
+        }, 1000);
+
+        // originalJDeploy.js Execution using child process
         const exec = util.promisify(require("child_process").exec);
         const { stdout, stderr } = await exec(jDeployCommand);
+
+        // Stop progress bar
+        clearInterval(this.barTimer);
+        this.bar.stop();
+
         this.codeNarcStdOut = stdout;
         this.codeNarcStdErr = stderr;
     }
@@ -117,8 +136,9 @@ class NpmGroovyLint {
             await this.parseCodeNarcResult();
             // Fix when possible
             if (this.nglFix) {
-                this.fixer = new NpmGroovyLintFix(this.lintResult, { debug: true });
+                this.fixer = new NpmGroovyLintFix(this.lintResult, { verbose: this.verbose });
                 await this.fixer.run();
+                this.lintResult = this.fixer.updatedLintResult;
             }
             // Output result
             await this.processNglOutput();
@@ -138,12 +158,13 @@ class NpmGroovyLint {
         const pcgkSummary = tempXmlFileContent.CodeNarc.PackageSummary[0]["$"];
         result.summary.totalFilesWithErrorsNumber = parseInt(pcgkSummary.filesWithViolations, 10);
         result.summary.totalFilesLinted = parseInt(pcgkSummary.totalFiles, 10);
-        result.summary.totalErrorsNumber = parseInt(pcgkSummary.priority1, 10);
+        result.summary.totalErrorNumber = parseInt(pcgkSummary.priority1, 10);
         result.summary.totalWarningNumber = parseInt(pcgkSummary.priority2, 10);
         result.summary.totalInfoNumber = parseInt(pcgkSummary.priority3, 10);
 
         // Parse files & violations
         const files = {};
+        let errId = 0;
         for (const folderInfo of tempXmlFileContent.CodeNarc.Package) {
             if (!folderInfo.File) {
                 continue;
@@ -155,19 +176,21 @@ class NpmGroovyLint {
                 }
                 for (const violation of fileInfo.Violation) {
                     const err = {
+                        id: errId,
                         line: violation["$"].lineNumber,
                         rule: violation["$"].ruleName,
                         severity:
                             violation["$"].priority == "1"
                                 ? "error"
                                 : violation["$"].priority == "2"
-                                ? "warning"
-                                : violation["$"].priority == "3"
-                                ? "info"
-                                : "unknown",
+                                    ? "warning"
+                                    : violation["$"].priority == "3"
+                                        ? "info"
+                                        : "unknown",
                         msg: violation.Message ? violation.Message[0] : "NGL: No message"
                     };
                     files[fileNm].errors.push(err);
+                    errId++;
                 }
             }
         }
@@ -199,6 +222,17 @@ class NpmGroovyLint {
                         default:
                             color = "magenta"; // should not happen
                     }
+                    // Display fixed errors only if --verbose is called
+                    if (err.fixed === true) {
+                        if (this.options.verbose === true) {
+                            color = "green";
+                            err.severity = 'fixed';
+                        }
+                        else {
+                            continue
+                        }
+                    }
+                    // Build error output line                    
                     this.nglOutputString +=
                         "  " +
                         err.line.padEnd(4, " ") +
@@ -212,18 +246,32 @@ class NpmGroovyLint {
                 }
                 this.nglOutputString += "\n";
             }
-            // Summary
             this.nglOutputString += "\nnpm-groovy-lint results in " + c.bold(this.lintResult.summary.totalFilesLinted) + " linted files:\n";
-            this.nglOutputString += "- " + c.red("Error") + ": " + c.bold(this.lintResult.summary.totalErrorsNumber) + "\n";
-            this.nglOutputString += "- " + c.yellow("Warning") + ": " + c.bold(this.lintResult.summary.totalWarningNumber) + "\n";
-            this.nglOutputString += "- " + c.grey("Info") + ": " + c.bold(this.lintResult.summary.totalInfoNumber) + "\n";
 
-            // Fixes result
-            if (this.fixer) {
-                this.nglOutputString += "\nnpm-groovy-lint fixed " + c.bold(this.fixer.fixedErrorsNumber) + " errors";
+            // Summary table
+            const errorTableLine = {
+                'Severity': "Error",
+                'Total found': this.lintResult.summary.totalErrorNumber,
+                'Total fixed': (this.lintResult.summary.totalFixedErrorNumber),
+                'Total remaining': (this.lintResult.summary.totalErrorNumber - this.lintResult.summary.totalFixedErrorNumber)
             }
+            const warningTableLine = {
+                'Severity': "Warning",
+                'Total found': this.lintResult.summary.totalWarningNumber,
+                'Total fixed': this.lintResult.summary.totalFixedWarningNumber,
+                'Total remaining': (this.lintResult.summary.totalWarningNumber - this.lintResult.summary.totalFixedWarningNumber)
+            }
+            const infoTableLine = {
+                'Severity': "Info",
+                'Total found': this.lintResult.summary.totalInfoNumber,
+                'Total fixed': this.lintResult.summary.totalFixedInfoNumber,
+                'Total remaining': (this.lintResult.summary.totalInfoNumber - this.lintResult.summary.totalFixedInfoNumber)
+            }
+            const summaryTable = [errorTableLine, warningTableLine, infoTableLine];
 
+            // Output log
             console.log(this.nglOutputString);
+            console.table(summaryTable, ['Severity', 'Total found', 'Total fixed', 'Total remaining']);
         }
         // Display as json
         else if (this.nglOutput === "json") {
@@ -243,14 +291,11 @@ class NpmGroovyLint {
                     value = value.replace(/^'(.*)'$/, "$1");
                 }
                 return value;
-            } else return true;
+            } else {
+                return true;
+            }
         }
         return false;
-    }
-
-    // Remove argument from user args
-    removeArg(args, name) {
-        return args.filter(userArg => !userArg.includes(name));
     }
 }
 

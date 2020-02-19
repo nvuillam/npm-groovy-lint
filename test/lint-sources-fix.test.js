@@ -3,9 +3,13 @@
 const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 
-describe('NPM GROOVY LINT with sources', () => {
+describe('TEST npm-groovy-lint with sources', () => {
     it('(SRC) should run with NGL option: --ngl-fix', async () => {
-        const res = await new NpmGroovyLint({ jdeployRootPath: 'jdeploy-bundle' }, [
+        const res = await new NpmGroovyLint(
+            {
+                jdeployRootPath: 'jdeploy-bundle',
+                verbose: true
+            }, [
             process.execPath,
             '',
             '-basedir="jdeploy-bundle/lib/example"',

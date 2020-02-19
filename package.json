@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "ansi-colors": "^4.1.1",
+    "cli-progress": "^3.6.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "shelljs": "^0.7.5",
@@ -63,7 +64,7 @@
     "node": ">=8.0.0"
   },
   "jdeploy": {
-    "jar": "dist/lib/CodeNarc-1.4.jar",
+    "jar": "dist/lib/CodeNarc-1.5.jar",
     "mainClass": "org.codenarc.CodeNarc",
     "classPath": "lib/groovy-3.0.1/lib/groovy-3.0.1.jar:lib/groovy-3.0.1/lib/groovy-templates-3.0.1.jar:lib/groovy-3.0.1/lib/groovy-xml-3.0.1.jar:lib/slf4j-api-1.7.9.jar:lib/log4j-slf4j-impl-2.13.0.jar:lib/log4j-api-2.13.0.jar:lib/log4j-core-2.13.0.jar:lib/GMetrics-0.7.jar:lib",
     "files": [

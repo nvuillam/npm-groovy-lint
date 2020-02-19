@@ -9,6 +9,7 @@ ruleset {
   ruleset('rulesets/convention.xml') {
     CompileStatic(enabled: false)
     FieldTypeRequired(enabled: false)
+    MethodReturnTypeRequired(enabled: false)
     NoDef(enabled: false)
     VariableTypeRequired(enabled: false)
   }
@@ -24,13 +25,10 @@ ruleset {
     LineLength(length: 200)
     SpaceAroundMapEntryColon(characterAfterColonRegex: /\s/)
     SpaceBeforeClosingBrace(ignoreEmptyBlock: true)
-    TrailingWhitespace(enabled:false)
   }
   ruleset('rulesets/generic.xml') {}
   ruleset('rulesets/groovyism.xml') {}
-  ruleset('rulesets/imports.xml') {
-    UnusedImport(enabled:false)
-  }
+  ruleset('rulesets/imports.xml') {}
   ruleset('rulesets/naming.xml') {
     FactoryMethodName(enabled: false)
     VariableName(ignoreVariableNames: '_')
@@ -40,7 +38,6 @@ ruleset {
     NestedBlockDepth(maxNestedBlockDepth: 8)
   }
   ruleset('rulesets/unnecessary.xml') {
-    UnnecessaryReturnKeyword(enabled: false)
   }
   ruleset('rulesets/unused.xml') {
     UnusedVariable(ignoreVariableNames: '_')
