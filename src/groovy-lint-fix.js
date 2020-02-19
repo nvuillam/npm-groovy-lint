@@ -3,7 +3,7 @@
 // Imports
 //const util = require("util");
 const fse = require("fs-extra");
-const cliProgress = require('cli-progress');
+const cliProgress = require("cli-progress");
 //const os = require("os");
 //const xml2js = require("xml2js");
 const { npmGroovyLintRules, npmGroovyLintGlobalReplacements } = require("./groovy-lint-rules.js");
@@ -37,10 +37,14 @@ class NpmGroovyLintFix {
     // Fix errors using codenarc result and groovy lint rules
     async run() {
         // Start progress bar
-        this.bar = new cliProgress.SingleBar({
-            format: 'NGL [{bar}] Fixing {file}',
-            clearOnComplete: true
-        }, cliProgress.Presets.shades_classic); this.bar.start(Object.keys(this.updatedLintResult.files).length, 0);
+        this.bar = new cliProgress.SingleBar(
+            {
+                format: "NGL [{bar}] Fixing {file}",
+                clearOnComplete: true
+            },
+            cliProgress.Presets.shades_classic
+        );
+        this.bar.start(Object.keys(this.updatedLintResult.files).length, 0);
 
         // Parse fixes and process them
         await this.parseFixableErrors();
@@ -56,7 +60,8 @@ class NpmGroovyLintFix {
     async parseFixableErrors() {
         for (const fileNm of Object.keys(this.updatedLintResult.files)) {
             // Progress bar
-            this.bar.increment(); this.bar.update(null, { 'file': fileNm });
+            this.bar.increment();
+            this.bar.update(null, { file: fileNm });
             // Match found errors and fixable groovy lint rules
             this.fixableErrors[fileNm] = [];
             const fileErrors = this.updatedLintResult.files[fileNm].errors;
@@ -200,9 +205,15 @@ class NpmGroovyLintFix {
         this.updatedLintResult.files[fileNm].errors[errIndex] = error;
         if (errDataToSet.fixed === true) {
             switch (error.severity) {
-                case "error": this.updatedLintResult.summary.totalFixedErrorNumber++; break;
-                case "warning": this.updatedLintResult.summary.totalFixedWarningNumber++; break;
-                case "info": this.updatedLintResult.summary.totalFixedInfoNumber++; break;
+                case "error":
+                    this.updatedLintResult.summary.totalFixedErrorNumber++;
+                    break;
+                case "warning":
+                    this.updatedLintResult.summary.totalFixedWarningNumber++;
+                    break;
+                case "info":
+                    this.updatedLintResult.summary.totalFixedInfoNumber++;
+                    break;
             }
         }
     }

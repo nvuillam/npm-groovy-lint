@@ -10,11 +10,11 @@ describe('TEST npm-groovy-lint with sources', () => {
                 jdeployRootPath: 'jdeploy-bundle',
                 verbose: true
             }, [
-            process.execPath,
-            '',
-            '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
-            '--ngl-fix']).run();
+                process.execPath,
+                '',
+                '-basedir="jdeploy-bundle/lib/example"',
+                '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
+                '--ngl-fix']).run();
         assert(res.status === 0 && res.fixer && res.fixer.fixedErrorsNumber > 0, 'Script failure');
     });
 

@@ -4,7 +4,7 @@
 const c = require("ansi-colors");
 const fse = require("fs-extra");
 const os = require("os");
-const cliProgress = require('cli-progress');
+const cliProgress = require("cli-progress");
 const util = require("util");
 const xml2js = require("xml2js");
 const NpmGroovyLintFix = require("./groovy-lint-fix.js");
@@ -96,10 +96,14 @@ class NpmGroovyLint {
         const jDeployCommand = '"' + this.args[0] + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" ' + this.codenarcArgs.join(" ");
 
         // Start progress bar
-        this.bar = new cliProgress.SingleBar({
-            format: '[{bar}] Running CodeNarc with arguments ' + this.codenarcArgs.join(" "),
-            clearOnComplete: true
-        }, cliProgress.Presets.shades_classic); this.bar.start(10, 1);
+        this.bar = new cliProgress.SingleBar(
+            {
+                format: "[{bar}] Running CodeNarc with arguments " + this.codenarcArgs.join(" "),
+                clearOnComplete: true
+            },
+            cliProgress.Presets.shades_classic
+        );
+        this.bar.start(10, 1);
         this.barTimer = setInterval(() => {
             this.bar.increment();
             if (this.bar.value === 9) {
@@ -183,10 +187,10 @@ class NpmGroovyLint {
                             violation["$"].priority == "1"
                                 ? "error"
                                 : violation["$"].priority == "2"
-                                    ? "warning"
-                                    : violation["$"].priority == "3"
-                                        ? "info"
-                                        : "unknown",
+                                ? "warning"
+                                : violation["$"].priority == "3"
+                                ? "info"
+                                : "unknown",
                         msg: violation.Message ? violation.Message[0] : "NGL: No message"
                     };
                     files[fileNm].errors.push(err);
@@ -226,13 +230,12 @@ class NpmGroovyLint {
                     if (err.fixed === true) {
                         if (this.options.verbose === true) {
                             color = "green";
-                            err.severity = 'fixed';
-                        }
-                        else {
-                            continue
+                            err.severity = "fixed";
+                        } else {
+                            continue;
                         }
                     }
-                    // Build error output line                    
+                    // Build error output line
                     this.nglOutputString +=
                         "  " +
                         err.line.padEnd(4, " ") +
@@ -250,28 +253,28 @@ class NpmGroovyLint {
 
             // Summary table
             const errorTableLine = {
-                'Severity': "Error",
-                'Total found': this.lintResult.summary.totalErrorNumber,
-                'Total fixed': (this.lintResult.summary.totalFixedErrorNumber),
-                'Total remaining': (this.lintResult.summary.totalErrorNumber - this.lintResult.summary.totalFixedErrorNumber)
-            }
+                Severity: "Error",
+                "Total found": this.lintResult.summary.totalErrorNumber,
+                "Total fixed": this.lintResult.summary.totalFixedErrorNumber,
+                "Total remaining": this.lintResult.summary.totalErrorNumber - this.lintResult.summary.totalFixedErrorNumber
+            };
             const warningTableLine = {
-                'Severity': "Warning",
-                'Total found': this.lintResult.summary.totalWarningNumber,
-                'Total fixed': this.lintResult.summary.totalFixedWarningNumber,
-                'Total remaining': (this.lintResult.summary.totalWarningNumber - this.lintResult.summary.totalFixedWarningNumber)
-            }
+                Severity: "Warning",
+                "Total found": this.lintResult.summary.totalWarningNumber,
+                "Total fixed": this.lintResult.summary.totalFixedWarningNumber,
+                "Total remaining": this.lintResult.summary.totalWarningNumber - this.lintResult.summary.totalFixedWarningNumber
+            };
             const infoTableLine = {
-                'Severity': "Info",
-                'Total found': this.lintResult.summary.totalInfoNumber,
-                'Total fixed': this.lintResult.summary.totalFixedInfoNumber,
-                'Total remaining': (this.lintResult.summary.totalInfoNumber - this.lintResult.summary.totalFixedInfoNumber)
-            }
+                Severity: "Info",
+                "Total found": this.lintResult.summary.totalInfoNumber,
+                "Total fixed": this.lintResult.summary.totalFixedInfoNumber,
+                "Total remaining": this.lintResult.summary.totalInfoNumber - this.lintResult.summary.totalFixedInfoNumber
+            };
             const summaryTable = [errorTableLine, warningTableLine, infoTableLine];
 
             // Output log
             console.log(this.nglOutputString);
-            console.table(summaryTable, ['Severity', 'Total found', 'Total fixed', 'Total remaining']);
+            console.table(summaryTable, ["Severity", "Total found", "Total fixed", "Total remaining"]);
         }
         // Display as json
         else if (this.nglOutput === "json") {
