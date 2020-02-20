@@ -1,6 +1,6 @@
 {
   "name": "npm-groovy-lint",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta3",
   "description": "NPM CodeNarc wrapper to easily lint Groovy files",
   "main": "index.js",
   "scripts": {
