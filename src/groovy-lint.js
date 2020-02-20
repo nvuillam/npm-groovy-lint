@@ -96,9 +96,13 @@ class NpmGroovyLint {
         const jDeployCommand = '"' + this.args[0] + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" ' + this.codenarcArgs.join(" ");
 
         // Start progress bar
+        if (this.verbose) {
+            console.log("Running CodeNarc with arguments " + this.codenarcArgs.join(" "));
+        }
         this.bar = new cliProgress.SingleBar(
             {
-                format: "[{bar}] Running CodeNarc with arguments " + this.codenarcArgs.join(" "),
+                format: "[{bar}] Running CodeNarc for {duration_formatted}",
+                hideCursor: true,
                 clearOnComplete: true
             },
             cliProgress.Presets.shades_classic
@@ -109,7 +113,7 @@ class NpmGroovyLint {
             if (this.bar.value === 9) {
                 this.bar.update(1);
             }
-        }, 1000);
+        }, 500);
 
         // originalJDeploy.js Execution using child process
         const exec = util.promisify(require("child_process").exec);

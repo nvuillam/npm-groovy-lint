@@ -1,12 +1,10 @@
 #! /usr/bin/env node
 
 // Imports
-//const util = require("util");
 const fse = require("fs-extra");
 const cliProgress = require("cli-progress");
-//const os = require("os");
-//const xml2js = require("xml2js");
-const { npmGroovyLintRules, npmGroovyLintGlobalReplacements } = require("./groovy-lint-rules.js");
+const decodeHtml = require('decode-html');
+const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
 
 class NpmGroovyLintFix {
     "use strict";
@@ -66,7 +64,7 @@ class NpmGroovyLintFix {
             this.fixableErrors[fileNm] = [];
             const fileErrors = this.updatedLintResult.files[fileNm].errors;
             for (const err of fileErrors) {
-                if (this.npmGroovyLintRules[err.rule] != null && this.npmGroovyLintRules[err.rule].fixes != null) {
+                if (this.npmGroovyLintRules[err.rule] != null && this.npmGroovyLintRules[err.rule].fix != null) {
                     const fixableError = {
                         id: err.id,
                         ruleName: err.rule,
@@ -77,14 +75,13 @@ class NpmGroovyLintFix {
                     this.fixableErrors[fileNm].push(fixableError);
                 }
             }
-            // Sort errors putting scope = file at last
+            // Sort errors putting file scope at last, and sorter file scopes by ascending priority
             this.fixableErrors[fileNm].sort((a, b) => {
-                if (a.rule.scope && a.rule.scope === "file" && b.rule.scope == null) {
-                    return -1;
-                } else if (b.rule.scope && b.rule.scope === "file" && a.rule.scope == null) {
-                    return 1;
-                }
-                return 0;
+                return (a.rule.scope && a.rule.scope === "file" && b.rule.scope == null) ? 1 :
+                    (b.rule.scope && b.rule.scope === "file" && a.rule.scope == null) ? -1 :
+                        (a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority > b.rule.priority) ? 1 :
+                            (a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority < b.rule.priority) ? -1 :
+                                0
             });
         }
     }
@@ -101,10 +98,11 @@ class NpmGroovyLintFix {
                 // Process fixes
                 let fixedInFileNb = 0;
                 for (const fileFixableError of this.fixableErrors[fileNm]) {
+                    const lineNb = parseInt(fileFixableError.lineNb, 10) - 1;
                     // File scope violation
                     if (fileFixableError.rule.scope === "file") {
-                        const fileLinesNew = this.applyFixRule(fileLines, fileFixableError);
-                        if (fileLinesNew.toString() !== fileLines.toString()) {
+                        const fileLinesNew = this.applyFixRule(fileLines, lineNb, fileFixableError).slice(); // copy result lines
+                        if (JSON.stringify(fileLinesNew) !== JSON.stringify(fileLines.toString)) {
                             fileLines = fileLinesNew;
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
@@ -113,9 +111,8 @@ class NpmGroovyLintFix {
                     }
                     // Line scope violation
                     else {
-                        const lineNb = parseInt(fileFixableError.lineNb, 10) - 1;
                         const line = fileLines[lineNb];
-                        const fixedLine = this.applyFixRule(line, fileFixableError);
+                        const fixedLine = this.applyFixRule(line, lineNb, fileFixableError);
                         if (fixedLine !== line) {
                             fileLines[lineNb] = fixedLine;
                             fixedInFileNb = fixedInFileNb + 1;
@@ -133,7 +130,7 @@ class NpmGroovyLintFix {
     }
 
     // Evaluate variables and apply rule defined fixes
-    applyFixRule(line, fixableError) {
+    applyFixRule(line, lineNb, fixableError) {
         // Evaluate variables from message
         const evaluatedVars = [];
         for (const varDef of fixableError.rule.variables || []) {
@@ -142,49 +139,39 @@ class NpmGroovyLintFix {
                 const regexRes = fixableError.msg.match(varDef.regex);
                 if (regexRes && regexRes.length > 1) {
                     const regexPos = varDef.regexPos || 1;
-                    evaluatedVars.push({ name: varDef.name, value: regexRes[regexPos] });
+                    evaluatedVars.push({ name: varDef.name, value: decodeHtml(regexRes[regexPos]) });
                 }
             } else if (varDef.value) {
                 evaluatedVars.push({ name: varDef.name, value: varDef.value });
             }
         }
+        evaluatedVars.push({ name: 'lineNb', value: lineNb });
 
-        // Apply replacement
+        // Apply fix : replacement or custom function
         let newLine = line;
-        for (const fix of fixableError.rule.fixes) {
-            // Replace String
-            if (fix.type === "replaceString") {
-                // Replace {{VARNAME}} by real variables
-                const strBefore = this.setVariablesValues(fix.before, evaluatedVars.concat(npmGroovyLintGlobalReplacements));
-                const strAfter = this.setVariablesValues(fix.after, evaluatedVars.concat(npmGroovyLintGlobalReplacements));
-                // Process replacement with evualuated expressions (except if issue in evaluated expression)
-                if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
-                    newLine = newLine.replace(strBefore, strAfter);
-                } else if (this.options.verbose) {
-                    console.debug("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n");
-                }
+        const fix = fixableError.rule.fix;
+        // Replace String
+        if (fix.type === "replaceString") {
+            // Replace {{VARNAME}} by real variables
+            const strBefore = this.setVariablesValues(fix.before, evaluatedVars);
+            const strAfter = this.setVariablesValues(fix.after, evaluatedVars);
+            // Process replacement with evualuated expressions (except if issue in evaluated expression)
+            if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
+                newLine = newLine.replace(strBefore, strAfter);
+            } else if (this.options.verbose) {
+                console.debug("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n");
             }
-            // Replace regex
-            else if (fix.type === "replaceRegex") {
-                // Replace {{VARNAME}} by real variables
-                const regexBefore = this.setVariablesValues(fix.before, evaluatedVars.concat(npmGroovyLintGlobalReplacements));
-                const strAfter = this.setVariablesValues(fix.after, evaluatedVars.concat(npmGroovyLintGlobalReplacements));
-                if (!regexBefore.includes("{{") && !strAfter.includes("{{")) {
-                    newLine = newLine.replace(new RegExp(regexBefore, "g"), strAfter);
-                }
-            }
-            // Function defined in rule
-            else if (fix.type === "function") {
-                try {
-                    newLine = fix.func(newLine, evaluatedVars);
-                } catch (e) {
-                    if (this.options.verbose) {
-                        console.error("NGL: Function error: " + e.message + " / " + JSON.stringify(fixableError));
-                    }
+        }
+        // Function defined in rule
+        else if (fix.type === "function") {
+            try {
+                newLine = fix.func(newLine, evaluatedVars);
+            } catch (e) {
+                if (this.options.verbose) {
+                    console.error("NGL: Function error: " + e.message + " / " + JSON.stringify(fixableError));
                 }
             }
         }
-
         return newLine;
     }
 
