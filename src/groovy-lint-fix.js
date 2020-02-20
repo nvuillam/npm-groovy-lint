@@ -3,7 +3,7 @@
 // Imports
 const fse = require("fs-extra");
 const cliProgress = require("cli-progress");
-const decodeHtml = require('decode-html');
+const decodeHtml = require("decode-html");
 const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
 
 class NpmGroovyLintFix {
@@ -77,11 +77,15 @@ class NpmGroovyLintFix {
             }
             // Sort errors putting file scope at last, and sorter file scopes by ascending priority
             this.fixableErrors[fileNm].sort((a, b) => {
-                return (a.rule.scope && a.rule.scope === "file" && b.rule.scope == null) ? 1 :
-                    (b.rule.scope && b.rule.scope === "file" && a.rule.scope == null) ? -1 :
-                        (a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority > b.rule.priority) ? 1 :
-                            (a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority < b.rule.priority) ? -1 :
-                                0
+                return a.rule.scope && a.rule.scope === "file" && b.rule.scope == null
+                    ? 1
+                    : b.rule.scope && b.rule.scope === "file" && a.rule.scope == null
+                    ? -1
+                    : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority > b.rule.priority
+                    ? 1
+                    : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority < b.rule.priority
+                    ? -1
+                    : 0;
             });
         }
     }
@@ -145,7 +149,7 @@ class NpmGroovyLintFix {
                 evaluatedVars.push({ name: varDef.name, value: varDef.value });
             }
         }
-        evaluatedVars.push({ name: 'lineNb', value: lineNb });
+        evaluatedVars.push({ name: "lineNb", value: lineNb });
 
         // Apply fix : replacement or custom function
         let newLine = line;

@@ -7,32 +7,28 @@ const fse = require("fs-extra");
 const exec = util.promisify(require("child_process").exec);
 
 describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
-    it('(EXE) should run with NGL option: --ngl-output=text', async () => {
+    it('(EXE) should generate text console output', async () => {
         const params = [
-            '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
-            '-title="TestTitle"',
-            '-maxPriority1Violations=0',
-            '-report="html:toBeIgnoredAtRuntime.xxx"',
-            '--ngl-output=text',
-            '--ngl-verbose'];
+            '--path', '"jdeploy-bundle/lib/example"',
+            '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
+            '--verbose'
+        ];
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
-        assert(stdout && stdout.includes('warning'), 'Script failure');
+        assert(stdout && stdout.includes('info'), 'Script failure');
     });
-    it('(EXE) should run with NGL option: --ngl-output=json', async () => {
+    it('(EXE) should generate json console output', async () => {
         const params = [
-            '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
-            '-title="TestTitle"',
-            '-maxPriority1Violations=0',
-            '-report="html:toBeIgnoredAtRuntime.zzz"',
-            '--ngl-output=json'];
+            '--path', '"jdeploy-bundle/lib/example"',
+            '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
+            '--output', 'json'
+        ];
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
         assert(stdout && stdout.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
     });
 
-    it('(EXE) should run with only codenarc options: HTML', async () => {
+    it('(EXE) should generate codenarc HTML file report', async () => {
         const params = [
+            '--codenarcargs',
             '-basedir="jdeploy-bundle/lib/example"',
             '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitleCodenarc"',
@@ -43,8 +39,9 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
         fse.removeSync('ReportTestCodenarc.html');
     });
 
-    it('(EXE) should run with only codenarc options: XML', async () => {
+    it('(EXE) should generate codenarc XML file report', async () => {
         const params = [
+            '--codenarcargs',
             '-basedir="jdeploy-bundle/lib/example"',
             '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitleCodenarc"',
@@ -57,20 +54,25 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
 
     it('(EXE) should run on a Jenkinsfile', async () => {
         const params = [
-            '-basedir="jdeploy-bundle/lib/example"',
-            '-includes=Jenkinsfile',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
-            '-title="TestTitle"',
-            '-maxPriority1Violations=0',
-            '-report="html:toBeIgnoredAtRuntime.xxx"',
-            '--ngl-output=text',
-            '--ngl-verbose'];
+            '--path', ' "jdeploy-bundle/lib/example"',
+            '--f', '"**/Jenkinsfile"',
+            '-r', '"jdeploy-bundle/lib/example/RuleSet-Jenkinsfile.groovy"',
+            '--verbose'];
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
         assert(stdout && stdout.includes('warning'), 'Script failure');
     });
 
-    it('(EXE) should run with only codenarc options: HELP', async () => {
+    it('(EXE) should show npm-groovy-lint help', async () => {
         const params = [
+            '-h'
+        ];
+        const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
+        assert(stdout.includes('-v, --verbose'), 'Script failure');
+    });
+
+    it('(EXE) should show codenarc help', async () => {
+        const params = [
+            '--codenarcargs',
             '-help'
         ];
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));

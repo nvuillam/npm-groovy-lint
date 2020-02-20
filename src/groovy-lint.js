@@ -8,6 +8,7 @@ const cliProgress = require("cli-progress");
 const util = require("util");
 const xml2js = require("xml2js");
 const NpmGroovyLintFix = require("./groovy-lint-fix.js");
+const optionsDefinition = require("./options");
 
 class NpmGroovyLint {
     "use strict";
@@ -15,88 +16,116 @@ class NpmGroovyLint {
     options = {}; // NpmGroovyLint options
     args = []; // Command line arguments
 
-    // Config
+    // Internal
     jdeployFile;
     jdeployRootPath;
     tmpXmlFileName;
 
     // Codenarc
-    codenarcArgs;
+    codenarcArgs = [];
     codeNarcBaseDir;
     codeNarcStdOut;
     codeNarcStdErr;
 
     // npm-groovy-lint
-    nglFix = false;
+    onlyCodeNarc = false;
     lintResult = {};
-    nglOutput;
     nglOutputString = "";
     status = 0;
     fixer;
 
     bar;
     barTimer;
-    verbose = false;
 
     // Construction: initialize options & args
-    constructor(optionsIn, argsIn) {
-        this.options = optionsIn;
+    constructor(argsIn, internalOpts = {}) {
         if (argsIn) {
             this.args = argsIn;
         }
-        this.verbose = this.options.verbose || this.findArg(this.args, "--ngl-verbose") || false;
-        this.jdeployFile = this.options.jdeployFile || process.env.JDEPLOY_FILE || "originaljdeploy.js";
-        this.jdeployRootPath = this.options.jdeployRootPath || process.env.JDEPLOY_ROOT_PATH || __dirname;
-        this.tmpXmlFileName = this.options.tmpXmlFileName || os.tmpdir() + "/CodeNarcReportXml_" + Math.random() + ".xml";
+        this.jdeployFile = internalOpts.jdeployFile || process.env.JDEPLOY_FILE || "originaljdeploy.js";
+        this.jdeployRootPath = internalOpts.jdeployRootPath || process.env.JDEPLOY_ROOT_PATH || __dirname;
+        this.tmpXmlFileName = internalOpts.tmpXmlFileName || os.tmpdir() + "/CodeNarcReportXml_" + Math.random() + ".xml";
     }
 
     async run() {
-        await this.preProcess();
-        await this.callCodeNarc();
-        await this.postProcess();
+        const doProcess = await this.preProcess();
+        if (doProcess) {
+            await this.callCodeNarc();
+            await this.postProcess();
+        }
         return this;
     }
 
     // Actions before call to CodeNarc
     async preProcess() {
-        this.codenarcArgs = this.args.slice(2);
+        // Manage when the user wants to use only codenarc args
+        if (this.args.includes("--codenarcargs")) {
+            this.codenarcArgs = this.args.slice(2).filter(userArg => userArg !== "--codenarcargs");
+            this.onlyCodeNarc = true;
+            return true;
+        }
 
-        // Define codeNarcBaseDir for later use ( postProcess )
-        const codeNarcBaseDirInit = this.findArg(this.codenarcArgs, "-basedir", { stripQuotes: true });
-        if (codeNarcBaseDirInit) {
-            this.codeNarcBaseDir = process.cwd() + "/" + codeNarcBaseDirInit;
+        // Parse options
+        try {
+            this.options = optionsDefinition.parse(this.args);
+        } catch (error) {
+            this.status = 2;
+            throw new Error(error.message);
+        }
+
+        // Show version (to do more clean)
+        if (this.options.version) {
+            console.info("v2.0.0");
+            return false;
+        }
+
+        // Show help ( index or for an options)
+        if (this.options.help) {
+            if (this.options._.length) {
+                this.nglOutputString = optionsDefinition.generateHelpForOption(this.options._[0]);
+            } else {
+                this.nglOutputString = optionsDefinition.generateHelp();
+            }
+            console.info(this.nglOutputString);
+            return false;
+        }
+
+        // Complete options
+
+        // Build codenarc options
+        // base directory
+        this.codeNarcBaseDir = ((this.options.path != ".") ?
+            (process.cwd() + "/" + this.options.path.replace(/^"(.*)"$/, "$1")) :
+            process.cwd());
+        this.codenarcArgs.push('-basedir="' + this.codeNarcBaseDir + '"');
+        // Matching files pattern(s)
+        this.codenarcArgs.push('-includes="' + this.options.files.replace(/^"(.*)"$/, "$1") + '"');
+        // Ruleset(s)
+        if (this.options.rulesets) {
+            this.codenarcArgs.push('-rulesetfiles="file:' + this.options.rulesets.replace(/^"(.*)"$/, "$1") + '"');
+        }
+
+        const output = this.options.output.replace(/^"(.*)"$/, "$1");
+        if (["txt", "json"].includes(output)) {
+            this.codenarcArgs.push('-report=xml:"' + this.tmpXmlFileName + '"');
+        } else if (["html", "xml"].includes(output.split(".").pop())) {
+            const ext = output.split(".").pop();
+            this.codenarcArgs.push('-report="' + ext + ":" + output + '"');
         } else {
-            this.codeNarcBaseDir = process.cwd();
+            this.status = 2;
+            throw new Error("For now, only output formats are txt and json in console, and html and xml as files");
         }
 
-        // Manage files prettifying ( not working yet)
-        if (this.findArg(this.codenarcArgs, "--ngl-format")) {
-            //await prettifyFiles(); // NV: not implemented yet
-        }
-
-        // Manage --ngl-fix option
-        if (this.findArg(this.codenarcArgs, "--ngl-fix")) {
-            this.nglFix = true;
-            this.codenarcArgs.push("--ngl-output:text");
-        }
-
-        // Check if npm-groovy-lint reformatted output has been requested
-        this.nglOutput = this.findArg(this.codenarcArgs, "--ngl-output");
-        // Remove -report userArg if existing, and add XML type to generate temp xml file that will be parsed later
-        if (this.nglOutput !== false) {
-            this.codenarcArgs = this.codenarcArgs.filter(userArg => !userArg.includes("-report"));
-            this.codenarcArgs.push("-report=xml:" + this.tmpXmlFileName);
-        }
+        return true;
     }
 
     // Call CodeNard java class from renamed jdeploy.js
     async callCodeNarc() {
         // Build jdeploy codenarc command , filter non-codenarc arguments
-        this.codenarcArgs = this.codenarcArgs.filter(userArg => !userArg.includes("-ngl-"));
         const jDeployCommand = '"' + this.args[0] + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" ' + this.codenarcArgs.join(" ");
 
         // Start progress bar
-        if (this.verbose) {
+        if (this.options.verbose) {
             console.log("Running CodeNarc with arguments " + this.codenarcArgs.join(" "));
         }
         this.bar = new cliProgress.SingleBar(
@@ -117,14 +146,21 @@ class NpmGroovyLint {
 
         // originalJDeploy.js Execution using child process
         const exec = util.promisify(require("child_process").exec);
-        const { stdout, stderr } = await exec(jDeployCommand);
+        let execRes;
+        try {
+            execRes = await exec(jDeployCommand);
+        } catch (e) {
+            clearInterval(this.barTimer);
+            this.bar.stop();
+            throw new Error('NGL: CodeNarc crash: \n' + e.message);
+        }
 
         // Stop progress bar
         clearInterval(this.barTimer);
         this.bar.stop();
 
-        this.codeNarcStdOut = stdout;
-        this.codeNarcStdErr = stderr;
+        this.codeNarcStdOut = execRes.stdout;
+        this.codeNarcStdErr = execRes.stderr;
     }
 
     // After CodeNarc call
@@ -135,16 +171,16 @@ class NpmGroovyLint {
             console.error("NGL: Error running CodeNarc: \n" + this.codeNarcStdErr);
         }
         // no --ngl* options
-        else if (this.nglOutput === false) {
+        else if (this.onlyCodeNarc) {
             console.log("NGL: Successfully processed CodeNarc: \n" + this.codeNarcStdOut);
         }
-        // process --ngl* options
+        // process npm-groovy-lint options ( output, fix, formatting ...)
         else {
             // Parse XML result as js object
             await this.parseCodeNarcResult();
             // Fix when possible
-            if (this.nglFix) {
-                this.fixer = new NpmGroovyLintFix(this.lintResult, { verbose: this.verbose });
+            if (this.options.fix) {
+                this.fixer = new NpmGroovyLintFix(this.lintResult, { verbose: this.options.verbose });
                 await this.fixer.run();
                 this.lintResult = this.fixer.updatedLintResult;
             }
@@ -158,6 +194,7 @@ class NpmGroovyLint {
         const tempXmlFileContent = await parser.parseStringPromise(fse.readFileSync(this.tmpXmlFileName), {});
         if (!tempXmlFileContent || !tempXmlFileContent.CodeNarc || !tempXmlFileContent.CodeNarc.Package) {
             console.error(JSON.stringify(tempXmlFileContent));
+            this.status = 3;
             throw new Error("Unable to parse temporary codenarc xml report file " + this.tmpXmlFileName);
         }
         const result = { summary: {} };
@@ -210,7 +247,7 @@ class NpmGroovyLint {
     // Reformat output if requested in command line
     async processNglOutput() {
         // Display as console log
-        if (this.nglOutput === "text" || this.nglOutput === true) {
+        if (this.options.output === "txt") {
             // Errors
             for (const fileNm of Object.keys(this.lintResult.files)) {
                 const fileErrors = this.lintResult.files[fileNm].errors;
@@ -276,33 +313,13 @@ class NpmGroovyLint {
 
             // Output log
             console.log(this.nglOutputString);
-            console.table(summaryTable, (this.fixer) ?
-                ["Severity", "Total found", "Total fixed", "Total remaining"] :
-                ["Severity", "Total found"]);
+            console.table(summaryTable, this.fixer ? ["Severity", "Total found", "Total fixed", "Total remaining"] : ["Severity", "Total found"]);
         }
         // Display as json
-        else if (this.nglOutput === "json") {
+        else if (this.options.output === "json") {
             this.nglOutputString = JSON.stringify(this.lintResult);
             console.log(this.nglOutputString);
         }
-    }
-
-    // Find argument (and associated value) in user args
-    findArg(args, name, options = {}) {
-        const argsRes = args.filter(userArg => userArg.includes(name));
-        if (argsRes.length > 0) {
-            if (argsRes[0].includes("=")) {
-                let value = argsRes[0].split("=")[1];
-                if (options.stripQuotes) {
-                    value = value.replace(/^"(.*)"$/, "$1");
-                    value = value.replace(/^'(.*)'$/, "$1");
-                }
-                return value;
-            } else {
-                return true;
-            }
-        }
-        return false;
     }
 }
 

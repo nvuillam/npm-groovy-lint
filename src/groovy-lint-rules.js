@@ -1,7 +1,7 @@
 // List fixable CodeNarc rules
 "use strict";
 
-const decodeHtml = require('decode-html');
+const decodeHtml = require("decode-html");
 
 const npmGroovyLintRules = {
     // Consecutive blank lines
@@ -84,7 +84,7 @@ const npmGroovyLintRules = {
             func: fileLines => {
                 const newFileLines = [];
                 for (const line of fileLines) {
-                    newFileLines.push(line.replace('\t', ''));
+                    newFileLines.push(line.replace("\t", ""));
                 }
                 return newFileLines;
             }
@@ -107,7 +107,7 @@ const npmGroovyLintRules = {
             func: line => {
                 const regexMatch = line.match(new RegExp(/{[^ ]/, "g"));
                 if (regexMatch && regexMatch[0]) {
-                    line = line.replace(regexMatch[0], '{ ' + regexMatch[0][0]);
+                    line = line.replace(regexMatch[0], "{ " + regexMatch[0][1]);
                 }
                 return line;
             }
@@ -135,8 +135,8 @@ const npmGroovyLintRules = {
     SpaceAfterComma: {
         fix: {
             type: "function",
-            func: (line) => {
-                return addSpaceAroundChar(line, ',');
+            func: line => {
+                return addSpaceAroundChar(line, ",");
             }
         }
     },
@@ -148,7 +148,7 @@ const npmGroovyLintRules = {
             func: line => {
                 const regexMatch = line.match(new RegExp(/[^ ]{/, "g"));
                 if (regexMatch && regexMatch[0]) {
-                    line = line.replace(regexMatch[0], regexMatch[0][0] + ' {');
+                    line = line.replace(regexMatch[0], regexMatch[0][0] + " {");
                 }
                 return line;
             }
@@ -194,13 +194,11 @@ const npmGroovyLintRules = {
             type: "function",
             func: line => {
                 const pos = line.lastIndexOf(";");
-                if (pos === (line.length - 1)) {
+                if (pos === line.length - 1) {
                     return line.slice(0, -1).trimEnd();
-                }
-                else {
+                } else {
                     return (line.slice(0, pos) + line.slice(pos + 1)).trimEnd();
                 }
-
             }
         }
     },
@@ -219,7 +217,7 @@ const npmGroovyLintRules = {
 function getVariable(evaluatedVars, name, optns = { mandatory: false, decodeHtml: false }) {
     const matchingVars = evaluatedVars.filter(evaluatedVar => evaluatedVar.name === name);
     if (matchingVars && matchingVars.length > 0) {
-        return (optns.decodeHtml) ? (decodeHtml(matchingVars[0].value)) : matchingVars[0].value;
+        return optns.decodeHtml ? decodeHtml(matchingVars[0].value) : matchingVars[0].value;
     } else if (optns.mandatory) {
         throw new Error("NGL fix: missing mandatory variable " + name + " in " + JSON.stringify(evaluatedVars));
     } else {
