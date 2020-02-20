@@ -13,7 +13,7 @@
 
 ### Changed
 
-- Command line arguments (no retro-compatibility as the package is new, please check the README or type npm-groovy-lint --help)
+- Command line arguments different from CodeNarc ones (retro-compatibility with CodeNarc arguments assured if you add --codenarcargs)
 - Upgrade to CodeNarc v1.5
 - Upgrade to Groovy v3.0.1
 
