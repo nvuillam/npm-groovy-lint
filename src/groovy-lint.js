@@ -187,10 +187,10 @@ class NpmGroovyLint {
                             violation["$"].priority == "1"
                                 ? "error"
                                 : violation["$"].priority == "2"
-                                ? "warning"
-                                : violation["$"].priority == "3"
-                                ? "info"
-                                : "unknown",
+                                    ? "warning"
+                                    : violation["$"].priority == "3"
+                                        ? "info"
+                                        : "unknown",
                         msg: violation.Message ? violation.Message[0] : "NGL: No message"
                     };
                     files[fileNm].errors.push(err);
@@ -223,8 +223,6 @@ class NpmGroovyLint {
                         case "info":
                             color = "grey";
                             break;
-                        default:
-                            color = "magenta"; // should not happen
                     }
                     // Display fixed errors only if --verbose is called
                     if (err.fixed === true) {
@@ -274,7 +272,9 @@ class NpmGroovyLint {
 
             // Output log
             console.log(this.nglOutputString);
-            console.table(summaryTable, ["Severity", "Total found", "Total fixed", "Total remaining"]);
+            console.table(summaryTable, (this.fixer) ?
+                ["Severity", "Total found", "Total fixed", "Total remaining"] :
+                ["Severity", "Total found"]);
         }
         // Display as json
         else if (this.nglOutput === "json") {

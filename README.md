@@ -27,7 +27,7 @@ For advanced usage,  you may need to define [RuleSet file(s)](http://codenarc.so
 You can use as starters :
 
 - [All rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-All.groovy)
-- [Base rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-Base.groovy)
+- [Base rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-Groovy.groovy)
 
 # USAGE
 
@@ -65,12 +65,12 @@ See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc
 ```
     // npm-groovy-lint output
 
-    $ npm-groovy-lint -report="xml:MyGroovyLinterReport.xml" --ngl-output=text
+    $ npm-groovy-lint --ngl-output=text
 
 
     // npm-groovy-lint output
 
-    $ npm-groovy-lint -includes=**/Jenkinsfile -rulesetfiles="file:config/codenarc/RuleSet-Base.groovy" --ngl-output=json
+    $ npm-groovy-lint -includes=**/Jenkinsfile -rulesetfiles="file:config/codenarc/RuleSet-Groovy.groovy" --ngl-output=json
 
 
     // CodeNarc output
@@ -80,7 +80,7 @@ See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc
 
     // CodeNarc output
 
-    $ npm-groovy-lint -basedir="src" -rulesetfiles="file:config/codenarc/RuleSet-Base.groovy" -title="MyGroovyLinterReport" -maxPriority1Violations=0 -report="html:MyGroovyLinterReport.html"
+    $ npm-groovy-lint -basedir="src" -rulesetfiles="file:config/codenarc/RuleSet-Groovy.groovy" -title="MyGroovyLinterReport" -maxPriority1Violations=0 -report="html:MyGroovyLinterReport.html"
 ```
 
 # TROUBLESHOOTING

@@ -5,6 +5,7 @@ let assert = require('assert');
 const fse = require("fs-extra");
 
 describe('TEST npm-groovy-lint with sources', () => {
+
     it('(SRC) should run with NGL option: --ngl-output=text', async () => {
         const res = await new NpmGroovyLint({
             jdeployRootPath: 'jdeploy-bundle',
@@ -13,7 +14,7 @@ describe('TEST npm-groovy-lint with sources', () => {
             process.execPath,
             '',
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitle"',
             '-maxPriority1Violations=0',
             '-report="html:toBeIgnoredAtRuntime.xxx"',
@@ -26,7 +27,7 @@ describe('TEST npm-groovy-lint with sources', () => {
             process.execPath,
             '',
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitle"',
             '-maxPriority1Violations=0',
             '-report="html:toBeIgnoredAtRuntime.zzz"',
@@ -40,7 +41,7 @@ describe('TEST npm-groovy-lint with sources', () => {
             process.execPath,
             '',
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="html:ReportTestCodenarc.html"']).run();
@@ -53,12 +54,30 @@ describe('TEST npm-groovy-lint with sources', () => {
             process.execPath,
             '',
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="xml:ReportTestCodenarc.xml"']).run();
         assert(res.status === 0 && fse.existsSync('ReportTestCodenarc.xml'), 'Script failure');
         fse.removeSync('ReportTestCodenarc.xml');
+    });
+
+    it('(SRC) should run on a Jenkinsfile', async () => {
+        const res = await new NpmGroovyLint({
+            jdeployRootPath: 'jdeploy-bundle',
+            verbose: true
+        }, [
+            process.execPath,
+            '',
+            '-basedir="jdeploy-bundle/lib/example"',
+            '-includes="**/Jenkinsfile"',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
+            '-title="TestTitle"',
+            '-maxPriority1Violations=0',
+            '-report="html:toBeIgnoredAtRuntime.xxx"',
+            '--ngl-verbose',
+            '--ngl-output=text']).run();
+        assert(res.status === 0 && res.nglOutputString.includes('warning'), 'Script failure');
     });
 
     it('(SRC) should run with only codenarc options: HELP', async () => {

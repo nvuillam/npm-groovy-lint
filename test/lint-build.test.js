@@ -10,7 +10,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
     it('(EXE) should run with NGL option: --ngl-output=text', async () => {
         const params = [
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitle"',
             '-maxPriority1Violations=0',
             '-report="html:toBeIgnoredAtRuntime.xxx"',
@@ -22,7 +22,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
     it('(EXE) should run with NGL option: --ngl-output=json', async () => {
         const params = [
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitle"',
             '-maxPriority1Violations=0',
             '-report="html:toBeIgnoredAtRuntime.zzz"',
@@ -34,7 +34,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
     it('(EXE) should run with only codenarc options: HTML', async () => {
         const params = [
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="html:ReportTestCodenarc.html"'];
@@ -46,13 +46,27 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
     it('(EXE) should run with only codenarc options: XML', async () => {
         const params = [
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Base.groovy"',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="xml:ReportTestCodenarc.xml"'];
         await exec('npm-groovy-lint ' + params.join(' '));
         assert(fse.existsSync('ReportTestCodenarc.xml'), 'Script failure');
         //       fse.removeSync('ReportTestCodenarc.xml');
+    });
+
+    it('(EXE) should run on a Jenkinsfile', async () => {
+        const params = [
+            '-basedir="jdeploy-bundle/lib/example"',
+            '-includes=Jenkinsfile',
+            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
+            '-title="TestTitle"',
+            '-maxPriority1Violations=0',
+            '-report="html:toBeIgnoredAtRuntime.xxx"',
+            '--ngl-output=text',
+            '--ngl-verbose'];
+        const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
+        assert(stdout && stdout.includes('warning'), 'Script failure');
     });
 
     it('(EXE) should run with only codenarc options: HELP', async () => {
