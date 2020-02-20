@@ -94,9 +94,7 @@ class NpmGroovyLint {
 
         // Build codenarc options
         // base directory
-        this.codeNarcBaseDir = ((this.options.path != ".") ?
-            (process.cwd() + "/" + this.options.path.replace(/^"(.*)"$/, "$1")) :
-            process.cwd());
+        this.codeNarcBaseDir = this.options.path != "." ? process.cwd() + "/" + this.options.path.replace(/^"(.*)"$/, "$1") : process.cwd();
         this.codenarcArgs.push('-basedir="' + this.codeNarcBaseDir + '"');
         // Matching files pattern(s)
         this.codenarcArgs.push('-includes="' + this.options.files.replace(/^"(.*)"$/, "$1") + '"');
@@ -152,7 +150,7 @@ class NpmGroovyLint {
         } catch (e) {
             clearInterval(this.barTimer);
             this.bar.stop();
-            throw new Error('NGL: CodeNarc crash: \n' + e.message);
+            throw new Error("NGL: CodeNarc crash: \n" + e.message);
         }
 
         // Stop progress bar
@@ -228,10 +226,10 @@ class NpmGroovyLint {
                             violation["$"].priority == "1"
                                 ? "error"
                                 : violation["$"].priority == "2"
-                                    ? "warning"
-                                    : violation["$"].priority == "3"
-                                        ? "info"
-                                        : "unknown",
+                                ? "warning"
+                                : violation["$"].priority == "3"
+                                ? "info"
+                                : "unknown",
                         msg: violation.Message ? violation.Message[0] : "NGL: No message"
                     };
                     files[fileNm].errors.push(err);
