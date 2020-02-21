@@ -95,12 +95,12 @@ class NpmGroovyLintFix {
                 return a.rule.scope && a.rule.scope === "file" && b.rule.scope == null
                     ? 1
                     : b.rule.scope && b.rule.scope === "file" && a.rule.scope == null
-                        ? -1
-                        : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority > b.rule.priority
-                            ? 1
-                            : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority < b.rule.priority
-                                ? -1
-                                : 0;
+                    ? -1
+                    : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority > b.rule.priority
+                    ? 1
+                    : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority < b.rule.priority
+                    ? -1
+                    : 0;
             });
         }
     }
@@ -109,6 +109,7 @@ class NpmGroovyLintFix {
     addFixableError(fileNm, fixableError) {
         if (
             fixableError.rule.scope === "file" &&
+            !fixableError.rule.unitary === true &&
             this.fixableErrors[fileNm].filter(matchFixableError => matchFixableError.ruleName === fixableError.ruleName).length > 0
         ) {
             return;

@@ -3,13 +3,64 @@
 
 const decodeHtml = require("decode-html");
 
+// Default indent length
 const indentLength = 4;
 
+// If you add a new global rule, it's very important to think about their order.
+// Rules modifiyng the number of lines must arrive last !
+const globalScopePriorityOrder = [
+    "NoTabCharacter",
+    "IfStatementBraces",
+    "ElseStatementBraces",
+    "IndentationClosingBraces",
+    "ClosingBraceNotAlone",
+    "ConsecutiveBlankLines",
+    "IndentationComments",
+    "FileEndsWithoutNewline"
+];
+
 const npmGroovyLintRules = {
+
+    // Closing brace not alone
+    ClosingBraceNotAlone: {
+        scope: "file",
+        priority: getPriority("ClosingBraceNotAlone"),
+        fix: {
+            type: "function",
+            func: fileLines => {
+                const newFileLines = [];
+                for (let i = 0; i < fileLines.length; i++) {
+                    let line = fileLines[i];
+                    // Detect not alone closing brace
+                    if (
+                        line.includes("}") &&
+                        line.trim() !== "}" && // is not already alone
+                        !line.trim().endsWith('{}') && !line.trim().endsWith('{ }') &&
+                        !line
+                            .slice(line.lastIndexOf("}") + 1)
+                            .trim()
+                            .startsWith("//")
+                    ) {
+                        // Is not a closing brace with comment
+                        // Remove brace at its position
+                        const bracePos = line.lastIndexOf("}");
+                        const maxIndex = bracePos == 0 ? 0 : bracePos;
+                        line = line.substring(0, maxIndex) + line.substring(bracePos + 1, line.length);
+                        newFileLines.push(line.trimEnd());
+                        newFileLines.push("}");
+                    } else {
+                        newFileLines.push(line);
+                    }
+                }
+                return newFileLines;
+            }
+        }
+    },
+
     // Consecutive blank lines
     ConsecutiveBlankLines: {
         scope: "file",
-        priority: 999,
+        priority: getPriority("ConsecutiveBlankLines"),
         fix: {
             type: "function",
             func: fileLines => {
@@ -32,7 +83,7 @@ const npmGroovyLintRules = {
     // File ends without new line
     FileEndsWithoutNewline: {
         scope: "file",
-        priority: 999,
+        priority: getPriority("FileEndsWithoutNewline"),
         fix: {
             type: "function",
             func: fileLines => {
@@ -41,27 +92,57 @@ const npmGroovyLintRules = {
         }
     },
 
-    /* nvuillam: Not working, especially when embedded missing If statements ... 
-       let's let people correct that manually for now :)
+    // nvuillam: Not working, especially when embedded missing If statements ...
+    //   let's let people correct that manually for now :)
     // Missing if braces
     IfStatementBraces: {
         scope: "file",
-        priority: 1,
+        unitary: true,
+        triggers: ["ClosingBraceNotAlone"],
+        priority: getPriority("IfStatementBraces"),
         fix: {
             type: "function",
             func: (fileLines, variables) => {
-                const lineNumber = getVariable(variables, 'lineNb', { mandatory: true });
-                fileLines[lineNumber - 1] = fileLines[lineNumber - 1] + ' {';
-                fileLines[lineNumber] = fileLines[lineNumber] + ' }';
+                const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
+                // If line
+                let line = fileLines[lineNumber];
+                line = line.trimEnd() + " {";
+                fileLines[lineNumber] = line;
+                // Next line
+                let nextLine = fileLines[lineNumber + 1];
+                nextLine = nextLine + " }";
+                fileLines[lineNumber + 1] = nextLine;
                 return fileLines;
             }
         }
     },
-    */
+
+    // Missing else braces
+    ElseStatementBraces: {
+        scope: "file",
+        unitary: true,
+        triggers: ["ClosingBraceNotAlone"],
+        priority: getPriority("ElseStatementBraces"),
+        fix: {
+            type: "function",
+            func: (fileLines, variables) => {
+                const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
+                // If line
+                let line = fileLines[lineNumber];
+                line = line.trimEnd() + " {";
+                fileLines[lineNumber] = line;
+                // Next line
+                let nextLine = fileLines[lineNumber + 1];
+                nextLine = nextLine + " }";
+                fileLines[lineNumber + 1] = nextLine;
+                return fileLines;
+            }
+        }
+    },
 
     // Indentation
     Indentation: {
-        triggers: ["IndentationClosingBraces", "IndentationComments"],
+        triggers: ["IndentationClosingBraces", "IndentationComments", "ClosingBraceNotAlone"],
         variables: [
             {
                 name: "EXPECTED",
@@ -93,7 +174,7 @@ const npmGroovyLintRules = {
     // Indentation comments
     IndentationComments: {
         scope: "file",
-        priority: 900,
+        priority: getPriority("IndentationComments"),
         fix: {
             type: "function",
             func: fileLines => {
@@ -123,10 +204,10 @@ const npmGroovyLintRules = {
         }
     },
 
-    // Indentation comments
+    // Indentation closing braces
     IndentationClosingBraces: {
         scope: "file",
-        priority: 800,
+        priority: getPriority("IndentationClosingBraces"),
         fix: {
             type: "function",
             func: fileLines => {
@@ -168,13 +249,13 @@ const npmGroovyLintRules = {
     // No tab character
     NoTabCharacter: {
         scope: "file",
-        priority: 2,
+        priority: getPriority("NoTabCharacter"),
         fix: {
             type: "function",
             func: fileLines => {
                 const newFileLines = [];
                 for (const line of fileLines) {
-                    newFileLines.push(line.replace("\t", ""));
+                    newFileLines.push(line.replace(/\t/g, ""));
                 }
                 return newFileLines;
             }
@@ -303,6 +384,10 @@ const npmGroovyLintRules = {
         }
     }
 };
+
+function getPriority(ruleName) {
+    return globalScopePriorityOrder.indexOf(ruleName);
+}
 
 function getVariable(evaluatedVars, name, optns = { mandatory: false, decodeHtml: false }) {
     const matchingVars = evaluatedVars.filter(evaluatedVar => evaluatedVar.name === name);

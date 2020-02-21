@@ -15,7 +15,7 @@
 
 Based on [CodeNarc](http://codenarc.sourceforge.net/) , this out of the box package allows to track groovy errors and correct a part of them
 
-Use option **--fix** to activate autofixing (mostly formatting rules for now)
+Use option **--fix** to activate autofixing (you may have to run it several times at first so CodeNarc take in account the updates)
 
 Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
 
