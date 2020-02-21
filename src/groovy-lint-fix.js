@@ -65,6 +65,7 @@ class NpmGroovyLintFix {
             const fileErrors = this.updatedLintResult.files[fileNm].errors;
             for (const err of fileErrors) {
                 if (this.npmGroovyLintRules[err.rule] != null && this.npmGroovyLintRules[err.rule].fix != null) {
+                    // Add fixable error
                     const fixableError = {
                         id: err.id,
                         ruleName: err.rule,
@@ -72,22 +73,47 @@ class NpmGroovyLintFix {
                         msg: err.msg,
                         rule: this.npmGroovyLintRules[err.rule]
                     };
-                    this.fixableErrors[fileNm].push(fixableError);
+                    this.addFixableError(fileNm, fixableError);
+                    // Trigger other fixes if defined in the rule
+                    if (this.npmGroovyLintRules[err.rule].triggers) {
+                        for (const triggeredRuleName of this.npmGroovyLintRules[err.rule].triggers) {
+                            const fixableErrorTriggered = {
+                                id: err.id + "_triggered",
+                                ruleName: triggeredRuleName,
+                                lineNb: err.line,
+                                msg: err.msg,
+                                rule: this.npmGroovyLintRules[triggeredRuleName]
+                            };
+                            this.addFixableError(fileNm, fixableErrorTriggered);
+                        }
+                    }
                 }
             }
+
             // Sort errors putting file scope at last, and sorter file scopes by ascending priority
             this.fixableErrors[fileNm].sort((a, b) => {
                 return a.rule.scope && a.rule.scope === "file" && b.rule.scope == null
                     ? 1
                     : b.rule.scope && b.rule.scope === "file" && a.rule.scope == null
-                    ? -1
-                    : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority > b.rule.priority
-                    ? 1
-                    : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority < b.rule.priority
-                    ? -1
-                    : 0;
+                        ? -1
+                        : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority > b.rule.priority
+                            ? 1
+                            : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority < b.rule.priority
+                                ? -1
+                                : 0;
             });
         }
+    }
+
+    // Add fixable error but do not add twice if scope if the full file
+    addFixableError(fileNm, fixableError) {
+        if (
+            fixableError.rule.scope === "file" &&
+            this.fixableErrors[fileNm].filter(matchFixableError => matchFixableError.ruleName === fixableError.ruleName).length > 0
+        ) {
+            return;
+        }
+        this.fixableErrors[fileNm].push(fixableError);
     }
 
     // Fix errors in files using fix rules
@@ -127,7 +153,7 @@ class NpmGroovyLintFix {
                 }
                 // Write new file content if it has been updated
                 if (fixedInFileNb) {
-                    fse.writeFileSync(fileNm, fileLines.join("\n"));
+                    fse.writeFileSync(fileNm, fileLines.join("\n") + (fileLines[fileLines.length - 1] === "\n" ? "\n" : ""));
                 }
             })
         );
@@ -191,6 +217,10 @@ class NpmGroovyLintFix {
     // Update lint result of an identified error
     updateLintResult(fileNm, errId, errDataToSet) {
         const errIndex = this.updatedLintResult.files[fileNm].errors.findIndex(error => error.id === errId);
+        if (errIndex < 0) {
+            // No error to update in case of fix from triggers of another rule
+            return;
+        }
         const error = this.updatedLintResult.files[fileNm].errors[errIndex];
         Object.assign(error, errDataToSet);
         this.updatedLintResult.files[fileNm].errors[errIndex] = error;

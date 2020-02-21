@@ -3,6 +3,8 @@
 
 const decodeHtml = require("decode-html");
 
+const indentLength = 4;
+
 const npmGroovyLintRules = {
     // Consecutive blank lines
     ConsecutiveBlankLines: {
@@ -27,6 +29,18 @@ const npmGroovyLintRules = {
         }
     },
 
+    // File ends without new line
+    FileEndsWithoutNewline: {
+        scope: "file",
+        priority: 999,
+        fix: {
+            type: "function",
+            func: fileLines => {
+                return (fileLines.join("\n") + "\n").split("\n");
+            }
+        }
+    },
+
     /* nvuillam: Not working, especially when embedded missing If statements ... 
        let's let people correct that manually for now :)
     // Missing if braces
@@ -47,6 +61,7 @@ const npmGroovyLintRules = {
 
     // Indentation
     Indentation: {
+        triggers: ["IndentationClosingBraces", "IndentationComments"],
         variables: [
             {
                 name: "EXPECTED",
@@ -66,11 +81,86 @@ const npmGroovyLintRules = {
                 const foundIndent = parseInt(getVariable(evaluatedVars, "FOUND", { mandatory: true }));
                 if (line.trim() === "}") {
                     // Manage Wrong info from codeNarc :/ {
-                    line = line.replace(" ".repeat(foundIndent - 1), " ".repeat((expectedIndent - 1) * 2));
+                    line = line.replace(" ".repeat(foundIndent - 1), " ".repeat(expectedIndent + indentLength * 2));
                 } else {
                     line = line.replace(" ".repeat(foundIndent - 1), " ".repeat(expectedIndent - 1));
                 }
                 return line;
+            }
+        }
+    },
+
+    // Indentation comments
+    IndentationComments: {
+        scope: "file",
+        priority: 900,
+        fix: {
+            type: "function",
+            func: fileLines => {
+                const newFileLines = [];
+                for (let i = 0; i < fileLines.length; i++) {
+                    let line = fileLines[i];
+                    // Detect comment line
+                    if (line.trimStart().startsWith("//")) {
+                        // Find indentation of next line (which is not blank or a comment)
+                        let j = 1;
+                        let nextLineIndent = null;
+                        while (fileLines[i + j] && nextLineIndent == null) {
+                            if (!/^\s*$/.test(fileLines[i + j]) && !fileLines[i + j].trimStart().startsWith("//")) {
+                                nextLineIndent = fileLines[i + j].search(/\S/);
+                            }
+                            j++;
+                        }
+                        // Set new indentation it on this comment line
+                        if (nextLineIndent) {
+                            line = " ".repeat(nextLineIndent) + line.trimStart();
+                        }
+                    }
+                    newFileLines.push(line);
+                }
+                return newFileLines;
+            }
+        }
+    },
+
+    // Indentation comments
+    IndentationClosingBraces: {
+        scope: "file",
+        priority: 800,
+        fix: {
+            type: "function",
+            func: fileLines => {
+                const newFileLines = [];
+                for (let i = 0; i < fileLines.length; i++) {
+                    let line = fileLines[i];
+                    // Detect closing brace line
+                    if (line.trim() == "}") {
+                        // Find indentation of matching brace (CodeNarc Indentation rule does not work well :/ )
+                        let j = 1;
+                        let matchingLineIndent = null;
+                        let level = 0;
+                        while (fileLines[i - j] && matchingLineIndent == null) {
+                            const prevLine = fileLines[i - j];
+                            if (prevLine.includes("}")) {
+                                level++;
+                            }
+                            if (prevLine.includes("{")) {
+                                if (level === 0) {
+                                    matchingLineIndent = prevLine.search(/\S/);
+                                } else {
+                                    level--;
+                                }
+                            }
+                            j++;
+                        }
+                        // Set new indentation it on this comment line
+                        if (matchingLineIndent) {
+                            line = " ".repeat(matchingLineIndent) + line.trimStart();
+                        }
+                    }
+                    newFileLines.push(line);
+                }
+                return newFileLines;
             }
         }
     },

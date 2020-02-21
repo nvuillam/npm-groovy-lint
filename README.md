@@ -11,13 +11,13 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/nicolas.vuillamy@gmail.com)
 
-**Groovy / Jenkinsfile linter and fixer**
+**Groovy / Jenkinsfile linter and autofixer**
 
- Based on [CodeNarc](http://codenarc.sourceforge.net/) , this out of the box package allows to easily find errors and correct a part of them
+Based on [CodeNarc](http://codenarc.sourceforge.net/) , this out of the box package allows to track groovy errors and correct a part of them
 
-Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile :)
+Use option **--fix** to activate autofixing (mostly formatting rules for now)
 
-Use option **--fix** to activate auto-correction
+Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
 
 # INSTALLATION
 
@@ -25,28 +25,65 @@ Use option **--fix** to activate auto-correction
     $ npm install -g npm-groovy-lint
 ```
 
-For advanced usage,  you may need to define [RuleSet file(s)](http://codenarc.sourceforge.net/codenarc-creating-rule.html)
-
-You can use as starters :
-
-- [All rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-All.groovy)
-- [Base rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-Groovy.groovy)
-
 # USAGE
 
 ```
     $ npm-groovy-lint OPTIONS
 ```
 
-## npm-groovy-lint OPTIONS
-
-
-
-See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc-command-line.html)
-
+| Parameter                | Type    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|--------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -p<br/> --path           | String  | Directory containing the files to lint<br/> Example: `./path/to/my/groovy/files`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| -f<br/> --files          | String  | Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: `"**/*.groovy,**/Jenkinsfile"`, or `"**/*.groovy"` if --rulesets Groovy, or `**/Jenkinsfile` if --rulesets Jenkinsfile <br/> Examples: <br/> - `"**/Jenkinsfile"<br/>` - `"*/*.groovy"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| -r<br/> --rulesets       | String  | RuleSet file(s) to use for linting. If it is a directory, all rulesets will be used.<br/> RuleSet file definition: http://codenarc.sourceforge.net/codenarc-creating-ruleset.html.<br/> If not specified, npm-groovy-script default ones will be used depending on file types found in --path:<br/> - [Groovy recommended rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-Groovy.groovy), also usable with `--rulesets Groovy`<br/> - [Jenkinsfile recommended rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-Jenkinsfile.groovy), also usable with `--rulesets Jenkinsfile`<br/>  Examples:<br/> - `"./config/codenarc/RuleSet-Custom.groovy"`<br/> - `"./path/to/my/ruleset/files"`<br/> - `Jenkinsfile` |
+| -o<br/> --output         | String  | Output format (txt,json,html,xml), or path to a file with one of these extensions<br/> Default: `txt`<br/> Examples:<br/> - `"txt"`<br/> - `"json"`<br/> - `"./logs/myLintResults.txt"`<br/> - `"./logs/myLintResults.json"`<br/> - `"./logs/myLintResults.html"`<br/> - `"./logs/myLintResults.xml"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -v<br/> --verbose        | Boolean | More outputs in console, including performed fixes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --fix                    | Boolean | Automatically fix problems when possible<br/> See [Autofixable rules](#Autofixable-rules)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| -i<br/> --ignore-pattern | String  | Comma-separated list of Ant-style file patterns specifying files that must be ignored<br/> Default: none<br/> Example: `"**/test/*""`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --failonerror            | Boolean | Fails if at least one error is found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --failonwarning          | Boolean | Fails if at least one warning is found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| --failoninfo             | Boolean | Fails if at least one error is found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --codenarcargs           | Boolean | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: http://codenarc.sourceforge.net/codenarc-command-line.html<br/> Example: `npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -h<br/> --help           | Boolean | Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)                                                                                                                                                                                                                                                                                                                                 
 # EXAMPLES
 
-```
+- Lint a Jenkinsfile
+
+`npm-groovy-lint --rulesets Jenkinsfile`
+
+- Lint groovy files
+
+`npm-groovy-lint --rulesets Groovy`
+
+- Lint and fix a Jenkinsfile 
+
+`npm-groovy-lint --rulesets Jenkinsfile --fix`
+
+- Lint groovy with JSON output
+
+`npm-groovy-lint --rulesets Groovy --output json`
+
+- Lint using core CodeNarc parameters and generate HTML report file
+
+`npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -title="TestTitleCodenarc" -maxPriority1Violations=0' -report="html:ReportTestCodenarc.html"`
+
+# Autofixable rules
+
+- ConsecutiveBlankLines
+- Indentation (IfStatementBraces and ElsefStatementBraces must be manually fixed to have correct indentation)
+- NoTabCharacter
+- SpaceAfterCatch
+- SpaceAfterOpeningBrace
+- SpaceAroundOperator
+- SpaceAfterComma
+- SpaceBeforeOpeningBrace
+- UnnecessaryDefInFieldDeclaration
+- UnnecessaryGString
+- UnnecessaryPublicModifier
+- UnnecessarySemicolon
+- TrailingWhitespace
+
+[Contribute](#Contribute) to add more [rules](http://codenarc.sourceforge.net/codenarc-rule-index.html) fixes :)
 
 # TROUBLESHOOTING
 

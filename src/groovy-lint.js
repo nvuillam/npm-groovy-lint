@@ -47,6 +47,7 @@ class NpmGroovyLint {
         this.tmpXmlFileName = internalOpts.tmpXmlFileName || os.tmpdir() + "/CodeNarcReportXml_" + Math.random() + ".xml";
     }
 
+    // Run linting (and fixing if --fix)
     async run() {
         const doProcess = await this.preProcess();
         if (doProcess) {
@@ -90,19 +91,41 @@ class NpmGroovyLint {
             return false;
         }
 
-        // Complete options
+        ////////////////////////////
+        // Build codenarc options //
+        ////////////////////////////
 
-        // Build codenarc options
-        // base directory
+        // Base directory
         this.codeNarcBaseDir = this.options.path != "." ? process.cwd() + "/" + this.options.path.replace(/^"(.*)"$/, "$1") : process.cwd();
         this.codenarcArgs.push('-basedir="' + this.codeNarcBaseDir + '"');
-        // Matching files pattern(s)
-        this.codenarcArgs.push('-includes="' + this.options.files.replace(/^"(.*)"$/, "$1") + '"');
-        // Ruleset(s)
+
+        // Ruleset(s) & matching files pattern
+        let defaultFilesPattern = "**/*.groovy,**/Jenkinsfile";
+        let ruleSetFile = this.jdeployRootPath + "/lib/example/RuleSet-Groovy.groovy";
         if (this.options.rulesets) {
-            this.codenarcArgs.push('-rulesetfiles="file:' + this.options.rulesets.replace(/^"(.*)"$/, "$1") + '"');
+            if (this.options.rulesets === "Jenkinsfile") {
+                defaultFilesPattern = "**/Jenkinsfile";
+                ruleSetFile = this.jdeployRootPath + "/lib/example/RuleSet-Jenkinsfile.groovy";
+            } else if (this.options.rulesets === "Groovy") {
+                defaultFilesPattern = "**/*.groovy";
+                ruleSetFile = this.jdeployRootPath + "/lib/example/RuleSet-Groovy.groovy";
+            } else if (this.options.rulesets === "all") {
+                ruleSetFile = this.jdeployRootPath + "/lib/example/RuleSet-All.groovy";
+            } else {
+                ruleSetFile = this.options.rulesets.replace(/^"(.*)"$/, "$1");
+            }
+        }
+        this.codenarcArgs.push('-rulesetfiles="file:' + ruleSetFile + '"');
+
+        // Matching files pattern(s)
+        if (this.options.files) {
+            this.codenarcArgs.push('-includes="' + this.options.files.replace(/^"(.*)"$/, "$1") + '"');
+        } else {
+            // If files not sent, use defaultFilesPattern, guessed from options.rulesets value
+            this.codenarcArgs.push('-includes="' + defaultFilesPattern + '"');
         }
 
+        // Output
         const output = this.options.output.replace(/^"(.*)"$/, "$1");
         if (["txt", "json"].includes(output)) {
             this.codenarcArgs.push('-report=xml:"' + this.tmpXmlFileName + '"');
@@ -286,7 +309,7 @@ class NpmGroovyLint {
                 }
                 this.nglOutputString += "\n";
             }
-            this.nglOutputString += "\nnpm-groovy-lint results in " + c.bold(this.lintResult.summary.totalFilesLinted) + " linted files:\n";
+            this.nglOutputString += "\nnpm-groovy-lint results in " + c.bold(this.lintResult.summary.totalFilesLinted) + " linted files:";
 
             // Summary table
             const errorTableLine = {

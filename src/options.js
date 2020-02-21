@@ -38,7 +38,6 @@ module.exports = optionator({
             option: "files",
             alias: "f",
             type: "String",
-            default: "**/*.groovy,**/Jenkinsfile",
             description: "Comma-separated list of Ant-style file patterns specifying files that must be included",
             example: ["**/Jenkinsfile", "*/*.groovy"]
         },

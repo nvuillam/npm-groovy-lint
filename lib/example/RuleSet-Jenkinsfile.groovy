@@ -15,14 +15,13 @@ ruleset {
     VariableTypeRequired(enabled: false)
   }
   ruleset('rulesets/design.xml') {
-    BuilderMethodWithSideEffects(enabled: false)
     Instanceof(enabled: false)
     SimpleDateFormatMissingLocale(enabled: false)
   }
   ruleset('rulesets/exceptions.xml') {}
   ruleset('rulesets/formatting.xml') {
     BlockStartsWithBlankLine(enabled: false)
-    Indentation(spacesPerIndentLevel: 2)
+    Indentation(spacesPerIndentLevel: 4)
     LineLength(length: 200)
     SpaceAroundMapEntryColon(enabled:false)
     SpaceBeforeClosingBrace(ignoreEmptyBlock: true)

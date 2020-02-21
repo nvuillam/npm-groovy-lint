@@ -19,7 +19,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
     it('(EXE) should generate json console output', async () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',
-            '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
+            '--rulesets', '"Groovy"',
             '--output', 'json'
         ];
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
@@ -55,8 +55,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
     it('(EXE) should run on a Jenkinsfile', async () => {
         const params = [
             '--path', ' "jdeploy-bundle/lib/example"',
-            '--f', '"**/Jenkinsfile"',
-            '-r', '"jdeploy-bundle/lib/example/RuleSet-Jenkinsfile.groovy"',
+            '-r', '"Jenkinsfile"',
             '--verbose'];
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
         assert(stdout && stdout.includes('warning'), 'Script failure');
