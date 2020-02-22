@@ -4,6 +4,7 @@
 const c = require("ansi-colors");
 const fse = require("fs-extra");
 const os = require("os");
+const path = require("path");
 const cliProgress = require("cli-progress");
 const util = require("util");
 const xml2js = require("xml2js");
@@ -28,6 +29,8 @@ class NpmGroovyLint {
     codeNarcStdErr;
 
     // npm-groovy-lint
+    outputType;
+    output;
     onlyCodeNarc = false;
     lintResult = {};
     nglOutputString = "";
@@ -126,12 +129,26 @@ class NpmGroovyLint {
         }
 
         // Output
-        const output = this.options.output.replace(/^"(.*)"$/, "$1");
-        if (["txt", "json"].includes(output)) {
+        this.output = this.options.output.replace(/^"(.*)"$/, "$1");
+        if (this.output.includes('.txt')) {
+            // Disable ansi colors if output in txt file
+            c.enabled = false;
+        }
+        if (["txt", "json"].includes(this.output) || this.output.endsWith(".txt") || this.output.endsWith(".json")) {
+            this.outputType = this.output.endsWith(".txt") ? "txt" : this.output.endsWith(".json") ? "json" : this.output;
             this.codenarcArgs.push('-report=xml:"' + this.tmpXmlFileName + '"');
-        } else if (["html", "xml"].includes(output.split(".").pop())) {
-            const ext = output.split(".").pop();
-            this.codenarcArgs.push('-report="' + ext + ":" + output + '"');
+        } else if (["html", "xml"].includes(this.output.split(".").pop())) {
+            this.outputType = this.output
+                .split(".")
+                .pop()
+                .endsWith("html")
+                ? "html"
+                : (this.output
+                    .split(".")
+                    .pop()
+                    .endsWith("xml") ? 'xml' : '');
+            const ext = this.output.split(".").pop();
+            this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
         } else {
             this.status = 2;
             throw new Error("For now, only output formats are txt and json in console, and html and xml as files");
@@ -147,7 +164,7 @@ class NpmGroovyLint {
 
         // Start progress bar
         if (this.options.verbose) {
-            console.log("Running CodeNarc with arguments " + this.codenarcArgs.join(" "));
+            console.log("NGL: running CodeNarc with " + this.codenarcArgs.join(" "));
         }
         this.bar = new cliProgress.SingleBar(
             {
@@ -249,10 +266,10 @@ class NpmGroovyLint {
                             violation["$"].priority == "1"
                                 ? "error"
                                 : violation["$"].priority == "2"
-                                ? "warning"
-                                : violation["$"].priority == "3"
-                                ? "info"
-                                : "unknown",
+                                    ? "warning"
+                                    : violation["$"].priority == "3"
+                                        ? "info"
+                                        : "unknown",
                         msg: violation.Message ? violation.Message[0] : "NGL: No message"
                     };
                     files[fileNm].errors.push(err);
@@ -268,7 +285,7 @@ class NpmGroovyLint {
     // Reformat output if requested in command line
     async processNglOutput() {
         // Display as console log
-        if (this.options.output === "txt") {
+        if (this.outputType === "txt") {
             // Errors
             for (const fileNm of Object.keys(this.lintResult.files)) {
                 const fileErrors = this.lintResult.files[fileNm].errors;
@@ -332,14 +349,31 @@ class NpmGroovyLint {
             };
             const summaryTable = [errorTableLine, warningTableLine, infoTableLine];
 
-            // Output log
-            console.log(this.nglOutputString);
-            console.table(summaryTable, this.fixer ? ["Severity", "Total found", "Total fixed", "Total remaining"] : ["Severity", "Total found"]);
+            // Output text log in file or console
+            if (this.output.endsWith(".txt")) {
+                const fullFileContent = this.nglOutputString;
+                fse.writeFileSync(this.output, fullFileContent);
+                console.table(summaryTable, this.fixer ? ["Severity", "Total found", "Total fixed", "Total remaining"] : ["Severity", "Total found"]);
+                const absolutePath = path.resolve(".", this.output);
+                console.info("NGL: Logged results in file " + absolutePath);
+            } else {
+                console.log(this.nglOutputString);
+                console.table(summaryTable, this.fixer ? ["Severity", "Total found", "Total fixed", "Total remaining"] : ["Severity", "Total found"]);
+            }
         }
         // Display as json
-        else if (this.options.output === "json") {
-            this.nglOutputString = JSON.stringify(this.lintResult);
-            console.log(this.nglOutputString);
+        else if (this.outputType === "json") {
+
+            // Output log
+            if (this.output.endsWith(".json")) {
+                const fullFileContent = JSON.stringify(this.nglOutputString, null, 2);
+                fse.writeFileSync(this.output, fullFileContent);
+                const absolutePath = path.resolve(".", this.output);
+                console.info("NGL: Logged results in file " + absolutePath);
+            } else {
+                this.nglOutputString = JSON.stringify(this.lintResult);
+                console.log(this.nglOutputString);
+            }
         }
     }
 }

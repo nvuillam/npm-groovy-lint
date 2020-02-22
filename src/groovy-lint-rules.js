@@ -20,7 +20,6 @@ const globalScopePriorityOrder = [
 ];
 
 const npmGroovyLintRules = {
-
     // Closing brace not alone
     ClosingBraceNotAlone: {
         scope: "file",
@@ -31,13 +30,14 @@ const npmGroovyLintRules = {
                 const newFileLines = [];
                 for (let i = 0; i < fileLines.length; i++) {
                     let line = fileLines[i];
+                    const lineTrim = line.trim();
                     // Detect not alone closing brace
                     if (
-                        line.includes("}") &&
-                        line.trim() !== "}" && // is not already alone
-                        !line.trim().endsWith('{}') && !line.trim().endsWith('{ }') &&
+                        lineTrim.endsWith("}") &&
+                        !lineTrim.endsWith("{}") &&
+                        !lineTrim.endsWith("{ }") &&
                         !line
-                            .slice(line.lastIndexOf("}") + 1)
+                            .slice((line.length !== 1) ? (line.lastIndexOf("}") + 1) : 0)
                             .trim()
                             .startsWith("//")
                     ) {
@@ -47,9 +47,11 @@ const npmGroovyLintRules = {
                         const maxIndex = bracePos == 0 ? 0 : bracePos;
                         line = line.substring(0, maxIndex) + line.substring(bracePos + 1, line.length);
                         newFileLines.push(line.trimEnd());
-                        newFileLines.push("}");
+                        // Add a closing brace in a new line with correct indent
+                        const indent = " ".repeat(line.search(/\S|$/) - 1);
+                        newFileLines.push((indent + "}").replace(/[\r\n]+/gm, ""));
                     } else {
-                        newFileLines.push(line);
+                        newFileLines.push(line.replace(/[\r\n]+/gm, ""));
                     }
                 }
                 return newFileLines;
@@ -66,12 +68,9 @@ const npmGroovyLintRules = {
             func: fileLines => {
                 const newFileLines = [];
                 for (const line of fileLines) {
-                    if (line.trim() === "") {
-                        // Check if previous line is empty: if not, add empty line
-                        if (!(newFileLines.length > 0 && newFileLines[newFileLines.length - 1].trim() === "")) {
-                            newFileLines.push("");
-                        }
-                    } else {
+                    if (line.trim() !== "" &&
+                        !(newFileLines.length > 0 && newFileLines[newFileLines.length - 1].trim() === "")) {
+                        // Check if previous line is empty: if not do not add line
                         newFileLines.push(line);
                     }
                 }
@@ -158,8 +157,8 @@ const npmGroovyLintRules = {
         fix: {
             type: "function",
             func: (line, evaluatedVars) => {
-                const expectedIndent = parseInt(getVariable(evaluatedVars, "EXPECTED", { mandatory: true }), 10);
-                const foundIndent = parseInt(getVariable(evaluatedVars, "FOUND", { mandatory: true }));
+                const expectedIndent = parseInt(getVariable(evaluatedVars, "EXPECTED", { mandatory: true, line: line }), 10);
+                const foundIndent = parseInt(getVariable(evaluatedVars, "FOUND", { mandatory: true, line: line }));
                 if (line.trim() === "}") {
                     // Manage Wrong info from codeNarc :/ {
                     line = line.replace(" ".repeat(foundIndent - 1), " ".repeat(expectedIndent + indentLength * 2));
@@ -236,7 +235,7 @@ const npmGroovyLintRules = {
                         }
                         // Set new indentation it on this comment line
                         if (matchingLineIndent) {
-                            line = " ".repeat(matchingLineIndent) + line.trimStart();
+                            line = (" ".repeat(matchingLineIndent) + line.trimStart()).replace(/\t/g, "");
                         }
                     }
                     newFileLines.push(line);
@@ -296,7 +295,7 @@ const npmGroovyLintRules = {
         fix: {
             type: "function",
             func: (line, evaluatedVars) => {
-                let operator = getVariable(evaluatedVars, "OPERATOR", { mandatory: true, htmlToString: true });
+                let operator = getVariable(evaluatedVars, "OPERATOR", { mandatory: true, htmlToString: true, line: line });
                 return addSpaceAroundChar(line, operator);
             }
         }
@@ -389,12 +388,12 @@ function getPriority(ruleName) {
     return globalScopePriorityOrder.indexOf(ruleName);
 }
 
-function getVariable(evaluatedVars, name, optns = { mandatory: false, decodeHtml: false }) {
+function getVariable(evaluatedVars, name, optns = { mandatory: false, decodeHtml: false, line: "" }) {
     const matchingVars = evaluatedVars.filter(evaluatedVar => evaluatedVar.name === name);
     if (matchingVars && matchingVars.length > 0) {
         return optns.decodeHtml ? decodeHtml(matchingVars[0].value) : matchingVars[0].value;
     } else if (optns.mandatory) {
-        throw new Error("NGL fix: missing mandatory variable " + name + " in " + JSON.stringify(evaluatedVars));
+        throw new Error("NGL fix: missing mandatory variable " + name + " in " + JSON.stringify(evaluatedVars)) + "for line :\n" + optns.line;
     } else {
         return null;
     }
