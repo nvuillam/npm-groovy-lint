@@ -105,16 +105,9 @@ typings/
 
 jdeploy-bundle/
 
-dist/test/ReportTest.html
-
-dist/test/ReportTestJs.html
-
-dist/index.js
-
-dist/patch-jdeploy-bin.js
-
 dist/
 
-ReportTestCodenarc.html
+Report*
 
-ReportTestCodenarc.xml
+
+npm-groovy-fix-log.txt

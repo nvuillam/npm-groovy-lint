@@ -1,4 +1,4 @@
-# NPM GROOVY LINT
+# NPM GROOVY LINT (and FIX !)
 
 [![Version](https://img.shields.io/npm/v/npm-groovy-lint.svg)](https://npmjs.org/package/npm-groovy-lint)
 [![Downloads/week](https://img.shields.io/npm/dw/npm-groovy-lint.svg)](https://npmjs.org/package/npm-groovy-lint) 
@@ -7,14 +7,17 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/nvuillam/npm-groovy-lint.svg)](https://gitHub.com/nvuillam/npm-groovy-lint/graphs/contributors/)
 [![GitHub stars](https://img.shields.io/github/stars/nvuillam/npm-groovy-lint?style=social&label=Star&maxAge=2592000)](https://GitHub.com/nvuillam/npm-groovy-lint/stargazers/)
 [![License](https://img.shields.io/npm/l/npm-groovy-lint.svg)](https://github.com/nvuillam/npm-groovy-lint/blob/master/package.json) 
+[![HitCount](https://hits.dwyl.com/nvuillam/npm-groovy-lint.svg)](https://hits.dwyl.com/nvuillam/npm-groovy-lint)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/nicolas.vuillamy@gmail.com)
 
-Wrapper for excellent groovy linter [CodeNarc](http://codenarc.sourceforge.net/), using the great [jdeploy](https://github.com/shannah/jdeploy) and [Groovy](https://groovy-lang.org/)!
+**Groovy / Jenkinsfile linter and autofixer**
 
-**npm-groovy-lint** allows you to run CodeNarc via command line without any installation issue
+Based on [CodeNarc](http://codenarc.sourceforge.net/) , this out of the box package allows to track groovy errors and correct a part of them
 
-Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile :)
+Use option **--fix** to activate autofixing (the function is still in experimental phase, you may have to run it several times at first so CodeNarc take in account the updates)
+
+Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
 
 # INSTALLATION
 
@@ -22,66 +25,65 @@ Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your
     $ npm install -g npm-groovy-lint
 ```
 
-For advanced usage,  you may need to define [RuleSet file(s)](http://codenarc.sourceforge.net/codenarc-creating-rule.html)
-
-You can use as starters :
-
-- [All rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-All.groovy)
-- [Base rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-Base.groovy)
-
 # USAGE
 
 ```
     $ npm-groovy-lint OPTIONS
 ```
 
-## npm-groovy-lint OPTIONS
-
-| Parameter    | Description                                                                                                  | Example                             |
-|--------------|--------------------------------------------------------------------------------------------------------------|-------------------------------------|
-| --ngl-output=format | npm-groovy-lint provided output (reformatted from CodeNarc output).<br/> Available formats: <br/>- text (default)<br/> - json | --ngl-output=json <br/> --ngl-output=text |
-|              |                                                                                                              |                                     |
-
-## CodeNarc OPTIONS
-
-| Parameter                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Example                                                                                                                        |
-|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| -basedir=DIR                   | The base (root) directory for the source code to be analyzed. Defaults to the current directory (".").                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | -basedir=src/main/groovy                                                                                                       |
-| -includes=PATTERNS             | The comma-separated list of Ant-style file patterns specifying files that must be included. Defaults to "**/*.groovy".                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | -includes=**/*.gr                                                                                                              |
-| -excludes=PATTERNS             | The comma-separated list of Ant-style file patterns specifying files that must be excluded. No files are excluded when omitted.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | -excludes=**/templates/**, **/*Test.*                                                                                          |
-| -rulesetfiles=FILENAMES        | The path to the Groovy or XML RuleSet definition files. This can be a single file path, or multiple paths separated by commas. By default, the paths specified are relative to the classpath. But these paths may be optionally prefixed by any of the valid java.net.URL prefixes, such as "file:" (to load from a relative or absolute path on the filesystem), or "http:". If it is a URL, its path may be optionally URL-encoded. That can be useful if the path contains any problematic characters, such as comma (',') or hash ('#'). For instance: "file:src/test/resources/RuleSet-,#.txt" can be encoded as: "file:src%2Ftest%2Fresources%2FRuleSet-%2C%23.txt" See URLEncoder#encode(java.lang.String, java.lang.String). Defaults to "rulesets/basic.xml". | -rulesetfiles=rulesets/imports.xml, rulesets/naming.xml                                                                        |
-| -report=REPORT-TYPE[:FILENAME] | The definition of the report to produce. The option value is of the form TYPE[:FILENAME], where TYPE is one of the predefined type names: "html", "xml", "text", "console" or else the fully-qualified class name of a class (accessible on the classpath) that implements the org.codenarc.report.ReportWriter interface. And FILENAME is the filename (with optional path) of the output report filename. If the report filename is omitted, the default filename for the report type is used ("CodeNarcReport.html" for "html" and "CodeNarcXmlReport.xml" for "xml"). If no report option is specified, default to a single "html" report with the default filename.                                                                                               | -report=html -report=html:MyProject.html -report=xml -report=xml:MyXmlReport.xml -report=org.codenarc.report. HtmlReportWriter |
-| -maxPriority1Violations=MAX    | The maximum number of priority 1 violations allowed (int).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | -maxPriority1Violations=0                                                                                                      |
-| -maxPriority2Violations=MAX    | The maximum number of priority 2 violations allowed (int).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | -maxPriority2Violations=0                                                                                                      |
-| -maxPriority3Violations=MAX    | The maximum number of priority 3 violations allowed (int).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | -maxPriority3Violations=0                                                                                                      |
-| -title=REPORT TITLE            | The title for this analysis; used in the output report(s), if supported by the report type(s). Optional.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | -title="My Project"                                                                                                            |
-| -help                          | Display the command-line help. If present, this must be the only command-line parameter.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | -help                                                                                                                          |
-
-
-See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc-command-line.html)
-
+| Parameter                | Type    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|--------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -p<br/> --path           | String  | Directory containing the files to lint<br/> Example: `./path/to/my/groovy/files`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| -f<br/> --files          | String  | Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: `"**/*.groovy,**/Jenkinsfile"`, or `"**/*.groovy"` if --rulesets Groovy, or `**/Jenkinsfile` if --rulesets Jenkinsfile <br/> Examples: <br/> - `"**/Jenkinsfile"<br/>` - `"*/*.groovy"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -r<br/> --rulesets       | String  | RuleSet file(s) to use for linting. If it is a directory, all rulesets will be used.<br/> RuleSet file definition: http://codenarc.sourceforge.net/codenarc-creating-ruleset.html.<br/> If not specified, npm-groovy-script default ones will be used depending on file types found in --path:<br/> - [Groovy recommended rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-Groovy.groovy), also usable with `--rulesets Groovy`<br/> - [Jenkinsfile recommended rules](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/example/RuleSet-Jenkinsfile.groovy), also usable with `--rulesets Jenkinsfile`<br/>  Examples:<br/> - `"./config/codenarc/RuleSet-Custom.groovy"`<br/> - `"./path/to/my/ruleset/files"`<br/> - `Jenkinsfile` |
+| -o<br/> --output         | String  | Output format (txt,json,html,xml), or path to a file with one of these extensions<br/> Default: `txt`<br/> Examples:<br/> - `"txt"`<br/> - `"json"`<br/> - `"./logs/myLintResults.txt"`<br/> - `"./logs/myLintResults.json"`<br/> - `"./logs/myLintResults.html"`<br/> - `"./logs/myLintResults.xml"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -l<br/> --loglevel       | String  | Log level (error,warning or info)<br/>Default: info                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| -v<br/> --verbose        | Boolean | More outputs in console, including performed fixes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --fix                    | Boolean | (Experimental) Automatically fix problems when possible<br/> See [Autofixable rules](#Autofixable-rules)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -i<br/> --ignore-pattern | String  | Comma-separated list of Ant-style file patterns specifying files that must be ignored<br/> Default: none<br/> Example: `"**/test/*""`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --failonerror            | Boolean | Fails if at least one error is found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --failonwarning          | Boolean | Fails if at least one warning is found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| --failoninfo             | Boolean | Fails if at least one error is found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --codenarcargs           | Boolean | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: http://codenarc.sourceforge.net/codenarc-command-line.html<br/> Example: `npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -h<br/> --help           | Boolean | Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)                                                                                                                                                                                                                                                                                                                                 
 # EXAMPLES
 
-```
-    // npm-groovy-lint output
+- Lint a Jenkinsfile
 
-    $ npm-groovy-lint -report="xml:MyGroovyLinterReport.xml" --ngl-output=text
+`npm-groovy-lint --rulesets Jenkinsfile`
 
+- Lint groovy files
 
-    // npm-groovy-lint output
+`npm-groovy-lint --rulesets Groovy`
 
-    $ npm-groovy-lint -includes=**/Jenkinsfile -rulesetfiles="file:config/codenarc/RuleSet-Base.groovy" --ngl-output=json
+- Lint and fix a Jenkinsfile 
 
+`npm-groovy-lint --rulesets Jenkinsfile --fix`
 
-    // CodeNarc output
+- Lint groovy with JSON output
 
-    $ npm-groovy-lint -includes=**/Jenkinsfile -rulesetfiles="file:config/codenarc/RuleSet-All.groovy" -title="MyJenkinsfileLinterReport" -maxPriority1Violations=0 -report="html:MyJenkinsfileLinterReport.html"
+`npm-groovy-lint --rulesets Groovy --output json`
 
+- Lint using core CodeNarc parameters and generate HTML report file
 
-    // CodeNarc output
+`npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -title="TestTitleCodenarc" -maxPriority1Violations=0' -report="html:ReportTestCodenarc.html"`
 
-    $ npm-groovy-lint -basedir="src" -rulesetfiles="file:config/codenarc/RuleSet-Base.groovy" -title="MyGroovyLinterReport" -maxPriority1Violations=0 -report="html:MyGroovyLinterReport.html"
-```
+# Autofixable rules (experimental)
+
+- ConsecutiveBlankLines
+- Indentation (IfStatementBraces and ElsefStatementBraces must be manually fixed to have correct indentation)
+- NoTabCharacter
+- SpaceAfterCatch
+- SpaceAfterOpeningBrace
+- SpaceAroundOperator
+- SpaceAfterComma
+- SpaceBeforeOpeningBrace
+- UnnecessaryDefInFieldDeclaration
+- UnnecessaryGString
+- UnnecessarySemicolon
+- TrailingWhitespace
+
+[Contribute](#Contribute) to add more [rules](http://codenarc.sourceforge.net/codenarc-rule-index.html) fixes :)
 
 # TROUBLESHOOTING
 
@@ -92,17 +94,17 @@ See OPTIONS in [CodeNarc documentation](http://codenarc.sourceforge.net/codenarc
 Contributions are very welcome !
 
 - Fork the repo and clone it on your computer
-- Run `npm run lint` then `npm run test` to check your updates
-- Once your code is ready, documented and linted, please make a pull request :)
+- Run `npm run lint` then `npm run test` to check your updates didn't break anything
+- Once your code is ready, documented and testing, please make a pull request :)
 
 # THANKS
 
-This package is just a bundle with a little script, it relies on :
+This package uses :
 
-- CodeNarc: https://github.com/CodeNarc/CodeNarc
-- jdeploy : https://github.com/shannah/jdeploy
-- slf4j : http://www.slf4j.org/
-- log4j : https://logging.apache.org/log4j/2.x/
-- GMetrics : https://dx42.github.io/gmetrics/
+- CodeNarc : https://github.com/CodeNarc/CodeNarc (groovy lint)
+- jdeploy : https://github.com/shannah/jdeploy (jar deployment and run)
+- slf4j : http://www.slf4j.org/ (logging for CodeNarc)
+- log4j : https://logging.apache.org/log4j/2.x/ (logging for CodeNarc)
+- GMetrics : https://dx42.github.io/gmetrics/ (Code mesures for CodeNarc)
 
 
