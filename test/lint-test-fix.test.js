@@ -48,8 +48,7 @@ describe('TEST npm-groovy-lint fixes with sources', function () {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
-            '--path', '"C:/Work/git/DXCO4SF_Sources_OEM_ST"',
-            '--files', '**/Utils.groovy',
+            '--path', '"jdeploy-bundle/lib/example"',
             '--fixrules', allRules.join(','),
             '--output', '"npm-groovy-fix-log.txt"',
             '--rulesets', 'Groovy',
