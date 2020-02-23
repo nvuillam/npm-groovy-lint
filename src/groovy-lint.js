@@ -99,7 +99,11 @@ class NpmGroovyLint {
         ////////////////////////////
 
         // Base directory
-        this.codeNarcBaseDir = this.options.path != "." ? process.cwd() + "/" + this.options.path.replace(/^"(.*)"$/, "$1") : process.cwd();
+        const baseBefore =
+            (this.options.path != "." && this.options.path.startsWith("/")) || this.options.path.includes(":/") || this.options.path.includes(":\\")
+                ? ""
+                : process.cwd() + "/";
+        this.codeNarcBaseDir = this.options.path != "." ? baseBefore + this.options.path.replace(/^"(.*)"$/, "$1") : process.cwd();
         this.codenarcArgs.push('-basedir="' + this.codeNarcBaseDir + '"');
 
         // Ruleset(s) & matching files pattern
@@ -130,7 +134,7 @@ class NpmGroovyLint {
 
         // Output
         this.output = this.options.output.replace(/^"(.*)"$/, "$1");
-        if (this.output.includes('.txt')) {
+        if (this.output.includes(".txt")) {
             // Disable ansi colors if output in txt file
             c.enabled = false;
         }
@@ -143,10 +147,12 @@ class NpmGroovyLint {
                 .pop()
                 .endsWith("html")
                 ? "html"
-                : (this.output
-                    .split(".")
-                    .pop()
-                    .endsWith("xml") ? 'xml' : '');
+                : this.output
+                      .split(".")
+                      .pop()
+                      .endsWith("xml")
+                ? "xml"
+                : "";
             const ext = this.output.split(".").pop();
             this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
         } else {
@@ -218,7 +224,10 @@ class NpmGroovyLint {
             await this.parseCodeNarcResult();
             // Fix when possible
             if (this.options.fix) {
-                this.fixer = new NpmGroovyLintFix(this.lintResult, { verbose: this.options.verbose });
+                this.fixer = new NpmGroovyLintFix(this.lintResult, {
+                    verbose: this.options.verbose,
+                    fixrules: this.options.fixrules
+                });
                 await this.fixer.run();
                 this.lintResult = this.fixer.updatedLintResult;
             }
@@ -266,14 +275,21 @@ class NpmGroovyLint {
                             violation["$"].priority == "1"
                                 ? "error"
                                 : violation["$"].priority == "2"
-                                    ? "warning"
-                                    : violation["$"].priority == "3"
-                                        ? "info"
-                                        : "unknown",
+                                ? "warning"
+                                : violation["$"].priority == "3"
+                                ? "info"
+                                : "unknown",
                         msg: violation.Message ? violation.Message[0] : "NGL: No message"
                     };
-                    files[fileNm].errors.push(err);
-                    errId++;
+                    // Add error only if severity is matching logLevel
+                    if (
+                        err.severity === "error" ||
+                        this.options.loglevel === "info" ||
+                        (this.options.loglevel === "warning" && ["error", "warning"].includes(err.severity))
+                    ) {
+                        files[fileNm].errors.push(err);
+                        errId++;
+                    }
                 }
             }
         }
@@ -363,7 +379,6 @@ class NpmGroovyLint {
         }
         // Display as json
         else if (this.outputType === "json") {
-
             // Output log
             if (this.output.endsWith(".json")) {
                 const fullFileContent = JSON.stringify(this.nglOutputString, null, 2);

@@ -58,6 +58,15 @@ module.exports = optionator({
             example: ["txt", "json", "./logs/myLintResults.txt", "./logs/myLintResults.json", "./logs/myLintResults.html", "./logs/myLintResults.xml"]
         },
         {
+            option: "loglevel",
+            alias: "l",
+            type: "String",
+            enum: ["error", "warning", "info"],
+            default: "info",
+            description: "Log level (error,warning,info)",
+            example: ["warning", "error"]
+        },
+        {
             option: "verbose",
             alias: "v",
             type: "Boolean",
@@ -70,6 +79,13 @@ module.exports = optionator({
             option: "fix",
             type: "Boolean",
             description: "Automatically fix problems when possible"
+        },
+        {
+            option: "fixrules",
+            alias: "x",
+            type: "String",
+            default: "all",
+            description: "List of rule identifiers to fix (if not specified, all available fixes will be applied)"
         },
         {
             heading: "Ignoring files"

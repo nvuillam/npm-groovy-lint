@@ -26,7 +26,8 @@ describe('TEST npm-groovy-lint with sources', () => {
             '',
             '--path', '"jdeploy-bundle/lib/example"',
             '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
-            '--output', 'json'
+            '--output', 'json',
+            '--loglevel', 'warning'
         ],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
         assert(res.status === 0 && res.nglOutputString.includes('"totalFilesWithErrorsNumber"'), 'Script failure');

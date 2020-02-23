@@ -13,6 +13,7 @@ class NpmGroovyLintFix {
 
     updatedLintResult;
     npmGroovyLintRules;
+    fixRules = null;
     fixableErrors = {};
     fixedErrorsNumber = 0;
 
@@ -24,8 +25,11 @@ class NpmGroovyLintFix {
         this.updatedLintResult = lintResult;
         this.options = optionsIn;
         this.verbose = optionsIn.verbose || false;
-        // Load fix rules
+        // Load available fix rules
         this.npmGroovyLintRules = this.options.groovyLintRulesOverride ? require(this.options.groovyLintRulesOverride) : npmGroovyLintRules;
+        if (this.options.fixrules !== "all" && this.options.fixrules !== null) {
+            this.fixRules = this.options.fixrules.split(",");
+        }
         // Initialize fix counters
         this.updatedLintResult.summary.totalFixedErrorNumber = 0;
         this.updatedLintResult.summary.totalFixedWarningNumber = 0;
@@ -64,7 +68,11 @@ class NpmGroovyLintFix {
             this.fixableErrors[fileNm] = [];
             const fileErrors = this.updatedLintResult.files[fileNm].errors;
             for (const err of fileErrors) {
-                if (this.npmGroovyLintRules[err.rule] != null && this.npmGroovyLintRules[err.rule].fix != null) {
+                if (
+                    this.npmGroovyLintRules[err.rule] != null &&
+                    this.npmGroovyLintRules[err.rule].fix != null &&
+                    (this.fixRules == null || this.fixRules.includes(err.rule))
+                ) {
                     // Add fixable error
                     const fixableError = {
                         id: err.id,
@@ -92,15 +100,7 @@ class NpmGroovyLintFix {
 
             // Sort errors putting file scope at last, and sorter file scopes by ascending priority
             this.fixableErrors[fileNm].sort((a, b) => {
-                return a.rule.scope && a.rule.scope === "file" && b.rule.scope == null
-                    ? 1
-                    : b.rule.scope && b.rule.scope === "file" && a.rule.scope == null
-                    ? -1
-                    : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority > b.rule.priority
-                    ? 1
-                    : a.rule.scope && a.rule.scope === "file" && b.rule.scope === "file" && a.rule.priority < b.rule.priority
-                    ? -1
-                    : 0;
+                return a.rule.priority > b.rule.priority ? 1 : a.rule.priority < b.rule.priority ? -1 : 0;
             });
         }
     }
@@ -124,15 +124,21 @@ class NpmGroovyLintFix {
             Object.keys(this.fixableErrors).map(async fileNm => {
                 // Read file
                 let fileContent = await fse.readFile(fileNm);
-                let fileLines = fileContent.toString().split("\n");
+                let fileLines = fileContent
+                    .toString()
+                    .replace(/\r?\n/g, "\r\n")
+                    .split("\r\n");
 
                 // Process fixes
                 let fixedInFileNb = 0;
                 for (const fileFixableError of this.fixableErrors[fileNm]) {
-                    const lineNb = parseInt(fileFixableError.lineNb, 10) - 1;
+                    if (this.fixRules != null && !this.fixRules.includes(fileFixableError.ruleName)) {
+                        continue;
+                    }
+                    const lineNb = fileFixableError.lineNb ? parseInt(fileFixableError.lineNb, 10) - 1 : -1;
                     // File scope violation
                     if (fileFixableError.rule.scope === "file") {
-                        const fileLinesNew = this.applyFixRule(fileLines, lineNb, fileFixableError).slice(); // copy result lines
+                        const fileLinesNew = this.tryApplyFixRule(fileLines, lineNb, fileFixableError).slice(); // copy result lines
                         if (JSON.stringify(fileLinesNew) !== JSON.stringify(fileLines.toString)) {
                             fileLines = fileLinesNew;
                             fixedInFileNb = fixedInFileNb + 1;
@@ -143,7 +149,7 @@ class NpmGroovyLintFix {
                     // Line scope violation
                     else {
                         const line = fileLines[lineNb];
-                        const fixedLine = this.applyFixRule(line, lineNb, fileFixableError);
+                        const fixedLine = this.tryApplyFixRule(line, lineNb, fileFixableError);
                         if (fixedLine !== line) {
                             fileLines[lineNb] = fixedLine;
                             fixedInFileNb = fixedInFileNb + 1;
@@ -154,10 +160,22 @@ class NpmGroovyLintFix {
                 }
                 // Write new file content if it has been updated
                 if (fixedInFileNb) {
-                    fse.writeFileSync(fileNm, fileLines.join("\n") + (fileLines[fileLines.length - 1] === "\n" ? "\n" : ""));
+                    fse.writeFileSync(fileNm, fileLines.join("\r\n") + "\r\n");
                 }
             })
         );
+    }
+
+    tryApplyFixRule(line, lineNb, fixableError) {
+        try {
+            return this.applyFixRule(line, lineNb, fixableError);
+        } catch (e) {
+            if (this.verbose) {
+                console.error(e.message);
+                console.error(fixableError);
+            }
+            return line;
+        }
     }
 
     // Evaluate variables and apply rule defined fixes
@@ -171,6 +189,8 @@ class NpmGroovyLintFix {
                 if (regexRes && regexRes.length > 1) {
                     const regexPos = varDef.regexPos || 1;
                     evaluatedVars.push({ name: varDef.name, value: decodeHtml(regexRes[regexPos]) });
+                } else if (this.verbose) {
+                    console.error("NGL: Unable to match " + varDef.regex + " in " + fixableError.msg);
                 }
             } else if (varDef.value) {
                 evaluatedVars.push({ name: varDef.name, value: varDef.value });
@@ -189,8 +209,8 @@ class NpmGroovyLintFix {
             // Process replacement with evualuated expressions (except if issue in evaluated expression)
             if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
                 newLine = newLine.replace(strBefore, strAfter);
-            } else if (this.options.verbose) {
-                console.debug("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n");
+            } else if (this.verbose) {
+                console.error("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n" + JSON.stringify(fixableError));
             }
         }
         // Function defined in rule
@@ -198,7 +218,7 @@ class NpmGroovyLintFix {
             try {
                 newLine = fix.func(newLine, evaluatedVars);
             } catch (e) {
-                if (this.options.verbose) {
+                if (this.verbose) {
                     console.error("NGL: Function error: " + e.message + " / " + JSON.stringify(fixableError));
                 }
             }
@@ -208,7 +228,7 @@ class NpmGroovyLintFix {
 
     // Replace {{VARNAME}} by real variables
     setVariablesValues(str, variables) {
-        let newStr = str;
+        let newStr = str + "";
         for (const variable of variables) {
             newStr = newStr.replace(new RegExp("{{" + variable.name + "}}", "g"), variable.value);
         }

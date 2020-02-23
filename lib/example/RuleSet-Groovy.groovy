@@ -42,6 +42,7 @@ ruleset {
     NestedBlockDepth(maxNestedBlockDepth: 8)
   }
   ruleset('rulesets/unnecessary.xml') {
+    UnnecessaryPublicModifier(enabled: false)
     UnnecessaryReturnKeyword(enabled: false)
   }
   ruleset('rulesets/unused.xml') {
