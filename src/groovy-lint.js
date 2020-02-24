@@ -270,7 +270,7 @@ class NpmGroovyLint {
                 for (const violation of fileInfo.Violation) {
                     const err = {
                         id: errId,
-                        line: violation["$"].lineNumber ? parseInt(violation["$"].lineNumber, 10) : null,
+                        line: violation["$"].lineNumber ? parseInt(violation["$"].lineNumber, 10) : 0,
                         rule: violation["$"].ruleName,
                         severity:
                             violation["$"].priority === "1"
@@ -332,7 +332,7 @@ class NpmGroovyLint {
                     // Build error output line
                     this.nglOutputString +=
                         "  " +
-                        err.line.padEnd(4, " ") +
+                        err.line.toString().padEnd(4, " ") +
                         "  " +
                         c[color](err.severity.padEnd(7, " ")) +
                         "  " +
