@@ -63,7 +63,7 @@ class NpmGroovyLint {
     // Actions before call to CodeNarc
     async preProcess() {
         // Manage when the user wants to use only codenarc args
-        if (this.args.includes("--codenarcargs")) {
+        if (Array.isArray(this.args) && this.args.includes("--codenarcargs")) {
             this.codenarcArgs = this.args.slice(2).filter(userArg => userArg !== "--codenarcargs");
             this.onlyCodeNarc = true;
             return true;
@@ -100,10 +100,10 @@ class NpmGroovyLint {
 
         // Base directory
         const baseBefore =
-            (this.options.path != "." && this.options.path.startsWith("/")) || this.options.path.includes(":/") || this.options.path.includes(":\\")
+            (this.options.path !== "." && this.options.path.startsWith("/")) || this.options.path.includes(":/") || this.options.path.includes(":\\")
                 ? ""
                 : process.cwd() + "/";
-        this.codeNarcBaseDir = this.options.path != "." ? baseBefore + this.options.path.replace(/^"(.*)"$/, "$1") : process.cwd();
+        this.codeNarcBaseDir = this.options.path !== "." ? baseBefore + this.options.path.replace(/^"(.*)"$/, "$1") : process.cwd();
         this.codenarcArgs.push('-basedir="' + this.codeNarcBaseDir + '"');
 
         // Ruleset(s) & matching files pattern
@@ -134,11 +134,11 @@ class NpmGroovyLint {
 
         // Output
         this.output = this.options.output.replace(/^"(.*)"$/, "$1");
-        if (this.output.includes(".txt")) {
+        if (this.output.includes(".txt") || this.output === "none") {
             // Disable ansi colors if output in txt file
             c.enabled = false;
         }
-        if (["txt", "json"].includes(this.output) || this.output.endsWith(".txt") || this.output.endsWith(".json")) {
+        if (["txt", "json", "none"].includes(this.output) || this.output.endsWith(".txt") || this.output.endsWith(".json")) {
             this.outputType = this.output.endsWith(".txt") ? "txt" : this.output.endsWith(".json") ? "json" : this.output;
             this.codenarcArgs.push('-report=xml:"' + this.tmpXmlFileName + '"');
         } else if (["html", "xml"].includes(this.output.split(".").pop())) {
@@ -166,7 +166,8 @@ class NpmGroovyLint {
     // Call CodeNard java class from renamed jdeploy.js
     async callCodeNarc() {
         // Build jdeploy codenarc command , filter non-codenarc arguments
-        const jDeployCommand = '"' + this.args[0] + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" ' + this.codenarcArgs.join(" ");
+        const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
+        const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" ' + this.codenarcArgs.join(" ");
 
         // Start progress bar
         if (this.options.verbose) {
@@ -269,17 +270,17 @@ class NpmGroovyLint {
                 for (const violation of fileInfo.Violation) {
                     const err = {
                         id: errId,
-                        line: violation["$"].lineNumber,
+                        line: violation["$"].lineNumber ? parseInt(violation["$"].lineNumber, 10) : null,
                         rule: violation["$"].ruleName,
                         severity:
-                            violation["$"].priority == "1"
+                            violation["$"].priority === "1"
                                 ? "error"
-                                : violation["$"].priority == "2"
+                                : violation["$"].priority === "2"
                                 ? "warning"
-                                : violation["$"].priority == "3"
+                                : violation["$"].priority === "3"
                                 ? "info"
                                 : "unknown",
-                        msg: violation.Message ? violation.Message[0] : "NGL: No message"
+                        msg: violation.Message ? violation.Message[0] : ""
                     };
                     // Add error only if severity is matching logLevel
                     if (
