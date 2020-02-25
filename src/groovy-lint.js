@@ -165,6 +165,11 @@ class NpmGroovyLint {
                 : "";
             const ext = this.output.split(".").pop();
             this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
+
+            // If filename is sent: just call codeNarc, no parsing results
+            if (!["html", "xml"].includes(this.output)) {
+                this.onlyCodeNarc = true;
+            }
         } else {
             this.status = 2;
             throw new Error("For now, only output formats are txt and json in console, and html and xml as files");

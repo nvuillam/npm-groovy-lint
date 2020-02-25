@@ -39,7 +39,6 @@ describe('TEST npm-groovy-lint using API', () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
-            '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/Jenkinsfile',
             '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-All.groovy"',
             '--output', 'ReportTestCodenarc.html'],
