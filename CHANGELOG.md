@@ -1,6 +1,13 @@
 # Changelog
 
-## [2.0.0] - 2020-02-21
+## [2.2.0] - 2020-02-25
+
+### Added
+
+- Capability to call NpmGroovyLint with options as object, not only command line arguments
+- New option "source", allowing to call NpmGroovyLint with the groovy code as a string , not only path & files pattern
+
+## [2.0.1] - 2020-02-21
 
 ### Added
 

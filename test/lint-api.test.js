@@ -11,6 +11,7 @@ describe('TEST npm-groovy-lint using API', () => {
             process.execPath,
             '',
             '--path', '"jdeploy-bundle/lib/example"',
+            '--files', '**/SampleFile.groovy',
             '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '--verbose'
         ], {
@@ -25,6 +26,7 @@ describe('TEST npm-groovy-lint using API', () => {
             process.execPath,
             '',
             '--path', '"jdeploy-bundle/lib/example"',
+            '--files', '**/SampleFile.groovy',
             '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '--output', 'json',
             '--loglevel', 'warning'
@@ -37,18 +39,16 @@ describe('TEST npm-groovy-lint using API', () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
-            '--codenarcargs',
-            '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
-            '-title="TestTitleCodenarc"',
-            '-maxPriority1Violations=0',
-            '-report="html:ReportTestCodenarc.html"'],
+            '--path', '"jdeploy-bundle/lib/example"',
+            '--files', '**/Jenkinsfile',
+            '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-All.groovy"',
+            '--output', 'ReportTestCodenarc.html'],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
         assert(res.status === 0 && fse.existsSync('ReportTestCodenarc.html'), 'Script failure');
         fse.removeSync('ReportTestCodenarc.html');
     });
 
-    it('(API) should generate codenarc XML report', async () => {
+    it('(API) should use --codenarcargs to generate XML report', async () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -86,6 +86,17 @@ describe('TEST npm-groovy-lint using API', () => {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
         assert(res.status === 0 && res.nglOutputString.includes('-v, --verbose'));
+    });
+
+
+    it('(API) should show npm-groovy-lint help option', async () => {
+        const res = await new NpmGroovyLint([
+            process.execPath,
+            '',
+            '-h', 'source'], {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(res.status === 0 && res.nglOutputString.includes('-s, --source'));
     });
 
     it('(API) should show codenarc help', async () => {
