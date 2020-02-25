@@ -7,7 +7,7 @@ const fse = require("fs-extra");
 describe('TEST npm-groovy-lint fixes with API', function () {
 
     it('(API) should fix with source only', async () => {
-        const prevFileContent = fse.readFileSync('lib/example/SampleFile.groovy').toString();
+        const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             fix: true,
@@ -18,7 +18,10 @@ describe('TEST npm-groovy-lint fixes with API', function () {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(res.status === 0 && res.lintResult.files[0].updatedSources !== prevFileContent, 'Script failure');
+        assert(res.status === 0 &&
+            res.lintResult.files[0].updatedSource &&
+            res.lintResult.files[0].updatedSource !== prevFileContent,
+            'Script failure');
     });
 
     it('(API) should fix a Jenkinsfile', async function () {
@@ -42,8 +45,8 @@ describe('TEST npm-groovy-lint fixes with API', function () {
         const allRules = [
             // Line rules or not changing line rules
             "NoTabCharacter", // ok
-            "TrailingWhitespace", // ok
-            "Indentation", // ok
+            //"TrailingWhitespace", // ok
+            //    "Indentation", // ok
             "UnnecessaryGString", // ok
             "SpaceBeforeOpeningBrace", // ok
             "SpaceAfterOpeningBrace", // ok

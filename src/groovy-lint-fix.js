@@ -22,12 +22,12 @@ class NpmGroovyLintFix {
 
     // Constructor: initialize options & args
     constructor(lintResult, optionsIn) {
-        this.updatedLintResult = lintResult;
+        this.updatedLintResult = JSON.parse(JSON.stringify(lintResult)); // Clone object to not compare the initial one
         this.options = optionsIn;
         this.verbose = optionsIn.verbose || false;
         // Load available fix rules
         this.npmGroovyLintRules = this.options.groovyLintRulesOverride ? require(this.options.groovyLintRulesOverride) : npmGroovyLintRules;
-        if (this.options.fixrules !== "all" && this.options.fixrules !== null) {
+        if (this.options.fixrules && this.options.fixrules !== "all") {
             this.fixRules = this.options.fixrules.split(",");
         }
         // Initialize fix counters
@@ -51,6 +51,8 @@ class NpmGroovyLintFix {
         // Parse fixes and process them
         await this.parseFixableErrors();
         await this.fixErrors();
+
+        this.updateResultCounters();
 
         // Clear progress bar
         this.bar.stop();
@@ -261,6 +263,17 @@ class NpmGroovyLintFix {
                     break;
             }
         }
+    }
+
+    // Update result counters
+    updateResultCounters() {
+        // Build remaining errors number if a fix has been performed
+        this.updatedLintResult.summary.totalRemainingErrorNumber =
+            this.updatedLintResult.summary.totalErrorNumber - this.updatedLintResult.summary.totalFixedErrorNumber;
+        this.updatedLintResult.summary.totalRemainingWarningNumber =
+            this.updatedLintResult.summary.totalWarningNumber - this.updatedLintResult.summary.totalFixedWarningNumber;
+        this.updatedLintResult.summary.totalRemainingInfoNumber =
+            this.updatedLintResult.summary.totalInfoNumber - this.updatedLintResult.summary.totalFixedInfoNumber;
     }
 }
 

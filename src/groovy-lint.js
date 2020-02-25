@@ -20,6 +20,7 @@ class NpmGroovyLint {
     // Internal
     jdeployFile;
     jdeployRootPath;
+    parseOptions;
     tmpXmlFileName;
     tmpGroovyFileName;
 
@@ -42,12 +43,13 @@ class NpmGroovyLint {
     barTimer;
 
     // Construction: initialize options & args
-    constructor(argsIn, internalOpts = {}) {
+    constructor(argsIn, internalOpts = { parseOptions: true }) {
         if (argsIn) {
             this.args = argsIn;
         }
         this.jdeployFile = internalOpts.jdeployFile || process.env.JDEPLOY_FILE || "originaljdeploy.js";
         this.jdeployRootPath = internalOpts.jdeployRootPath || process.env.JDEPLOY_ROOT_PATH || __dirname;
+        this.parseOptions = internalOpts.parseOptions !== false;
     }
 
     // Run linting (and fixing if --fix)
@@ -69,15 +71,19 @@ class NpmGroovyLint {
             return true;
         }
 
-        // Parse options
-        try {
-            this.options = optionsDefinition.parse(this.args);
-        } catch (error) {
-            this.status = 2;
-            throw new Error(error.message);
+        // Parse options ( or force them if coming from lint re-run after fix)
+        if (this.parseOptions) {
+            try {
+                this.options = optionsDefinition.parse(this.args);
+            } catch (error) {
+                this.status = 2;
+                throw new Error(error.message);
+            }
+        } else {
+            this.options = this.args;
         }
 
-        // Show version (to do more clean)
+        // Show version (TODO: more clean)
         if (this.options.version) {
             console.info("v2.0.0");
             return false;
@@ -237,7 +243,7 @@ class NpmGroovyLint {
         // process npm-groovy-lint options ( output, fix, formatting ...)
         else {
             // Parse XML result as js object
-            await this.parseCodeNarcResult();
+            this.lintResult = await this.parseCodeNarcResult();
             // Fix when possible
             if (this.options.fix) {
                 this.fixer = new NpmGroovyLintFix(this.lintResult, {
@@ -248,6 +254,10 @@ class NpmGroovyLint {
                 });
                 await this.fixer.run();
                 this.lintResult = this.fixer.updatedLintResult;
+                // If there has been fixes, call CodeNarc again to get updated error list
+                if (this.fixer.fixedErrorsNumber > 0) {
+                    await this.lintAgainAfterFix();
+                }
             }
             // Output result
             await this.processNglOutput();
@@ -258,6 +268,7 @@ class NpmGroovyLint {
             await fse.remove(this.tmpGroovyFileName);
         }
     }
+
     // Parse XML result file as js object
     async parseCodeNarcResult() {
         const parser = new xml2js.Parser();
@@ -319,8 +330,60 @@ class NpmGroovyLint {
             }
         }
         result.files = files;
-        this.lintResult = result;
-        fse.removeSync(this.tmpXmlFileName); // Remove temporary file
+        await fse.remove(this.tmpXmlFileName); // Remove temporary file
+        return result;
+    }
+
+    // Lint again after fixes and merge in existing results
+    async lintAgainAfterFix() {
+        // same Options except fix = false & output = none
+        const lintAgainOptions = JSON.parse(JSON.stringify(this.options));
+        if (this.options.source) {
+            lintAgainOptions.source = this.lintResult.files[0].updatedSource;
+        }
+        lintAgainOptions.fix = false;
+        lintAgainOptions.output = "none";
+        const newLinter = new NpmGroovyLint(lintAgainOptions, {
+            parseOptions: false,
+            jdeployFile: this.jdeployFile,
+            jdeployRootPath: this.jdeployRootPath
+        });
+        // Run linter
+        await newLinter.run();
+        const newLintResult = newLinter.lintResult;
+        // Merge new linter results in existing results
+        this.lintResult = this.mergeResults(this.lintResult, newLintResult);
+    }
+
+    // Merge --fix results and following lint results
+    mergeResults(initialResults, afterFixResults) {
+        const updatedResults = JSON.parse(JSON.stringify(initialResults));
+
+        // Reset properties and update counters
+        updatedResults.files = {};
+        updatedResults.summary.totalErrorNumber = afterFixResults.summary.totalErrorNumber;
+        updatedResults.summary.totalWarningNumber = afterFixResults.summary.totalWarningNumber;
+        updatedResults.summary.totalInfoNumber = afterFixResults.summary.totalInfoNumber;
+        updatedResults.summary.totalFixedErrorNumber = initialResults.summary.totalFixedErrorNumber;
+        updatedResults.summary.totalFixedWarningNumber = initialResults.summary.totalFixedWarningNumber;
+        updatedResults.summary.totalFixedInfoNumber = initialResults.summary.totalFixedInfoNumber;
+
+        // Remove not fixed errors from initial result and add remaining errors of afterfixResults
+        for (const fileNm of Object.keys(initialResults.files)) {
+            const initialResfileErrors = initialResults.files[fileNm].errors;
+            const afterFixResfileErrors = afterFixResults.files[fileNm].errors;
+            const fileDtl = {
+                errors: afterFixResfileErrors,
+                updatedSource: initialResults.files[fileNm].updatedSource
+            };
+            for (const initialFileError of initialResfileErrors) {
+                if (initialFileError.fixed) {
+                    fileDtl.errors.push(initialFileError);
+                }
+            }
+            updatedResults.files[fileNm] = fileDtl;
+        }
+        return updatedResults;
     }
 
     // Reformat output if requested in command line
@@ -374,19 +437,19 @@ class NpmGroovyLint {
                 Severity: "Error",
                 "Total found": this.lintResult.summary.totalErrorNumber,
                 "Total fixed": this.lintResult.summary.totalFixedErrorNumber,
-                "Total remaining": this.lintResult.summary.totalErrorNumber - this.lintResult.summary.totalFixedErrorNumber
+                "Total remaining": this.lintResult.summary.totalRemainingErrorNumber
             };
             const warningTableLine = {
                 Severity: "Warning",
                 "Total found": this.lintResult.summary.totalWarningNumber,
                 "Total fixed": this.lintResult.summary.totalFixedWarningNumber,
-                "Total remaining": this.lintResult.summary.totalWarningNumber - this.lintResult.summary.totalFixedWarningNumber
+                "Total remaining": this.lintResult.summary.totalRemainingWarningNumber
             };
             const infoTableLine = {
                 Severity: "Info",
                 "Total found": this.lintResult.summary.totalInfoNumber,
                 "Total fixed": this.lintResult.summary.totalFixedInfoNumber,
-                "Total remaining": this.lintResult.summary.totalInfoNumber - this.lintResult.summary.totalFixedInfoNumber
+                "Total remaining": this.lintResult.summary.totalRemainingInfoNumber
             };
             const summaryTable = [errorTableLine, warningTableLine, infoTableLine];
 
