@@ -4,9 +4,9 @@ const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
 
-describe('TEST npm-groovy-lint with sources', () => {
+describe('TEST npm-groovy-lint using API', () => {
 
-    it('(SRC) should generate text console output', async () => {
+    it('(API) should generate text console output', async () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -20,7 +20,7 @@ describe('TEST npm-groovy-lint with sources', () => {
         assert(res.status === 0 && res.nglOutputString.includes('warning'), 'Script failure');
     });
 
-    it('(SRC) should generate json output', async () => {
+    it('(API) should generate json output', async () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -33,7 +33,7 @@ describe('TEST npm-groovy-lint with sources', () => {
         assert(res.status === 0 && res.nglOutputString.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
     });
 
-    it('(SRC) should generate codenarc HTML file report', async () => {
+    it('(API) should generate codenarc HTML file report', async () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -48,7 +48,7 @@ describe('TEST npm-groovy-lint with sources', () => {
         fse.removeSync('ReportTestCodenarc.html');
     });
 
-    it('(SRC) should generate codenarc XML report', async () => {
+    it('(API) should generate codenarc XML report', async () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -63,7 +63,7 @@ describe('TEST npm-groovy-lint with sources', () => {
         fse.removeSync('ReportTestCodenarc.xml');
     });
 
-    it('(SRC) should run on a Jenkinsfile', async () => {
+    it('(API) should run on a Jenkinsfile', async () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -78,7 +78,7 @@ describe('TEST npm-groovy-lint with sources', () => {
         assert(res.status === 0 && res.nglOutputString.includes('warning'), 'Script failure');
     });
 
-    it('(SRC) should show npm-groovy-lint help', async () => {
+    it('(API) should show npm-groovy-lint help', async () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -88,7 +88,7 @@ describe('TEST npm-groovy-lint with sources', () => {
         assert(res.status === 0 && res.nglOutputString.includes('-v, --verbose'));
     });
 
-    it('(SRC) should show codenarc help', async () => {
+    it('(API) should show codenarc help', async () => {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -98,4 +98,22 @@ describe('TEST npm-groovy-lint with sources', () => {
         }).run();
         assert(res.status === 0 && res.codeNarcStdOut.includes('where OPTIONS are zero or more command-line options'), 'Script failure');
     });
+
+
+    it('(API) should run with source only', async () => {
+        const npmGroovyLintConfig = {
+            source: fse.readFileSync('lib/example/SampleFile.groovy').toString(),
+            output: 'none',
+            verbose: true
+        };
+        const res = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(res.status === 0 && res.lintResult.files[0].errors.length > 0, 'Script failure');
+    });
+
+
+
+
 });

@@ -4,9 +4,24 @@ const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
 
-describe('TEST npm-groovy-lint fixes with sources', function () {
+describe('TEST npm-groovy-lint fixes with API', function () {
 
-    it('(SRC) should fix a Jenkinsfile', async function () {
+    it('(API) should fix with source only', async () => {
+        const prevFileContent = fse.readFileSync('lib/example/SampleFile.groovy').toString();
+        const npmGroovyLintConfig = {
+            source: prevFileContent,
+            fix: true,
+            output: 'none',
+            verbose: true
+        };
+        const res = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(res.status === 0 && res.lintResult.files[0].updatedSources !== prevFileContent, 'Script failure');
+    });
+
+    it('(API) should fix a Jenkinsfile', async function () {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -23,7 +38,7 @@ describe('TEST npm-groovy-lint fixes with sources', function () {
     }).timeout(60000);
 
 
-    it('(SRC) should fix only some errors', async function () {
+    it('(API) should fix only some errors', async function () {
         const allRules = [
             // Line rules or not changing line rules
             "NoTabCharacter", // ok
@@ -61,7 +76,7 @@ describe('TEST npm-groovy-lint fixes with sources', function () {
         //fse.removeSync('npm-groovy-fix-log.txt');
     }).timeout(60000);
 
-    it('(SRC) should fix groovy files', async function () {
+    it('(API) should fix groovy files', async function () {
         const res = await new NpmGroovyLint([
             process.execPath,
             '',

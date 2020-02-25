@@ -123,7 +123,7 @@ class NpmGroovyLintFix {
         await Promise.all(
             Object.keys(this.fixableErrors).map(async fileNm => {
                 // Read file
-                let fileContent = await fse.readFile(fileNm);
+                let fileContent = this.options.source || (await fse.readFile(fileNm));
                 let fileLines = fileContent
                     .toString()
                     .replace(/\r?\n/g, "\r\n")
@@ -158,9 +158,12 @@ class NpmGroovyLintFix {
                         }
                     }
                 }
+                const newSources = fileLines.join("\r\n") + "\r\n";
                 // Write new file content if it has been updated
-                if (fixedInFileNb) {
-                    fse.writeFileSync(fileNm, fileLines.join("\r\n") + "\r\n");
+                if (this.options.save && fixedInFileNb > 0) {
+                    fse.writeFileSync(fileNm, newSources);
+                } else if (fixedInFileNb > 0) {
+                    this.updatedLintResult.files[fileNm].updatedSource = newSources;
                 }
             })
         );

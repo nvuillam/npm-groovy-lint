@@ -21,6 +21,7 @@ class NpmGroovyLint {
     jdeployFile;
     jdeployRootPath;
     tmpXmlFileName;
+    tmpGroovyFileName;
 
     // Codenarc
     codenarcArgs = [];
@@ -47,7 +48,6 @@ class NpmGroovyLint {
         }
         this.jdeployFile = internalOpts.jdeployFile || process.env.JDEPLOY_FILE || "originaljdeploy.js";
         this.jdeployRootPath = internalOpts.jdeployRootPath || process.env.JDEPLOY_ROOT_PATH || __dirname;
-        this.tmpXmlFileName = internalOpts.tmpXmlFileName || os.tmpdir() + "/CodeNarcReportXml_" + Math.random() + ".xml";
     }
 
     // Run linting (and fixing if --fix)
@@ -98,12 +98,21 @@ class NpmGroovyLint {
         // Build codenarc options //
         ////////////////////////////
 
+        let cnPath = this.options.path;
+        let cnFiles = this.options.files;
+
+        // If source option, create a temporary Groovy file
+        if (this.options.source) {
+            cnPath = os.tmpdir();
+            const tmpFileNm = "codeNarcTmpFile_" + Math.random() + ".groovy";
+            this.tmpGroovyFileName = os.tmpdir() + "/" + tmpFileNm;
+            cnFiles = "**/" + tmpFileNm;
+            await fse.writeFile(this.tmpGroovyFileName, this.options.source);
+        }
+
         // Base directory
-        const baseBefore =
-            (this.options.path !== "." && this.options.path.startsWith("/")) || this.options.path.includes(":/") || this.options.path.includes(":\\")
-                ? ""
-                : process.cwd() + "/";
-        this.codeNarcBaseDir = this.options.path !== "." ? baseBefore + this.options.path.replace(/^"(.*)"$/, "$1") : process.cwd();
+        const baseBefore = (cnPath !== "." && cnPath.startsWith("/")) || cnPath.includes(":/") || cnPath.includes(":\\") ? "" : process.cwd() + "/";
+        this.codeNarcBaseDir = cnPath !== "." ? baseBefore + cnPath.replace(/^"(.*)"$/, "$1") : process.cwd();
         this.codenarcArgs.push('-basedir="' + this.codeNarcBaseDir + '"');
 
         // Ruleset(s) & matching files pattern
@@ -125,8 +134,8 @@ class NpmGroovyLint {
         this.codenarcArgs.push('-rulesetfiles="file:' + ruleSetFile + '"');
 
         // Matching files pattern(s)
-        if (this.options.files) {
-            this.codenarcArgs.push('-includes="' + this.options.files.replace(/^"(.*)"$/, "$1") + '"');
+        if (cnFiles) {
+            this.codenarcArgs.push('-includes="' + cnFiles.replace(/^"(.*)"$/, "$1") + '"');
         } else {
             // If files not sent, use defaultFilesPattern, guessed from options.rulesets value
             this.codenarcArgs.push('-includes="' + defaultFilesPattern + '"');
@@ -140,6 +149,7 @@ class NpmGroovyLint {
         }
         if (["txt", "json", "none"].includes(this.output) || this.output.endsWith(".txt") || this.output.endsWith(".json")) {
             this.outputType = this.output.endsWith(".txt") ? "txt" : this.output.endsWith(".json") ? "json" : this.output;
+            this.tmpXmlFileName = os.tmpdir() + "/codeNarcReportXml_" + Math.random() + ".xml";
             this.codenarcArgs.push('-report=xml:"' + this.tmpXmlFileName + '"');
         } else if (["html", "xml"].includes(this.output.split(".").pop())) {
             this.outputType = this.output
@@ -227,13 +237,20 @@ class NpmGroovyLint {
             if (this.options.fix) {
                 this.fixer = new NpmGroovyLintFix(this.lintResult, {
                     verbose: this.options.verbose,
-                    fixrules: this.options.fixrules
+                    fixrules: this.options.fixrules,
+                    source: this.options.source,
+                    save: this.tmpGroovyFileName ? false : true
                 });
                 await this.fixer.run();
                 this.lintResult = this.fixer.updatedLintResult;
             }
             // Output result
             await this.processNglOutput();
+        }
+
+        // Remove temporary file created for source argument if provided
+        if (this.tmpGroovyFileName) {
+            await fse.remove(this.tmpGroovyFileName);
         }
     }
     // Parse XML result file as js object
@@ -263,7 +280,9 @@ class NpmGroovyLint {
                 continue;
             }
             for (const fileInfo of folderInfo.File) {
-                const fileNm = this.codeNarcBaseDir + "/" + (folderInfo["$"].path ? folderInfo["$"].path + "/" : "") + fileInfo["$"].name;
+                const fileNm = this.options.source
+                    ? 0
+                    : this.codeNarcBaseDir + "/" + (folderInfo["$"].path ? folderInfo["$"].path + "/" : "") + fileInfo["$"].name;
                 if (files[fileNm] == null) {
                     files[fileNm] = { errors: [] };
                 }
