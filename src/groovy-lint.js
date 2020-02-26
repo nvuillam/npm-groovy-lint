@@ -403,12 +403,13 @@ class NpmGroovyLint {
         updatedResults.summary.fixedErrorsIds = afterFixResults.summary.fixedErrorsIds;
 
         // Remove not fixed errors from initial result and add remaining errors of afterfixResults
+        // Pipes because variable content depends that if we run linter after fix or not
         for (const fileNm of Object.keys(initialResults.files)) {
             const initialResfileErrors = initialResults.files[fileNm].errors;
             const afterFixResfileErrors = afterFixResults.files[fileNm].errors;
             const fileDtl = {
                 errors: afterFixResfileErrors,
-                updatedSource: afterFixResults.files[fileNm].updatedSource
+                updatedSource: afterFixResults.files[fileNm].updatedSource || initialResults.files[fileNm].updatedSource
             };
             for (const initialFileError of initialResfileErrors) {
                 if (initialFileError.fixed) {
