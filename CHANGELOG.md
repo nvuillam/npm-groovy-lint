@@ -1,6 +1,16 @@
 # Changelog
 
-## [2.0.0] - 2020-02-21
+## [2.2.0] - 2020-02-26
+
+### Added
+
+- Capability to call NpmGroovyLint with options as object, not only command line arguments
+- New option "source", allowing to call NpmGroovyLint with the groovy code as a string , not only path & files pattern
+- Run lint again after fix all errors, to get updated lintResult
+- Add gitattributes to normalized line-endings (thanks [docwhat](https://github.com/docwhat))
+- API: fix only some errors after an initial lint (better perfs)
+
+## [2.0.1] - 2020-02-21
 
 ### Added
 

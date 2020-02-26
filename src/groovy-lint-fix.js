@@ -3,8 +3,8 @@
 // Imports
 const fse = require("fs-extra");
 const cliProgress = require("cli-progress");
-const decodeHtml = require("decode-html");
 const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
+const { evaluateVariables, getSourceLines } = require("./utils.js");
 
 class NpmGroovyLintFix {
     "use strict";
@@ -16,28 +16,30 @@ class NpmGroovyLintFix {
     fixRules = null;
     fixableErrors = {};
     fixedErrorsNumber = 0;
+    fixedErrorsIds = [];
 
     bar;
     barTimer;
 
     // Constructor: initialize options & args
     constructor(lintResult, optionsIn) {
-        this.updatedLintResult = lintResult;
+        this.updatedLintResult = JSON.parse(JSON.stringify(lintResult)); // Clone object to not compare the initial one
         this.options = optionsIn;
         this.verbose = optionsIn.verbose || false;
         // Load available fix rules
         this.npmGroovyLintRules = this.options.groovyLintRulesOverride ? require(this.options.groovyLintRulesOverride) : npmGroovyLintRules;
-        if (this.options.fixrules !== "all" && this.options.fixrules !== null) {
+        if (this.options.fixrules && this.options.fixrules !== "all") {
             this.fixRules = this.options.fixrules.split(",");
         }
+
         // Initialize fix counters
-        this.updatedLintResult.summary.totalFixedErrorNumber = 0;
-        this.updatedLintResult.summary.totalFixedWarningNumber = 0;
-        this.updatedLintResult.summary.totalFixedInfoNumber = 0;
+        this.updatedLintResult.summary.totalFixedErrorNumber = this.updatedLintResult.summary.totalFixedErrorNumber || 0;
+        this.updatedLintResult.summary.totalFixedWarningNumber = this.updatedLintResult.summary.totalFixedWarningNumber || 0;
+        this.updatedLintResult.summary.totalFixedInfoNumber || this.updatedLintResult.summary.totalFixedInfoNumber || 0;
     }
 
     // Fix errors using codenarc result and groovy lint rules
-    async run() {
+    async run(errorIds = null) {
         // Start progress bar
         this.bar = new cliProgress.SingleBar(
             {
@@ -49,8 +51,10 @@ class NpmGroovyLintFix {
         this.bar.start(Object.keys(this.updatedLintResult.files).length, 0);
 
         // Parse fixes and process them
-        await this.parseFixableErrors();
+        await this.parseFixableErrors(errorIds);
         await this.fixErrors();
+
+        this.updateResultCounters();
 
         // Clear progress bar
         this.bar.stop();
@@ -59,7 +63,7 @@ class NpmGroovyLintFix {
     }
 
     // Extract fixable errors from definition file
-    async parseFixableErrors() {
+    async parseFixableErrors(errorIds) {
         for (const fileNm of Object.keys(this.updatedLintResult.files)) {
             // Progress bar
             this.bar.increment();
@@ -69,6 +73,7 @@ class NpmGroovyLintFix {
             const fileErrors = this.updatedLintResult.files[fileNm].errors;
             for (const err of fileErrors) {
                 if (
+                    (errorIds == null || errorIds.includes(err.id)) &&
                     this.npmGroovyLintRules[err.rule] != null &&
                     this.npmGroovyLintRules[err.rule].fix != null &&
                     (this.fixRules == null || this.fixRules.includes(err.rule))
@@ -123,11 +128,7 @@ class NpmGroovyLintFix {
         await Promise.all(
             Object.keys(this.fixableErrors).map(async fileNm => {
                 // Read file
-                let fileContent = await fse.readFile(fileNm);
-                let fileLines = fileContent
-                    .toString()
-                    .replace(/\r?\n/g, "\r\n")
-                    .split("\r\n");
+                let allLines = await getSourceLines(this.options.source, fileNm);
 
                 // Process fixes
                 let fixedInFileNb = 0;
@@ -138,29 +139,34 @@ class NpmGroovyLintFix {
                     const lineNb = fileFixableError.lineNb ? parseInt(fileFixableError.lineNb, 10) - 1 : -1;
                     // File scope violation
                     if (fileFixableError.rule.scope === "file") {
-                        const fileLinesNew = this.tryApplyFixRule(fileLines, lineNb, fileFixableError).slice(); // copy result lines
-                        if (JSON.stringify(fileLinesNew) !== JSON.stringify(fileLines.toString)) {
-                            fileLines = fileLinesNew;
+                        const allLinesNew = this.tryApplyFixRule(allLines, lineNb, fileFixableError).slice(); // copy result lines
+                        if (JSON.stringify(allLinesNew) !== JSON.stringify(allLines.toString)) {
+                            allLines = allLinesNew;
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
+                            this.fixedErrorsIds.push(fileFixableError.id);
                             this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
                         }
                     }
                     // Line scope violation
                     else {
-                        const line = fileLines[lineNb];
+                        const line = allLines[lineNb];
                         const fixedLine = this.tryApplyFixRule(line, lineNb, fileFixableError);
                         if (fixedLine !== line) {
-                            fileLines[lineNb] = fixedLine;
+                            allLines[lineNb] = fixedLine;
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
+                            this.fixedErrorsIds.push(fileFixableError.id);
                             this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
                         }
                     }
                 }
+                const newSources = allLines.join("\r\n") + "\r\n";
                 // Write new file content if it has been updated
-                if (fixedInFileNb) {
-                    fse.writeFileSync(fileNm, fileLines.join("\r\n") + "\r\n");
+                if (this.options.save && fixedInFileNb > 0) {
+                    fse.writeFileSync(fileNm, newSources);
+                } else if (fixedInFileNb > 0) {
+                    this.updatedLintResult.files[fileNm].updatedSource = newSources;
                 }
             })
         );
@@ -181,21 +187,7 @@ class NpmGroovyLintFix {
     // Evaluate variables and apply rule defined fixes
     applyFixRule(line, lineNb, fixableError) {
         // Evaluate variables from message
-        const evaluatedVars = [];
-        for (const varDef of fixableError.rule.variables || []) {
-            // regex
-            if (varDef.regex) {
-                const regexRes = fixableError.msg.match(varDef.regex);
-                if (regexRes && regexRes.length > 1) {
-                    const regexPos = varDef.regexPos || 1;
-                    evaluatedVars.push({ name: varDef.name, value: decodeHtml(regexRes[regexPos]) });
-                } else if (this.verbose) {
-                    console.error("NGL: Unable to match " + varDef.regex + " in " + fixableError.msg);
-                }
-            } else if (varDef.value) {
-                evaluatedVars.push({ name: varDef.name, value: varDef.value });
-            }
-        }
+        const evaluatedVars = evaluateVariables(fixableError.rule.variables, fixableError.msg, { verbose: this.verbose });
         evaluatedVars.push({ name: "lineNb", value: lineNb });
 
         // Apply fix : replacement or custom function
@@ -258,6 +250,21 @@ class NpmGroovyLintFix {
                     break;
             }
         }
+    }
+
+    // Update result counters
+    updateResultCounters() {
+        // Build remaining errors number if a fix has been performed
+        this.updatedLintResult.summary.totalRemainingErrorNumber =
+            this.updatedLintResult.summary.totalErrorNumber - this.updatedLintResult.summary.totalFixedErrorNumber;
+        this.updatedLintResult.summary.totalRemainingWarningNumber =
+            this.updatedLintResult.summary.totalWarningNumber - this.updatedLintResult.summary.totalFixedWarningNumber;
+        this.updatedLintResult.summary.totalRemainingInfoNumber =
+            this.updatedLintResult.summary.totalInfoNumber - this.updatedLintResult.summary.totalFixedInfoNumber;
+
+        // Return list of fixed error ids
+        this.updatedLintResult.summary.fixedErrorsNumber = this.fixedErrorsNumber;
+        this.updatedLintResult.summary.fixedErrorsIds = [...new Set(this.fixedErrorsIds)];
     }
 }
 

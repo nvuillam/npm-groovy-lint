@@ -42,6 +42,13 @@ module.exports = optionator({
             example: ["**/Jenkinsfile", "*/*.groovy"]
         },
         {
+            option: "source",
+            alias: "s",
+            type: "String",
+            description: "Source text to lint (if no path/files arguments)",
+            example: ["import groovyx.net.http.HTTPBuilder\n\nimport class Toto { \n }"]
+        },
+        {
             option: "rulesets",
             alias: "r",
             type: "String",
@@ -85,13 +92,14 @@ module.exports = optionator({
             alias: "x",
             type: "String",
             default: "all",
+            dependsOn: ["fix"],
             description: "List of rule identifiers to fix (if not specified, all available fixes will be applied)"
         },
         {
             heading: "Ignoring files"
         },
         {
-            option: "ignore-pattern",
+            option: "ignorepattern",
             alias: "i",
             type: "String",
             description: "Comma-separated list of Ant-style file patterns specifying files that must be ignored. Default: none",
@@ -129,5 +137,11 @@ module.exports = optionator({
             type: "Boolean",
             description: "Show help (npm-groovy-lint -help OPTIONNAME to see option detail)"
         }
+    ],
+    mutuallyExclusive: [
+        ["files", "source", "codenarcargs", "help"],
+        [["path", "files"], "source"],
+        ["failonerror", "failonwarning", "failoninfo"],
+        ["codenarcargs", ["failonerror", "failonwarning", "failoninfo", "path", "files", "source", "fix", "fixrules"]]
     ]
 });

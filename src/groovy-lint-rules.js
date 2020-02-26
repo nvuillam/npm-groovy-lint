@@ -1,4 +1,4 @@
-// List fixable CodeNarc rules
+// Additional definition for codenarc rules ( get position & available fix)
 "use strict";
 
 const decodeHtml = require("decode-html");
@@ -38,6 +38,16 @@ const npmGroovyLintRules = {
     ClosingBraceNotAlone: {
         scope: "file",
         priority: getPriority("ClosingBraceNotAlone"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                const closingBracePos = errLine.lastIndexOf("}");
+                return {
+                    from: { line: errItem.line, char: closingBracePos },
+                    to: { line: errItem.line, char: closingBracePos + 1 }
+                };
+            }
+        },
         fix: {
             type: "function",
             func: fileLines => {
@@ -183,14 +193,25 @@ const npmGroovyLintRules = {
             {
                 name: "EXPECTED",
                 regex: /The (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
-                regexPos: 2
+                regexPos: 2,
+                type: "number"
             },
             {
                 name: "FOUND",
                 regex: /The (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
-                regexPos: 3
+                regexPos: 3,
+                type: "number"
             }
         ],
+        range: {
+            type: "function",
+            func: (errLine, errItem, evaluatedVars) => {
+                return {
+                    from: { line: errItem.line, char: getVariable(evaluatedVars, "EXPECTED") },
+                    to: { line: errItem.line, char: getVariable(evaluatedVars, "FOUND") }
+                };
+            }
+        },
         fix: {
             type: "function",
             func: (line, evaluatedVars) => {
@@ -371,6 +392,17 @@ const npmGroovyLintRules = {
         }
     },
 
+    // Trailing Whitespaces
+    TrailingWhitespace: {
+        priority: getPriority("TrailingWhitespace"),
+        fix: {
+            type: "function",
+            func: line => {
+                return line.trimEnd();
+            }
+        }
+    },
+
     // Unnecessary def in field declaration (statif def)
     UnnecessaryDefInFieldDeclaration: {
         priority: getPriority("UnnecessaryDefInFieldDeclaration"),
@@ -408,13 +440,24 @@ const npmGroovyLintRules = {
         }
     },
 
-    // Trailing Whitespaces
-    TrailingWhitespace: {
-        priority: getPriority("TrailingWhitespace"),
-        fix: {
+    // Unused variable
+    UnusedVariable: {
+        priority: getPriority("UnusedVariable"),
+        variables: [
+            {
+                name: "VARNAME",
+                regex: /The variable \[(.*)\] in (.*) is not used/
+            }
+        ],
+        range: {
             type: "function",
-            func: line => {
-                return line.trimEnd();
+            func: (errLine, errItem, evaluatedVars) => {
+                const varName = getVariable(evaluatedVars, "VARNAME");
+                const varStartPos = errLine.indexOf(varName);
+                return {
+                    from: { line: errItem.line, char: varStartPos },
+                    to: { line: errItem.line, char: varStartPos + varName.length }
+                };
             }
         }
     }
@@ -424,7 +467,7 @@ function getPriority(ruleName) {
     return rulesFixPriorityOrder.indexOf(ruleName);
 }
 
-function getVariable(evaluatedVars, name, optns = { mandatory: false, decodeHtml: false, line: "" }) {
+function getVariable(evaluatedVars, name, optns = { mandatory: true, decodeHtml: false, line: "" }) {
     const matchingVars = evaluatedVars.filter(evaluatedVar => evaluatedVar.name === name);
     if (matchingVars && matchingVars.length > 0) {
         return optns.decodeHtml ? decodeHtml(matchingVars[0].value) : matchingVars[0].value;
