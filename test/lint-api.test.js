@@ -7,7 +7,7 @@ const fse = require("fs-extra");
 describe('TEST npm-groovy-lint using API', () => {
 
     it('(API) should generate text console output', async () => {
-        const res = await new NpmGroovyLint([
+        const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '--path', '"jdeploy-bundle/lib/example"',
@@ -18,11 +18,11 @@ describe('TEST npm-groovy-lint using API', () => {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        assert(res.status === 0 && res.nglOutputString.includes('warning'), 'Script failure');
+        assert(linter.status === 0 && linter.nglOutputString.includes('warning'), 'Script failure');
     });
 
     it('(API) should generate json output', async () => {
-        const res = await new NpmGroovyLint([
+        const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '--path', '"jdeploy-bundle/lib/example"',
@@ -32,23 +32,23 @@ describe('TEST npm-groovy-lint using API', () => {
             '--loglevel', 'warning'
         ],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
-        assert(res.status === 0 && res.nglOutputString.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
+        assert(linter.status === 0 && linter.nglOutputString.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
     });
 
     it('(API) should generate codenarc HTML file report', async () => {
-        const res = await new NpmGroovyLint([
+        const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '--files', '**/Jenkinsfile',
             '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-All.groovy"',
             '--output', 'ReportTestCodenarc.html'],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
-        assert(res.status === 0 && fse.existsSync('ReportTestCodenarc.html'), 'Script failure');
+        assert(linter.status === 0 && fse.existsSync('ReportTestCodenarc.html'), 'Script failure');
         fse.removeSync('ReportTestCodenarc.html');
     });
 
     it('(API) should use --codenarcargs to generate XML report', async () => {
-        const res = await new NpmGroovyLint([
+        const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '--codenarcargs',
@@ -58,12 +58,12 @@ describe('TEST npm-groovy-lint using API', () => {
             '-maxPriority1Violations=0',
             '-report="xml:ReportTestCodenarc.xml"'],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
-        assert(res.status === 0 && fse.existsSync('ReportTestCodenarc.xml'), 'Script failure');
+        assert(linter.status === 0 && fse.existsSync('ReportTestCodenarc.xml'), 'Script failure');
         fse.removeSync('ReportTestCodenarc.xml');
     });
 
     it('(API) should run on a Jenkinsfile', async () => {
-        const res = await new NpmGroovyLint([
+        const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '--path', '"jdeploy-bundle/lib/example"',
@@ -74,39 +74,39 @@ describe('TEST npm-groovy-lint using API', () => {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        assert(res.status === 0 && res.nglOutputString.includes('warning'), 'Script failure');
+        assert(linter.status === 0 && linter.nglOutputString.includes('warning'), 'Script failure');
     });
 
     it('(API) should show npm-groovy-lint help', async () => {
-        const res = await new NpmGroovyLint([
+        const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '-h'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(res.status === 0 && res.nglOutputString.includes('-v, --verbose'));
+        assert(linter.status === 0 && linter.nglOutputString.includes('-v, --verbose'));
     });
 
 
     it('(API) should show npm-groovy-lint help option', async () => {
-        const res = await new NpmGroovyLint([
+        const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '-h', 'source'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(res.status === 0 && res.nglOutputString.includes('-s, --source'));
+        assert(linter.status === 0 && linter.nglOutputString.includes('-s, --source'));
     });
 
     it('(API) should show codenarc help', async () => {
-        const res = await new NpmGroovyLint([
+        const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '--codenarcargs',
             '-help'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(res.status === 0 && res.codeNarcStdOut.includes('where OPTIONS are zero or more command-line options'), 'Script failure');
+        assert(linter.status === 0 && linter.codeNarcStdOut.includes('where OPTIONS are zero or more command-line options'), 'Script failure');
     });
 
 
@@ -116,11 +116,11 @@ describe('TEST npm-groovy-lint using API', () => {
             output: 'none',
             verbose: true
         };
-        const res = await new NpmGroovyLint(
+        const linter = await new NpmGroovyLint(
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(res.status === 0 && res.lintResult.files[0].errors.length > 0, 'Script failure');
+        assert(linter.status === 0 && linter.lintResult.files[0].errors.length > 0, 'Script failure');
     });
 
 

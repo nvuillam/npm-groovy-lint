@@ -9,8 +9,9 @@ const cliProgress = require("cli-progress");
 const util = require("util");
 const xml2js = require("xml2js");
 const NpmGroovyLintFix = require("./groovy-lint-fix.js");
+const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
 const optionsDefinition = require("./options");
-
+const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js");
 class NpmGroovyLint {
     "use strict";
 
@@ -60,6 +61,17 @@ class NpmGroovyLint {
             await this.postProcess();
         }
         return this;
+    }
+
+    // Call an existing NpmGroovyLint instance to request fix of errors
+    async fixErrors(errorIds) {
+        this.fixer = new NpmGroovyLintFix(this.lintResult, {
+            verbose: this.options.verbose,
+            fixrules: this.options.fixrules,
+            source: this.options.source,
+            save: this.tmpGroovyFileName ? false : true
+        });
+        await this.fixer.run(errorIds);
     }
 
     // Actions before call to CodeNarc
@@ -296,14 +308,18 @@ class NpmGroovyLint {
                 continue;
             }
             for (const fileInfo of folderInfo.File) {
+                // Build file name, or use '0' if source has been sent as input parameter
                 const fileNm = this.options.source
                     ? 0
                     : this.codeNarcBaseDir + "/" + (folderInfo["$"].path ? folderInfo["$"].path + "/" : "") + fileInfo["$"].name;
                 if (files[fileNm] == null) {
                     files[fileNm] = { errors: [] };
                 }
+                // Get source code from file or input parameter
+                let allLines = await getSourceLines(this.options.source, fileNm);
+
                 for (const violation of fileInfo.Violation) {
-                    const err = {
+                    const errItem = {
                         id: errId,
                         line: violation["$"].lineNumber ? parseInt(violation["$"].lineNumber, 10) : 0,
                         rule: violation["$"].ruleName,
@@ -317,13 +333,27 @@ class NpmGroovyLint {
                                 : "unknown",
                         msg: violation.Message ? violation.Message[0] : ""
                     };
-                    // Add error only if severity is matching logLevel
+                    // Find range & add error only if severity is matching logLevel
                     if (
-                        err.severity === "error" ||
+                        errItem.severity === "error" ||
                         this.options.loglevel === "info" ||
-                        (this.options.loglevel === "warning" && ["error", "warning"].includes(err.severity))
+                        (this.options.loglevel === "warning" && ["error", "warning"].includes(errItem.severity))
                     ) {
-                        files[fileNm].errors.push(err);
+                        // Get fixable info & range if they have been defined on the rule
+                        const errRule = npmGroovyLintRules[errItem.rule];
+                        if (errRule) {
+                            errItem.fixable = errRule.fix ? true : false;
+                            if (errRule.range) {
+                                const evaluatedVars = evaluateVariables(errRule.variables, errItem.msg, { verbose: this.verbose });
+                                const errLine = allLines[errItem.line - 1];
+                                const range = evaluateRange(errItem, errRule, evaluatedVars, errLine, allLines, { verbose: this.verbose });
+                                if (range) {
+                                    errItem.range = range;
+                                }
+                            }
+                        }
+                        // Add in file errors
+                        files[fileNm].errors.push(errItem);
                         errId++;
                     }
                 }
