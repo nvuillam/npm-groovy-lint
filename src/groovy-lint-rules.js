@@ -43,8 +43,8 @@ const npmGroovyLintRules = {
             func: (errLine, errItem) => {
                 const closingBracePos = errLine.lastIndexOf("}");
                 return {
-                    from: { line: errItem.line, char: closingBracePos },
-                    to: { line: errItem.line, char: closingBracePos + 1 }
+                    start: { line: errItem.line, character: closingBracePos },
+                    end: { line: errItem.line, character: closingBracePos + 1 }
                 };
             }
         },
@@ -207,8 +207,8 @@ const npmGroovyLintRules = {
             type: "function",
             func: (errLine, errItem, evaluatedVars) => {
                 return {
-                    from: { line: errItem.line, char: getVariable(evaluatedVars, "EXPECTED") },
-                    to: { line: errItem.line, char: getVariable(evaluatedVars, "FOUND") }
+                    start: { line: errItem.line, character: getVariable(evaluatedVars, "EXPECTED") },
+                    end: { line: errItem.line, character: getVariable(evaluatedVars, "FOUND") }
                 };
             }
         },
@@ -455,8 +455,8 @@ const npmGroovyLintRules = {
                 const varName = getVariable(evaluatedVars, "VARNAME");
                 const varStartPos = errLine.indexOf(varName);
                 return {
-                    from: { line: errItem.line, char: varStartPos },
-                    to: { line: errItem.line, char: varStartPos + varName.length }
+                    start: { line: errItem.line, character: varStartPos },
+                    end: { line: errItem.line, character: varStartPos + varName.length }
                 };
             }
         }
