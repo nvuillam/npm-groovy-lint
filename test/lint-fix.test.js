@@ -6,7 +6,7 @@ const fse = require("fs-extra");
 
 describe('TEST npm-groovy-lint fixes with API', function () {
 
-    it('(API) should fix only a list of errors', async () => {
+    it('(API) should lint then fix only a list of errors', async () => {
         const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -23,13 +23,13 @@ describe('TEST npm-groovy-lint fixes with API', function () {
         await linter.fixErrors(errIdList);
 
         assert(linter.status === 0 &&
-            linter.fixedErrorsNumber > 0 &&
+            linter.lintResult.summary.fixedErrorsNumber >= 5 && // can be more than the five sent errors, as there are other triggered fixes
             linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
             'Script failure');
     });
 
-    it('(API) should fix with source only', async () => {
+    it('(API) should lint and fix with source only (one shot)', async () => {
         const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -47,7 +47,7 @@ describe('TEST npm-groovy-lint fixes with API', function () {
             'Script failure');
     });
 
-    it('(API) should fix a Jenkinsfile', async function () {
+    it('(API) should lit and fix a Jenkinsfile in one shot', async function () {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',

@@ -16,6 +16,7 @@ class NpmGroovyLintFix {
     fixRules = null;
     fixableErrors = {};
     fixedErrorsNumber = 0;
+    fixedErrorsIds = [];
 
     bar;
     barTimer;
@@ -143,6 +144,7 @@ class NpmGroovyLintFix {
                             allLines = allLinesNew;
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
+                            this.fixedErrorsIds.push(fileFixableError.id);
                             this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
                         }
                     }
@@ -154,6 +156,7 @@ class NpmGroovyLintFix {
                             allLines[lineNb] = fixedLine;
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
+                            this.fixedErrorsIds.push(fileFixableError.id);
                             this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
                         }
                     }
@@ -258,6 +261,10 @@ class NpmGroovyLintFix {
             this.updatedLintResult.summary.totalWarningNumber - this.updatedLintResult.summary.totalFixedWarningNumber;
         this.updatedLintResult.summary.totalRemainingInfoNumber =
             this.updatedLintResult.summary.totalInfoNumber - this.updatedLintResult.summary.totalFixedInfoNumber;
+
+        // Return list of fixed error ids
+        this.updatedLintResult.summary.fixedErrorsNumber = this.fixedErrorsNumber;
+        this.updatedLintResult.summary.fixedErrorsIds = [...new Set(this.fixedErrorsIds)];
     }
 }
 

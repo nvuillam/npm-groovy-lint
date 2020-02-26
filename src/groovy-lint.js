@@ -72,6 +72,7 @@ class NpmGroovyLint {
             save: this.tmpGroovyFileName ? false : true
         });
         await this.fixer.run(errorIds);
+        this.lintResult = this.mergeResults(this.lintResult, this.fixer.updatedLintResult);
     }
 
     // Actions before call to CodeNarc
@@ -394,9 +395,12 @@ class NpmGroovyLint {
         updatedResults.summary.totalErrorNumber = afterFixResults.summary.totalErrorNumber;
         updatedResults.summary.totalWarningNumber = afterFixResults.summary.totalWarningNumber;
         updatedResults.summary.totalInfoNumber = afterFixResults.summary.totalInfoNumber;
-        updatedResults.summary.totalFixedErrorNumber = initialResults.summary.totalFixedErrorNumber;
-        updatedResults.summary.totalFixedWarningNumber = initialResults.summary.totalFixedWarningNumber;
-        updatedResults.summary.totalFixedInfoNumber = initialResults.summary.totalFixedInfoNumber;
+        updatedResults.summary.totalFixedErrorNumber = afterFixResults.summary.totalFixedErrorNumber;
+        updatedResults.summary.totalFixedWarningNumber = afterFixResults.summary.totalFixedWarningNumber;
+        updatedResults.summary.totalFixedInfoNumber = afterFixResults.summary.totalFixedInfoNumber;
+
+        updatedResults.summary.fixedErrorsNumber = afterFixResults.summary.fixedErrorsNumber;
+        updatedResults.summary.fixedErrorsIds = afterFixResults.summary.fixedErrorsIds;
 
         // Remove not fixed errors from initial result and add remaining errors of afterfixResults
         for (const fileNm of Object.keys(initialResults.files)) {
@@ -404,7 +408,7 @@ class NpmGroovyLint {
             const afterFixResfileErrors = afterFixResults.files[fileNm].errors;
             const fileDtl = {
                 errors: afterFixResfileErrors,
-                updatedSource: initialResults.files[fileNm].updatedSource
+                updatedSource: afterFixResults.files[fileNm].updatedSource
             };
             for (const initialFileError of initialResfileErrors) {
                 if (initialFileError.fixed) {
