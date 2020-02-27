@@ -98,6 +98,16 @@ const npmGroovyLintRules = {
         }
     },
 
+    // Exception type must not be used
+    CatchException: {
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, "Exception", errItem);
+            }
+        }
+    },
+
     // Closing brace not alone
     ClosingBraceNotAlone: {
         scope: "file",
@@ -161,7 +171,7 @@ const npmGroovyLintRules = {
         range: {
             type: "function",
             func: (errLine, errItem) => {
-                return getStringRange(errLine, "else", errItem);
+                return getStringRangeMultiline(errLine, "else", errItem);
             }
         },
         fix: {
@@ -222,7 +232,7 @@ const npmGroovyLintRules = {
         range: {
             type: "function",
             func: (errLine, errItem) => {
-                return getStringRange(errLine, "else", errItem);
+                return getStringRange(errLine, "if", errItem);
             }
         },
         fix: {
@@ -379,21 +389,22 @@ const npmGroovyLintRules = {
     },
 
     // No use of Java.io classes
-    JavaIoPackageAccess: {
-        variables: [
-            {
-                name: "CLASSNAME",
-                regex: /The use of java.io.(.*) violates the Enterprise Java Bean specification/,
-                regexPos: 1
+    /*  NV: TODO: finalise for when there is several occurences of the string in the same line
+        JavaIoPackageAccess: {
+            variables: [
+                {
+                    name: "CLASSNAME",
+                    regex: /The use of java.io.(.*) violates the Enterprise Java Bean specification/,
+                    regexPos: 1
+                }
+            ],
+            range: {
+                type: "function",
+                func: (errLine, errItem, evaluatedVars) => {
+                    return getLastVariableRange(errLine, evaluatedVars, "CLASSNAME", errItem);
+                }
             }
-        ],
-        range: {
-            type: "function",
-            func: (errLine, errItem, evaluatedVars) => {
-                return getVariableRange(errLine, evaluatedVars, "CLASSNAME", errItem);
-            }
-        }
-    },
+        }, */
 
     // Too many methods in a class
     MethodCount: {
@@ -631,6 +642,23 @@ const npmGroovyLintRules = {
         }
     },
 
+    // Unnecessary toString()
+    UnnecessaryToString: {
+        priority: getPriority("UnnecessaryToString"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, ".toString()", errItem);
+            }
+        },
+        fix: {
+            type: "function",
+            func: line => {
+                return line.replace(".toString()");
+            }
+        }
+    },
+
     // Unused method parameter
     UnusedMethodParameter: {
         variables: [
@@ -688,6 +716,24 @@ function getStringRange(errLine, str, errItem) {
     };
 }
 
+function getStringRangeMultiline(allLines, str, errItem) {
+    let range = getDefaultRange(allLines, errItem);
+    let pos = errItem.line - 1;
+    let isFound = false;
+    while (isFound === false && pos < allLines.length) {
+        if (!isFound && allLines[pos].indexOf(str) > -1) {
+            const varStartPos = allLines[pos].indexOf(str)
+            range = {
+                start: { line: errItem.line, character: varStartPos },
+                end: { line: errItem.line, character: varStartPos + str.length }
+            }
+            isFound = true;
+        }
+        pos++;
+    }
+    return range;
+}
+
 function getLastStringRange(errLine, str, errItem) {
     const varStartPos = errLine.lastIndexOf(str);
     return {
@@ -701,25 +747,37 @@ function getVariableRange(errLine, evaluatedVars, variable, errItem) {
     return getStringRange(errLine, varValue, errItem);
 }
 
+/*
+function getLastVariableRange(errLine, evaluatedVars, variable, errItem) {
+    const varValue = getVariable(evaluatedVars, variable);
+    return getLastStringRange(errLine, varValue, errItem);
+}
+*/
+
 function findRangeBetweenStrings(allLines, errItem, strStart, strEnd) {
-    let range = {
-        start: { line: errItem.line, character: 0 },
-        end: { line: errItem.line, character: allLines[errItem.line - 1].length }
-    };
+    let range = getDefaultRange(allLines, errItem);
     let pos = errItem.line - 1;
     let isStartFound = false;
     let isEndFound = false;
     while ((isStartFound === false || isEndFound === false) && pos < allLines.length) {
         if (!isStartFound && allLines[pos].indexOf(strStart) > -1) {
-            range.start = { line: pos, character: allLines[pos].indexOf(strStart) };
+            range.start = { line: pos + 1, character: allLines[pos].indexOf(strStart) };
+            isStartFound = true;
         }
         if (!isEndFound && allLines[pos].indexOf(strEnd) > -1) {
-            range.end = { line: pos, character: allLines[pos].indexOf(strEnd) };
+            range.end = { line: pos + 1, character: allLines[pos].indexOf(strEnd) };
             isEndFound = true;
         }
         pos++;
     }
     return range;
+}
+
+function getDefaultRange(allLines, errItem) {
+    return {
+        start: { line: errItem.line, character: 0 },
+        end: { line: errItem.line, character: allLines[errItem.line - 1].length }
+    };
 }
 
 function isValidCodeLine(line) {
