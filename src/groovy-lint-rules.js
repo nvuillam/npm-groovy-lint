@@ -1,4 +1,58 @@
 // Additional definition for codenarc rules ( get position & available fix)
+
+// Rule Template:
+/*
+   RuleName: {
+        // add scope = "file" if the fix impacts more than the identified line (If fix defined)
+        scope: "file",
+        // Define a priority at the top of groovy-lint-rules.js (If fix defined)
+        priority: getPriority("RuleName"),
+        // Extract variables from CodeNarc error message (optional)
+        variables: [
+            {
+                name: "MYVAR",
+                regex: /The (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
+                regexPos: 1,
+                type: "number"
+            },
+            {
+                name: "MYOTHERVAR",
+                regex: /The (.*) is at the incorrect indent level: Expected column (.*) but was (.*)/,
+                regexPos: 2,
+            }
+        ],
+        // Return range for UI . Input: errorLine, errorItem, evaluated variables
+        range: {
+            type: "function",
+            func: (_errLine, errItem, evaluatedVars) => {
+                const myVar = getVariable(evaluatedVars, "MYVAR");
+                return {
+                    start: { line: errItem.line, character: 0 },
+                    end: { line: errItem.line, character: myVar.length }
+                };
+            }
+        },
+        // Fix if scope = file
+        fix: {
+            type: "function",
+            func: allLines => {
+                // update allLines here
+                return allLines;
+            }
+        },
+        // Fix if scope = line
+        fix: {
+            type: "function",
+            func: (line, evaluatedVars) => {
+                const myVar = getVariable(evaluatedVars, "MYOTHERVAR");
+                line = line.replace(myVar, 'whatever');
+                return line;
+            }
+        }
+    },
+
+*/
+
 "use strict";
 
 const decodeHtml = require("decode-html");
@@ -25,7 +79,7 @@ const rulesFixPriorityOrder = [
     // Rule that can change the numbers of lines, so they must be processed after line scope rules
 
     "IfStatementBraces",
-    "ElseStatementBraces",
+    "ElseBlocktBraces",
     "ConsecutiveBlankLines",
     "ClosingBraceNotAlone",
     "IndentationClosingBraces",
@@ -34,6 +88,16 @@ const rulesFixPriorityOrder = [
 ];
 
 const npmGroovyLintRules = {
+    // Braces for if else
+    BracesForIfElse: {
+        range: {
+            type: "function",
+            func: (_errLine, errItem, _evaluatedVars, allLines) => {
+                return findRangeBetweenStrings(allLines, errItem, "if", "{");
+            }
+        }
+    },
+
     // Closing brace not alone
     ClosingBraceNotAlone: {
         scope: "file",
@@ -50,10 +114,10 @@ const npmGroovyLintRules = {
         },
         fix: {
             type: "function",
-            func: fileLines => {
+            func: allLines => {
                 const newFileLines = [];
                 let prevLine = "";
-                for (const line of fileLines) {
+                for (const line of allLines) {
                     const newLine = line.replace("{{{NEWLINECLOSINGBRACE}}}", "");
                     const prevLineIndent = prevLine.search(/\S/);
                     newFileLines.push(newLine);
@@ -73,10 +137,10 @@ const npmGroovyLintRules = {
         priority: getPriority("ConsecutiveBlankLines"),
         fix: {
             type: "function",
-            func: fileLines => {
+            func: allLines => {
                 const newFileLines = [];
                 let prevLine = "none";
-                for (const line of fileLines) {
+                for (const line of allLines) {
                     if (!(line.trim() === "" && prevLine.trim() === "")) {
                         // Check if previous line is empty: if not do not add line
                         newFileLines.push(line);
@@ -88,19 +152,66 @@ const npmGroovyLintRules = {
         }
     },
 
+    // Missing else braces
+    ElseBlocktBraces: {
+        scope: "file",
+        unitary: true,
+        triggers: ["ClosingBraceNotAlone"],
+        priority: getPriority("ElseBlocktBraces"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, "else", errItem);
+            }
+        },
+        fix: {
+            type: "function",
+            func: (allLines, variables) => {
+                const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
+                // If next line is also a if/else, this rule can not autofix for now, it has to be done manually
+                if (allLines[lineNumber + 1] && lineNumber[lineNumber + 1].includes("else")) {
+                    return allLines;
+                }
+                let line = allLines[lineNumber];
+                line = line.trimEnd() + " {";
+                allLines[lineNumber] = line;
+                // next line
+                let match = false;
+                let pos = 0;
+                let level = 0;
+                while (!match && pos < allLines.length) {
+                    let nextLine = allLines[lineNumber + pos + 1];
+                    if (isValidCodeLine(nextLine) && level === 0) {
+                        if (!nextLine.trim().startsWith("if") && !nextLine.includes("{")) {
+                            nextLine = nextLine + "{{{NEWLINECLOSINGBRACE}}}";
+                            allLines[lineNumber + pos + 1] = nextLine;
+                            match = true;
+                        } else if (nextLine.includes("}") && !nextLine.includes("{")) {
+                            level--;
+                        } else {
+                            level++;
+                        }
+                    }
+                    pos++;
+                }
+                return allLines;
+            }
+        }
+    },
+
     // File ends without new line
     FileEndsWithoutNewline: {
         scope: "file",
         priority: getPriority("FileEndsWithoutNewline"),
         fix: {
             type: "function",
-            func: fileLines => {
-                return (fileLines.join("\r\n") + "\r\n").split("\r\n");
+            func: allLines => {
+                return (allLines.join("\r\n") + "\r\n").split("\r\n");
             }
         }
     },
 
-    // nvuillam: Not working, especially when embedded missing If statements ...
+    // nvuillam: Fix not working, especially when embedded missing If statements ...
     //   let's let people correct that manually for now :)
     // Missing if braces
     IfStatementBraces: {
@@ -108,28 +219,34 @@ const npmGroovyLintRules = {
         unitary: true,
         triggers: ["ClosingBraceNotAlone"],
         priority: getPriority("IfStatementBraces"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, "else", errItem);
+            }
+        },
         fix: {
             type: "function",
-            func: (fileLines, variables) => {
+            func: (allLines, variables) => {
                 const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
                 // If next line is also a if/else, this rule can not autofix for now, it has to be done manually
-                if (fileLines[lineNumber + 1] && (fileLines[lineNumber + 1].includes("if") || fileLines[lineNumber + 1].includes("else"))) {
-                    return fileLines;
+                if (allLines[lineNumber + 1] && (allLines[lineNumber + 1].includes("if") || allLines[lineNumber + 1].includes("else"))) {
+                    return allLines;
                 }
                 // If line
-                let line = fileLines[lineNumber];
+                let line = allLines[lineNumber];
                 line = line.trimEnd() + " {";
-                fileLines[lineNumber] = line;
+                allLines[lineNumber] = line;
                 // next line
                 let match = false;
                 let pos = 0;
                 let level = 0;
-                while (!match && pos < fileLines.length) {
-                    let nextLine = fileLines[lineNumber + pos + 1];
+                while (!match && pos < allLines.length) {
+                    let nextLine = allLines[lineNumber + pos + 1];
                     if (isValidCodeLine(nextLine) && level === 0) {
                         if (!nextLine.trim().startsWith("if") && !nextLine.includes("{")) {
                             nextLine = nextLine + "{{{NEWLINECLOSINGBRACE}}}";
-                            fileLines[lineNumber + pos + 1] = nextLine;
+                            allLines[lineNumber + pos + 1] = nextLine;
                             match = true;
                         } else if (nextLine.includes("}") && !nextLine.includes("{")) {
                             level--;
@@ -139,48 +256,7 @@ const npmGroovyLintRules = {
                     }
                     pos++;
                 }
-                return fileLines;
-            }
-        }
-    },
-
-    // Missing else braces
-    ElseStatementBraces: {
-        scope: "file",
-        unitary: true,
-        triggers: ["ClosingBraceNotAlone"],
-        priority: getPriority("ElseStatementBraces"),
-        fix: {
-            type: "function",
-            func: (fileLines, variables) => {
-                const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
-                // If next line is also a if/else, this rule can not autofix for now, it has to be done manually
-                if (fileLines[lineNumber + 1] && (lineNumber[lineNumber + 1].includes("if") || lineNumber[lineNumber + 1].includes("else"))) {
-                    return fileLines;
-                }
-                let line = fileLines[lineNumber];
-                line = line.trimEnd() + " {";
-                fileLines[lineNumber] = line;
-                // next line
-                let match = false;
-                let pos = 0;
-                let level = 0;
-                while (!match && pos < fileLines.length) {
-                    let nextLine = fileLines[lineNumber + pos + 1];
-                    if (isValidCodeLine(nextLine) && level === 0) {
-                        if (!nextLine.trim().startsWith("if") && !nextLine.includes("{")) {
-                            nextLine = nextLine + "{{{NEWLINECLOSINGBRACE}}}";
-                            fileLines[lineNumber + pos + 1] = nextLine;
-                            match = true;
-                        } else if (nextLine.includes("}") && !nextLine.includes("{")) {
-                            level--;
-                        } else {
-                            level++;
-                        }
-                    }
-                    pos++;
-                }
-                return fileLines;
+                return allLines;
             }
         }
     },
@@ -234,18 +310,18 @@ const npmGroovyLintRules = {
         priority: getPriority("IndentationComments"),
         fix: {
             type: "function",
-            func: fileLines => {
+            func: allLines => {
                 const newFileLines = [];
-                for (let i = 0; i < fileLines.length; i++) {
-                    let line = fileLines[i];
+                for (let i = 0; i < allLines.length; i++) {
+                    let line = allLines[i];
                     // Detect comment line
                     if (line.trimStart().startsWith("//")) {
                         // Find indentation of next line (which is not blank or a comment)
                         let j = 1;
                         let nextLineIndent = null;
-                        while (fileLines[i + j] && nextLineIndent == null) {
-                            if (!/^\s*$/.test(fileLines[i + j]) && !fileLines[i + j].trimStart().startsWith("//")) {
-                                nextLineIndent = fileLines[i + j].search(/\S/); // find first non blank character
+                        while (allLines[i + j] && nextLineIndent == null) {
+                            if (!/^\s*$/.test(allLines[i + j]) && !allLines[i + j].trimStart().startsWith("//")) {
+                                nextLineIndent = allLines[i + j].search(/\S/); // find first non blank character
                             }
                             j++;
                         }
@@ -267,18 +343,18 @@ const npmGroovyLintRules = {
         priority: getPriority("IndentationClosingBraces"),
         fix: {
             type: "function",
-            func: fileLines => {
+            func: allLines => {
                 const newFileLines = [];
-                for (let i = 0; i < fileLines.length; i++) {
-                    let line = fileLines[i] + "";
+                for (let i = 0; i < allLines.length; i++) {
+                    let line = allLines[i] + "";
                     // Detect closing brace line
                     if (line.trim() === "}") {
                         // Find indentation of matching brace (CodeNarc Indentation rule does not always work well :/ )
                         let j = 1;
                         let matchingLineIndent = null;
                         let level = 1;
-                        while ((fileLines[i - j] || fileLines[i - j] === "") && matchingLineIndent == null) {
-                            const prevLine = fileLines[i - j];
+                        while ((allLines[i - j] || allLines[i - j] === "") && matchingLineIndent == null) {
+                            const prevLine = allLines[i - j];
                             if (prevLine.includes("}") && !prevLine.includes("${")) {
                                 level++;
                             }
@@ -302,16 +378,60 @@ const npmGroovyLintRules = {
         }
     },
 
+    // No use of Java.io classes
+    JavaIoPackageAccess: {
+        variables: [
+            {
+                name: "CLASSNAME",
+                regex: /The use of java.io.(.*) violates the Enterprise Java Bean specification/,
+                regexPos: 1
+            }
+        ],
+        range: {
+            type: "function",
+            func: (errLine, errItem, evaluatedVars) => {
+                return getVariableRange(errLine, evaluatedVars, "CLASSNAME", errItem);
+            }
+        }
+    },
+
+    // Too many methods in a class
+    MethodCount: {
+        variables: [
+            {
+                name: "CLASSNAME",
+                regex: /Class (.*) has 52 methods/,
+                regexPos: 1
+            }
+        ],
+        range: {
+            type: "function",
+            func: (errLine, errItem, evaluatedVars) => {
+                return getVariableRange(errLine, evaluatedVars, "CLASSNAME", errItem);
+            }
+        }
+    },
+
+    // No use of Java.util.date
+    NoJavaUtilDate: {
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, "Date", errItem);
+            }
+        }
+    },
+
     // No tab character
     NoTabCharacter: {
         scope: "file",
         priority: getPriority("NoTabCharacter"),
         fix: {
             type: "function",
-            func: fileLines => {
+            func: allLines => {
                 const newFileLines = [];
                 const replaceChars = " ".repeat(indentLength);
-                for (const line of fileLines) {
+                for (const line of allLines) {
                     newFileLines.push(line.replace(/\t/g, replaceChars));
                 }
                 return newFileLines;
@@ -321,6 +441,12 @@ const npmGroovyLintRules = {
 
     // Space after catch
     SpaceAfterCatch: {
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, "){", errItem);
+            }
+        },
         priority: getPriority("SpaceAfterCatch"),
         fix: {
             type: "replaceString",
@@ -332,6 +458,12 @@ const npmGroovyLintRules = {
     // Space after opening brace
     SpaceAfterOpeningBrace: {
         priority: getPriority("SpaceAfterOpeningBrace"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, "{", errItem);
+            }
+        },
         fix: {
             type: "function",
             func: line => {
@@ -353,6 +485,12 @@ const npmGroovyLintRules = {
                 regex: /The operator "(.*)" within class (.*) is not (.*) by a space or whitespace/
             }
         ],
+        range: {
+            type: "function",
+            func: (errLine, errItem, evaluatedVars) => {
+                return getVariableRange(errLine, evaluatedVars, "OPERATOR", errItem);
+            }
+        },
         fix: {
             type: "function",
             func: (line, evaluatedVars) => {
@@ -369,6 +507,12 @@ const npmGroovyLintRules = {
     // Add space after a comma
     SpaceAfterComma: {
         priority: getPriority("SpaceAfterComma"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, ",", errItem);
+            }
+        },
         fix: {
             type: "function",
             func: line => {
@@ -380,6 +524,12 @@ const npmGroovyLintRules = {
     // Space before opening brace
     SpaceBeforeOpeningBrace: {
         priority: getPriority("SpaceBeforeOpeningBrace"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, "{", errItem);
+            }
+        },
         fix: {
             type: "function",
             func: line => {
@@ -392,9 +542,29 @@ const npmGroovyLintRules = {
         }
     },
 
+    // System.exit forbidden
+    SystemExit: {
+        range: {
+            type: "function",
+            func: (errLine, errItem, evaluatedVars) => {
+                return getVariableRange(errLine, evaluatedVars, "System.exit", errItem);
+            }
+        }
+    },
+
     // Trailing Whitespaces
     TrailingWhitespace: {
         priority: getPriority("TrailingWhitespace"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                const diff = errLine.length - errLine.trimEnd().length;
+                return {
+                    start: { line: errItem.line, character: errLine.length - diff },
+                    end: { line: errItem.line, character: errLine.length }
+                };
+            }
+        },
         fix: {
             type: "function",
             func: line => {
@@ -406,6 +576,12 @@ const npmGroovyLintRules = {
     // Unnecessary def in field declaration (statif def)
     UnnecessaryDefInFieldDeclaration: {
         priority: getPriority("UnnecessaryDefInFieldDeclaration"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getStringRange(errLine, "def", errItem);
+            }
+        },
         fix: {
             type: "replaceString",
             before: "def ",
@@ -422,6 +598,12 @@ const npmGroovyLintRules = {
                 regex: /The String '(.*)' can be wrapped in single quotes instead of double quotes/
             }
         ],
+        range: {
+            type: "function",
+            func: (errLine, errItem, evaluatedVars) => {
+                return getVariableRange(errLine, evaluatedVars, "STRING", errItem);
+            }
+        },
         fix: {
             type: "replaceString",
             before: '"{{STRING}}"',
@@ -432,17 +614,42 @@ const npmGroovyLintRules = {
     // Unnecessary semi colon at the end of a line
     UnnecessarySemicolon: {
         priority: getPriority("UnnecessarySemicolon"),
+        range: {
+            type: "function",
+            func: (errLine, errItem) => {
+                return getLastStringRange(errLine, ";", errItem);
+            }
+        },
         fix: {
             type: "function",
             func: line => {
-                return line.split(";").join("");
+                if ((line.match(/;/g) || []).length === 1) {
+                    line = line.split(";").join("");
+                }
+                return line;
+            }
+        }
+    },
+
+    // Unused method parameter
+    UnusedMethodParameter: {
+        variables: [
+            {
+                name: "PARAMNAME",
+                regex: /Violation in class (.*) Method parameter \[(.*)\] is never referenced in the method (.*) of class (.*)/,
+                regexPos: 2
+            }
+        ],
+        range: {
+            type: "function",
+            func: (errLine, errItem, evaluatedVars) => {
+                return getVariableRange(errLine, evaluatedVars, "PARAMNAME", errItem);
             }
         }
     },
 
     // Unused variable
     UnusedVariable: {
-        priority: getPriority("UnusedVariable"),
         variables: [
             {
                 name: "VARNAME",
@@ -452,12 +659,7 @@ const npmGroovyLintRules = {
         range: {
             type: "function",
             func: (errLine, errItem, evaluatedVars) => {
-                const varName = getVariable(evaluatedVars, "VARNAME");
-                const varStartPos = errLine.indexOf(varName);
-                return {
-                    start: { line: errItem.line, character: varStartPos },
-                    end: { line: errItem.line, character: varStartPos + varName.length }
-                };
+                return getVariableRange(errLine, evaluatedVars, "VARNAME", errItem);
             }
         }
     }
@@ -476,6 +678,48 @@ function getVariable(evaluatedVars, name, optns = { mandatory: true, decodeHtml:
     } else {
         return null;
     }
+}
+
+function getStringRange(errLine, str, errItem) {
+    const varStartPos = errLine.indexOf(str);
+    return {
+        start: { line: errItem.line, character: varStartPos },
+        end: { line: errItem.line, character: varStartPos + str.length }
+    };
+}
+
+function getLastStringRange(errLine, str, errItem) {
+    const varStartPos = errLine.lastIndexOf(str);
+    return {
+        start: { line: errItem.line, character: varStartPos },
+        end: { line: errItem.line, character: varStartPos + str.length }
+    };
+}
+
+function getVariableRange(errLine, evaluatedVars, variable, errItem) {
+    const varValue = getVariable(evaluatedVars, variable);
+    return getStringRange(errLine, varValue, errItem);
+}
+
+function findRangeBetweenStrings(allLines, errItem, strStart, strEnd) {
+    let range = {
+        start: { line: errItem.line, character: 0 },
+        end: { line: errItem.line, character: allLines[errItem.line - 1].length }
+    };
+    let pos = errItem.line - 1;
+    let isStartFound = false;
+    let isEndFound = false;
+    while ((isStartFound === false || isEndFound === false) && pos < allLines.length) {
+        if (!isStartFound && allLines[pos].indexOf(strStart) > -1) {
+            range.start = { line: pos, character: allLines[pos].indexOf(strStart) };
+        }
+        if (!isEndFound && allLines[pos].indexOf(strEnd) > -1) {
+            range.end = { line: pos, character: allLines[pos].indexOf(strEnd) };
+            isEndFound = true;
+        }
+        pos++;
+    }
+    return range;
 }
 
 function isValidCodeLine(line) {
