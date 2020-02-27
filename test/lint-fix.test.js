@@ -6,7 +6,7 @@ const fse = require("fs-extra");
 
 describe('TEST npm-groovy-lint fixes with API', function () {
 
-    it('(API) should lint then fix only a list of errors', async () => {
+    it('(API:source) should lint then fix only a list of errors', async () => {
         const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -22,14 +22,14 @@ describe('TEST npm-groovy-lint fixes with API', function () {
         errIdList = errIdList.slice(0, 5);
         await linter.fixErrors(errIdList);
 
-        assert(linter.status === 0 &&
-            linter.lintResult.summary.fixedErrorsNumber >= 5 && // can be more than the five sent errors, as there are other triggered fixes
-            linter.lintResult.files[0].updatedSource &&
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.lintResult.summary.fixedErrorsNumber >= 5, 'Errors have been fixed'); // can be more than the five sent errors, as there are other triggered fixes
+        assert(linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
-            'Script failure');
+            'Source has been updated');
     });
 
-    it('(API) should lint and fix with source only (one shot)', async () => {
+    it('(API:source) should lint and fix (one shot)', async () => {
         const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -41,13 +41,16 @@ describe('TEST npm-groovy-lint fixes with API', function () {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 &&
-            linter.lintResult.files[0].updatedSource &&
+
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.lintResult.summary.fixedErrorsNumber >= 5, 'Errors have been fixed');
+        assert(linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
-            'Script failure');
+            'Source has been updated');
     });
 
-    it('(API) should lit and fix a Jenkinsfile in one shot', async function () {
+    it('(API:file) should lit and fix a Jenkinsfile in one shot', async function () {
+        const prevFileContent = fse.readFileSync('./jdeploy-bundle/lib/example/Jenkinsfile').toString();
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -58,13 +61,18 @@ describe('TEST npm-groovy-lint fixes with API', function () {
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
         }).run();
-        assert(linter.status === 0 && linter.fixer && linter.fixer.fixedErrorsNumber > 0, 'Script failure');
-        assert(fse.existsSync('npm-groovy-fix-log.json'), 'Output json file not found');
+
+        assert(linter.status === 0, "status is 0");
+        assert(linter.lintResult.summary.fixedErrorsNumber > 0, 'Error have been fixed');
+        assert(linter.lintResult.files[Object.keys(linter.lintResult.files)[0]].updatedSource !== prevFileContent,
+            'File content has been updated');
+        assert(fse.existsSync('npm-groovy-fix-log.json'), 'Output json file has been produced');
+
         fse.removeSync('npm-groovy-fix-log.json');
-    }).timeout(60000);
+    }).timeout(120000);
 
 
-    it('(API) should fix only some errors', async function () {
+    it('(API:file) should fix only some errors', async function () {
         const allRules = [
             // Line rules or not changing line rules
             "NoTabCharacter", // ok
@@ -97,12 +105,14 @@ describe('TEST npm-groovy-lint fixes with API', function () {
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
         }).run();
-        assert(linter.status === 0 && linter.fixer && linter.fixer.fixedErrorsNumber > 0, 'Script failure');
-        assert(fse.existsSync('npm-groovy-fix-log.txt'), 'Output txt file not found')
-        //fse.removeSync('npm-groovy-fix-log.txt');
+
+        assert(linter.status === 0 && linter.lintResult.summary.fixedErrorsNumber > 0, 'Errors have been fixed');
+        assert(fse.existsSync('npm-groovy-fix-log.txt'), 'Output txt file produced');
+
+        fse.removeSync('npm-groovy-fix-log.txt');
     }).timeout(60000);
 
-    it('(API) should fix groovy files', async function () {
+    it('(API:file) should fix groovy files', async function () {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -113,9 +123,12 @@ describe('TEST npm-groovy-lint fixes with API', function () {
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
         }).run();
-        assert(linter.status === 0 && linter.fixer && linter.fixer.fixedErrorsNumber > 0, 'Script failure');
-        assert(fse.existsSync('npm-groovy-fix-log.txt'), 'Output txt file not found')
-        //fse.removeSync('npm-groovy-fix-log.txt');
-    }).timeout(60000);
+
+        assert(linter.status === 0, "Status is 0");
+        assert(linter.lintResult.summary.fixedErrorsNumber > 0, 'Errors have been fixed');
+        assert(fse.existsSync('npm-groovy-fix-log.txt'), 'Output txt file produced');
+
+        fse.removeSync('npm-groovy-fix-log.txt');
+    }).timeout(120000);
 
 });

@@ -7,7 +7,7 @@ const fse = require("fs-extra");
 const exec = util.promisify(require("child_process").exec);
 
 describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
-    it('(EXE) should generate text console output', async () => {
+    it('(EXE:file) should generate text console output', async () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',
             '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
@@ -17,7 +17,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
         assert(stdout && stdout.includes('warning'), 'Script failure');
     });
-    it('(EXE) should generate json console output', async () => {
+    it('(EXE:file) should generate json console output', async () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',
             '--rulesets', '"Groovy"',
@@ -27,7 +27,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
         assert(stdout && stdout.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
     });
 
-    it('(EXE) should generate codenarc HTML file report', async () => {
+    it('(EXE:file) should generate codenarc HTML file report', async () => {
         const params = [
             '--codenarcargs',
             '-basedir="jdeploy-bundle/lib/example"',
@@ -40,7 +40,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
         fse.removeSync('ReportTestCodenarc.html');
     });
 
-    it('(EXE) should generate codenarc XML file report', async () => {
+    it('(EXE:file) should generate codenarc XML file report', async () => {
         const params = [
             '--codenarcargs',
             '-basedir="jdeploy-bundle/lib/example"',
@@ -53,7 +53,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
         //       fse.removeSync('ReportTestCodenarc.xml');
     });
 
-    it('(EXE) should run on a Jenkinsfile', async () => {
+    it('(EXE:file) should run on a Jenkinsfile', async () => {
         const params = [
             '--path', ' "jdeploy-bundle/lib/example"',
             '-r', '"Jenkinsfile"',
@@ -62,7 +62,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
         assert(stdout && stdout.includes('warning'), 'Script failure');
     });
 
-    it('(EXE) should show npm-groovy-lint help', async () => {
+    it('(EXE:help) should show npm-groovy-lint help', async () => {
         const params = [
             '-h'
         ];
@@ -70,7 +70,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
         assert(stdout.includes('-v, --verbose'), 'Script failure');
     });
 
-    it('(EXE) should show codenarc help', async () => {
+    it('(EXE:help) should show codenarc help', async () => {
         const params = [
             '--codenarcargs',
             '-help'
