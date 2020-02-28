@@ -53,7 +53,7 @@ module.exports = optionator({
             alias: "r",
             type: "String",
             description:
-                "RuleSet file(s) to use for linting. If it is a directory, all rulesets will be used. RuleSet file definition: http://codenarc.sourceforge.net/codenarc-creating-ruleset.html. If not specified, npm-groovy-script default one will be used",
+                "RuleSet file(s) to use for linting. If it is a directory, all rulesets will be used. RuleSet file definition: http://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html. If not specified, npm-groovy-script default one will be used",
             example: ["./config/codenarc/RuleSet-Custom.groovy", "./path/to/my/ruleset/files"]
         },
         {
@@ -129,7 +129,7 @@ module.exports = optionator({
             example:
                 'npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml',
             description:
-                "Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored). Doc: http://codenarc.sourceforge.net/codenarc-command-line.html"
+                "Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored). Doc: http://codenarc.github.io/CodeNarc/codenarc-command-line.html"
         },
         {
             option: "help",

@@ -1,4 +1,4 @@
-// More info there : http://codenarc.sourceforge.net/codenarc-creating-ruleset.html
+// More info there : http://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html
 
 ruleset {
 

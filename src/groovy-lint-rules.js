@@ -722,11 +722,11 @@ function getStringRangeMultiline(allLines, str, errItem) {
     let isFound = false;
     while (isFound === false && pos < allLines.length) {
         if (!isFound && allLines[pos].indexOf(str) > -1) {
-            const varStartPos = allLines[pos].indexOf(str)
+            const varStartPos = allLines[pos].indexOf(str);
             range = {
                 start: { line: errItem.line, character: varStartPos },
                 end: { line: errItem.line, character: varStartPos + str.length }
-            }
+            };
             isFound = true;
         }
         pos++;
