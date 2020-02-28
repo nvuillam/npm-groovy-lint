@@ -9,6 +9,8 @@
 - Run lint again after fix all errors, to get updated lintResult
 - Add gitattributes to normalized line-endings (thanks [docwhat](https://github.com/docwhat))
 - API: fix only some errors after an initial lint (better perfs)
+- Return error range in files for some rules in JSON or API result (will be useful for the VsCode extension currently developed)
+- Define range function for existing rules, new fixable rules
 
 ## [2.0.1] - 2020-02-21
 
