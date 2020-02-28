@@ -74,6 +74,11 @@ Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your
     $ npm-groovy-lint --rulesets Groovy --output json
 ```
 
+- Advanced config
+```
+    $ npm-groovy-lint --path "./path/to/my/groovy/files" --files "**/*.groovy" --rulesets "./config/codenarc/RuleSet-Custom.groovy" --loglevel warning --output txt
+```
+
 - Lint using core CodeNarc parameters and generate HTML report file
 
 ```
