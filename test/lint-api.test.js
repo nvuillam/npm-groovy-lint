@@ -6,7 +6,7 @@ const fse = require("fs-extra");
 
 describe('TEST npm-groovy-lint using API', () => {
 
-    it('(API) should generate text console output', async () => {
+    it('(API:file) should generate text console output', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -18,10 +18,13 @@ describe('TEST npm-groovy-lint using API', () => {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        assert(linter.status === 0 && linter.nglOutputString.includes('warning'), 'Script failure');
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.nglOutputString.includes('warning'), 'Output string contains warning');
+        assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
+        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, 'Infos found');
     });
 
-    it('(API) should generate json output', async () => {
+    it('(API:file) should generate json output', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -33,9 +36,11 @@ describe('TEST npm-groovy-lint using API', () => {
         ],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
         assert(linter.status === 0 && linter.nglOutputString.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
+        assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
+        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, 'Infos found');
     });
 
-    it('(API) should generate codenarc HTML file report', async () => {
+    it('(API:file) should generate codenarc HTML file report', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -43,11 +48,13 @@ describe('TEST npm-groovy-lint using API', () => {
             '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-All.groovy"',
             '--output', 'ReportTestCodenarc.html'],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
-        assert(linter.status === 0 && fse.existsSync('ReportTestCodenarc.html'), 'Script failure');
+
+        assert(linter.status === 0 && fse.existsSync('ReportTestCodenarc.html'), 'CodeNarc HTML report generated');
+
         fse.removeSync('ReportTestCodenarc.html');
     });
 
-    it('(API) should use --codenarcargs to generate XML report', async () => {
+    it('(API:file) should use --codenarcargs to generate XML report', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -58,11 +65,13 @@ describe('TEST npm-groovy-lint using API', () => {
             '-maxPriority1Violations=0',
             '-report="xml:ReportTestCodenarc.xml"'],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
-        assert(linter.status === 0 && fse.existsSync('ReportTestCodenarc.xml'), 'Script failure');
+
+        assert(linter.status === 0 && fse.existsSync('ReportTestCodenarc.xml'), 'XML CodeNarc report has been generated');
+
         fse.removeSync('ReportTestCodenarc.xml');
     });
 
-    it('(API) should run on a Jenkinsfile', async () => {
+    it('(API:file) should run on a Jenkinsfile', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -74,10 +83,12 @@ describe('TEST npm-groovy-lint using API', () => {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        assert(linter.status === 0 && linter.nglOutputString.includes('warning'), 'Script failure');
+        assert(linter.status === 0 && linter.nglOutputString.includes('warning'), 'Output string contains warning');
+        assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
+        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, 'Infos found');
     });
 
-    it('(API) should show npm-groovy-lint help', async () => {
+    it('(API:help) should show npm-groovy-lint help', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -88,17 +99,18 @@ describe('TEST npm-groovy-lint using API', () => {
     });
 
 
-    it('(API) should show npm-groovy-lint help option', async () => {
+    it('(API:help) should show npm-groovy-lint help option', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '-h', 'source'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 && linter.nglOutputString.includes('-s, --source'));
+
+        assert(linter.status === 0 && linter.nglOutputString.includes('-s, --source'), 'npm-groovy-lint Help is displayed');
     });
 
-    it('(API) should show codenarc help', async () => {
+    it('(API:help) should show codenarc help', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -106,11 +118,11 @@ describe('TEST npm-groovy-lint using API', () => {
             '-help'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 && linter.codeNarcStdOut.includes('where OPTIONS are zero or more command-line options'), 'Script failure');
+        assert(linter.status === 0 && linter.codeNarcStdOut.includes('where OPTIONS are zero or more command-line options'), 'CodeNarc help is displayed');
     });
 
 
-    it('(API) should run with source only', async () => {
+    it('(API:source) should run with source only', async () => {
         const npmGroovyLintConfig = {
             source: fse.readFileSync('lib/example/SampleFile.groovy').toString(),
             output: 'none',
@@ -120,7 +132,7 @@ describe('TEST npm-groovy-lint using API', () => {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 && linter.lintResult.files[0].errors.length > 0, 'Script failure');
+        assert(linter.status === 0 && linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
     });
 
 

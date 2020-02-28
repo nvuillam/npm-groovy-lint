@@ -72,7 +72,7 @@ class NpmGroovyLint {
             save: this.tmpGroovyFileName ? false : true
         });
         await this.fixer.run(errorIds);
-        this.lintResult = this.mergeResults(this.lintResult, this.fixer.updatedLintResult);
+        this.lintResult = this.fixer.updatedLintResult;
     }
 
     // Actions before call to CodeNarc
@@ -257,7 +257,7 @@ class NpmGroovyLint {
         else {
             // Parse XML result as js object
             this.lintResult = await this.parseCodeNarcResult();
-            // Fix when possible
+            // Fix all found errors if requested
             if (this.options.fix) {
                 this.fixer = new NpmGroovyLintFix(this.lintResult, {
                     verbose: this.options.verbose,
@@ -297,9 +297,9 @@ class NpmGroovyLint {
         const pcgkSummary = tempXmlFileContent.CodeNarc.PackageSummary[0]["$"];
         result.summary.totalFilesWithErrorsNumber = parseInt(pcgkSummary.filesWithViolations, 10);
         result.summary.totalFilesLinted = parseInt(pcgkSummary.totalFiles, 10);
-        result.summary.totalErrorNumber = parseInt(pcgkSummary.priority1, 10);
-        result.summary.totalWarningNumber = parseInt(pcgkSummary.priority2, 10);
-        result.summary.totalInfoNumber = parseInt(pcgkSummary.priority3, 10);
+        result.summary.totalFoundErrorNumber = parseInt(pcgkSummary.priority1, 10);
+        result.summary.totalFoundWarningNumber = parseInt(pcgkSummary.priority2, 10);
+        result.summary.totalFoundInfoNumber = parseInt(pcgkSummary.priority3, 10);
 
         // Parse files & violations
         const files = {};
@@ -390,34 +390,38 @@ class NpmGroovyLint {
     mergeResults(initialResults, afterFixResults) {
         const updatedResults = JSON.parse(JSON.stringify(initialResults));
 
+        // Pipes because variable content depends that if we run linter after fix or not
         // Reset properties and update counters
         updatedResults.files = {};
-        updatedResults.summary.totalErrorNumber = afterFixResults.summary.totalErrorNumber;
-        updatedResults.summary.totalWarningNumber = afterFixResults.summary.totalWarningNumber;
-        updatedResults.summary.totalInfoNumber = afterFixResults.summary.totalInfoNumber;
-        updatedResults.summary.totalFixedErrorNumber = afterFixResults.summary.totalFixedErrorNumber;
-        updatedResults.summary.totalFixedWarningNumber = afterFixResults.summary.totalFixedWarningNumber;
-        updatedResults.summary.totalFixedInfoNumber = afterFixResults.summary.totalFixedInfoNumber;
-
-        updatedResults.summary.fixedErrorsNumber = afterFixResults.summary.fixedErrorsNumber;
-        updatedResults.summary.fixedErrorsIds = afterFixResults.summary.fixedErrorsIds;
+        updatedResults.summary.totalFoundErrorNumber = afterFixResults.summary.totalFoundErrorNumber;
+        updatedResults.summary.totalFoundWarningNumber = afterFixResults.summary.totalFoundWarningNumber;
+        updatedResults.summary.totalFoundInfoNumber = afterFixResults.summary.totalFoundInfoNumber;
+        updatedResults.summary.totalFixedErrorNumber = initialResults.summary.totalFixedErrorNumber;
+        updatedResults.summary.totalFixedWarningNumber = initialResults.summary.totalFixedWarningNumber;
+        updatedResults.summary.totalFixedInfoNumber = initialResults.summary.totalFixedInfoNumber;
 
         // Remove not fixed errors from initial result and add remaining errors of afterfixResults
-        // Pipes because variable content depends that if we run linter after fix or not
+        let fixedErrorsNumber = 0;
+        const fixedErrorsIds = [];
         for (const fileNm of Object.keys(initialResults.files)) {
             const initialResfileErrors = initialResults.files[fileNm].errors;
             const afterFixResfileErrors = afterFixResults.files[fileNm].errors;
             const fileDtl = {
                 errors: afterFixResfileErrors,
-                updatedSource: afterFixResults.files[fileNm].updatedSource || initialResults.files[fileNm].updatedSource
+                updatedSource: initialResults.files[fileNm].updatedSource
             };
             for (const initialFileError of initialResfileErrors) {
                 if (initialFileError.fixed) {
+                    fixedErrorsNumber++;
+                    fixedErrorsIds.push(initialFileError.id);
                     fileDtl.errors.push(initialFileError);
                 }
             }
             updatedResults.files[fileNm] = fileDtl;
         }
+        updatedResults.summary.fixedErrorsNumber = fixedErrorsNumber;
+        updatedResults.summary.fixedErrorsIds = fixedErrorsIds;
+
         return updatedResults;
     }
 
@@ -470,19 +474,19 @@ class NpmGroovyLint {
             // Summary table
             const errorTableLine = {
                 Severity: "Error",
-                "Total found": this.lintResult.summary.totalErrorNumber,
+                "Total found": this.lintResult.summary.totalFoundErrorNumber,
                 "Total fixed": this.lintResult.summary.totalFixedErrorNumber,
                 "Total remaining": this.lintResult.summary.totalRemainingErrorNumber
             };
             const warningTableLine = {
                 Severity: "Warning",
-                "Total found": this.lintResult.summary.totalWarningNumber,
+                "Total found": this.lintResult.summary.totalFoundWarningNumber,
                 "Total fixed": this.lintResult.summary.totalFixedWarningNumber,
                 "Total remaining": this.lintResult.summary.totalRemainingWarningNumber
             };
             const infoTableLine = {
                 Severity: "Info",
-                "Total found": this.lintResult.summary.totalInfoNumber,
+                "Total found": this.lintResult.summary.totalFoundInfoNumber,
                 "Total fixed": this.lintResult.summary.totalFixedInfoNumber,
                 "Total remaining": this.lintResult.summary.totalRemainingInfoNumber
             };

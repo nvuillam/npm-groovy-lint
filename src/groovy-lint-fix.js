@@ -32,7 +32,10 @@ class NpmGroovyLintFix {
             this.fixRules = this.options.fixrules.split(",");
         }
 
-        // Initialize fix counters
+        // Initialize counters
+        this.updatedLintResult.summary.totalFoundErrorNumber = this.updatedLintResult.summary.totalFoundErrorNumber || 0;
+        this.updatedLintResult.summary.totalFoundWarningNumber = this.updatedLintResult.summary.totalFoundWarningNumber || 0;
+        this.updatedLintResult.summary.totalFoundInfoNumber || this.updatedLintResult.summary.totalFoundInfoNumber || 0;
         this.updatedLintResult.summary.totalFixedErrorNumber = this.updatedLintResult.summary.totalFixedErrorNumber || 0;
         this.updatedLintResult.summary.totalFixedWarningNumber = this.updatedLintResult.summary.totalFixedWarningNumber || 0;
         this.updatedLintResult.summary.totalFixedInfoNumber || this.updatedLintResult.summary.totalFixedInfoNumber || 0;
@@ -256,11 +259,11 @@ class NpmGroovyLintFix {
     updateResultCounters() {
         // Build remaining errors number if a fix has been performed
         this.updatedLintResult.summary.totalRemainingErrorNumber =
-            this.updatedLintResult.summary.totalErrorNumber - this.updatedLintResult.summary.totalFixedErrorNumber;
+            this.updatedLintResult.summary.totalFoundErrorNumber - this.updatedLintResult.summary.totalFixedErrorNumber;
         this.updatedLintResult.summary.totalRemainingWarningNumber =
-            this.updatedLintResult.summary.totalWarningNumber - this.updatedLintResult.summary.totalFixedWarningNumber;
+            this.updatedLintResult.summary.totalFoundWarningNumber - this.updatedLintResult.summary.totalFixedWarningNumber;
         this.updatedLintResult.summary.totalRemainingInfoNumber =
-            this.updatedLintResult.summary.totalInfoNumber - this.updatedLintResult.summary.totalFixedInfoNumber;
+            this.updatedLintResult.summary.totalFoundInfoNumber - this.updatedLintResult.summary.totalFixedInfoNumber;
 
         // Return list of fixed error ids
         this.updatedLintResult.summary.fixedErrorsNumber = this.fixedErrorsNumber;
