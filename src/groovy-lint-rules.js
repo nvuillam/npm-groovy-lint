@@ -34,6 +34,7 @@
         },
         // Fix if scope = file
         fix: {
+            label: "Label of the fix",
             type: "function",
             func: allLines => {
                 // update allLines here
@@ -42,6 +43,7 @@
         },
         // Fix if scope = line
         fix: {
+            label: "Label of the fix",
             type: "function",
             func: (line, evaluatedVars) => {
                 const myVar = getVariable(evaluatedVars, "MYOTHERVAR");
@@ -146,6 +148,7 @@ const npmGroovyLintRules = {
         scope: "file",
         priority: getPriority("ConsecutiveBlankLines"),
         fix: {
+            label: "Remove consecutive blank lines",
             type: "function",
             func: allLines => {
                 const newFileLines = [];
@@ -163,7 +166,7 @@ const npmGroovyLintRules = {
     },
 
     // Missing else braces
-    ElseBlocktBraces: {
+    ElseBlockBraces: {
         scope: "file",
         unitary: true,
         triggers: ["ClosingBraceNotAlone"],
@@ -175,6 +178,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Add braces",
             type: "function",
             func: (allLines, variables) => {
                 const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
@@ -214,6 +218,7 @@ const npmGroovyLintRules = {
         scope: "file",
         priority: getPriority("FileEndsWithoutNewline"),
         fix: {
+            label: "Add new line at the end of file",
             type: "function",
             func: allLines => {
                 return (allLines.join("\r\n") + "\r\n").split("\r\n");
@@ -236,6 +241,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Add if statement braces",
             type: "function",
             func: (allLines, variables) => {
                 const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
@@ -299,6 +305,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Fix indentation",
             type: "function",
             func: (line, evaluatedVars) => {
                 const expectedCol = parseInt(getVariable(evaluatedVars, "EXPECTED", { mandatory: true, line: line }), 10);
@@ -319,6 +326,7 @@ const npmGroovyLintRules = {
         scope: "file",
         priority: getPriority("IndentationComments"),
         fix: {
+            label: "Fix indentation",
             type: "function",
             func: allLines => {
                 const newFileLines = [];
@@ -352,6 +360,7 @@ const npmGroovyLintRules = {
         scope: "file",
         priority: getPriority("IndentationClosingBraces"),
         fix: {
+            label: "Fix indentation",
             type: "function",
             func: allLines => {
                 const newFileLines = [];
@@ -438,6 +447,7 @@ const npmGroovyLintRules = {
         scope: "file",
         priority: getPriority("NoTabCharacter"),
         fix: {
+            label: "Replace tabs by spaces in all file",
             type: "function",
             func: allLines => {
                 const newFileLines = [];
@@ -460,6 +470,7 @@ const npmGroovyLintRules = {
         },
         priority: getPriority("SpaceAfterCatch"),
         fix: {
+            label: "Add space after catch",
             type: "replaceString",
             before: "){",
             after: ") {"
@@ -476,6 +487,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Add space after opening brace",
             type: "function",
             func: line => {
                 const regexMatch = line.match(new RegExp(/{[^ ]/, "g"));
@@ -503,6 +515,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Add space around operator",
             type: "function",
             func: (line, evaluatedVars) => {
                 let operator = getVariable(evaluatedVars, "OPERATOR", { mandatory: true, htmlToString: true, line: line });
@@ -525,6 +538,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Add space after comma",
             type: "function",
             func: line => {
                 return addSpaceAroundChar(line, ",");
@@ -542,6 +556,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Add space before opening brace",
             type: "function",
             func: line => {
                 const regexMatch = line.match(new RegExp(/[^ ]{/, "g"));
@@ -577,6 +592,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Remove trailing whitespace",
             type: "function",
             func: line => {
                 return line.trimEnd();
@@ -594,6 +610,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Remove def",
             type: "replaceString",
             before: "def ",
             after: ""
@@ -616,6 +633,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Replace double quotes by single quotes",
             type: "replaceString",
             before: '"{{STRING}}"',
             after: "'{{STRING}}'"
@@ -632,6 +650,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Remove unnecessary semicolon",
             type: "function",
             func: line => {
                 if ((line.match(/;/g) || []).length === 1) {
@@ -652,6 +671,7 @@ const npmGroovyLintRules = {
             }
         },
         fix: {
+            label: "Remove unnecessary toString()",
             type: "function",
             func: line => {
                 return line.replace(".toString()");

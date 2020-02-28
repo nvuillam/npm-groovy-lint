@@ -177,11 +177,11 @@ class NpmGroovyLint {
                 .endsWith("html")
                 ? "html"
                 : this.output
-                      .split(".")
-                      .pop()
-                      .endsWith("xml")
-                ? "xml"
-                : "";
+                    .split(".")
+                    .pop()
+                    .endsWith("xml")
+                    ? "xml"
+                    : "";
             const ext = this.output.split(".").pop();
             this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
 
@@ -328,10 +328,10 @@ class NpmGroovyLint {
                             violation["$"].priority === "1"
                                 ? "error"
                                 : violation["$"].priority === "2"
-                                ? "warning"
-                                : violation["$"].priority === "3"
-                                ? "info"
-                                : "unknown",
+                                    ? "warning"
+                                    : violation["$"].priority === "3"
+                                        ? "info"
+                                        : "unknown",
                         msg: violation.Message ? violation.Message[0] : ""
                     };
                     // Find range & add error only if severity is matching logLevel
@@ -343,7 +343,10 @@ class NpmGroovyLint {
                         // Get fixable info & range if they have been defined on the rule
                         const errRule = npmGroovyLintRules[errItem.rule];
                         if (errRule) {
-                            errItem.fixable = errRule.fix ? true : false;
+                            if (errRule.fix) {
+                                errItem.fixable = true;
+                                errItem.fixLabel = errRule.fix.label || `Fix ${errItem.rule}`;
+                            }
                             if (errRule.range) {
                                 const evaluatedVars = evaluateVariables(errRule.variables, errItem.msg, { verbose: this.verbose });
                                 const errLine = allLines[errItem.line - 1];
