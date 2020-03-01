@@ -177,11 +177,11 @@ class NpmGroovyLint {
                 .endsWith("html")
                 ? "html"
                 : this.output
-                    .split(".")
-                    .pop()
-                    .endsWith("xml")
-                    ? "xml"
-                    : "";
+                      .split(".")
+                      .pop()
+                      .endsWith("xml")
+                ? "xml"
+                : "";
             const ext = this.output.split(".").pop();
             this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
 
@@ -205,7 +205,7 @@ class NpmGroovyLint {
 
         // Start progress bar
         if (this.options.verbose) {
-            console.log("NGL: running CodeNarc with " + this.codenarcArgs.join(" "));
+            console.log("NGL: running CodeNarc using " + jDeployCommand);
         }
         this.bar = new cliProgress.SingleBar(
             {
@@ -328,10 +328,10 @@ class NpmGroovyLint {
                             violation["$"].priority === "1"
                                 ? "error"
                                 : violation["$"].priority === "2"
-                                    ? "warning"
-                                    : violation["$"].priority === "3"
-                                        ? "info"
-                                        : "unknown",
+                                ? "warning"
+                                : violation["$"].priority === "3"
+                                ? "info"
+                                : "unknown",
                         msg: violation.Message ? violation.Message[0] : ""
                     };
                     // Find range & add error only if severity is matching logLevel

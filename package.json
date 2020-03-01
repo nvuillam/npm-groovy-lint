@@ -9,6 +9,7 @@
     "prebuild": "node patch-jdeploy-before.js",
     "build": "jdeploy install",
     "postbuild": "node patch-jdeploy-after.js",
+    "groovy:build": "groovyc -cp \"./lib/*\" --encoding utf-8 ./groovy/src/main/com/nvuillam/CodeNarcServer.groovy -d lib && jar -cvfm ./lib/CodeNarcServer.jar MANIFEST.txt lib/com/nvuillam/CodeNarcServer.class ",
     "test": "mocha \"test/**/*.test.js\"",
     "test:coverage": "nyc npm run test",
     "test:debug": "mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
@@ -66,9 +67,9 @@
     "node": ">=8.0.0"
   },
   "jdeploy": {
-    "jar": "dist/lib/CodeNarc-1.5.jar",
-    "mainClass": "org.codenarc.CodeNarc",
-    "classPath": "lib/groovy-3.0.1/lib/groovy-3.0.1.jar:lib/groovy-3.0.1/lib/groovy-templates-3.0.1.jar:lib/groovy-3.0.1/lib/groovy-xml-3.0.1.jar:lib/slf4j-api-1.7.9.jar:lib/log4j-slf4j-impl-2.13.0.jar:lib/log4j-api-2.13.0.jar:lib/log4j-core-2.13.0.jar:lib/GMetrics-0.7.jar:lib",
+    "jar": "dist/lib/CodeNarcServer.jar",
+    "mainClass": "com.nvuillam.CodeNarcServer",
+    "classPath": "lib/CodeNarc-1.5.jar:lib/groovy-3.0.1/lib/groovy-3.0.1.jar:lib/groovy-3.0.1/lib/groovy-templates-3.0.1.jar:lib/groovy-3.0.1/lib/groovy-xml-3.0.1.jar:lib/slf4j-api-1.7.9.jar:lib/log4j-slf4j-impl-2.13.0.jar:lib/log4j-api-2.13.0.jar:lib/log4j-core-2.13.0.jar:lib/GMetrics-0.7.jar:lib",
     "files": [
       {
         "dir": "dist"
