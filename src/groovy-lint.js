@@ -10,6 +10,7 @@ const { performance } = require("perf_hooks");
 const rp = require("request-promise");
 const util = require("util");
 const xml2js = require("xml2js");
+const exec = util.promisify(require("child_process").exec);
 const NpmGroovyLintFix = require("./groovy-lint-fix.js");
 const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
 const optionsDefinition = require("./options");
@@ -207,7 +208,7 @@ class NpmGroovyLint {
             serverSuccess = await this.callCodeNarcServer();
         }
         if (!serverSuccess) {
-            this.callCodeNarcJava();
+            await this.callCodeNarcJava();
         }
     }
 
@@ -282,7 +283,6 @@ class NpmGroovyLint {
         }, 500);
 
         // originalJDeploy.js Execution using child process
-        const exec = util.promisify(require("child_process").exec);
         let execRes;
         try {
             execRes = await exec(jDeployCommand);
@@ -303,33 +303,43 @@ class NpmGroovyLint {
     // Start CodeNarc server so it can be called via Http just after
     async startCodeNarcServer() {
         this.serverStatus = "unknown";
+        let attempts = 1;
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" --server';
-        const exec = util.promisify(require("child_process").exec);
         const serverPingUri = this.getCodeNarcServerUi() + "/ping";
         try {
             // Start server using java
             exec(jDeployCommand);
             // Poll it until it is ready
             const start = performance.now();
-            while (this.serverStatus === "unknown" && start - performance.now() < 150000)
-                try {
-                    const parsedBody = await rp({
-                        method: "GET",
-                        uri: serverPingUri,
-                        json: true
-                    });
-                    if (parsedBody.status === "running") {
-                        this.serverStatus = "running";
+
+            await new Promise(resolve => {
+                const interval = setInterval(async () => {
+                    try {
+                        const parsedBody = await rp({
+                            method: "GET",
+                            uri: serverPingUri,
+                            json: true
+                        });
+                        if (parsedBody.status === "running") {
+                            this.serverStatus = "running";
+                        }
+                    } catch (e) {
+                        attempts = attempts + 1;
                     }
-                } catch (e) {
-                    console.debug("Try again to reach server");
-                }
+                    if (this.serverStatus !== "unknown") {
+                        clearInterval(interval);
+                        resolve();
+                    } else if (this.serverStatus === "unknown" && start - performance.now() > 15000) {
+                        throw new Error("NGL: Unable to launch CodeNarc Server");
+                    }
+                }, 500);
+            });
         } catch (e) {
             console.log("NGL: Error starting CodeNarc Server");
             return false;
         }
-        console.log("NGL: Started CodeNarc Server");
+        console.log(`NGL: Started CodeNarc Server after ${attempts} attempts`);
         return true;
     }
 
