@@ -13,6 +13,7 @@
     "test": "mocha \"test/**/*.test.js\"",
     "test:coverage": "nyc npm run test",
     "test:debug": "mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
+    "test:groovy": "java lib/com/nvuillam/CodeNarcServer.class",
     "publish:release": "npm run build && npm publish",
     "publish:beta": "npm run build && npm publish --tag beta"
   },
