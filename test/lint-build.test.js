@@ -78,4 +78,6 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
         assert(stdout.includes('where OPTIONS are zero or more command-line options'), 'Script failure');
     });
+
+
 });

@@ -1,18 +1,35 @@
+/*
+ * CodeNarc main class Wrapper to run a light HttpServer so next calls can have better performances
+ * Autokills itself when maximum idle time is reached
+ * @author Nicolas Vuillamy
+ */
 package com.nvuillam
 
+// Java Http Server
 import com.sun.net.httpserver.HttpServer
 import com.sun.net.httpserver.HttpExchange
 
+// Java Executor & Timer management
+import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.ThreadFactory
+import java.util.Timer
+import java.util.TimerTask
+
+// Groovy Json Management
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+
+// CodeNarc main class
 import org.codenarc.CodeNarc
 
-/*
- * CodeNarc main class Wrapper to run a light HttpServer so next calls can have better performances
-
- * @author Nicolas Vuillamy
- */
 class CodeNarcServer {
 
     int PORT = 7484 
+    int maxIdleTime = 3600000 // 1h
+
+    final ExecutorService ex = Executors.newSingleThreadExecutor()
 
     /**
      * Main command-line entry-point. Run the CodeNarcServer application.
@@ -22,43 +39,85 @@ class CodeNarcServer {
         println 'CodeNarcServer: '+args
         final List<String> argsList =  new ArrayList<String>()
         Collections.addAll(argsList, args); 
-        CodeNarcServer server = new CodeNarcServer()
+        CodeNarcServer codeNarcServer = new CodeNarcServer()
+        // Initialize CodeNarc Server for later calls
         if (argsList.contains('--server')) {
-            server.initialize()
+            codeNarcServer.initialize()
             argsList.remove('--server')
             argsList.remove('--port')
         }
-        if (['-basedir','-includes','-excludes','-rulesetfiles','-report','-help'].intersect(argsList)) {
-            server.runCodeNarc((String[])argsList)
+        // Do not use server, just call CodeNarc (worse perfs as Java classes mus be reloaded everytime)
+        else if (['-basedir','-includes','-excludes','-rulesetfiles','-report','-help'].intersect(argsList)) {
+            codeNarcServer.runCodeNarc((String[])argsList)
         }
+        return ;
     }
 
-    void initialize() {
-        HttpServer.create(new InetSocketAddress(PORT), /*max backlog*/ 0).with {
-            println "Server is listening on ${PORT}, hit Ctrl+C to exit."    
-            createContext("/") { http ->
+    private void initialize() {
+        Timer timer = new Timer();
+        TimerTask currentTimerTask ;
+        def server = HttpServer.create(new InetSocketAddress(PORT), 0)
+        // Ping
+        server.createContext("/ping") { http ->
+            http.sendResponseHeaders(200, 0)  
+            http.responseHeaders.add("Content-type", "application/json")
+            http.responseBody.withWriter { out ->
+                out << '{"status":"running"}'
+            }            
+        }
+        // Request CodeNarc linting
+        server.createContext("/") { http ->
+                System.setOut(new StorePrintStream(System.out))
                 println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
+                // Restart idle timer
+                currentTimerTask.cancel();
+                timer = new Timer();
+                currentTimerTask = timer.runAfter(this.maxIdleTime, { timerData ->
+                    stopServer(ex,server)
+                })                
+                // Parse input and call CodeNarc
                 try {
-                    def queryParams = getQueryParameters(http)
-                    println queryParams
-                    def codenarcArgs = queryParams.codenarcargs 
-                    def codenarcArgsArray = codenarcArgs.split(" ")
-                    runCodeNarc(codenarcArgsArray)
-                    http.responseHeaders.add("Content-type", "text/plain")
+                    def body = streamToString(http.getRequestBody())
+                    println "CodeNarcServer: received ${body}"
+                    def jsonSlurper = new JsonSlurper()
+                    def bodyObj = jsonSlurper.parseText(body)
+                    def codeNarcArgs = bodyObj.codeNarcArgs
+                    def codenarcArgsArray = codeNarcArgs.split(' ') 
+                    def printOut = runCodeNarc(codenarcArgsArray)
+                    http.responseHeaders.add("Content-type", "application/json")
                     http.sendResponseHeaders(200, 0)
+                    def respObj = [ status: 'success',
+                                    stdout: StorePrintStream.printList.join("\n") ]
+                    def respJson = JsonOutput.toJson(respObj)
                     http.responseBody.withWriter { out ->
-                        out << "Hello ${http.remoteAddress.hostName}!\n"
-                }
-                println "Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
+                        out << respJson
+                    }
                 } catch (Throwable t) {
+                    def respObj = [ status: 'error' ,
+                                    errorDtl: t.getStackTrace(),
+                                    stdout: StorePrintStream.printList.join("\n") ]
+                    def respJson = JsonOutput.toJson(respObj)
+                    http.responseHeaders.add("Content-type", "application/json")
+                    http.sendResponseHeaders(500, 0)
+                    http.responseBody.withWriter { out ->
+                        out << respJson
+                    }                    
                     t.printStackTrace()
                 }
-            }
-            start()
         }
+        server.setExecutor(ex);      // set up a custom executor for the server
+        server.start();              // start the server
+        println "CodeNarcServer is listening on ${PORT}, hit Ctrl+C to exit." 
+        currentTimerTask = timer.runAfter(this.maxIdleTime, { timerData ->
+            stopServer(ex,server)
+        })
     }
 
-    protected runCodeNarc(String[] args) {
+    private runCodeNarc(String[] args) {
+        if (args == ['-help'] as String[]) {
+            CodeNarc.main(args);
+            return ;
+        }
         CodeNarc codeNarc = new CodeNarc()
         try {
             codeNarc.execute(args)
@@ -69,19 +128,38 @@ class CodeNarcServer {
         }
     }
 
-    private Map<String,String> getQueryParameters( HttpExchange httpExchange ) {
-        def query = httpExchange.getRequestURI().getQuery()
-        return query.split( '&' )
-                .collectEntries {
-            String[] pair = it.split( '=' )
-            if (pair.length > 1)
-            {
-                return [(pair[0]): pair[1]]
-            }
-            else
-            {
-                return [(pair[0]): ""]
-            }
+    private streamToString(def stream) {
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = stream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
         }
+        // StandardCharsets.UTF_8.name() > JDK 7
+        return result.toString("UTF-8");        
+    }
+
+    private stopServer(ex,server) {
+            ex.shutdown();
+            ex.awaitTermination(10, TimeUnit.MINUTES); 
+            server.stop(0);
+            System.out.println("CodeNarcServer stopped");
+            System.exit(0)
+    }
+
+}
+
+class StorePrintStream extends PrintStream {
+
+    public static List<String> printList = new LinkedList<String>();
+
+    public StorePrintStream(PrintStream org) {
+        super(org);
+    }
+
+    @Override
+    public void println(String line) {
+        printList.add(line);
+        super.println(line);
     }
 }

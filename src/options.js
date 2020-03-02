@@ -132,6 +132,24 @@ module.exports = optionator({
                 "Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored). Doc: http://codenarc.github.io/CodeNarc/codenarc-command-line.html"
         },
         {
+            option: "noserver",
+            type: "Boolean",
+            description:
+                "For better perfs, npm-groovy-lint runs a local server to eep CodeNarc alive instead of loading java/groovy at each call. If you don't want that, send this argument"
+        },
+        {
+            option: "serverhost",
+            type: "String",
+            default: "http://localhost",
+            description: "If use of CodeNarc server, host where is the CodeNarc server (default: localhost)"
+        },
+        {
+            option: "serverport",
+            type: "String",
+            default: "7484",
+            description: "If use of CodeNarc server, port of the CodeNarc server (default: 7484)"
+        },
+        {
             option: "help",
             alias: "h",
             type: "Boolean",

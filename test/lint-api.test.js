@@ -135,6 +135,20 @@ describe('TEST npm-groovy-lint using API', () => {
         assert(linter.status === 0 && linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
     });
 
+    it('(API:source) should run without CodeNarc Server', async () => {
+        const npmGroovyLintConfig = {
+            source: fse.readFileSync('lib/example/SampleFile.groovy').toString(),
+            noserver: true,
+            output: 'none',
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(linter.status === 0 && linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
+    });
+
 
 
 

@@ -2,10 +2,12 @@
 
 // Imports
 const c = require("ansi-colors");
+const cliProgress = require("cli-progress");
 const fse = require("fs-extra");
 const os = require("os");
 const path = require("path");
-const cliProgress = require("cli-progress");
+const { performance } = require("perf_hooks");
+const rp = require("request-promise");
 const util = require("util");
 const xml2js = require("xml2js");
 const NpmGroovyLintFix = require("./groovy-lint-fix.js");
@@ -32,6 +34,7 @@ class NpmGroovyLint {
     codeNarcStdErr;
 
     // npm-groovy-lint
+    serverStatus = "unknown";
     outputType;
     output;
     onlyCodeNarc = false;
@@ -98,7 +101,7 @@ class NpmGroovyLint {
 
         // Show version (TODO: more clean)
         if (this.options.version) {
-            console.info("v2.0.0");
+            console.info("v3.0.0");
             return false;
         }
 
@@ -197,9 +200,64 @@ class NpmGroovyLint {
         return true;
     }
 
-    // Call CodeNard java class from renamed jdeploy.js
+    // Call either CodeNarc local server (better perfs), or java class if server not running
     async callCodeNarc() {
-        // Build jdeploy codenarc command , filter non-codenarc arguments
+        let serverSuccess = false;
+        if (!this.options.noserver) {
+            serverSuccess = await this.callCodeNarcServer();
+        }
+        if (!serverSuccess) {
+            this.callCodeNarcJava();
+        }
+    }
+
+    // Call local CodeNarc server if running
+    async callCodeNarcServer() {
+        // If use of --codenarcargs, get default values for CodeNarcServer host & port
+        const serverUri = this.getCodeNarcServerUi();
+        // Remove "" around values because they won't get thru system command line parser
+        const codeNarcArgsForServer = this.codenarcArgs.map(codeNarcArg => {
+            if (codeNarcArg.includes('="') || codeNarcArg.includes(':"')) {
+                codeNarcArg = codeNarcArg.replace('="', "=").replace(':"', ":");
+                codeNarcArg = codeNarcArg.substring(0, codeNarcArg.length - 1);
+            }
+            return codeNarcArg;
+        });
+        // Call CodeNarc server
+        const codeNarcArgsString = codeNarcArgsForServer.join(" ");
+        const rqstOptions = {
+            method: "POST",
+            uri: serverUri,
+            body: {
+                codeNarcArgs: codeNarcArgsString
+            },
+            json: true
+        };
+        let parsedBody = null;
+        try {
+            parsedBody = await rp(rqstOptions);
+            this.serverStatus = "running";
+        } catch (e) {
+            // If server not started , start it and try again
+            if (
+                e.message &&
+                e.message.includes("ECONNREFUSED") &&
+                ["unknown", "running"].includes(this.serverStatus) &&
+                (await this.startCodeNarcServer())
+            ) {
+                return await this.callCodeNarcServer();
+            }
+            this.serverStatus = "error";
+            return false;
+        }
+        this.codeNarcStdOut = parsedBody.stdout;
+        this.codeNarcStdErr = parsedBody.stderr;
+        return parsedBody.status === "success";
+    }
+
+    // Call CodeNard java class from renamed jdeploy.js
+    async callCodeNarcJava() {
+        // Build jdeploy codenarc command (request to launch server for next call except if --noserver is sent)
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" ' + this.codenarcArgs.join(" ");
 
@@ -240,6 +298,46 @@ class NpmGroovyLint {
 
         this.codeNarcStdOut = execRes.stdout;
         this.codeNarcStdErr = execRes.stderr;
+    }
+
+    // Start CodeNarc server so it can be called via Http just after
+    async startCodeNarcServer() {
+        this.serverStatus = "unknown";
+        const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
+        const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" --server';
+        const exec = util.promisify(require("child_process").exec);
+        const serverPingUri = this.getCodeNarcServerUi() + "/ping";
+        try {
+            // Start server using java
+            exec(jDeployCommand);
+            // Poll it until it is ready
+            const start = performance.now();
+            while (this.serverStatus === "unknown" && start - performance.now() < 150000)
+                try {
+                    const parsedBody = await rp({
+                        method: "GET",
+                        uri: serverPingUri,
+                        json: true
+                    });
+                    if (parsedBody.status === "running") {
+                        this.serverStatus = "running";
+                    }
+                } catch (e) {
+                    console.debug("Try again to reach server");
+                }
+        } catch (e) {
+            console.log("NGL: Error starting CodeNarc Server");
+            return false;
+        }
+        console.log("NGL: Started CodeNarc Server");
+        return true;
+    }
+
+    // Return CodeNarc server URI
+    getCodeNarcServerUi() {
+        // If use of --codenarcargs, get default values for CodeNarcServer host & port
+        const serverOptions = optionsDefinition.parse({});
+        return (this.options.serverhost || serverOptions.serverhost) + ":" + (this.options.serverport || serverOptions.serverport);
     }
 
     // After CodeNarc call
