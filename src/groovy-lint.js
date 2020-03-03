@@ -137,7 +137,7 @@ class NpmGroovyLint {
                 const parsedBody = await rp({
                     method: "POST",
                     uri: serverUri,
-                    timeout: 2000,
+                    timeout: 10000,
                     json: true
                 });
                 if (parsedBody.status === "killed") {

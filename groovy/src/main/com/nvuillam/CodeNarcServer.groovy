@@ -57,8 +57,8 @@ class CodeNarcServer {
     // Launch HttpServer to receive CodeNarc linting request via Http
     private void initialize() {
         // Create a server who accepts only calls from localhost
-        InetAddress localHost = InetAddress.getLoopbackAddress();
-        InetSocketAddress sockAddr = new InetSocketAddress(localHost, PORT);
+        def localHost = InetAddress.localHost ;
+        InetSocketAddress sockAddr = new InetSocketAddress(InetAddress.localHost, PORT);
         def server = HttpServer.create(sockAddr, 0)
 
         Timer timer = new Timer();
@@ -125,7 +125,7 @@ class CodeNarcServer {
         }
         server.setExecutor(ex);      // set up a custom executor for the server
         server.start();              // start the server
-        println "CodeNarcServer is listening on ${PORT}, hit Ctrl+C to exit." 
+        println "CodeNarcServer is listening on ${localHost}:${PORT}, hit Ctrl+C to exit." 
         currentTimerTask = timer.runAfter(this.maxIdleTime, { timerData ->
             stopServer(ex,server)
         })
