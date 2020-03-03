@@ -103,7 +103,17 @@ class NpmGroovyLint {
 
         // Show version (TODO: more clean)
         if (this.options.version) {
-            console.info("v3.0.0");
+            let v = process.env.npm_package_version;
+            if (!v) {
+                try {
+                    v = require("package.json").version;
+                } catch {
+                    v = "3.0.0-beta.1";
+                }
+            }
+            const vLabel = "npm-groovy-lint v" + v;
+            console.info(vLabel);
+            this.nglOutputString = vLabel;
             return false;
         }
 
@@ -182,11 +192,11 @@ class NpmGroovyLint {
                 .endsWith("html")
                 ? "html"
                 : this.output
-                      .split(".")
-                      .pop()
-                      .endsWith("xml")
-                ? "xml"
-                : "";
+                    .split(".")
+                    .pop()
+                    .endsWith("xml")
+                    ? "xml"
+                    : "";
             const ext = this.output.split(".").pop();
             this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
 
@@ -436,10 +446,10 @@ class NpmGroovyLint {
                             violation["$"].priority === "1"
                                 ? "error"
                                 : violation["$"].priority === "2"
-                                ? "warning"
-                                : violation["$"].priority === "3"
-                                ? "info"
-                                : "unknown",
+                                    ? "warning"
+                                    : violation["$"].priority === "3"
+                                        ? "info"
+                                        : "unknown",
                         msg: violation.Message ? violation.Message[0] : ""
                     };
                     // Find range & add error only if severity is matching logLevel

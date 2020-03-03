@@ -75,7 +75,6 @@ module.exports = optionator({
         },
         {
             option: "verbose",
-            alias: "v",
             type: "Boolean",
             description: "More outputs in console, including performed fixes"
         },
@@ -154,6 +153,12 @@ module.exports = optionator({
             alias: "h",
             type: "Boolean",
             description: "Show help (npm-groovy-lint -help OPTIONNAME to see option detail)"
+        },
+        {
+            option: "version",
+            alias: "v",
+            type: "Boolean",
+            description: "Show version"
         }
     ],
     mutuallyExclusive: [

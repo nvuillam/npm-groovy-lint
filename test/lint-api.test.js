@@ -95,7 +95,7 @@ describe('TEST npm-groovy-lint using API', () => {
             '-h'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 && linter.nglOutputString.includes('-v, --verbose'));
+        assert(linter.status === 0 && linter.nglOutputString.includes('--verbose'));
     });
 
 
@@ -108,6 +108,16 @@ describe('TEST npm-groovy-lint using API', () => {
         }).run();
 
         assert(linter.status === 0 && linter.nglOutputString.includes('-s, --source'), 'npm-groovy-lint Help is displayed');
+    });
+
+    it('(API:help) should show npm-groovy-lint version', async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            '',
+            '-v'], {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(linter.status === 0 && linter.nglOutputString.includes('npm-groovy-lint v'));
     });
 
     it('(API:help) should show codenarc help', async () => {

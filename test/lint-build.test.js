@@ -67,7 +67,7 @@ describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
             '-h'
         ];
         const { stdout } = await exec('npm-groovy-lint ' + params.join(' '));
-        assert(stdout.includes('-v, --verbose'), 'Script failure');
+        assert(stdout.includes('--verbose'), 'Script failure');
     });
 
     it('(EXE:help) should show codenarc help', async () => {

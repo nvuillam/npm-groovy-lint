@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.0] 2020-03-23
+
+### Added 
+
+- Local microservice "CodeNarcServer" called via Http by npm-groovy-lint, to avoid loading all groovy/java classes at each lint request. This microservice autokills itself after one hour idle.
+
 ## [2.2.0] 2020-02-28
 
 ### Added
