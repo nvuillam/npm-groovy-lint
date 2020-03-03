@@ -24,6 +24,7 @@ class NpmGroovyLint {
 
     // Internal
     jdeployFile;
+    jdeployFilePlanB;
     jdeployRootPath;
     parseOptions;
     tmpXmlFileName;
@@ -54,6 +55,7 @@ class NpmGroovyLint {
             this.args = argsIn;
         }
         this.jdeployFile = internalOpts.jdeployFile || process.env.JDEPLOY_FILE || "originaljdeploy.js";
+        this.jdeployFilePlanB = internalOpts.jdeployFilePlanB || process.env.JDEPLOY_FILE_PLAN_B || "originaljdeployPlanB.js";
         this.jdeployRootPath = internalOpts.jdeployRootPath || process.env.JDEPLOY_ROOT_PATH || __dirname;
         this.parseOptions = internalOpts.parseOptions !== false;
     }
@@ -128,6 +130,28 @@ class NpmGroovyLint {
             return false;
         }
 
+        // Kill running CodeNarcServer
+        if (this.options.killserver) {
+            const serverUri = this.getCodeNarcServerUri() + "/kill";
+            try {
+                const parsedBody = await rp({
+                    method: "POST",
+                    uri: serverUri,
+                    timeout: 2000,
+                    json: true
+                });
+                if (parsedBody.status === "killed") {
+                    this.nglOutputString = "CodeNarcServer terminated";
+                } else {
+                    this.nglOutputString = "Error killing CodeNarcServer";
+                }
+            } catch (e) {
+                this.nglOutputString = "CodeNarcServer was not running";
+            }
+            console.info(this.nglOutputString);
+            return false;
+        }
+
         ////////////////////////////
         // Build codenarc options //
         ////////////////////////////
@@ -192,11 +216,11 @@ class NpmGroovyLint {
                 .endsWith("html")
                 ? "html"
                 : this.output
-                    .split(".")
-                    .pop()
-                    .endsWith("xml")
-                    ? "xml"
-                    : "";
+                      .split(".")
+                      .pop()
+                      .endsWith("xml")
+                ? "xml"
+                : "";
             const ext = this.output.split(".").pop();
             this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
 
@@ -226,7 +250,7 @@ class NpmGroovyLint {
     // Call local CodeNarc server if running
     async callCodeNarcServer() {
         // If use of --codenarcargs, get default values for CodeNarcServer host & port
-        const serverUri = this.getCodeNarcServerUi();
+        const serverUri = this.getCodeNarcServerUri();
         // Remove "" around values because they won't get thru system command line parser
         const codeNarcArgsForServer = this.codenarcArgs.map(codeNarcArg => {
             if (codeNarcArg.includes('="') || codeNarcArg.includes(':"')) {
@@ -268,10 +292,11 @@ class NpmGroovyLint {
     }
 
     // Call CodeNard java class from renamed jdeploy.js
-    async callCodeNarcJava() {
+    async callCodeNarcJava(secondAttempt = false) {
         // Build jdeploy codenarc command (request to launch server for next call except if --noserver is sent)
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
-        const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" ' + this.codenarcArgs.join(" ");
+        const jdeployFileToUse = secondAttempt ? this.jdeployFilePlanB : this.jdeployFile;
+        const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + jdeployFileToUse + '" ' + this.codenarcArgs.join(" ");
 
         // Start progress bar
         if (this.options.verbose) {
@@ -300,7 +325,13 @@ class NpmGroovyLint {
         } catch (e) {
             clearInterval(this.barTimer);
             this.bar.stop();
-            throw new Error("NGL: CodeNarc crash: \n" + e.message);
+            // If failure (missing class for example, it can happen on Linux, let's try the original org.codenarc.CodeNarc class)
+            if (!secondAttempt) {
+                return await this.callCodeNarcJava(true);
+            } else {
+                this.codeNarcStdErr = e.stderr;
+                return;
+            }
         }
 
         // Stop progress bar
@@ -317,7 +348,7 @@ class NpmGroovyLint {
         let attempts = 1;
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" --server';
-        const serverPingUri = this.getCodeNarcServerUi() + "/ping";
+        const serverPingUri = this.getCodeNarcServerUri() + "/ping";
         try {
             // Start server using java
             exec(jDeployCommand);
@@ -354,7 +385,7 @@ class NpmGroovyLint {
     }
 
     // Return CodeNarc server URI
-    getCodeNarcServerUi() {
+    getCodeNarcServerUri() {
         // If use of --codenarcargs, get default values for CodeNarcServer host & port
         const serverOptions = optionsDefinition.parse({});
         return (this.options.serverhost || serverOptions.serverhost) + ":" + (this.options.serverport || serverOptions.serverport);
@@ -446,10 +477,10 @@ class NpmGroovyLint {
                             violation["$"].priority === "1"
                                 ? "error"
                                 : violation["$"].priority === "2"
-                                    ? "warning"
-                                    : violation["$"].priority === "3"
-                                        ? "info"
-                                        : "unknown",
+                                ? "warning"
+                                : violation["$"].priority === "3"
+                                ? "info"
+                                : "unknown",
                         msg: violation.Message ? violation.Message[0] : ""
                     };
                     // Find range & add error only if severity is matching logLevel

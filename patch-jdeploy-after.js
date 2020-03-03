@@ -9,6 +9,7 @@ const fse = require('fs-extra');
 const jdeployFile = './jdeploy-bundle/jdeploy.js';
 const runGroovyLintFile = './jdeploy-bundle/index.js';
 const jdeployFileAfterRename = './jdeploy-bundle/originaljdeploy.js';
+const jdeployFileAfterRenamePlanB = './jdeploy-bundle/originaljdeployPlanB.js';
 const packageJsonFile = 'package.json';
 
 // Process
@@ -39,6 +40,15 @@ console.info('NGL: ' + jdeployFile + ' has been updated.');
 // Rename jdeploy.js into jdeployOriginal.js
 fse.renameSync(jdeployFile, jdeployFileAfterRename);
 console.info('NGL: ' + jdeployFile + ' renamed into ' + jdeployFileAfterRename);
+
+// Replace org.nvuillam.CodeNarcServer by org.codenarc.CodeNarc in another jdeploy file, to use it in case the first java call fails
+if (packageJsonConfig.jdeploy.mainClassPlanB) {
+    const jdeployFileContentPlanB = jdeployFileContent.replace(packageJsonConfig.jdeploy.mainClass, packageJsonConfig.jdeploy.mainClassPlanB);
+    fse.writeFileSync(jdeployFileAfterRenamePlanB, jdeployFileContentPlanB);
+    console.info('NGL: ' + jdeployFileAfterRenamePlanB + ' created from ' + jdeployFileAfterRename +
+        ' by replacing ' + packageJsonConfig.jdeploy.mainClass + ' by ' + packageJsonConfig.jdeploy.mainClassPlanB);
+}
+
 // Rename index.js into jdeploy.js
 fse.renameSync(runGroovyLintFile, jdeployFile);
 console.info('NGL: ' + runGroovyLintFile + ' renamed into ' + jdeployFile);

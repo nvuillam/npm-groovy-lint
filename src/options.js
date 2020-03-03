@@ -149,6 +149,11 @@ module.exports = optionator({
             description: "If use of CodeNarc server, port of the CodeNarc server (default: 7484)"
         },
         {
+            option: "killserver",
+            type: "Boolean",
+            description: "Terminate the CodeNarcServer if running"
+        },
+        {
             option: "help",
             alias: "h",
             type: "Boolean",

@@ -71,6 +71,18 @@ class CodeNarcServer {
                 out << '{"status":"running"}'
             }            
         }
+        // Kill server
+        server.createContext("/kill") { http ->
+            println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
+            println "Received kill CodeNarcServer request"
+            stopServer(ex,server)    
+            http.sendResponseHeaders(200, 0)  
+            http.responseHeaders.add("Content-type", "application/json")
+            http.responseBody.withWriter { out ->
+                out << '{"status":"killed"}'
+            }
+            println "CodeNarcServer shutting down..."
+        }
         // Request CodeNarc linting
         server.createContext("/") { http ->
             System.setOut(new StorePrintStream(System.out))
@@ -147,9 +159,9 @@ class CodeNarcServer {
 
     private stopServer(ex,server) {
             ex.shutdown();
-            ex.awaitTermination(10, TimeUnit.MINUTES); 
+            // ex.awaitTermination(10, TimeUnit.MINUTES); //Seems some ghost request prevents to kill server
             server.stop(0);
-            System.out.println("CodeNarcServer stopped");
+            println("CodeNarcServer stopped");
             System.exit(0)
     }
 

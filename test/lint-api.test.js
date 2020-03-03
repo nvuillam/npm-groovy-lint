@@ -88,6 +88,32 @@ describe('TEST npm-groovy-lint using API', () => {
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, 'Infos found');
     });
 
+    it('(API:Server) should kill running server', async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            '',
+            '--killserver',
+            '--verbose'
+        ], {
+            jdeployRootPath: 'jdeploy-bundle',
+            verbose: true
+        }).run();
+        assert(linter.status === 0 && linter.nglOutputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
+    });
+
+    it('(API:Server) should not succeeed to kill running server', async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            '',
+            '--killserver',
+            '--verbose'
+        ], {
+            jdeployRootPath: 'jdeploy-bundle',
+            verbose: true
+        }).run();
+        assert(linter.status === 0 && linter.nglOutputString.includes('CodeNarcServer was not running'), 'CodeNarcServer not killed because not running');
+    });
+
     it('(API:help) should show npm-groovy-lint help', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
