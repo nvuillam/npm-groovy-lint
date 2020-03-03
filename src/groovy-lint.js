@@ -7,7 +7,8 @@ const fse = require("fs-extra");
 const os = require("os");
 const path = require("path");
 const { performance } = require("perf_hooks");
-const rp = require("request-promise");
+const request = require("request");
+const rp = require("request-promise-native");
 const util = require("util");
 const xml2js = require("xml2js");
 const exec = util.promisify(require("child_process").exec);
@@ -312,28 +313,27 @@ class NpmGroovyLint {
             exec(jDeployCommand);
             // Poll it until it is ready
             const start = performance.now();
-
-            await new Promise(resolve => {
-                const interval = setInterval(async () => {
-                    try {
-                        const parsedBody = await rp({
-                            method: "GET",
-                            uri: serverPingUri,
-                            json: true
+            await new Promise((resolve, reject) => {
+                const interval = setInterval(() => {
+                    request
+                        .get(serverPingUri)
+                        .on("response", response => {
+                            if (response.statusCode === 200 && response.toJSON().status === "running") {
+                                this.serverStatus = "running";
+                                clearInterval(interval);
+                                resolve();
+                            } else if (this.serverStatus === "unknown" && performance.now() - start > 5000) {
+                                clearInterval(interval);
+                                reject("NGL: Unable to launch CodeNarc Server");
+                            }
+                        })
+                        .on("error", () => {
+                            if (this.serverStatus === "unknown" && performance.now() - start > 5000) {
+                                clearInterval(interval);
+                                reject("NGL: Unable to launch CodeNarc Server");
+                            }
                         });
-                        if (parsedBody.status === "running") {
-                            this.serverStatus = "running";
-                        }
-                    } catch (e) {
-                        attempts = attempts + 1;
-                    }
-                    if (this.serverStatus !== "unknown") {
-                        clearInterval(interval);
-                        resolve();
-                    } else if (this.serverStatus === "unknown" && start - performance.now() > 15000) {
-                        throw new Error("NGL: Unable to launch CodeNarc Server");
-                    }
-                }, 500);
+                }, 1000);
             });
         } catch (e) {
             console.log("NGL: Error starting CodeNarc Server");
