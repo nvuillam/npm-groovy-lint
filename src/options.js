@@ -139,7 +139,7 @@ module.exports = optionator({
         {
             option: "serverhost",
             type: "String",
-            default: "http://localhost",
+            default: 'http://' + require("ip").address(), //Usually localhost, but not always on CIs (Circle, Jenkins ...)
             description: "If use of CodeNarc server, host where is the CodeNarc server (default: localhost)"
         },
         {

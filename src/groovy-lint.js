@@ -216,11 +216,11 @@ class NpmGroovyLint {
                 .endsWith("html")
                 ? "html"
                 : this.output
-                      .split(".")
-                      .pop()
-                      .endsWith("xml")
-                ? "xml"
-                : "";
+                    .split(".")
+                    .pop()
+                    .endsWith("xml")
+                    ? "xml"
+                    : "";
             const ext = this.output.split(".").pop();
             this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
 
@@ -325,7 +325,7 @@ class NpmGroovyLint {
         } catch (e) {
             clearInterval(this.barTimer);
             this.bar.stop();
-            // If failure (missing class for example, it can happen on Linux, let's try the original org.codenarc.CodeNarc class)
+            // If failure (missing class com.nvuillam.CodeNarcServer for example, it can happen on Linux, let's try the original org.codenarc.CodeNarc class)
             if (!secondAttempt) {
                 return await this.callCodeNarcJava(true);
             } else {
@@ -477,10 +477,10 @@ class NpmGroovyLint {
                             violation["$"].priority === "1"
                                 ? "error"
                                 : violation["$"].priority === "2"
-                                ? "warning"
-                                : violation["$"].priority === "3"
-                                ? "info"
-                                : "unknown",
+                                    ? "warning"
+                                    : violation["$"].priority === "3"
+                                        ? "info"
+                                        : "unknown",
                         msg: violation.Message ? violation.Message[0] : ""
                     };
                     // Find range & add error only if severity is matching logLevel
