@@ -137,7 +137,7 @@ class NpmGroovyLint {
                 const parsedBody = await rp({
                     method: "POST",
                     uri: serverUri,
-                    timeout: 10000,
+                    timeout: 5000,
                     json: true
                 });
                 if (parsedBody.status === "killed") {
@@ -146,7 +146,12 @@ class NpmGroovyLint {
                     this.nglOutputString = "Error killing CodeNarcServer";
                 }
             } catch (e) {
-                this.nglOutputString = "CodeNarcServer was not running";
+                if (e.message.includes('socket hang up')) {
+                    this.nglOutputString = "CodeNarcServer terminated";
+                }
+                else {
+                    this.nglOutputString = "CodeNarcServer was not running";
+                }
             }
             console.info(this.nglOutputString);
             return false;
@@ -345,6 +350,7 @@ class NpmGroovyLint {
     // Start CodeNarc server so it can be called via Http just after
     async startCodeNarcServer() {
         this.serverStatus = "unknown";
+        const maxAttemptTimeMs = 1000;
         let attempts = 1;
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" --server';
@@ -359,29 +365,39 @@ class NpmGroovyLint {
                     request
                         .get(serverPingUri)
                         .on("response", response => {
-                            if (response.statusCode === 200 && response.toJSON().status === "running") {
+                            if (response.statusCode === 200) {
                                 this.serverStatus = "running";
                                 clearInterval(interval);
                                 resolve();
-                            } else if (this.serverStatus === "unknown" && performance.now() - start > 5000) {
+                            } else if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
+                                this.printServerError({
+                                    message: "Timeout after " + maxAttemptTimeMs + "\nResponse: " + JSON.stringify(response.toJSON())
+                                });
                                 clearInterval(interval);
-                                reject("NGL: Unable to launch CodeNarc Server");
+                                reject();
                             }
                         })
-                        .on("error", () => {
-                            if (this.serverStatus === "unknown" && performance.now() - start > 5000) {
-                                clearInterval(interval);
-                                reject("NGL: Unable to launch CodeNarc Server");
+                        .on("error", e => {
+                            if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
+                                this.printServerError(e);
+                                reject();
                             }
                         });
                 }, 1000);
             });
         } catch (e) {
-            console.log("NGL: Error starting CodeNarc Server");
+            this.printServerError(e);
             return false;
         }
         console.log(`NGL: Started CodeNarc Server after ${attempts} attempts`);
         return true;
+    }
+
+    printServerError(e) {
+        console.log("NGL: Unable to start CodeNarc Server. Use --noserver if you do not even want to try");
+        if (this.verbose && e) {
+            console.error(e.message);
+        }
     }
 
     // Return CodeNarc server URI

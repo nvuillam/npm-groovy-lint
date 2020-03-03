@@ -15,7 +15,8 @@
     "test:coverage": "nyc npm run test",
     "test:debug": "mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
     "publish:release": "npm run build && npm publish",
-    "publish:beta": "npm run build && npm publish --tag beta"
+    "publish:beta": "npm run build && npm publish --tag beta",
+    "lint-build-all": "npm run lint:fix && npm run groovy:build && npm run build"
   },
   "repository": {
     "type": "git",
