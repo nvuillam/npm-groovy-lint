@@ -146,10 +146,9 @@ class NpmGroovyLint {
                     this.nglOutputString = "Error killing CodeNarcServer";
                 }
             } catch (e) {
-                if (e.message.includes('socket hang up')) {
+                if (e.message.includes("socket hang up")) {
                     this.nglOutputString = "CodeNarcServer terminated";
-                }
-                else {
+                } else {
                     this.nglOutputString = "CodeNarcServer was not running";
                 }
             }
@@ -221,11 +220,11 @@ class NpmGroovyLint {
                 .endsWith("html")
                 ? "html"
                 : this.output
-                    .split(".")
-                    .pop()
-                    .endsWith("xml")
-                    ? "xml"
-                    : "";
+                      .split(".")
+                      .pop()
+                      .endsWith("xml")
+                ? "xml"
+                : "";
             const ext = this.output.split(".").pop();
             this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
 
@@ -241,7 +240,12 @@ class NpmGroovyLint {
         return true;
     }
 
-    // Call either CodeNarc local server (better perfs), or java class if server not running
+    /* Order of attempts (supposed to work on every config):
+        - Call CodeNarcServer via Http (except if --noserver)
+        - Launch CodeNarcServer using com.nvuillam.CodeNarcServer, then call CodeNarcServer via Http (except if --noserver)
+        - Call CodeNarc using com.nvuillam.CodeNarcServer (without launching server) (originaljdeploy.js)
+        - Call CodeNarc using org.codenarc.CodeNarc (originaljdeployPlanB.js)
+    */
     async callCodeNarc() {
         let serverSuccess = false;
         if (!this.options.noserver) {
@@ -350,7 +354,7 @@ class NpmGroovyLint {
     // Start CodeNarc server so it can be called via Http just after
     async startCodeNarcServer() {
         this.serverStatus = "unknown";
-        const maxAttemptTimeMs = 1000;
+        const maxAttemptTimeMs = 2000;
         let attempts = 1;
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" --server';
@@ -370,7 +374,7 @@ class NpmGroovyLint {
                                 clearInterval(interval);
                                 resolve();
                             } else if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
-                                this.printServerError({
+                                this.declareServerError({
                                     message: "Timeout after " + maxAttemptTimeMs + "\nResponse: " + JSON.stringify(response.toJSON())
                                 });
                                 clearInterval(interval);
@@ -379,21 +383,22 @@ class NpmGroovyLint {
                         })
                         .on("error", e => {
                             if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
-                                this.printServerError(e);
+                                this.declareServerError(e);
                                 reject();
                             }
                         });
                 }, 1000);
             });
         } catch (e) {
-            this.printServerError(e);
+            this.declareServerError(e);
             return false;
         }
         console.log(`NGL: Started CodeNarc Server after ${attempts} attempts`);
         return true;
     }
 
-    printServerError(e) {
+    declareServerError(e) {
+        this.serverStatus = "error";
         console.log("NGL: Unable to start CodeNarc Server. Use --noserver if you do not even want to try");
         if (this.verbose && e) {
             console.error(e.message);
@@ -493,10 +498,10 @@ class NpmGroovyLint {
                             violation["$"].priority === "1"
                                 ? "error"
                                 : violation["$"].priority === "2"
-                                    ? "warning"
-                                    : violation["$"].priority === "3"
-                                        ? "info"
-                                        : "unknown",
+                                ? "warning"
+                                : violation["$"].priority === "3"
+                                ? "info"
+                                : "unknown",
                         msg: violation.Message ? violation.Message[0] : ""
                     };
                     // Find range & add error only if severity is matching logLevel
