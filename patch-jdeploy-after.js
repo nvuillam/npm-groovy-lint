@@ -43,7 +43,9 @@ console.info('NGL: ' + jdeployFile + ' renamed into ' + jdeployFileAfterRename);
 
 // Replace org.nvuillam.CodeNarcServer by org.codenarc.CodeNarc in another jdeploy file, to use it in case the first java call fails
 if (packageJsonConfig.jdeploy.mainClassPlanB) {
-    const jdeployFileContentPlanB = jdeployFileContent.replace(packageJsonConfig.jdeploy.mainClass, packageJsonConfig.jdeploy.mainClassPlanB);
+    const jdeployFileContentPlanB = jdeployFileContent
+        .replace(packageJsonConfig.jdeploy.mainClass, packageJsonConfig.jdeploy.mainClassPlanB)
+        .replace('lib/CodeNarcServer.jar:', '');
     fse.writeFileSync(jdeployFileAfterRenamePlanB, jdeployFileContentPlanB);
     console.info('NGL: ' + jdeployFileAfterRenamePlanB + ' created from ' + jdeployFileAfterRename +
         ' by replacing ' + packageJsonConfig.jdeploy.mainClass + ' by ' + packageJsonConfig.jdeploy.mainClassPlanB);

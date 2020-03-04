@@ -45,6 +45,7 @@ class NpmGroovyLint {
     nglOutputString = "";
     status = 0;
     fixer;
+    execTimeout = 120000;
 
     bar;
     barTimer;
@@ -290,7 +291,9 @@ class NpmGroovyLint {
                 ["unknown", "running"].includes(this.serverStatus) &&
                 (await this.startCodeNarcServer())
             ) {
-                return await this.callCodeNarcServer();
+                if (this.serverStatus === "running") {
+                    return await this.callCodeNarcServer();
+                }
             }
             this.serverStatus = "error";
             return false;
@@ -330,7 +333,7 @@ class NpmGroovyLint {
         // originalJDeploy.js Execution using child process
         let execRes;
         try {
-            execRes = await exec(jDeployCommand);
+            execRes = await exec(jDeployCommand, { timeout: this.execTimeout });
         } catch (e) {
             clearInterval(this.barTimer);
             this.bar.stop();
@@ -359,13 +362,14 @@ class NpmGroovyLint {
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" --server';
         const serverPingUri = this.getCodeNarcServerUri() + "/ping";
+        let interval;
         try {
             // Start server using java
-            exec(jDeployCommand);
+            exec(jDeployCommand, { timeout: this.execTimeout });
             // Poll it until it is ready
             const start = performance.now();
             await new Promise((resolve, reject) => {
-                const interval = setInterval(() => {
+                interval = setInterval(() => {
                     request
                         .get(serverPingUri)
                         .on("response", response => {
@@ -374,31 +378,36 @@ class NpmGroovyLint {
                                 clearInterval(interval);
                                 resolve();
                             } else if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
-                                this.declareServerError({
-                                    message: "Timeout after " + maxAttemptTimeMs + "\nResponse: " + JSON.stringify(response.toJSON())
-                                });
-                                clearInterval(interval);
+                                this.declareServerError(
+                                    {
+                                        message: "Timeout after " + maxAttemptTimeMs + "\nResponse: " + JSON.stringify(response.toJSON())
+                                    },
+                                    interval
+                                );
                                 reject();
                             }
                         })
                         .on("error", e => {
                             if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
-                                this.declareServerError(e);
+                                this.declareServerError(e, interval);
                                 reject();
                             }
                         });
                 }, 1000);
             });
         } catch (e) {
-            this.declareServerError(e);
+            this.declareServerError(e, interval);
             return false;
         }
         console.log(`NGL: Started CodeNarc Server after ${attempts} attempts`);
         return true;
     }
 
-    declareServerError(e) {
+    declareServerError(e, interval) {
         this.serverStatus = "error";
+        if (interval) {
+            clearInterval(interval);
+        }
         console.log("NGL: Unable to start CodeNarc Server. Use --noserver if you do not even want to try");
         if (this.verbose && e) {
             console.error(e.message);
@@ -415,7 +424,7 @@ class NpmGroovyLint {
     // After CodeNarc call
     async postProcess() {
         // CodeNarc error
-        if (this.codeNarcStdErr && this.codeNarcStdErr !== "Picked up _JAVA_OPTIONS: -Xmx512M\n") {
+        if (this.codeNarcStdErr && [null, "", undefined].includes(this.codeNarcStdOut)) {
             this.status = 1;
             console.error("NGL: Error running CodeNarc: \n" + this.codeNarcStdErr);
         }
