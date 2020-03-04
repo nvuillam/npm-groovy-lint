@@ -1,5 +1,7 @@
 #! /usr/bin/env node
 
+const DEFAULT_VERSION = "3.0.0-beta.2";
+
 // Imports
 const c = require("ansi-colors");
 const cliProgress = require("cli-progress");
@@ -111,7 +113,7 @@ class NpmGroovyLint {
                 try {
                     v = require("package.json").version;
                 } catch {
-                    v = "3.0.0-beta.1";
+                    v = DEFAULT_VERSION;
                 }
             }
             const vLabel = "npm-groovy-lint v" + v;

@@ -142,6 +142,7 @@ describe('TEST npm-groovy-lint using API', () => {
     });
 
     it('(API:help) should show npm-groovy-lint version', async () => {
+        process.env.npm_package_version = ""; // NV: Do nto use npm_package_version to have more code coverage :)
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
