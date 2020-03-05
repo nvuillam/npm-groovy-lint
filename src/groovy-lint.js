@@ -463,6 +463,7 @@ class NpmGroovyLint {
         // Remove temporary file created for source argument if provided
         if (this.tmpGroovyFileName) {
             await fse.remove(this.tmpGroovyFileName);
+            this.tmpXmlFileName = null;
         }
     }
 
@@ -548,7 +549,10 @@ class NpmGroovyLint {
             }
         }
         result.files = files;
-        await fse.remove(this.tmpXmlFileName); // Remove temporary file
+        if (this.tmpXmlFileName) {
+            await fse.remove(this.tmpXmlFileName); // Remove temporary file
+            this.tmpXmlFileName = null;
+        }
         return result;
     }
 
