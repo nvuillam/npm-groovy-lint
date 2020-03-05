@@ -1,6 +1,7 @@
 // Shared functions
 "use strict";
 
+const debug = require("debug")("npm-groovy-lint");
 const decodeHtml = require("decode-html");
 const fse = require("fs-extra");
 
@@ -14,7 +15,7 @@ async function getSourceLines(source, fileNm) {
 }
 
 // Evaluate variables from messages
-function evaluateVariables(variableDefs, msg, optns = { verbose: false }) {
+function evaluateVariables(variableDefs, msg) {
     const evaluatedVars = [];
     for (const varDef of variableDefs || []) {
         // regex
@@ -27,8 +28,8 @@ function evaluateVariables(variableDefs, msg, optns = { verbose: false }) {
                     name: varDef.name,
                     value: varDef.type && varDef.type === "number" ? parseInt(value, 10) : value
                 });
-            } else if (optns.verbose) {
-                console.error("NGL: Unable to match " + varDef.regex + " in " + msg);
+            } else {
+                debug("NGL: Unable to match " + varDef.regex + " in " + msg);
             }
         } else if (varDef.value) {
             evaluatedVars.push({ name: varDef.name, value: varDef.value });
@@ -38,16 +39,14 @@ function evaluateVariables(variableDefs, msg, optns = { verbose: false }) {
 }
 
 // Get position to highlight in sources
-function evaluateRange(errItem, rule, evaluatedVars, errLine, allLines, optns = { verbose: false }) {
+function evaluateRange(errItem, rule, evaluatedVars, errLine, allLines) {
     let range;
     if (rule.range) {
         if (rule.range.type === "function") {
             try {
                 range = rule.range.func(errLine, errItem, evaluatedVars, allLines);
             } catch (e) {
-                if (optns.verbose) {
-                    console.error("NGL: Range function error: " + e.message + " / " + JSON.stringify(rule) + "\n" + JSON.stringify(errItem));
-                }
+                debug("NGL: Range function error: " + e.message + " / " + JSON.stringify(rule) + "\n" + JSON.stringify(errItem));
             }
         }
     }

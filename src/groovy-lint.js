@@ -5,6 +5,7 @@ const DEFAULT_VERSION = "3.0.0-beta.2";
 // Imports
 const c = require("ansi-colors");
 const cliProgress = require("cli-progress");
+const debug = require("debug")("npm-groovy-lint");
 const fse = require("fs-extra");
 const os = require("os");
 const path = require("path");
@@ -18,6 +19,7 @@ const NpmGroovyLintFix = require("./groovy-lint-fix.js");
 const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
 const optionsDefinition = require("./options");
 const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js");
+
 class NpmGroovyLint {
     "use strict";
 
@@ -313,9 +315,7 @@ class NpmGroovyLint {
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + jdeployFileToUse + '" ' + this.codenarcArgs.join(" ");
 
         // Start progress bar
-        if (this.options.verbose) {
-            console.log("NGL: running CodeNarc using " + jDeployCommand);
-        }
+        debug("NGL: running CodeNarc using " + jDeployCommand);
         this.bar = new cliProgress.SingleBar(
             {
                 format: "[{bar}] Running CodeNarc for {duration_formatted}",
@@ -332,7 +332,7 @@ class NpmGroovyLint {
             }
         }, 500);
 
-        // originalJDeploy.js Execution using child process
+        // originalJDeploy.js Execution using child process (or originaljdeployPlanB if originaljdeploy.js failed)
         let execRes;
         try {
             execRes = await exec(jDeployCommand, { timeout: this.execTimeout });
@@ -370,7 +370,7 @@ class NpmGroovyLint {
             exec(jDeployCommand, { timeout: this.execTimeout });
             // Poll it until it is ready
             const start = performance.now();
-            await new Promise((resolve, reject) => {
+            await new Promise(resolve => {
                 interval = setInterval(() => {
                     request
                         .get(serverPingUri)
@@ -386,13 +386,13 @@ class NpmGroovyLint {
                                     },
                                     interval
                                 );
-                                reject();
+                                resolve();
                             }
                         })
                         .on("error", e => {
                             if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
                                 this.declareServerError(e, interval);
-                                reject();
+                                resolve();
                             }
                         });
                 }, 1000);
@@ -401,19 +401,22 @@ class NpmGroovyLint {
             this.declareServerError(e, interval);
             return false;
         }
-        console.log(`NGL: Started CodeNarc Server after ${attempts} attempts`);
-        return true;
+        if (this.serverStatus === "running") {
+            console.log(`NGL: Started CodeNarc Server after ${attempts} attempts`);
+            return true;
+        } else {
+            return false;
+        }
     }
 
+    // Stop polling and log error
     declareServerError(e, interval) {
         this.serverStatus = "error";
         if (interval) {
             clearInterval(interval);
         }
         console.log("NGL: Unable to start CodeNarc Server. Use --noserver if you do not even want to try");
-        if (this.verbose && e) {
-            console.error(e.message);
-        }
+        debug(e.message);
     }
 
     // Return CodeNarc server URI

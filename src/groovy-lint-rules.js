@@ -67,7 +67,6 @@ const indentLength = 4;
 const rulesFixPriorityOrder = [
     // Line rules or not changing line rules
     "NoTabCharacter",
-    "TrailingWhitespace",
     "Indentation",
     "UnnecessaryGString",
     "SpaceBeforeOpeningBrace",
@@ -77,6 +76,7 @@ const rulesFixPriorityOrder = [
     "SpaceAfterComma",
     "UnnecessaryDefInFieldDeclaration",
     "UnnecessarySemicolon",
+    "TrailingWhitespace",
 
     // Rule that can change the numbers of lines, so they must be processed after line scope rules
 

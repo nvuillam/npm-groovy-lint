@@ -3,6 +3,7 @@
 // Imports
 const fse = require("fs-extra");
 const cliProgress = require("cli-progress");
+const debug = require("debug")("npm-groovy-lint");
 const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
 const { evaluateVariables, getSourceLines } = require("./utils.js");
 
@@ -180,8 +181,8 @@ class NpmGroovyLintFix {
             return this.applyFixRule(line, lineNb, fixableError);
         } catch (e) {
             if (this.verbose) {
-                console.error(e.message);
-                console.error(fixableError);
+                debug(e.message);
+                debug(fixableError);
             }
             return line;
         }
@@ -204,8 +205,8 @@ class NpmGroovyLintFix {
             // Process replacement with evualuated expressions (except if issue in evaluated expression)
             if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
                 newLine = newLine.replace(strBefore, strAfter);
-            } else if (this.verbose) {
-                console.error("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n" + JSON.stringify(fixableError));
+            } else {
+                debug("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n" + JSON.stringify(fixableError));
             }
         }
         // Function defined in rule
@@ -213,9 +214,7 @@ class NpmGroovyLintFix {
             try {
                 newLine = fix.func(newLine, evaluatedVars);
             } catch (e) {
-                if (this.verbose) {
-                    console.error("NGL: Function error: " + e.message + " / " + JSON.stringify(fixableError));
-                }
+                debug("NGL: Function error: " + e.message + " / " + JSON.stringify(fixableError));
             }
         }
         return newLine;
