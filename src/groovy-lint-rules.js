@@ -299,8 +299,8 @@ const npmGroovyLintRules = {
             type: "function",
             func: (errLine, errItem, evaluatedVars) => {
                 return {
-                    start: { line: errItem.line, character: getVariable(evaluatedVars, "EXPECTED") },
-                    end: { line: errItem.line, character: getVariable(evaluatedVars, "FOUND") }
+                    start: { line: errItem.line, character: 0 },
+                    end: { line: errItem.line, character: getVariable(evaluatedVars, "FOUND") - 1 }
                 };
             }
         },

@@ -13,17 +13,34 @@ const jdeployFileAfterRenamePlanB = './jdeploy-bundle/originaljdeployPlanB.js';
 const packageJsonFile = 'package.json';
 
 // Process
-
 console.info('NGL: Patching ' + jdeployFile + '...');
 const packageJsonConfig = fse.readJsonSync(packageJsonFile);
 
+// Get config from package Json
 const jarFileNamePath = packageJsonConfig.jdeploy.jar.slice(packageJsonConfig.jdeploy.jar.indexOf('/') + 1);
 const jarFileName = packageJsonConfig.jdeploy.jar.slice(packageJsonConfig.jdeploy.jar.lastIndexOf('/') + 1);
 
+// Build text replacements
+const execCommandCode = `
+let child;
+try {
+    child = exec(cmd, { async: true });
+    child.on('close', function (code) {
+        process.exit(code);
+    });
+} catch (e) {
+    console.log('jdeploy exec error: ' + e.message);
+    process.exit(1);
+}`
+const onCloseCode = `child.on('close', function(code) {
+    process.exit(code);
+});`
 const replacements = [
     { before: ('"' + jarFileName + '"'), after: '"{{JAR_NAME}}"' },
     { before: '{{MAIN_CLASS}}', after: packageJsonConfig.jdeploy.mainClass },
     { before: '{{CLASSPATH}}', after: (jarFileNamePath + ':' + packageJsonConfig.jdeploy.classPath) },
+    { before: 'var child = exec(cmd, {async: true});', after: execCommandCode },
+    { before: onCloseCode, after: '' }
 ];
 
 console.debug('Replacements: ' + JSON.stringify(replacements, null, 2));
@@ -33,6 +50,7 @@ let jdeployFileContent = fse.readFileSync(jdeployFile).toString();
 for (const replacement of replacements) {
     jdeployFileContent = jdeployFileContent.replace(replacement.before, replacement.after);
 }
+
 
 fse.writeFileSync(jdeployFile, jdeployFileContent);
 console.info('NGL: ' + jdeployFile + ' has been updated.');

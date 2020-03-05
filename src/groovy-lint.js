@@ -49,7 +49,7 @@ class NpmGroovyLint {
     nglOutputString = "";
     status = 0;
     fixer;
-    execTimeout = 120000;
+    execTimeout = 240000;
 
     bar;
     barTimer;
@@ -359,7 +359,7 @@ class NpmGroovyLint {
     // Start CodeNarc server so it can be called via Http just after
     async startCodeNarcServer() {
         this.serverStatus = "unknown";
-        const maxAttemptTimeMs = 2000;
+        const maxAttemptTimeMs = 10000;
         let attempts = 1;
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" --server';
