@@ -76,11 +76,11 @@ class NpmGroovyLint {
     }
 
     // Call an existing NpmGroovyLint instance to request fix of errors
-    async fixErrors(errorIds) {
+    async fixErrors(errorIds, optns = {}) {
         this.fixer = new NpmGroovyLintFix(this.lintResult, {
-            verbose: this.options.verbose,
-            fixrules: this.options.fixrules,
-            source: this.options.source,
+            verbose: optns.verbose || this.options.verbose,
+            fixrules: optns.fixrules || this.options.fixrules,
+            source: optns.source || this.options.source,
             save: this.tmpGroovyFileName ? false : true
         });
         await this.fixer.run(errorIds);
