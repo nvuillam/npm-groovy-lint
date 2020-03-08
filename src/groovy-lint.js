@@ -3,22 +3,18 @@
 const DEFAULT_VERSION = "3.0.0-beta.2";
 
 // Imports
-const c = require("ansi-colors");
 const cliProgress = require("cli-progress");
 const debug = require("debug")("npm-groovy-lint");
-const fse = require("fs-extra");
-const os = require("os");
-const path = require("path");
 const { performance } = require("perf_hooks");
 const request = require("request");
 const rp = require("request-promise-native");
 const util = require("util");
-const xml2js = require("xml2js");
+
 const exec = util.promisify(require("child_process").exec);
-const NpmGroovyLintFix = require("./groovy-lint-fix.js");
-const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
+const NpmGroovyLintFix = require("./groovy-lint-fix");
+const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = require("./codenarc-factory.js");
 const optionsDefinition = require("./options");
-const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js");
+const { processOutput } = require("./output.js");
 
 class NpmGroovyLint {
     "use strict";
@@ -33,6 +29,7 @@ class NpmGroovyLint {
     parseOptions;
     tmpXmlFileName;
     tmpGroovyFileName;
+    tmpRuleSetFileName;
 
     // Codenarc
     codenarcArgs = [];
@@ -46,7 +43,7 @@ class NpmGroovyLint {
     output;
     onlyCodeNarc = false;
     lintResult = {};
-    nglOutputString = "";
+    outputString = "";
     status = 0;
     fixer;
     execTimeout = 240000;
@@ -123,18 +120,18 @@ class NpmGroovyLint {
             }
             const vLabel = "npm-groovy-lint v" + v;
             console.info(vLabel);
-            this.nglOutputString = vLabel;
+            this.outputString = vLabel;
             return false;
         }
 
         // Show help ( index or for an options)
         if (this.options.help) {
             if (this.options._.length) {
-                this.nglOutputString = optionsDefinition.generateHelpForOption(this.options._[0]);
+                this.outputString = optionsDefinition.generateHelpForOption(this.options._[0]);
             } else {
-                this.nglOutputString = optionsDefinition.generateHelp();
+                this.outputString = optionsDefinition.generateHelp();
             }
-            console.info(this.nglOutputString);
+            console.info(this.outputString);
             return false;
         }
 
@@ -149,103 +146,26 @@ class NpmGroovyLint {
                     json: true
                 });
                 if (parsedBody.status === "killed") {
-                    this.nglOutputString = "CodeNarcServer terminated";
+                    this.outputString = "CodeNarcServer terminated";
                 } else {
-                    this.nglOutputString = "Error killing CodeNarcServer";
+                    this.outputString = "Error killing CodeNarcServer";
                 }
             } catch (e) {
                 if (e.message.includes("socket hang up")) {
-                    this.nglOutputString = "CodeNarcServer terminated";
+                    this.outputString = "CodeNarcServer terminated";
                 } else {
-                    this.nglOutputString = "CodeNarcServer was not running";
+                    this.outputString = "CodeNarcServer was not running";
                 }
             }
-            console.info(this.nglOutputString);
+            console.info(this.outputString);
             return false;
         }
 
-        ////////////////////////////
-        // Build codenarc options //
-        ////////////////////////////
-
-        let cnPath = this.options.path;
-        let cnFiles = this.options.files;
-
-        // If source option, create a temporary Groovy file
-        if (this.options.source) {
-            cnPath = os.tmpdir();
-            const tmpFileNm = "codeNarcTmpFile_" + Math.random() + ".groovy";
-            this.tmpGroovyFileName = os.tmpdir() + "/" + tmpFileNm;
-            cnFiles = "**/" + tmpFileNm;
-            await fse.writeFile(this.tmpGroovyFileName, this.options.source);
-            debug(`Create temp file ${this.tmpGroovyFileName} with input source, as CodeNarc requires physical files`);
+        // Prepare CodeNarc call then set result on NpmGroovyLint instance
+        const codeNarcFactoryResult = await prepareCodeNarcCall(this.options, this.jdeployRootPath);
+        for (const propName of Object.keys(codeNarcFactoryResult)) {
+            this[propName] = codeNarcFactoryResult[propName];
         }
-
-        // Base directory
-        const baseBefore = (cnPath !== "." && cnPath.startsWith("/")) || cnPath.includes(":/") || cnPath.includes(":\\") ? "" : process.cwd() + "/";
-        this.codeNarcBaseDir = cnPath !== "." ? baseBefore + cnPath.replace(/^"(.*)"$/, "$1") : process.cwd();
-        this.codenarcArgs.push('-basedir="' + this.codeNarcBaseDir + '"');
-
-        // Ruleset(s) & matching files pattern
-        let defaultFilesPattern = "**/*.groovy,**/Jenkinsfile";
-        let ruleSetFile = this.jdeployRootPath + "/lib/example/RuleSet-Groovy.groovy";
-        if (this.options.rulesets) {
-            if (this.options.rulesets === "Jenkinsfile") {
-                defaultFilesPattern = "**/Jenkinsfile";
-                ruleSetFile = this.jdeployRootPath + "/lib/example/RuleSet-Jenkinsfile.groovy";
-            } else if (this.options.rulesets === "Groovy") {
-                defaultFilesPattern = "**/*.groovy";
-                ruleSetFile = this.jdeployRootPath + "/lib/example/RuleSet-Groovy.groovy";
-            } else if (this.options.rulesets === "all") {
-                ruleSetFile = this.jdeployRootPath + "/lib/example/RuleSet-All.groovy";
-            } else {
-                ruleSetFile = this.options.rulesets.replace(/^"(.*)"$/, "$1");
-            }
-        }
-        this.codenarcArgs.push('-rulesetfiles="file:' + ruleSetFile + '"');
-
-        // Matching files pattern(s)
-        if (cnFiles) {
-            this.codenarcArgs.push('-includes="' + cnFiles.replace(/^"(.*)"$/, "$1") + '"');
-        } else {
-            // If files not sent, use defaultFilesPattern, guessed from options.rulesets value
-            this.codenarcArgs.push('-includes="' + defaultFilesPattern + '"');
-        }
-
-        // Output
-        this.output = this.options.output.replace(/^"(.*)"$/, "$1");
-        if (this.output.includes(".txt") || this.output === "none") {
-            // Disable ansi colors if output in txt file
-            c.enabled = false;
-        }
-        if (["txt", "json", "none"].includes(this.output) || this.output.endsWith(".txt") || this.output.endsWith(".json")) {
-            this.outputType = this.output.endsWith(".txt") ? "txt" : this.output.endsWith(".json") ? "json" : this.output;
-            this.tmpXmlFileName = os.tmpdir() + "/codeNarcReportXml_" + Math.random() + ".xml";
-            this.codenarcArgs.push('-report=xml:"' + this.tmpXmlFileName + '"');
-        } else if (["html", "xml"].includes(this.output.split(".").pop())) {
-            this.outputType = this.output
-                .split(".")
-                .pop()
-                .endsWith("html")
-                ? "html"
-                : this.output
-                      .split(".")
-                      .pop()
-                      .endsWith("xml")
-                ? "xml"
-                : "";
-            const ext = this.output.split(".").pop();
-            this.codenarcArgs.push('-report="' + ext + ":" + this.output + '"');
-
-            // If filename is sent: just call codeNarc, no parsing results
-            if (!["html", "xml"].includes(this.output)) {
-                this.onlyCodeNarc = true;
-            }
-        } else {
-            this.status = 2;
-            throw new Error("For now, only output formats are txt and json in console, and html and xml as files");
-        }
-
         return true;
     }
 
@@ -373,13 +293,23 @@ class NpmGroovyLint {
         debug(`ATTEMPT to start CodeNarcServer with ${jDeployCommand}`);
         try {
             // Start server using java (we don't care the promise result, as the following promise will poll the server)
+            let stop = false;
+            let eJava;
             exec(jDeployCommand, { timeout: this.execTimeout })
                 .then(() => {})
-                .catch(() => {});
+                .catch(eRun => {
+                    stop = true;
+                    eJava = eRun;
+                });
             // Poll it until it is ready
             const start = performance.now();
             await new Promise(resolve => {
                 interval = setInterval(() => {
+                    // If java call crashed, don't bother polling
+                    if (stop) {
+                        this.declareServerError(eJava, interval);
+                        resolve();
+                    }
                     request
                         .get(serverPingUri)
                         .on("response", response => {
@@ -451,7 +381,7 @@ class NpmGroovyLint {
         // process npm-groovy-lint options ( output, fix, formatting ...)
         else {
             // Parse XML result as js object
-            this.lintResult = await this.parseCodeNarcResult();
+            this.lintResult = await parseCodeNarcResult(this.options, this.codeNarcBaseDir, this.tmpXmlFileName);
             // Fix all found errors if requested
             if (this.options.fix) {
                 this.fixer = new NpmGroovyLintFix(this.lintResult, {
@@ -468,102 +398,10 @@ class NpmGroovyLint {
                 }
             }
             // Output result
-            await this.processNglOutput();
+            this.outputString = await processOutput(this.outputType, this.output, this.lintResult, this.options, this.fixer);
         }
 
-        // Remove temporary file created for source argument if provided
-        if (this.tmpGroovyFileName) {
-            await fse.remove(this.tmpGroovyFileName);
-            debug(`Removed temp file ${this.tmpGroovyFileName} as it is not longer used`);
-            this.tmpXmlFileName = null;
-        }
-    }
-
-    // Parse XML result file as js object
-    async parseCodeNarcResult() {
-        const parser = new xml2js.Parser();
-        const tempXmlFileContent = await parser.parseStringPromise(fse.readFileSync(this.tmpXmlFileName), {});
-        if (!tempXmlFileContent || !tempXmlFileContent.CodeNarc || !tempXmlFileContent.CodeNarc.Package) {
-            console.error(JSON.stringify(tempXmlFileContent));
-            this.status = 3;
-            throw new Error("Unable to parse temporary codenarc xml report file " + this.tmpXmlFileName);
-        }
-        const result = { summary: {} };
-
-        // Parse main result
-        const pcgkSummary = tempXmlFileContent.CodeNarc.PackageSummary[0]["$"];
-        result.summary.totalFilesWithErrorsNumber = parseInt(pcgkSummary.filesWithViolations, 10);
-        result.summary.totalFilesLinted = parseInt(pcgkSummary.totalFiles, 10);
-        result.summary.totalFoundErrorNumber = parseInt(pcgkSummary.priority1, 10);
-        result.summary.totalFoundWarningNumber = parseInt(pcgkSummary.priority2, 10);
-        result.summary.totalFoundInfoNumber = parseInt(pcgkSummary.priority3, 10);
-
-        // Parse files & violations
-        const files = {};
-        let errId = 0;
-        for (const folderInfo of tempXmlFileContent.CodeNarc.Package) {
-            if (!folderInfo.File) {
-                debug(`Warning: ${folderInfo} does not contain any File item`);
-                continue;
-            }
-            for (const fileInfo of folderInfo.File) {
-                // Build file name, or use '0' if source has been sent as input parameter
-                const fileNm = this.options.source
-                    ? 0
-                    : this.codeNarcBaseDir + "/" + (folderInfo["$"].path ? folderInfo["$"].path + "/" : "") + fileInfo["$"].name;
-                if (files[fileNm] == null) {
-                    files[fileNm] = { errors: [] };
-                }
-                // Get source code from file or input parameter
-                let allLines = await getSourceLines(this.options.source, fileNm);
-
-                for (const violation of fileInfo.Violation) {
-                    const errItem = {
-                        id: errId,
-                        line: violation["$"].lineNumber ? parseInt(violation["$"].lineNumber, 10) : 0,
-                        rule: violation["$"].ruleName,
-                        severity:
-                            violation["$"].priority === "1"
-                                ? "error"
-                                : violation["$"].priority === "2"
-                                ? "warning"
-                                : violation["$"].priority === "3"
-                                ? "info"
-                                : "unknown",
-                        msg: violation.Message ? violation.Message[0] : ""
-                    };
-                    // Find range & add error only if severity is matching logLevel
-                    if (
-                        errItem.severity === "error" ||
-                        this.options.loglevel === "info" ||
-                        (this.options.loglevel === "warning" && ["error", "warning"].includes(errItem.severity))
-                    ) {
-                        // Get fixable info & range if they have been defined on the rule
-                        const errRule = npmGroovyLintRules[errItem.rule];
-                        if (errRule) {
-                            if (errRule.fix) {
-                                errItem.fixable = true;
-                                errItem.fixLabel = errRule.fix.label || `Fix ${errItem.rule}`;
-                            }
-                            if (errRule.range) {
-                                const evaluatedVars = evaluateVariables(errRule.variables, errItem.msg, { verbose: this.verbose });
-                                const errLine = allLines[errItem.line - 1];
-                                const range = evaluateRange(errItem, errRule, evaluatedVars, errLine, allLines, { verbose: this.verbose });
-                                if (range) {
-                                    errItem.range = range;
-                                }
-                            }
-                        }
-                        // Add in file errors
-                        files[fileNm].errors.push(errItem);
-                        errId++;
-                    }
-                }
-            }
-        }
-        // Complete with files with no error
-        result.files = files;
-        return result;
+        manageDeleteTmpFiles(this.tmpGroovyFileName, this.tmpRuleSetFileName);
     }
 
     // Lint again after fixes and merge in existing results
@@ -625,100 +463,6 @@ class NpmGroovyLint {
         updatedResults.summary.fixedErrorsIds = fixedErrorsIds;
         debug(`Merged results summary ${JSON.stringify(updatedResults.summary)}`);
         return updatedResults;
-    }
-
-    // Reformat output if requested in command line
-    async processNglOutput() {
-        // Display as console log
-        if (this.outputType === "txt") {
-            // Errors
-            for (const fileNm of Object.keys(this.lintResult.files)) {
-                const fileErrors = this.lintResult.files[fileNm].errors;
-                this.nglOutputString += c.underline(fileNm) + "\n";
-                for (const err of fileErrors) {
-                    let color = "grey";
-                    switch (err.severity) {
-                        case "error":
-                            color = "red";
-                            break;
-                        case "warning":
-                            color = "yellow";
-                            break;
-                        case "info":
-                            color = "grey";
-                            break;
-                    }
-                    // Display fixed errors only if --verbose is called
-                    if (err.fixed === true) {
-                        if (this.options.verbose === true) {
-                            color = "green";
-                            err.severity = "fixed";
-                        } else {
-                            continue;
-                        }
-                    }
-                    // Build error output line
-                    this.nglOutputString +=
-                        "  " +
-                        err.line.toString().padEnd(4, " ") +
-                        "  " +
-                        c[color](err.severity.padEnd(7, " ")) +
-                        "  " +
-                        err.msg +
-                        "  " +
-                        err.rule.padEnd(24, " ") +
-                        "\n";
-                }
-                this.nglOutputString += "\n";
-            }
-            this.nglOutputString += "\nnpm-groovy-lint results in " + c.bold(this.lintResult.summary.totalFilesLinted) + " linted files:";
-
-            // Summary table
-            const errorTableLine = {
-                Severity: "Error",
-                "Total found": this.lintResult.summary.totalFoundErrorNumber,
-                "Total fixed": this.lintResult.summary.totalFixedErrorNumber,
-                "Total remaining": this.lintResult.summary.totalRemainingErrorNumber
-            };
-            const warningTableLine = {
-                Severity: "Warning",
-                "Total found": this.lintResult.summary.totalFoundWarningNumber,
-                "Total fixed": this.lintResult.summary.totalFixedWarningNumber,
-                "Total remaining": this.lintResult.summary.totalRemainingWarningNumber
-            };
-            const infoTableLine = {
-                Severity: "Info",
-                "Total found": this.lintResult.summary.totalFoundInfoNumber,
-                "Total fixed": this.lintResult.summary.totalFixedInfoNumber,
-                "Total remaining": this.lintResult.summary.totalRemainingInfoNumber
-            };
-            const summaryTable = [errorTableLine, warningTableLine, infoTableLine];
-
-            // Output text log in file or console
-            if (this.output.endsWith(".txt")) {
-                const fullFileContent = this.nglOutputString;
-                fse.writeFileSync(this.output, fullFileContent);
-                console.table(summaryTable, this.fixer ? ["Severity", "Total found", "Total fixed", "Total remaining"] : ["Severity", "Total found"]);
-                const absolutePath = path.resolve(".", this.output);
-                console.info("NGL: Logged results in file " + absolutePath);
-            } else {
-                console.log(this.nglOutputString);
-                console.table(summaryTable, this.fixer ? ["Severity", "Total found", "Total fixed", "Total remaining"] : ["Severity", "Total found"]);
-            }
-        }
-        // Display as json
-        else if (this.outputType === "json") {
-            // Output log
-            if (this.output.endsWith(".json")) {
-                const fullFileContent = JSON.stringify(this.nglOutputString, null, 2);
-                fse.writeFileSync(this.output, fullFileContent);
-                const absolutePath = path.resolve(".", this.output);
-                console.info("NGL: Logged results in file " + absolutePath);
-            } else {
-                this.nglOutputString = JSON.stringify(this.lintResult);
-                console.log(this.nglOutputString);
-            }
-        }
     }
 }
 

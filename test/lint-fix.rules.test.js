@@ -44,7 +44,7 @@ async function checkRuleFix(ruleName, testRule, ruleDef) {
     // Call linter & fixer
     const npmGroovyLintConfig = {
         source: testRule.sourceBefore.replace(/\r?\n/g, "\r\n"),
-        rulesets: 'Groovy',
+        rulesets: fixRules,
         fix: true,
         fixrules: fixRules,
         output: 'none',

@@ -18,11 +18,13 @@ else {
 // Copy files into dist folder (where they will be taken by "jdeploy install" command and copied to jdeploy_bundle)
 const filesToCopy =
     [
-        "index.js",
+        "codenarc-factory.js",
         "groovy-lint.js",
         "groovy-lint-fix.js",
         "groovy-lint-rules.js",
+        "index.js",
         "options.js",
+        "output.js",
         "utils.js"
     ];
 
