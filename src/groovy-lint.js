@@ -67,23 +67,26 @@ class NpmGroovyLint {
 
     // Run linting (and fixing if --fix)
     async run() {
+        debug(`<<< NpmGroovyLint.run START >>>`);
         const doProcess = await this.preProcess();
         if (doProcess) {
             await this.callCodeNarc();
             await this.postProcess();
         }
+        debug(`>>> NpmGroovyLint.run END <<<`);
         return this;
     }
 
     // Call an existing NpmGroovyLint instance to request fix of errors
     async fixErrors(errorIds, optns = {}) {
+        debug(`Fix errors for ${JSON.stringify(errorIds)} on existing NpmGroovyLint instance`);
         this.fixer = new NpmGroovyLintFix(this.lintResult, {
             verbose: optns.verbose || this.options.verbose,
             fixrules: optns.fixrules || this.options.fixrules,
             source: optns.source || this.options.source,
             save: this.tmpGroovyFileName ? false : true
         });
-        await this.fixer.run(errorIds);
+        await this.fixer.run({ errorIds: errorIds, propagate: true });
         this.lintResult = this.fixer.updatedLintResult;
     }
 
@@ -175,6 +178,7 @@ class NpmGroovyLint {
             this.tmpGroovyFileName = os.tmpdir() + "/" + tmpFileNm;
             cnFiles = "**/" + tmpFileNm;
             await fse.writeFile(this.tmpGroovyFileName, this.options.source);
+            debug(`Create temp file ${this.tmpGroovyFileName} with input source, as CodeNarc requires physical files`);
         }
 
         // Base directory
@@ -283,6 +287,7 @@ class NpmGroovyLint {
             },
             json: true
         };
+        debug(`CALL CodeNarcServer with ${JSON.stringify(rqstOptions, null, 2)}`);
         let parsedBody = null;
         try {
             parsedBody = await rp(rqstOptions);
@@ -315,7 +320,7 @@ class NpmGroovyLint {
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + jdeployFileToUse + '" ' + this.codenarcArgs.join(" ");
 
         // Start progress bar
-        debug("NGL: running CodeNarc using " + jDeployCommand);
+        debug(`CALL CodeNarcJava with ${jDeployCommand}`);
         this.bar = new cliProgress.SingleBar(
             {
                 format: "[{bar}] Running CodeNarc for {duration_formatted}",
@@ -365,9 +370,12 @@ class NpmGroovyLint {
         const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" --server';
         const serverPingUri = this.getCodeNarcServerUri() + "/ping";
         let interval;
+        debug(`ATTEMPT to start CodeNarcServer with ${jDeployCommand}`);
         try {
-            // Start server using java
-            exec(jDeployCommand, { timeout: this.execTimeout });
+            // Start server using java (we don't care the promise result, as the following promise will poll the server)
+            exec(jDeployCommand, { timeout: this.execTimeout })
+                .then(() => {})
+                .catch(() => {});
             // Poll it until it is ready
             const start = performance.now();
             await new Promise(resolve => {
@@ -377,6 +385,7 @@ class NpmGroovyLint {
                         .on("response", response => {
                             if (response.statusCode === 200) {
                                 this.serverStatus = "running";
+                                debug(`SUCCESS: CodeNarcServer is running`);
                                 clearInterval(interval);
                                 resolve();
                             } else if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
@@ -415,8 +424,10 @@ class NpmGroovyLint {
         if (interval) {
             clearInterval(interval);
         }
-        console.log("NGL: Unable to start CodeNarc Server. Use --noserver if you do not even want to try");
+        const errMsg = "NGL: Unable to start CodeNarc Server. Use --noserver if you do not even want to try";
+        debug(errMsg);
         debug(e.message);
+        console.log(errMsg);
     }
 
     // Return CodeNarc server URI
@@ -433,7 +444,7 @@ class NpmGroovyLint {
             this.status = 1;
             console.error("NGL: Error running CodeNarc: \n" + this.codeNarcStdErr);
         }
-        // no --ngl* options
+        // only --codenarcargs arguments
         else if (this.onlyCodeNarc) {
             console.log("NGL: Successfully processed CodeNarc: \n" + this.codeNarcStdOut);
         }
@@ -463,6 +474,7 @@ class NpmGroovyLint {
         // Remove temporary file created for source argument if provided
         if (this.tmpGroovyFileName) {
             await fse.remove(this.tmpGroovyFileName);
+            debug(`Removed temp file ${this.tmpGroovyFileName} as it is not longer used`);
             this.tmpXmlFileName = null;
         }
     }
@@ -491,6 +503,7 @@ class NpmGroovyLint {
         let errId = 0;
         for (const folderInfo of tempXmlFileContent.CodeNarc.Package) {
             if (!folderInfo.File) {
+                debug(`Warning: ${folderInfo} does not contain any File item`);
                 continue;
             }
             for (const fileInfo of folderInfo.File) {
@@ -548,11 +561,8 @@ class NpmGroovyLint {
                 }
             }
         }
+        // Complete with files with no error
         result.files = files;
-        if (this.tmpXmlFileName) {
-            await fse.remove(this.tmpXmlFileName); // Remove temporary file
-            this.tmpXmlFileName = null;
-        }
         return result;
     }
 
@@ -560,6 +570,7 @@ class NpmGroovyLint {
     async lintAgainAfterFix() {
         // same Options except fix = false & output = none
         const lintAgainOptions = JSON.parse(JSON.stringify(this.options));
+        debug(`Fix is done, lint again with options ${JSON.stringify(lintAgainOptions)}`);
         if (this.options.source) {
             lintAgainOptions.source = this.lintResult.files[0].updatedSource;
         }
@@ -596,7 +607,7 @@ class NpmGroovyLint {
         const fixedErrorsIds = [];
         for (const fileNm of Object.keys(initialResults.files)) {
             const initialResfileErrors = initialResults.files[fileNm].errors;
-            const afterFixResfileErrors = afterFixResults.files[fileNm].errors;
+            const afterFixResfileErrors = afterFixResults.files[fileNm] ? afterFixResults.files[fileNm].errors : [];
             const fileDtl = {
                 errors: afterFixResfileErrors,
                 updatedSource: initialResults.files[fileNm].updatedSource
@@ -612,7 +623,7 @@ class NpmGroovyLint {
         }
         updatedResults.summary.fixedErrorsNumber = fixedErrorsNumber;
         updatedResults.summary.fixedErrorsIds = fixedErrorsIds;
-
+        debug(`Merged results summary ${JSON.stringify(updatedResults.summary)}`);
         return updatedResults;
     }
 

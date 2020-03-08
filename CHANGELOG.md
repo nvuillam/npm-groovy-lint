@@ -5,6 +5,16 @@
 ### Added 
 
 - Local microservice "CodeNarcServer" called via Http by npm-groovy-lint, to avoid loading all groovy/java classes at each lint request. This microservice autokills itself after one hour idle.
+- Test classes for rules fix (before / after fix defined in rule definitions)
+- Add debug logs (use it by setting DEBUG env variable , ex: `DEBUG=npm-groovy-lint npm-groovy-lint args...`)
+- Update lines and ranges of other errors after a fix updated the number of lines
+
+## Changes
+
+- Split rules definition into files instead of all in a huge single file
+- New lib utils.js that can be used by rules definition
+- Fix: Crash when there was no error found in a file
+- Fix: Remove Promise error display in log after launching CodeNarcServer
 
 ## [2.2.0] 2020-02-28
 

@@ -43,7 +43,8 @@ class NpmGroovyLintFix {
     }
 
     // Fix errors using codenarc result and groovy lint rules
-    async run(errorIds = null) {
+    async run(optns = { errorIds: null, propagate: false }) {
+        debug(`<<<<<< NpmGroovyLintFix.run START >>>>>>`);
         // Start progress bar
         this.bar = new cliProgress.SingleBar(
             {
@@ -55,14 +56,14 @@ class NpmGroovyLintFix {
         this.bar.start(Object.keys(this.updatedLintResult.files).length, 0);
 
         // Parse fixes and process them
-        await this.parseFixableErrors(errorIds);
-        await this.fixErrors();
+        await this.parseFixableErrors(optns.errorIds);
+        await this.fixErrors(optns.propagate);
 
         this.updateResultCounters();
 
         // Clear progress bar
         this.bar.stop();
-
+        debug(`>>>>>> NpmGroovyLintFix.run END <<<<<<`);
         return this;
     }
 
@@ -112,6 +113,7 @@ class NpmGroovyLintFix {
                 return a.rule.priority > b.rule.priority ? 1 : a.rule.priority < b.rule.priority ? -1 : 0;
             });
         }
+        debug(`Parsed fixable errors: ${JSON.stringify(this.fixableErrors)}`);
     }
 
     // Add fixable error but do not add twice if scope if the full file
@@ -127,7 +129,7 @@ class NpmGroovyLintFix {
     }
 
     // Fix errors in files using fix rules
-    async fixErrors() {
+    async fixErrors(propagate) {
         // Process files in parallel
         await Promise.all(
             Object.keys(this.fixableErrors).map(async fileNm => {
@@ -143,13 +145,16 @@ class NpmGroovyLintFix {
                     const lineNb = fileFixableError.lineNb ? parseInt(fileFixableError.lineNb, 10) - 1 : -1;
                     // File scope violation
                     if (fileFixableError.rule.scope === "file") {
-                        const allLinesNew = this.tryApplyFixRule(allLines, lineNb, fileFixableError).slice(); // copy result lines
-                        if (JSON.stringify(allLinesNew) !== JSON.stringify(allLines.toString)) {
-                            allLines = allLinesNew;
+                        const allLinesNew = this.tryApplyFixRule([...allLines], lineNb, fileFixableError).slice(); // copy result lines
+                        if (JSON.stringify(allLinesNew) !== JSON.stringify(allLines)) {
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
                             this.fixedErrorsIds.push(fileFixableError.id);
-                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
+                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true }, propagate, {
+                                beforeFix: allLines,
+                                afterFix: allLinesNew
+                            });
+                            allLines = allLinesNew;
                         }
                     }
                     // Line scope violation
@@ -161,7 +166,7 @@ class NpmGroovyLintFix {
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
                             this.fixedErrorsIds.push(fileFixableError.id);
-                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
+                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true }, propagate);
                         }
                     }
                 }
@@ -230,26 +235,65 @@ class NpmGroovyLintFix {
     }
 
     // Update lint result of an identified error
-    updateLintResult(fileNm, errId, errDataToSet) {
+    updateLintResult(fileNm, errId, errDataToSet, propagate, compareInfo = {}) {
         const errIndex = this.updatedLintResult.files[fileNm].errors.findIndex(error => error.id === errId);
-        if (errIndex < 0) {
-            // No error to update in case of fix from triggers of another rule
-            return;
+        // Update error in lint result {mostly fixed: true}
+        // It not in list of errors, it means it's from a triggered error
+        if (errIndex > -1) {
+            const error = this.updatedLintResult.files[fileNm].errors[errIndex];
+            Object.assign(error, errDataToSet);
+            this.updatedLintResult.files[fileNm].errors[errIndex] = error;
+            if (errDataToSet.fixed === true) {
+                switch (error.severity) {
+                    case "error":
+                        this.updatedLintResult.summary.totalFixedErrorNumber++;
+                        break;
+                    case "warning":
+                        this.updatedLintResult.summary.totalFixedWarningNumber++;
+                        break;
+                    case "info":
+                        this.updatedLintResult.summary.totalFixedInfoNumber++;
+                        break;
+                }
+            }
         }
-        const error = this.updatedLintResult.files[fileNm].errors[errIndex];
-        Object.assign(error, errDataToSet);
-        this.updatedLintResult.files[fileNm].errors[errIndex] = error;
-        if (errDataToSet.fixed === true) {
-            switch (error.severity) {
-                case "error":
-                    this.updatedLintResult.summary.totalFixedErrorNumber++;
+        // If the number of lines has changes, update lines after
+        if (propagate && compareInfo && compareInfo.beforeFix && compareInfo.afterFix) {
+            // Propagate only if number of lines is different
+            if (compareInfo.beforeFix.length === compareInfo.afterFix.length) {
+                return;
+            }
+            let diffLinesNb = compareInfo.afterFix.length - compareInfo.beforeFix.length;
+
+            let firstAddedOrRemovedLineNb;
+            // Find first updated line number
+            for (let i = 0; i < compareInfo.beforeFix.length; i++) {
+                if (compareInfo.beforeFix[i] !== compareInfo.afterFix[i]) {
+                    firstAddedOrRemovedLineNb = i;
                     break;
-                case "warning":
-                    this.updatedLintResult.summary.totalFixedWarningNumber++;
-                    break;
-                case "info":
-                    this.updatedLintResult.summary.totalFixedInfoNumber++;
-                    break;
+                }
+            }
+
+            // Recalculate line positions if line number has changed
+            if ((firstAddedOrRemovedLineNb || firstAddedOrRemovedLineNb === 0) & (diffLinesNb !== 0)) {
+                // Update lint results
+                this.updatedLintResult.files[fileNm].errors = this.updatedLintResult.files[fileNm].errors.map(err => {
+                    if (err.range && err.range.start.line >= firstAddedOrRemovedLineNb) {
+                        err.range.start.line = err.range.start.line + diffLinesNb;
+                        err.range.end.line = err.range.end.line + diffLinesNb;
+                    }
+                    if (err.line && err.line >= firstAddedOrRemovedLineNb) {
+                        err.line = err.line + diffLinesNb;
+                    }
+                    return err;
+                });
+                // Update fixable Errors
+                this.fixableErrors[fileNm] = this.fixableErrors[fileNm].map(fixableError => {
+                    if ((fixableError.lineNb || fixableError.lineNb === 0) && fixableError.lineNb >= firstAddedOrRemovedLineNb) {
+                        fixableError.lineNb = fixableError.lineNb + diffLinesNb;
+                    }
+                    return fixableError;
+                });
             }
         }
     }

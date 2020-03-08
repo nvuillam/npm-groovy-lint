@@ -4,7 +4,7 @@ const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
 
-describe('TEST npm-groovy-lint fixes with API', function () {
+describe('Lint & fix with API', function () {
 
     it('(API:source) should lint then fix only a list of errors', async () => {
         const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
@@ -19,11 +19,11 @@ describe('TEST npm-groovy-lint fixes with API', function () {
         }).run();
 
         let errIdList = linter.lintResult.files[0].errors.filter(error => error.fixable === true).map(err => err.id);
-        errIdList = errIdList.slice(0, 5);
+        errIdList = errIdList.slice(0, 500);
         await linter.fixErrors(errIdList);
 
         assert(linter.status === 0, 'Status is 0');
-        assert(linter.lintResult.summary.fixedErrorsNumber >= 5, 'Errors have been fixed'); // can be more than the five sent errors, as there are other triggered fixes
+        assert(linter.lintResult.summary.fixedErrorsNumber >= 100, 'Errors have been fixed'); // can be more than the five sent errors, as there are other triggered fixes
         assert(linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
             'Source has been updated');

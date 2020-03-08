@@ -4,7 +4,7 @@ const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
 
-describe('TEST npm-groovy-lint using API', () => {
+describe('Lint with API', () => {
 
     it('(API:file) should generate text console output', async () => {
         const linter = await new NpmGroovyLint([

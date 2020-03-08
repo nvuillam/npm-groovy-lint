@@ -6,7 +6,7 @@ const fse = require("fs-extra");
 
 const exec = util.promisify(require("child_process").exec);
 
-describe('TEST npm-groovy-lint with built jdeploy-bundle', () => {
+describe('Lint with executables (jdeploy-bundle)', () => {
     it('(EXE:file) should generate text console output', async () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',

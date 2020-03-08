@@ -31,6 +31,9 @@ for (const fileName of filesToCopy) {
     console.info('NGL: Copied lib files into dist/lib');
 }
 
+fse.copySync('src/rules', 'dist/rules');
+console.info('NGL: Copied src/rules files into dist/rules');
+
 fse.copySync('lib', 'dist/lib');
 console.info('NGL: Copied lib files into dist/lib');
 

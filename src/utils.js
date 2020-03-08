@@ -14,6 +14,11 @@ async function getSourceLines(source, fileNm) {
         .split("\r\n");
 }
 
+// Get indent length
+function getIndentLength() {
+    return 4;
+}
+
 // Evaluate variables from messages
 function evaluateVariables(variableDefs, msg) {
     const evaluatedVars = [];
@@ -53,4 +58,120 @@ function evaluateRange(errItem, rule, evaluatedVars, errLine, allLines) {
     return range;
 }
 
-module.exports = { evaluateVariables, getSourceLines, evaluateRange };
+function getVariable(evaluatedVars, name, optns = { mandatory: true, decodeHtml: false, line: "" }) {
+    const matchingVars = evaluatedVars.filter(evaluatedVar => evaluatedVar.name === name);
+    if (matchingVars && matchingVars.length > 0) {
+        return optns.decodeHtml ? decodeHtml(matchingVars[0].value) : matchingVars[0].value;
+    } else if (optns.mandatory) {
+        throw new Error("NGL fix: missing mandatory variable " + name + " in " + JSON.stringify(evaluatedVars)) + "for line :\n" + optns.line;
+    } else {
+        return null;
+    }
+}
+
+function getStringRange(errLine, str, errItem) {
+    const varStartPos = errLine.indexOf(str);
+    return {
+        start: { line: errItem.line, character: varStartPos },
+        end: { line: errItem.line, character: varStartPos + str.length }
+    };
+}
+
+function getStringRangeMultiline(allLines, str, errItem) {
+    let range = getDefaultRange(allLines, errItem);
+    let pos = errItem.line - 1;
+    let isFound = false;
+    while (isFound === false && pos < allLines.length) {
+        if (!isFound && allLines[pos].indexOf(str) > -1) {
+            const varStartPos = allLines[pos].indexOf(str);
+            range = {
+                start: { line: errItem.line, character: varStartPos },
+                end: { line: errItem.line, character: varStartPos + str.length }
+            };
+            isFound = true;
+        }
+        pos++;
+    }
+    return range;
+}
+
+function getLastStringRange(errLine, str, errItem) {
+    const varStartPos = errLine.lastIndexOf(str);
+    return {
+        start: { line: errItem.line, character: varStartPos },
+        end: { line: errItem.line, character: varStartPos + str.length }
+    };
+}
+
+function getVariableRange(errLine, evaluatedVars, variable, errItem) {
+    const varValue = getVariable(evaluatedVars, variable);
+    return getStringRange(errLine, varValue, errItem);
+}
+
+/*
+function getLastVariableRange(errLine, evaluatedVars, variable, errItem) {
+    const varValue = getVariable(evaluatedVars, variable);
+    return getLastStringRange(errLine, varValue, errItem);
+}
+*/
+
+function findRangeBetweenStrings(allLines, errItem, strStart, strEnd) {
+    let range = getDefaultRange(allLines, errItem);
+    let pos = errItem.line - 1;
+    let isStartFound = false;
+    let isEndFound = false;
+    while ((isStartFound === false || isEndFound === false) && pos < allLines.length) {
+        if (!isStartFound && allLines[pos].indexOf(strStart) > -1) {
+            range.start = { line: pos + 1, character: allLines[pos].indexOf(strStart) };
+            isStartFound = true;
+        }
+        if (!isEndFound && allLines[pos].indexOf(strEnd) > -1) {
+            range.end = { line: pos + 1, character: allLines[pos].indexOf(strEnd) };
+            isEndFound = true;
+        }
+        pos++;
+    }
+    return range;
+}
+
+function getDefaultRange(allLines, errItem) {
+    return {
+        start: { line: errItem.line, character: 0 },
+        end: { line: errItem.line, character: allLines[errItem.line - 1].length }
+    };
+}
+
+function isValidCodeLine(line) {
+    return line.trim() !== "" && line.trim().split("//")[0] !== "";
+}
+
+function addSpaceAroundChar(line, char) {
+    let pos = -1;
+    const splits = line.split(char);
+    const newArray = splits.map(str => {
+        pos++;
+        if (pos === 0) {
+            return str.trimEnd();
+        } else if (pos === splits.length - 1) {
+            return str.trimStart();
+        } else {
+            return str.trim();
+        }
+    });
+    return newArray.join(" " + char + " ").trimEnd();
+}
+
+module.exports = {
+    addSpaceAroundChar,
+    evaluateRange,
+    evaluateVariables,
+    findRangeBetweenStrings,
+    getIndentLength,
+    getLastStringRange,
+    getSourceLines,
+    getStringRange,
+    getStringRangeMultiline,
+    getVariable,
+    getVariableRange,
+    isValidCodeLine
+};
