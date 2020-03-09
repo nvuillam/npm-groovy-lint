@@ -75,24 +75,22 @@ describe('Lint & fix with API', function () {
     it('(API:file) should fix only some errors', async function () {
         const allRules = [
             // Line rules or not changing line rules
-            "NoTabCharacter", // ok
-            //"TrailingWhitespace", // ok
-            //    "Indentation", // ok
-            "UnnecessaryGString", // ok
-            "SpaceBeforeOpeningBrace", // ok
-            "SpaceAfterOpeningBrace", // ok
-            "SpaceAfterCatch", // ok
-            "SpaceAroundOperator", // ok
-            "SpaceAfterComma", // ok
-            "UnnecessaryDefInFieldDeclaration", // not tested yet ?
-            "UnnecessarySemicolon", // ok
-            "IfStatementBraces", // ok
-            "ElseStatementBraces", // ok
-            "ConsecutiveBlankLines", // ok
-            "ClosingBraceNotAlone", // Required for IfStatementBraces & ElseStatementBraces
-            "IndentationClosingBraces",
-            "IndentationComments",
-            "FileEndsWithoutNewline" // ok
+
+            "Indentation" // ok
+            // "UnnecessaryGString", 
+            // "SpaceBeforeOpeningBrace", 
+            // "SpaceAfterOpeningBrace",
+            // "SpaceAfterCatch", 
+            // "SpaceAroundOperator",
+            // "SpaceAfterComma",
+            // "UnnecessaryDefInFieldDeclaration", 
+            // "UnnecessarySemicolon", 
+            // "IfStatementBraces",
+            // "ElseStatementBraces", 
+            // "ConsecutiveBlankLines", 
+            // "IndentationClosingBraces",
+            // "IndentationComments",
+            // "FileEndsWithoutNewline" // ok
         ];
         const linter = await new NpmGroovyLint([
             process.execPath,

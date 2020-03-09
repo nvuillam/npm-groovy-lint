@@ -18,6 +18,7 @@
 - New lib utils.js that can be used by rules definition
 - Fix: Crash when there was no error found in a file
 - Fix: Remove Promise error display in log after launching CodeNarcServer
+- Fix: Add more options exclusivity arguments rules
 
 ## [2.2.0] 2020-02-28
 

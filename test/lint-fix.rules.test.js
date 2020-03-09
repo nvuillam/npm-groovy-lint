@@ -19,7 +19,7 @@ describe('Check rules auto-fixes', () => {
                     // Do not test non-codenarc rules, as they can't be returned by CodeNarc Linter
                     if (npmGroovyLintRules[ruleName].isCodeNarcRule == null || npmGroovyLintRules[ruleName].isCodeNarcRule === true)
                         it(`${ruleName} (${pos})`, async () => {
-                            await checkRuleFix(ruleName, testRule, npmGroovyLintRules[ruleName]);
+                            await checkRuleFix(ruleName, testRule);
                         }).timeout(60000);
                     pos = pos + 1;
                 }
@@ -36,11 +36,8 @@ describe('Check rules auto-fixes', () => {
 });
 
 // Check rule fix result
-async function checkRuleFix(ruleName, testRule, ruleDef) {
+async function checkRuleFix(ruleName, testRule) {
     let fixRules = ruleName;
-    if (ruleDef.triggers) {
-        fixRules = fixRules + ',' + ruleDef.triggers.join(',');
-    }
     // Call linter & fixer
     const npmGroovyLintConfig = {
         source: testRule.sourceBefore.replace(/\r?\n/g, "\r\n"),

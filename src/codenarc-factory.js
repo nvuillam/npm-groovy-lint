@@ -39,7 +39,7 @@ async function prepareCodeNarcCall(options, jdeployRootPath) {
 
     // Create ruleSet groovy file if necessary
     const tmpRuleSetFileName = await manageCreateRuleSetFile(options);
-    if (tmpRuleSetFileName) {
+    if (tmpRuleSetFileName && tmpRuleSetFileName !== "") {
         result.tmpRuleSetFile = tmpRuleSetFileName;
         options.rulesets = tmpRuleSetFileName;
     }
@@ -221,9 +221,8 @@ async function manageCreateRuleSetFile(options) {
         await fse.writeFile(tmpRuleSetFileNm, ruleSetSource);
         debug(`CREATE RULESET tmp file ${tmpRuleSetFileNm} generated from input options, as CodeNarc requires physical files`);
         return tmpRuleSetFileNm;
-    } else {
-        return null;
     }
+    return "";
 }
 
 async function manageDeleteTmpFiles(tmpGroovyFileName, tmpRuleSetFileName) {

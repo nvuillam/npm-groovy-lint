@@ -140,9 +140,8 @@ class NpmGroovyLint {
 
         // Prepare CodeNarc call then set result on NpmGroovyLint instance
         const codeNarcFactoryResult = await prepareCodeNarcCall(this.options, this.jdeployRootPath);
-        for (const propName of Object.keys(codeNarcFactoryResult)) {
-            this[propName] = codeNarcFactoryResult[propName];
-        }
+        this.setMethodResult(codeNarcFactoryResult);
+
         return true;
     }
 
@@ -165,10 +164,7 @@ class NpmGroovyLint {
         if ([1, null].includes(serverCallResult.status)) {
             serverCallResult = await codeNarcCaller.callCodeNarcJava();
         }
-        // Set result on NpmGroovyLint instance
-        for (const propName of Object.keys(serverCallResult)) {
-            this[propName] = serverCallResult[propName];
-        }
+        this.setMethodResult(serverCallResult);
     }
 
     // After CodeNarc call
@@ -267,6 +263,13 @@ class NpmGroovyLint {
         updatedResults.summary.fixedErrorsIds = fixedErrorsIds;
         debug(`Merged results summary ${JSON.stringify(updatedResults.summary)}`);
         return updatedResults;
+    }
+
+    // Set lib results on this NpmGroovyLint instance
+    setMethodResult(libResult) {
+        for (const propName of Object.keys(libResult)) {
+            this[propName] = libResult[propName];
+        }
     }
 }
 
