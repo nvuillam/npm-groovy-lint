@@ -9,11 +9,12 @@
 - Test classes for rules fix (before / after fix defined in rule definitions)
 - Add debug logs (use it by setting DEBUG env variable , ex: `DEBUG=npm-groovy-lint npm-groovy-lint args...`)
 - Update lines and ranges of other errors after a fix updated the number of lines
-- Generate json config for VsCode Extension GroovyLint (not released yet)
+- Generate json config for VsCode Extension GroovyLint (soon releaased !)
 
 ## Changes
 
 - Split rules definition into files instead of all in a huge single file
+- Reorganise groovy-lint.js code, using codenarc-factory.js and codenarc-caller.js
 - New lib utils.js that can be used by rules definition
 - Fix: Crash when there was no error found in a file
 - Fix: Remove Promise error display in log after launching CodeNarcServer

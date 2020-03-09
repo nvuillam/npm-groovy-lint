@@ -82,7 +82,7 @@ async function processOutput(outputType, output, lintResult, options, fixer = nu
             fse.writeFileSync(output, fullFileContent);
             console.table(summaryTable, fixer ? ["Severity", "Total found", "Total fixed", "Total remaining"] : ["Severity", "Total found"]);
             const absolutePath = path.resolve(".", output);
-            console.info("NGL: Logged results in file " + absolutePath);
+            console.info("GroovyLint: Logged results in file " + absolutePath);
         } else {
             // Output text log in console
             console.log(outputString);
@@ -96,7 +96,7 @@ async function processOutput(outputType, output, lintResult, options, fixer = nu
             const fullFileContent = JSON.stringify(outputString, null, 2);
             fse.writeFileSync(output, fullFileContent);
             const absolutePath = path.resolve(".", output);
-            console.info("NGL: Logged results in file " + absolutePath);
+            console.info("GroovyLint: Logged results in file " + absolutePath);
         } else {
             outputString = JSON.stringify(lintResult);
             console.log(outputString);

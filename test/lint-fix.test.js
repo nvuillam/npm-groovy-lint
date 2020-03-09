@@ -49,7 +49,7 @@ describe('Lint & fix with API', function () {
             'Source has been updated');
     });
 
-    it('(API:file) should lit and fix a Jenkinsfile in one shot', async function () {
+    it('(API:file) should lint and fix a Jenkinsfile in one shot', async function () {
         const prevFileContent = fse.readFileSync('./jdeploy-bundle/lib/example/Jenkinsfile').toString();
         const linter = await new NpmGroovyLint([
             process.execPath,

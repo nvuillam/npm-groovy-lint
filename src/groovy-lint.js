@@ -3,15 +3,10 @@
 const DEFAULT_VERSION = "3.0.0-beta.2";
 
 // Imports
-const cliProgress = require("cli-progress");
 const debug = require("debug")("npm-groovy-lint");
-const { performance } = require("perf_hooks");
-const request = require("request");
-const rp = require("request-promise-native");
-const util = require("util");
 
-const exec = util.promisify(require("child_process").exec);
 const NpmGroovyLintFix = require("./groovy-lint-fix");
+const CodeNarcCaller = require("./codenarc-caller.js");
 const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = require("./codenarc-factory.js");
 const optionsDefinition = require("./options");
 const { processOutput } = require("./output.js");
@@ -46,10 +41,6 @@ class NpmGroovyLint {
     outputString = "";
     status = 0;
     fixer;
-    execTimeout = 240000;
-
-    bar;
-    barTimer;
 
     // Construction: initialize options & args
     constructor(argsIn, internalOpts = { parseOptions: true }) {
@@ -137,26 +128,12 @@ class NpmGroovyLint {
 
         // Kill running CodeNarcServer
         if (this.options.killserver) {
-            const serverUri = this.getCodeNarcServerUri() + "/kill";
-            try {
-                const parsedBody = await rp({
-                    method: "POST",
-                    uri: serverUri,
-                    timeout: 5000,
-                    json: true
-                });
-                if (parsedBody.status === "killed") {
-                    this.outputString = "CodeNarcServer terminated";
-                } else {
-                    this.outputString = "Error killing CodeNarcServer";
-                }
-            } catch (e) {
-                if (e.message.includes("socket hang up")) {
-                    this.outputString = "CodeNarcServer terminated";
-                } else {
-                    this.outputString = "CodeNarcServer was not running";
-                }
-            }
+            const codeNarcCaller = new CodeNarcCaller(this.codenarcArgs, this.serverStatus, this.args, this.options, {
+                jdeployFile: this.jdeployFile,
+                jdeployFilePlanB: this.jdeployFilePlanB,
+                jdeployRootPath: this.jdeployRootPath
+            });
+            this.outputString = await codeNarcCaller.killCodeNarcServer();
             console.info(this.outputString);
             return false;
         }
@@ -176,195 +153,22 @@ class NpmGroovyLint {
         - Call CodeNarc using org.codenarc.CodeNarc (originaljdeployPlanB.js)
     */
     async callCodeNarc() {
-        let serverSuccess = false;
-        if (!this.options.noserver) {
-            serverSuccess = await this.callCodeNarcServer();
-        }
-        if (!serverSuccess) {
-            await this.callCodeNarcJava();
-        }
-    }
-
-    // Call local CodeNarc server if running
-    async callCodeNarcServer() {
-        // If use of --codenarcargs, get default values for CodeNarcServer host & port
-        const serverUri = this.getCodeNarcServerUri();
-        // Remove "" around values because they won't get thru system command line parser
-        const codeNarcArgsForServer = this.codenarcArgs.map(codeNarcArg => {
-            if (codeNarcArg.includes('="') || codeNarcArg.includes(':"')) {
-                codeNarcArg = codeNarcArg.replace('="', "=").replace(':"', ":");
-                codeNarcArg = codeNarcArg.substring(0, codeNarcArg.length - 1);
-            }
-            return codeNarcArg;
+        let serverCallResult = { status: null };
+        const codeNarcCaller = new CodeNarcCaller(this.codenarcArgs, this.serverStatus, this.args, this.options, {
+            jdeployFile: this.jdeployFile,
+            jdeployFilePlanB: this.jdeployFilePlanB,
+            jdeployRootPath: this.jdeployRootPath
         });
-        // Call CodeNarc server
-        const codeNarcArgsString = codeNarcArgsForServer.join(" ");
-        const rqstOptions = {
-            method: "POST",
-            uri: serverUri,
-            body: {
-                codeNarcArgs: codeNarcArgsString
-            },
-            json: true
-        };
-        debug(`CALL CodeNarcServer with ${JSON.stringify(rqstOptions, null, 2)}`);
-        let parsedBody = null;
-        try {
-            parsedBody = await rp(rqstOptions);
-            this.serverStatus = "running";
-        } catch (e) {
-            // If server not started , start it and try again
-            if (
-                e.message &&
-                e.message.includes("ECONNREFUSED") &&
-                ["unknown", "running"].includes(this.serverStatus) &&
-                (await this.startCodeNarcServer())
-            ) {
-                if (this.serverStatus === "running") {
-                    return await this.callCodeNarcServer();
-                }
-            }
-            this.serverStatus = "error";
-            return false;
+        if (!this.options.noserver) {
+            serverCallResult = await codeNarcCaller.callCodeNarcServer();
         }
-        this.codeNarcStdOut = parsedBody.stdout;
-        this.codeNarcStdErr = parsedBody.stderr;
-        return parsedBody.status === "success";
-    }
-
-    // Call CodeNard java class from renamed jdeploy.js
-    async callCodeNarcJava(secondAttempt = false) {
-        // Build jdeploy codenarc command (request to launch server for next call except if --noserver is sent)
-        const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
-        const jdeployFileToUse = secondAttempt ? this.jdeployFilePlanB : this.jdeployFile;
-        const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + jdeployFileToUse + '" ' + this.codenarcArgs.join(" ");
-
-        // Start progress bar
-        debug(`CALL CodeNarcJava with ${jDeployCommand}`);
-        this.bar = new cliProgress.SingleBar(
-            {
-                format: "[{bar}] Running CodeNarc for {duration_formatted}",
-                hideCursor: true,
-                clearOnComplete: true
-            },
-            cliProgress.Presets.shades_classic
-        );
-        this.bar.start(10, 1);
-        this.barTimer = setInterval(() => {
-            this.bar.increment();
-            if (this.bar.value === 9) {
-                this.bar.update(1);
-            }
-        }, 500);
-
-        // originalJDeploy.js Execution using child process (or originaljdeployPlanB if originaljdeploy.js failed)
-        let execRes;
-        try {
-            execRes = await exec(jDeployCommand, { timeout: this.execTimeout });
-        } catch (e) {
-            clearInterval(this.barTimer);
-            this.bar.stop();
-            // If failure (missing class com.nvuillam.CodeNarcServer for example, it can happen on Linux, let's try the original org.codenarc.CodeNarc class)
-            if (!secondAttempt) {
-                return await this.callCodeNarcJava(true);
-            } else {
-                this.codeNarcStdErr = e.stderr;
-                return;
-            }
+        if ([1, null].includes(serverCallResult.status)) {
+            serverCallResult = await codeNarcCaller.callCodeNarcJava();
         }
-
-        // Stop progress bar
-        clearInterval(this.barTimer);
-        this.bar.stop();
-
-        this.codeNarcStdOut = execRes.stdout;
-        this.codeNarcStdErr = execRes.stderr;
-    }
-
-    // Start CodeNarc server so it can be called via Http just after
-    async startCodeNarcServer() {
-        this.serverStatus = "unknown";
-        const maxAttemptTimeMs = 10000;
-        let attempts = 1;
-        const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
-        const jDeployCommand = '"' + nodeExe + '" "' + this.jdeployRootPath.trim() + "/" + this.jdeployFile + '" --server';
-        const serverPingUri = this.getCodeNarcServerUri() + "/ping";
-        let interval;
-        debug(`ATTEMPT to start CodeNarcServer with ${jDeployCommand}`);
-        try {
-            // Start server using java (we don't care the promise result, as the following promise will poll the server)
-            let stop = false;
-            let eJava;
-            exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => {})
-                .catch(eRun => {
-                    stop = true;
-                    eJava = eRun;
-                });
-            // Poll it until it is ready
-            const start = performance.now();
-            await new Promise(resolve => {
-                interval = setInterval(() => {
-                    // If java call crashed, don't bother polling
-                    if (stop) {
-                        this.declareServerError(eJava, interval);
-                        resolve();
-                    }
-                    request
-                        .get(serverPingUri)
-                        .on("response", response => {
-                            if (response.statusCode === 200) {
-                                this.serverStatus = "running";
-                                debug(`SUCCESS: CodeNarcServer is running`);
-                                clearInterval(interval);
-                                resolve();
-                            } else if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
-                                this.declareServerError(
-                                    {
-                                        message: "Timeout after " + maxAttemptTimeMs + "\nResponse: " + JSON.stringify(response.toJSON())
-                                    },
-                                    interval
-                                );
-                                resolve();
-                            }
-                        })
-                        .on("error", e => {
-                            if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {
-                                this.declareServerError(e, interval);
-                                resolve();
-                            }
-                        });
-                }, 1000);
-            });
-        } catch (e) {
-            this.declareServerError(e, interval);
-            return false;
+        // Set result on NpmGroovyLint instance
+        for (const propName of Object.keys(serverCallResult)) {
+            this[propName] = serverCallResult[propName];
         }
-        if (this.serverStatus === "running") {
-            console.log(`NGL: Started CodeNarc Server after ${attempts} attempts`);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // Stop polling and log error
-    declareServerError(e, interval) {
-        this.serverStatus = "error";
-        if (interval) {
-            clearInterval(interval);
-        }
-        const errMsg = "NGL: Unable to start CodeNarc Server. Use --noserver if you do not even want to try";
-        debug(errMsg);
-        debug(e.message);
-        console.log(errMsg);
-    }
-
-    // Return CodeNarc server URI
-    getCodeNarcServerUri() {
-        // If use of --codenarcargs, get default values for CodeNarcServer host & port
-        const serverOptions = optionsDefinition.parse({});
-        return (this.options.serverhost || serverOptions.serverhost) + ":" + (this.options.serverport || serverOptions.serverport);
     }
 
     // After CodeNarc call
@@ -372,11 +176,11 @@ class NpmGroovyLint {
         // CodeNarc error
         if (this.codeNarcStdErr && [null, "", undefined].includes(this.codeNarcStdOut)) {
             this.status = 1;
-            console.error("NGL: Error running CodeNarc: \n" + this.codeNarcStdErr);
+            console.error("GroovyLint: Error running CodeNarc: \n" + this.codeNarcStdErr);
         }
         // only --codenarcargs arguments
         else if (this.onlyCodeNarc) {
-            console.log("NGL: Successfully processed CodeNarc: \n" + this.codeNarcStdOut);
+            console.log("GroovyLint: Successfully processed CodeNarc: \n" + this.codeNarcStdOut);
         }
         // process npm-groovy-lint options ( output, fix, formatting ...)
         else {

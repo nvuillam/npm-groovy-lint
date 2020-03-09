@@ -34,7 +34,7 @@ function evaluateVariables(variableDefs, msg) {
                     value: varDef.type && varDef.type === "number" ? parseInt(value, 10) : value
                 });
             } else {
-                debug("NGL: Unable to match " + varDef.regex + " in " + msg);
+                debug("GroovyLint: Unable to match " + varDef.regex + " in " + msg);
             }
         } else if (varDef.value) {
             evaluatedVars.push({ name: varDef.name, value: varDef.value });
@@ -51,7 +51,7 @@ function evaluateRange(errItem, rule, evaluatedVars, errLine, allLines) {
             try {
                 range = rule.range.func(errLine, errItem, evaluatedVars, allLines);
             } catch (e) {
-                debug("NGL: Range function error: " + e.message + " / " + JSON.stringify(rule) + "\n" + JSON.stringify(errItem));
+                debug("GroovyLint: Range function error: " + e.message + " / " + JSON.stringify(rule) + "\n" + JSON.stringify(errItem));
             }
         }
     }
@@ -63,7 +63,7 @@ function getVariable(evaluatedVars, name, optns = { mandatory: true, decodeHtml:
     if (matchingVars && matchingVars.length > 0) {
         return optns.decodeHtml ? decodeHtml(matchingVars[0].value) : matchingVars[0].value;
     } else if (optns.mandatory) {
-        throw new Error("NGL fix: missing mandatory variable " + name + " in " + JSON.stringify(evaluatedVars)) + "for line :\n" + optns.line;
+        throw new Error("GroovyLint fix: missing mandatory variable " + name + " in " + JSON.stringify(evaluatedVars)) + "for line :\n" + optns.line;
     } else {
         return null;
     }

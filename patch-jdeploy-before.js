@@ -18,6 +18,7 @@ else {
 // Copy files into dist folder (where they will be taken by "jdeploy install" command and copied to jdeploy_bundle)
 const filesToCopy =
     [
+        "codenarc-caller.js",
         "codenarc-factory.js",
         "groovy-lint.js",
         "groovy-lint-fix.js",
@@ -29,15 +30,17 @@ const filesToCopy =
     ];
 
 for (const fileName of filesToCopy) {
-    fse.copyFileSync('src/' + fileName, 'dist/' + fileName);
-    console.info('NGL: Copied lib files into dist/lib');
+    const origin = `src/${fileName}`;
+    const target = `dist/${fileName}`;
+    fse.copyFileSync(origin, target);
+    console.info(`GroovyLint: Copied ${origin} into ${target} `);
 }
 
 fse.copySync('src/rules', 'dist/rules');
-console.info('NGL: Copied src/rules files into dist/rules');
+console.info('GroovyLint: Copied src/rules files into dist/rules');
 
 fse.copySync('lib', 'dist/lib');
-console.info('NGL: Copied lib files into dist/lib');
+console.info('GroovyLint: Copied lib files into dist/lib');
 
 process.exit(0);
 

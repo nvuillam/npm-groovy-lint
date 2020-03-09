@@ -48,7 +48,7 @@ class NpmGroovyLintFix {
         // Start progress bar
         this.bar = new cliProgress.SingleBar(
             {
-                format: "NGL [{bar}] Fixing {file}",
+                format: "GroovyLint [{bar}] Fixing {file}",
                 clearOnComplete: true
             },
             cliProgress.Presets.shades_classic
@@ -211,7 +211,7 @@ class NpmGroovyLintFix {
             if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
                 newLine = newLine.replace(strBefore, strAfter);
             } else {
-                debug("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n" + JSON.stringify(fixableError));
+                debug("GroovyLint: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n" + JSON.stringify(fixableError));
             }
         }
         // Function defined in rule
@@ -219,7 +219,7 @@ class NpmGroovyLintFix {
             try {
                 newLine = fix.func(newLine, evaluatedVars);
             } catch (e) {
-                debug("NGL: Function error: " + e.message + " / " + JSON.stringify(fixableError));
+                debug("GroovyLint: Function error: " + e.message + " / " + JSON.stringify(fixableError));
             }
         }
         return newLine;

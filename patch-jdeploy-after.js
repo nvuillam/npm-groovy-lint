@@ -13,7 +13,7 @@ const jdeployFileAfterRenamePlanB = './jdeploy-bundle/originaljdeployPlanB.js';
 const packageJsonFile = 'package.json';
 
 // Process
-console.info('NGL: Patching ' + jdeployFile + '...');
+console.info('GroovyLint: Patching ' + jdeployFile + '...');
 const packageJsonConfig = fse.readJsonSync(packageJsonFile);
 
 // Get config from package Json
@@ -53,11 +53,11 @@ for (const replacement of replacements) {
 
 
 fse.writeFileSync(jdeployFile, jdeployFileContent);
-console.info('NGL: ' + jdeployFile + ' has been updated.');
+console.info('GroovyLint: ' + jdeployFile + ' has been updated.');
 
 // Rename jdeploy.js into jdeployOriginal.js
 fse.renameSync(jdeployFile, jdeployFileAfterRename);
-console.info('NGL: ' + jdeployFile + ' renamed into ' + jdeployFileAfterRename);
+console.info('GroovyLint: ' + jdeployFile + ' renamed into ' + jdeployFileAfterRename);
 
 // Replace org.nvuillam.CodeNarcServer by org.codenarc.CodeNarc in another jdeploy file, to use it in case the first java call fails
 if (packageJsonConfig.jdeploy.mainClassPlanB) {
@@ -65,13 +65,13 @@ if (packageJsonConfig.jdeploy.mainClassPlanB) {
         .replace(packageJsonConfig.jdeploy.mainClass, packageJsonConfig.jdeploy.mainClassPlanB)
         .replace('lib/CodeNarcServer.jar:', '');
     fse.writeFileSync(jdeployFileAfterRenamePlanB, jdeployFileContentPlanB);
-    console.info('NGL: ' + jdeployFileAfterRenamePlanB + ' created from ' + jdeployFileAfterRename +
+    console.info('GroovyLint: ' + jdeployFileAfterRenamePlanB + ' created from ' + jdeployFileAfterRename +
         ' by replacing ' + packageJsonConfig.jdeploy.mainClass + ' by ' + packageJsonConfig.jdeploy.mainClassPlanB);
 }
 
 // Rename index.js into jdeploy.js
 fse.renameSync(runGroovyLintFile, jdeployFile);
-console.info('NGL: ' + runGroovyLintFile + ' renamed into ' + jdeployFile);
+console.info('GroovyLint: ' + runGroovyLintFile + ' renamed into ' + jdeployFile);
 
 
 
