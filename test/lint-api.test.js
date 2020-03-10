@@ -35,9 +35,9 @@ describe('Lint with API', () => {
             '--loglevel', 'warning'
         ],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
-        assert(linter.status === 0 && linter.outputString.includes('"totalFilesWithErrorsNumber"'), 'Script failure');
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes(`"totalFoundWarningNumber":`), 'Property totalFoundWarningNumber is in result');
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
-        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, 'Infos found');
     });
 
     it('(API:file) should generate codenarc HTML file report', async () => {
@@ -49,8 +49,8 @@ describe('Lint with API', () => {
             '--output', 'ReportTestCodenarc.html'],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
-        assert(linter.status === 0 && fse.existsSync('ReportTestCodenarc.html'), 'CodeNarc HTML report generated');
-
+        assert(linter.status === 0, 'Status is 0');
+        assert(fse.existsSync('ReportTestCodenarc.html'), 'CodeNarc HTML report generated');
         fse.removeSync('ReportTestCodenarc.html');
     });
 
@@ -66,8 +66,8 @@ describe('Lint with API', () => {
             '-report="xml:ReportTestCodenarc.xml"'],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
-        assert(linter.status === 0 && fse.existsSync('ReportTestCodenarc.xml'), 'XML CodeNarc report has been generated');
-
+        assert(linter.status === 0, 'Status is 0');
+        assert(fse.existsSync('ReportTestCodenarc.xml'), 'XML CodeNarc report has been generated');
         fse.removeSync('ReportTestCodenarc.xml');
     });
 
@@ -83,7 +83,8 @@ describe('Lint with API', () => {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        assert(linter.status === 0 && linter.outputString.includes('warning'), 'Output string contains warning');
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('warning'), 'Output string contains warning');
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, 'Infos found');
     });
@@ -98,15 +99,16 @@ describe('Lint with API', () => {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        if (process.platform.includes('win')) {
-            assert(linter.status === 0 && linter.outputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
+        if (process.platform.includes('win')) { // Doesn't work in Linux yet :/ 
+            assert(linter.status === 0, 'Status is 0');
+            assert(linter.outputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
         }
         else {
             console.log('Test (API:Server) should kill running server skipped: CodeNarcServer works only on windows for now , and we are on ' + process.platform);
         }
     });
 
-    it('(API:Server) should not succeeed to kill running server', async () => {
+    it('(API:Server) should not succeed to kill running server', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -116,7 +118,8 @@ describe('Lint with API', () => {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        assert(linter.status === 0 && linter.outputString.includes('CodeNarcServer was not running'), 'CodeNarcServer not killed because not running');
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('CodeNarcServer was not running'), 'CodeNarcServer not killed because not running');
     });
 
     it('(API:help) should show npm-groovy-lint help', async () => {
@@ -126,7 +129,8 @@ describe('Lint with API', () => {
             '-h'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 && linter.outputString.includes('--verbose'));
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('--verbose'), '--verbose is found in output text');
     });
 
 
@@ -137,8 +141,8 @@ describe('Lint with API', () => {
             '-h', 'source'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-
-        assert(linter.status === 0 && linter.outputString.includes('-s, --source'), 'npm-groovy-lint Help is displayed');
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('-s, --source'), 'npm-groovy-lint Help is displayed');
     });
 
     it('(API:help) should show npm-groovy-lint version', async () => {
@@ -149,7 +153,8 @@ describe('Lint with API', () => {
             '-v'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 && linter.outputString.includes('npm-groovy-lint v'));
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('npm-groovy-lint v'), 'Provides version');
     });
 
     it('(API:help) should show codenarc help', async () => {
@@ -160,7 +165,8 @@ describe('Lint with API', () => {
             '-help'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 && linter.codeNarcStdOut.includes('where OPTIONS are zero or more command-line options'), 'CodeNarc help is displayed');
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.codeNarcStdOut.includes('where OPTIONS are zero or more command-line options'), 'CodeNarc help is displayed');
     });
 
 
@@ -174,7 +180,8 @@ describe('Lint with API', () => {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 && linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
     });
 
     it('(API:source) should run without CodeNarc Server', async () => {
@@ -188,10 +195,8 @@ describe('Lint with API', () => {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0 && linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
     });
-
-
-
 
 });

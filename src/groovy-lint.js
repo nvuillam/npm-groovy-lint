@@ -9,7 +9,7 @@ const NpmGroovyLintFix = require("./groovy-lint-fix");
 const CodeNarcCaller = require("./codenarc-caller.js");
 const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = require("./codenarc-factory.js");
 const optionsDefinition = require("./options");
-const { processOutput } = require("./output.js");
+const { computeStats, processOutput } = require("./output.js");
 
 class NpmGroovyLint {
     "use strict";
@@ -198,6 +198,7 @@ class NpmGroovyLint {
                 }
             }
             // Output result
+            this.lintResult = computeStats(this.lintResult);
             this.outputString = await processOutput(this.outputType, this.output, this.lintResult, this.options, this.fixer);
         }
 
@@ -221,48 +222,8 @@ class NpmGroovyLint {
         });
         // Run linter
         await newLinter.run();
-        const newLintResult = newLinter.lintResult;
         // Merge new linter results in existing results
-        this.lintResult = this.mergeResults(this.lintResult, newLintResult);
-    }
-
-    // Merge --fix results and following lint results
-    mergeResults(initialResults, afterFixResults) {
-        const updatedResults = JSON.parse(JSON.stringify(initialResults));
-
-        // Pipes because variable content depends that if we run linter after fix or not
-        // Reset properties and update counters
-        updatedResults.files = {};
-        updatedResults.summary.totalFoundErrorNumber = afterFixResults.summary.totalFoundErrorNumber;
-        updatedResults.summary.totalFoundWarningNumber = afterFixResults.summary.totalFoundWarningNumber;
-        updatedResults.summary.totalFoundInfoNumber = afterFixResults.summary.totalFoundInfoNumber;
-        updatedResults.summary.totalFixedErrorNumber = initialResults.summary.totalFixedErrorNumber;
-        updatedResults.summary.totalFixedWarningNumber = initialResults.summary.totalFixedWarningNumber;
-        updatedResults.summary.totalFixedInfoNumber = initialResults.summary.totalFixedInfoNumber;
-
-        // Remove not fixed errors from initial result and add remaining errors of afterfixResults
-        let fixedErrorsNumber = 0;
-        const fixedErrorsIds = [];
-        for (const fileNm of Object.keys(initialResults.files)) {
-            const initialResfileErrors = initialResults.files[fileNm].errors;
-            const afterFixResfileErrors = afterFixResults.files[fileNm] ? afterFixResults.files[fileNm].errors : [];
-            const fileDtl = {
-                errors: afterFixResfileErrors,
-                updatedSource: initialResults.files[fileNm].updatedSource
-            };
-            for (const initialFileError of initialResfileErrors) {
-                if (initialFileError.fixed) {
-                    fixedErrorsNumber++;
-                    fixedErrorsIds.push(initialFileError.id);
-                    fileDtl.errors.push(initialFileError);
-                }
-            }
-            updatedResults.files[fileNm] = fileDtl;
-        }
-        updatedResults.summary.fixedErrorsNumber = fixedErrorsNumber;
-        updatedResults.summary.fixedErrorsIds = fixedErrorsIds;
-        debug(`Merged results summary ${JSON.stringify(updatedResults.summary)}`);
-        return updatedResults;
+        this.lintResult = newLinter.lintResult;
     }
 
     // Set lib results on this NpmGroovyLint instance

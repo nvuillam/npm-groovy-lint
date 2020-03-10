@@ -3,6 +3,81 @@ const c = require("ansi-colors");
 const fse = require("fs-extra");
 const path = require("path");
 
+// Compute statistics for output
+function computeStats(lintResult) {
+    const counterResultsSummary = {
+        totalFoundNumber: 0,
+        totalFixedNumber: 0,
+        totalRemainingNumber: 0,
+
+        totalFoundErrorNumber: 0,
+        totalFoundWarningNumber: 0,
+        totalFoundInfoNumber: 0,
+        totalFixedErrorNumber: 0,
+        totalFixedWarningNumber: 0,
+        totalFixedInfoNumber: 0,
+        totalRemainingErrorNumber: 0,
+        totalRemainingWarningNumber: 0,
+        totalRemainingInfoNumber: 0
+    };
+
+    for (const fileName of Object.keys(lintResult.files)) {
+        const fileResults = lintResult.files[fileName];
+        const fileErrors = fileResults.errors || [];
+
+        // Compute Error counters
+        const fileFoundErrorsNumber = fileErrors.filter(err => {
+            return err.severity === "error";
+        }).length;
+        const fileFixedErrorsNumber = fileErrors.filter(err => {
+            return err.severity === "error" && err.fixed && err.fixed === true;
+        }).length;
+        const fileRemainingErrorNumber = fileFoundErrorsNumber - fileFixedErrorsNumber;
+
+        counterResultsSummary.totalFoundErrorNumber = counterResultsSummary.totalFoundErrorNumber + fileFoundErrorsNumber;
+        counterResultsSummary.totalFixedErrorNumber = counterResultsSummary.totalFixedErrorNumber + fileFixedErrorsNumber;
+        counterResultsSummary.totalRemainingErrorNumber = counterResultsSummary.totalRemainingErrorNumber + fileRemainingErrorNumber;
+
+        // Compute Warning counters
+        const fileFoundWarningNumber = fileErrors.filter(err => {
+            return err.severity === "warning";
+        }).length;
+        const fileFixedWarningNumber = fileErrors.filter(err => {
+            return err.severity === "warning" && err.fixed && err.fixed === true;
+        }).length;
+        const fileRemainingWarningNumber = fileFoundWarningNumber - fileFixedWarningNumber;
+
+        counterResultsSummary.totalFoundWarningNumber = counterResultsSummary.totalFoundWarningNumber + fileFoundWarningNumber;
+        counterResultsSummary.totalFixedWarningNumber = counterResultsSummary.totalFixedWarningNumber + fileFixedWarningNumber;
+        counterResultsSummary.totalRemainingWarningNumber = counterResultsSummary.totalRemainingWarningNumber + fileRemainingWarningNumber;
+
+        // Compute Info counters
+        const fileFoundInfoNumber = fileErrors.filter(err => {
+            return err.severity === "info";
+        }).length;
+        const fileFixedInfoNumber = fileErrors.filter(err => {
+            return err.severity === "info" && err.fixed && err.fixed === true;
+        }).length;
+        const fileRemainingInfoNumber = fileFoundInfoNumber - fileFixedInfoNumber;
+
+        counterResultsSummary.totalFoundInfoNumber = counterResultsSummary.totalFoundErrorNumber + fileFoundInfoNumber;
+        counterResultsSummary.totalFixedInfoNumber = counterResultsSummary.totalFixedInfoNumber + fileFixedInfoNumber;
+        counterResultsSummary.totalRemainingInfoNumber = counterResultsSummary.totalRemainingInfoNumber + fileRemainingInfoNumber;
+
+        // Total undepending of severity
+        counterResultsSummary.totalFoundNumber =
+            counterResultsSummary.totalFoundNumber + fileFoundErrorsNumber + fileFoundWarningNumber + fileFoundInfoNumber;
+        counterResultsSummary.totalFixedNumber =
+            counterResultsSummary.totalFixedNumber + fileFixedErrorsNumber + fileFixedWarningNumber + fileFixedInfoNumber;
+        counterResultsSummary.totalRemainingNumber =
+            counterResultsSummary.totalRemainingNumber + fileRemainingErrorNumber + fileRemainingWarningNumber + fileRemainingInfoNumber;
+    }
+
+    // Set summary
+    lintResult.summary = counterResultsSummary;
+    return lintResult;
+}
+
 // Reformat output if requested in command line
 async function processOutput(outputType, output, lintResult, options, fixer = null) {
     let outputString = "";
@@ -105,4 +180,4 @@ async function processOutput(outputType, output, lintResult, options, fixer = nu
     return outputString;
 }
 
-module.exports = { processOutput };
+module.exports = { computeStats, processOutput };

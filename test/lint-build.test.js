@@ -32,7 +32,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
             console.error(stderr);
         }
         assert(stdout, 'stdout is set');
-        assert(stdout.includes('"totalFilesWithErrorsNumber"'), 'stdout should contain word "totalFilesWithErrorsNumber"');
+        assert(stdout.includes(`"totalFoundWarningNumber":`), 'Property totalFoundWarningNumber is in result');
     });
 
     it('(EXE:file) should generate codenarc HTML file report', async () => {

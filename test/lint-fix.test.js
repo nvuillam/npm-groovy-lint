@@ -23,10 +23,11 @@ describe('Lint & fix with API', function () {
         await linter.fixErrors(errIdList);
 
         assert(linter.status === 0, 'Status is 0');
-        assert(linter.lintResult.summary.fixedErrorsNumber >= 100, 'Errors have been fixed'); // can be more than the five sent errors, as there are other triggered fixes
+        assert(linter.lintResult.summary.totalFixedNumber >= 100, 'Errors have been fixed'); // can be more than the five sent errors, as there are other triggered fixes
         assert(linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
             'Source has been updated');
+        assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
     });
 
     it('(API:source) should lint and fix (one shot)', async () => {
@@ -43,10 +44,11 @@ describe('Lint & fix with API', function () {
         }).run();
 
         assert(linter.status === 0, 'Status is 0');
-        assert(linter.lintResult.summary.fixedErrorsNumber >= 5, 'Errors have been fixed');
+        assert(linter.lintResult.summary.totalFixedNumber >= 5, 'Errors have been fixed');
         assert(linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
             'Source has been updated');
+        assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
     });
 
     it('(API:file) should lint and fix a Jenkinsfile in one shot', async function () {
@@ -63,10 +65,11 @@ describe('Lint & fix with API', function () {
         }).run();
 
         assert(linter.status === 0, "status is 0");
-        assert(linter.lintResult.summary.fixedErrorsNumber > 0, 'Error have been fixed');
+        assert(linter.lintResult.summary.totalFixedNumber > 0, 'Error have been fixed');
         assert(linter.lintResult.files[Object.keys(linter.lintResult.files)[0]].updatedSource !== prevFileContent,
             'File content has been updated');
         assert(fse.existsSync('npm-groovy-fix-log.json'), 'Output json file has been produced');
+        assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
 
         fse.removeSync('npm-groovy-fix-log.json');
     }).timeout(120000);
@@ -104,8 +107,10 @@ describe('Lint & fix with API', function () {
             jdeployRootPath: 'jdeploy-bundle',
         }).run();
 
-        assert(linter.status === 0 && linter.lintResult.summary.fixedErrorsNumber > 0, 'Errors have been fixed');
+        assert(linter.status === 0);
+        assert(linter.lintResult.summary.totalFixedNumber > 0, 'Errors have been fixed');
         assert(fse.existsSync('npm-groovy-fix-log.txt'), 'Output txt file produced');
+        assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
 
         fse.removeSync('npm-groovy-fix-log.txt');
     }).timeout(60000);
@@ -123,8 +128,9 @@ describe('Lint & fix with API', function () {
         }).run();
 
         assert(linter.status === 0, "Status is 0");
-        assert(linter.lintResult.summary.fixedErrorsNumber > 0, 'Errors have been fixed');
+        assert(linter.lintResult.summary.totalFixedNumber > 0, 'Errors have been fixed');
         assert(fse.existsSync('npm-groovy-fix-log.txt'), 'Output txt file produced');
+        assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
 
         fse.removeSync('npm-groovy-fix-log.txt');
     }).timeout(120000);

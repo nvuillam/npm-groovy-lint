@@ -59,8 +59,6 @@ class NpmGroovyLintFix {
         await this.parseFixableErrors(optns.errorIds);
         await this.fixErrors(optns.propagate);
 
-        this.updateResultCounters();
-
         // Clear progress bar
         this.bar.stop();
         debug(`>>>>>> NpmGroovyLintFix.run END <<<<<<`);
@@ -129,7 +127,7 @@ class NpmGroovyLintFix {
     }
 
     // Fix errors in files using fix rules
-    async fixErrors(propagate) {
+    async fixErrors() {
         // Process files in parallel
         await Promise.all(
             Object.keys(this.fixableErrors).map(async fileNm => {
@@ -150,10 +148,7 @@ class NpmGroovyLintFix {
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
                             this.fixedErrorsIds.push(fileFixableError.id);
-                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true }, propagate, {
-                                beforeFix: allLines,
-                                afterFix: allLinesNew
-                            });
+                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
                             allLines = allLinesNew;
                         }
                     }
@@ -166,7 +161,7 @@ class NpmGroovyLintFix {
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
                             this.fixedErrorsIds.push(fileFixableError.id);
-                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true }, propagate);
+                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
                         }
                     }
                 }
@@ -235,7 +230,7 @@ class NpmGroovyLintFix {
     }
 
     // Update lint result of an identified error
-    updateLintResult(fileNm, errId, errDataToSet, propagate, compareInfo = {}) {
+    updateLintResult(fileNm, errId, errDataToSet) {
         const errIndex = this.updatedLintResult.files[fileNm].errors.findIndex(error => error.id === errId);
         // Update error in lint result {mostly fixed: true}
         // It not in list of errors, it means it's from a triggered error
@@ -243,74 +238,7 @@ class NpmGroovyLintFix {
             const error = this.updatedLintResult.files[fileNm].errors[errIndex];
             Object.assign(error, errDataToSet);
             this.updatedLintResult.files[fileNm].errors[errIndex] = error;
-            if (errDataToSet.fixed === true) {
-                switch (error.severity) {
-                    case "error":
-                        this.updatedLintResult.summary.totalFixedErrorNumber++;
-                        break;
-                    case "warning":
-                        this.updatedLintResult.summary.totalFixedWarningNumber++;
-                        break;
-                    case "info":
-                        this.updatedLintResult.summary.totalFixedInfoNumber++;
-                        break;
-                }
-            }
         }
-        // If the number of lines has changes, update lines after
-        if (propagate && compareInfo && compareInfo.beforeFix && compareInfo.afterFix) {
-            // Propagate only if number of lines is different
-            if (compareInfo.beforeFix.length === compareInfo.afterFix.length) {
-                return;
-            }
-            let diffLinesNb = compareInfo.afterFix.length - compareInfo.beforeFix.length;
-
-            let firstAddedOrRemovedLineNb;
-            // Find first updated line number
-            for (let i = 0; i < compareInfo.beforeFix.length; i++) {
-                if (compareInfo.beforeFix[i] !== compareInfo.afterFix[i]) {
-                    firstAddedOrRemovedLineNb = i;
-                    break;
-                }
-            }
-
-            // Recalculate line positions if line number has changed
-            if ((firstAddedOrRemovedLineNb || firstAddedOrRemovedLineNb === 0) & (diffLinesNb !== 0)) {
-                // Update lint results
-                this.updatedLintResult.files[fileNm].errors = this.updatedLintResult.files[fileNm].errors.map(err => {
-                    if (err.range && err.range.start.line >= firstAddedOrRemovedLineNb) {
-                        err.range.start.line = err.range.start.line + diffLinesNb;
-                        err.range.end.line = err.range.end.line + diffLinesNb;
-                    }
-                    if (err.line && err.line >= firstAddedOrRemovedLineNb) {
-                        err.line = err.line + diffLinesNb;
-                    }
-                    return err;
-                });
-                // Update fixable Errors
-                this.fixableErrors[fileNm] = this.fixableErrors[fileNm].map(fixableError => {
-                    if ((fixableError.lineNb || fixableError.lineNb === 0) && fixableError.lineNb >= firstAddedOrRemovedLineNb) {
-                        fixableError.lineNb = fixableError.lineNb + diffLinesNb;
-                    }
-                    return fixableError;
-                });
-            }
-        }
-    }
-
-    // Update result counters
-    updateResultCounters() {
-        // Build remaining errors number if a fix has been performed
-        this.updatedLintResult.summary.totalRemainingErrorNumber =
-            this.updatedLintResult.summary.totalFoundErrorNumber - this.updatedLintResult.summary.totalFixedErrorNumber;
-        this.updatedLintResult.summary.totalRemainingWarningNumber =
-            this.updatedLintResult.summary.totalFoundWarningNumber - this.updatedLintResult.summary.totalFixedWarningNumber;
-        this.updatedLintResult.summary.totalRemainingInfoNumber =
-            this.updatedLintResult.summary.totalFoundInfoNumber - this.updatedLintResult.summary.totalFixedInfoNumber;
-
-        // Return list of fixed error ids
-        this.updatedLintResult.summary.fixedErrorsNumber = this.fixedErrorsNumber;
-        this.updatedLintResult.summary.fixedErrorsIds = [...new Set(this.fixedErrorsIds)];
     }
 }
 

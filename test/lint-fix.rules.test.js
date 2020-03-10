@@ -54,7 +54,7 @@ async function checkRuleFix(ruleName, testRule) {
     // Check results
 
     assert(linter.status === 0, 'Linter status is 0');
-    assert(linter.lintResult.summary.fixedErrorsNumber > 0, 'Errors have been fixed');
+    assert(linter.lintResult.summary.totalFixedNumber > 0, 'Errors have been fixed');
     const updatedSource = linter.lintResult.files[0].updatedSource;
     const diff = jsdiff.diffChars(testRule.sourceAfter, updatedSource);
     const effectiveDiffs = diff.filter((item => { item.added || item.removed }));
