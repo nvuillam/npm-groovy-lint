@@ -49,6 +49,15 @@ module.exports = optionator({
             example: ["import groovyx.net.http.HTTPBuilder\n\nimport class Toto { \n }"]
         },
         {
+            option: "config",
+            alias: "c",
+            type: "String",
+            default: process.cwd(),
+            description:
+                "Custom path to GroovyLint config file.\n Default: Found groovylintrc.js/json/yml/package.json config file, or default npm-groovy-lint config if not defined. \nNote: command-line arguments have priority on config file properties",
+            example: ["./config/.groovylintrc-custom.js", "./config/.groovylintrc-custom.json"]
+        },
+        {
             option: "rulesets",
             alias: "r",
             type: "String",

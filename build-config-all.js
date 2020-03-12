@@ -3,12 +3,13 @@
 "use strict";
 
 // Imports
+const beautify = require('js-beautify').js;
 const fse = require('fs-extra');
 const ruleSetAll = fse.readFileSync('lib/example/RuleSet-All.groovy', 'utf8');
 
 const allLines = ruleSetAll.replace(/\r?\n/g, "\r\n").split("\r\n");
 
-function buildVsCodeRules(allLines, ruleSetTypeName) {
+function buildAllRules(allLines) {
     const configurationProperties = {};
     let currentCategory = null;
 
@@ -23,26 +24,26 @@ function buildVsCodeRules(allLines, ruleSetTypeName) {
         // Check if the line is a rule ( contains only alphanumeric characters)
         if (currentCategory && line.trim() !== '' && line.trim().match("^[a-zA-Z0-9]*$")) {
             const ruleName = line.trim();
-            const propName = `groovyLint.ruleset.${ruleSetTypeName}.custom.rules.${currentCategory}.${ruleName}`;
+            const propName = `${currentCategory}.${ruleName}`;
             let description = ruleName.replace(/([A-Z])/g, ' $1').trim();
             description = description.charAt(0).toUpperCase() + description.slice(1).toLowerCase()
-            const property = {
-                "scope": "resource",
-                "description": description, // Add space before every capital character
-                "type": "boolean",
-                "default": true
-            }
+            const property = {};
             configurationProperties[propName] = property;
         }
     }
     return configurationProperties;
 }
 
-const groovyVsCodeRules = JSON.stringify(buildVsCodeRules(allLines, 'groovy'), null, 4);
-const jenkinsfileVsCodeRules = JSON.stringify(buildVsCodeRules(allLines, 'jenkinsfile'), null, 4);
+const allRulesConfig = JSON.stringify(buildAllRules(allLines), null, 4);
+const fullConfig = `module.exports = {
+    rules: ${allRulesConfig}
+}
+`
 
-fse.writeFileSync('vscode-rules-Groovy.json', groovyVsCodeRules);
-fse.writeFileSync('vscode-rules-Jenkinsfile.json', jenkinsfileVsCodeRules);
+const fullConfigIndented = beautify(fullConfig, { indent_size: 4, space_in_empty_paren: true });
 
-console.log(groovyVsCodeRules);
-console.log(jenkinsfileVsCodeRules);
+fse.writeFileSync('.groovylintrc-all.js', fullConfigIndented);
+
+
+
+console.log('Generated .groovylintrc-all.js fullConfig');

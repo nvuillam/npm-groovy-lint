@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-const DEFAULT_VERSION = "3.0.0-beta.2";
+const DEFAULT_VERSION = "3.0.0";
 
 // Imports
 const debug = require("debug")("npm-groovy-lint");
@@ -8,6 +8,7 @@ const debug = require("debug")("npm-groovy-lint");
 const NpmGroovyLintFix = require("./groovy-lint-fix");
 const CodeNarcCaller = require("./codenarc-caller.js");
 const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = require("./codenarc-factory.js");
+const { loadConfig } = require("./config.js");
 const optionsDefinition = require("./options");
 const { computeStats, processOutput } = require("./output.js");
 
@@ -87,10 +88,17 @@ class NpmGroovyLint {
             return true;
         }
 
-        // Parse options ( or force them if coming from lint re-run after fix)
+        // Parse options (or force them if coming from lint re-run after fix)
+        // Mix between command-line options and .groovyLint file options (priority is given to .groovyLint file)
         if (this.parseOptions) {
             try {
                 this.options = optionsDefinition.parse(this.args);
+                const configProperties = await loadConfig(this.options.config);
+                for (const configProp of Object.keys(configProperties)) {
+                    if (this.options[configProp] == null) {
+                        this.options[configProp] = configProperties[configProp];
+                    }
+                }
             } catch (error) {
                 this.status = 2;
                 throw new Error(error.message);

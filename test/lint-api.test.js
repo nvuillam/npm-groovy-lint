@@ -12,7 +12,6 @@ describe('Lint with API', () => {
             '',
             '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/SampleFile.groovy',
-            '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '--verbose'
         ], {
             jdeployRootPath: 'jdeploy-bundle',
