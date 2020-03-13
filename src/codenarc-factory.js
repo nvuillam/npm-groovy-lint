@@ -90,11 +90,11 @@ async function prepareCodeNarcCall(options, jdeployRootPath) {
             .endsWith("html")
             ? "html"
             : result.output
-                .split(".")
-                .pop()
-                .endsWith("xml")
-                ? "xml"
-                : "";
+                  .split(".")
+                  .pop()
+                  .endsWith("xml")
+            ? "xml"
+            : "";
         const ext = result.output.split(".").pop();
         result.codenarcArgs.push('-report="' + ext + ":" + result.output + '"');
 
@@ -153,10 +153,10 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName) {
                         violation["$"].priority === "1"
                             ? "error"
                             : violation["$"].priority === "2"
-                                ? "warning"
-                                : violation["$"].priority === "3"
-                                    ? "info"
-                                    : "unknown",
+                            ? "warning"
+                            : violation["$"].priority === "3"
+                            ? "info"
+                            : "unknown",
                     msg: violation.Message ? violation.Message[0] : ""
                 };
                 // Find range & add error only if severity is matching logLevel
@@ -196,15 +196,12 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName) {
 
 // Build RuleSet file from configuration
 async function manageCreateRuleSetFile(options) {
-    let ruleSetsDef = [];
-
-    // Rules from config file
-    if (options.rules) {
-        ruleSetsDef = Object.entries(options.rules).map(ruleName => {
-            ruleName = (ruleName.includes('.')) ? ruleName.split('.')[1] : ruleName;
-            return { name: ruleName };
-        });
+    // If RuleSet files has already been created, or is groovy file, return it
+    if (options.rulesets && options.rulesets.endsWith(".groovy")) {
+        return options.rulesets;
     }
+
+    let ruleSetsDef = [];
 
     // List of rule strings sent as arguments/options, convert them as ruleSet defs
     if (options.rulesets && !notCodeNarcRuleNames.includes(options.rulesets) && !options.rulesets.includes(".")) {
@@ -212,6 +209,16 @@ async function manageCreateRuleSetFile(options) {
         ruleSetsDef = ruleList.map(ruleName => {
             return { name: ruleName };
         });
+    }
+
+    // Rules from config file, only if rulesets has not been sent as argument
+    if (ruleSetsDef.length === 0 && options.rules) {
+        for (let ruleName of Object.keys(options.rules)) {
+            if (!(options.rules[ruleName] === "off" || options.rules[ruleName].disabled === true)) {
+                ruleName = ruleName.includes(".") ? ruleName.split(".")[1] : ruleName;
+                ruleSetsDef.push(Object.assign({ name: ruleName }, options.rules[ruleName]));
+            }
+        }
     }
 
     // If ruleSetDef , create temporary file

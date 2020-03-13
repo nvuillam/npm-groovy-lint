@@ -6,8 +6,8 @@ const DEFAULT_VERSION = "3.0.0";
 const debug = require("debug")("npm-groovy-lint");
 
 const NpmGroovyLintFix = require("./groovy-lint-fix");
-const CodeNarcCaller = require("./codenarc-caller.js");
-const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = require("./codenarc-factory.js");
+const CodeNarcCaller = require("./codenarc-caller");
+const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = require("./codenarc-factory");
 const { loadConfig } = require("./config.js");
 const optionsDefinition = require("./options");
 const { computeStats, processOutput } = require("./output.js");
@@ -68,6 +68,7 @@ class NpmGroovyLint {
 
     // Call an existing NpmGroovyLint instance to request fix of errors
     async fixErrors(errorIds, optns = {}) {
+        // Run fixer on existing NpmGroovyLint instance
         debug(`Fix errors for ${JSON.stringify(errorIds)} on existing NpmGroovyLint instance`);
         this.fixer = new NpmGroovyLintFix(this.lintResult, {
             verbose: optns.verbose || this.options.verbose,
@@ -76,7 +77,13 @@ class NpmGroovyLint {
             save: this.tmpGroovyFileName ? false : true
         });
         await this.fixer.run({ errorIds: errorIds, propagate: true });
-        this.lintResult = this.fixer.updatedLintResult;
+        // Control fix result by calling a new lint
+        await this.lintAgainAfterFix();
+        // Compute stats & build output result
+        this.lintResult = computeStats(this.lintResult);
+        this.outputString = await processOutput(this.outputType, this.output, this.lintResult, this.options, this.fixer);
+        // Delete Tmp file if existing
+        manageDeleteTmpFiles(this.tmpGroovyFileName, this.tmpRuleSetFileName);
     }
 
     // Actions before call to CodeNarc
@@ -231,7 +238,26 @@ class NpmGroovyLint {
         // Run linter
         await newLinter.run();
         // Merge new linter results in existing results
-        this.lintResult = newLinter.lintResult;
+        this.lintResult = this.mergeResults(this.lintResult, newLinter.lintResult);
+    }
+
+    // Merge results after control lint after fixing
+    mergeResults(lintResAfterFix, lintResControl) {
+        const mergedLintResults = { files: {} };
+        for (const afterFixResFileNm of Object.keys(lintResAfterFix.files)) {
+            // Append fixed errors to errors found via control lint (post fix)
+            const afterFixFileErrors = lintResAfterFix.files[afterFixResFileNm].errors;
+            const fixedErrors = afterFixFileErrors.filter(err => err.fixed === true);
+            const controlFileErrors =
+                lintResControl.files && lintResControl.files[afterFixResFileNm] ? lintResControl.files[afterFixResFileNm].errors || [] : [];
+            const mergedFileErrors = controlFileErrors.concat(fixedErrors);
+            mergedLintResults.files[afterFixResFileNm] = { errors: mergedFileErrors };
+            // Set updatedSource in results in provided
+            if (lintResAfterFix.files[afterFixResFileNm].updatedSource) {
+                mergedLintResults.files[afterFixResFileNm].updatedSource = lintResAfterFix.files[afterFixResFileNm].updatedSource;
+            }
+        }
+        return mergedLintResults;
     }
 
     // Set lib results on this NpmGroovyLint instance

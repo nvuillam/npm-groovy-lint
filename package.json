@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint **/*.js --ignore-pattern /jdeploy-bundle/* --ignore-pattern /dist/*",
     "lint:fix": "eslint **/*.js --ignore-pattern jdeploy-bundle --ignore-pattern dist --fix && prettier --write \"./src/**/*.{js,jsx,json}\" --tab-width 4 --print-width 150",
-    "prebuild": "node --inspect-brk build-config-all.js && node patch-jdeploy-before.js",
+    "prebuild": "node build-config-all.js && node patch-jdeploy-before.js",
     "build": "jdeploy install",
     "postbuild": "node patch-jdeploy-after.js",
     "groovy:run-server-from-source": "groovy -cp \"lib/CodeNarc-1.5.jar;lib/groovy-3.0.1/lib/groovy-3.0.2.jar;lib/groovy-3.0.1/lib/groovy-templates-3.0.2.jar;lib/groovy-3.0.1/lib/groovy-xml-3.0.2.jar;lib/groovy-3.0.1/lib/groovy-json-3.0.2.jar;lib/slf4j-api-1.7.9.jar;lib/log4j-slf4j-impl-2.13.0.jar;lib/log4j-api-2.13.0.jar;lib/log4j-core-2.13.0.jar;lib/GMetrics-0.7.jar\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",

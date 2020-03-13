@@ -7,13 +7,7 @@ const importFresh = require("import-fresh");
 const path = require("path");
 const stripComments = require("strip-json-comments");
 
-const configFilenames = [
-    ".groovylintrc.js",
-    ".groovylintrc.cjs",
-    ".groovylintrc.json",
-    ".groovylintrc",
-    "package.json"
-];
+const configFilenames = [".groovylintrc.js", ".groovylintrc.cjs", ".groovylintrc.json", ".groovylintrc", "package.json"];
 
 // Load configuration from identified file, or find config file from a start path
 async function loadConfig(startPathOrFile) {
@@ -89,7 +83,6 @@ function loadJSConfigFile(filePath) {
 
 function loadJSONConfigFile(filePath) {
     debug(`Loading JSON config file: ${filePath}`);
-
     try {
         return JSON.parse(stripComments(readFile(filePath)));
     } catch (e) {
@@ -129,7 +122,7 @@ function loadPackageJSONConfigFile(filePath) {
             throw Object.assign(new Error("package.json file doesn't have 'groovylintConfig' field."), { code: "GROOVYLINT_CONFIG_FIELD_NOT_FOUND" });
         }
 
-        return packageData.eslintConfig;
+        return packageData.groovylintConfig;
     } catch (e) {
         debug(`Error reading package.json file: ${filePath}`);
         e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
@@ -138,7 +131,8 @@ function loadPackageJSONConfigFile(filePath) {
 }
 
 async function readFile(filePath) {
-    return await fse.readFile(filePath, "utf8").replace(/^\ufeff/u, "");
+    const fileContent = await fse.readFile(filePath, "utf8");
+    return fileContent.replace(/^\ufeff/u, "");
 }
 
 module.exports = { loadConfig };

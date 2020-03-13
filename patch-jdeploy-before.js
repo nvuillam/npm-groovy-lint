@@ -20,6 +20,7 @@ const filesToCopy =
     [
         "codenarc-caller.js",
         "codenarc-factory.js",
+        "config.js",
         "groovy-lint.js",
         "groovy-lint-fix.js",
         "groovy-lint-rules.js",
