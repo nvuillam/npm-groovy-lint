@@ -77,6 +77,7 @@ class NpmGroovyLint {
             save: this.tmpGroovyFileName ? false : true
         });
         await this.fixer.run({ errorIds: errorIds, propagate: true });
+        this.lintResult = this.fixer.updatedLintResult;
         // Control fix result by calling a new lint
         await this.lintAgainAfterFix();
         // Compute stats & build output result

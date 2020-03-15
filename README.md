@@ -57,34 +57,46 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 | --codenarcargs           | Boolean | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: http://codenarc.github.io/CodeNarc/codenarc-command-line.html<br/> Example: `npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -h<br/> --help           | Boolean | Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)                                                                                                                                                                                                                                                                                                                                 
 
+# CONFIGURATION
+
+Define a file named **.groovylintrc.js** (or .json or .YAML, or include in a property groovyLintConfig in package.json)
+
+Format : 
+
+- extends: Name of a base configuration ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.js) or [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.js))
+- rules: List of rules definition, following format "RuleSection.RuleName": ruleParameters
+    - "RuleSection.RuleName": any of the [available rules](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html) 
+    - ruleParameters: can be just a severity override ( `"off"`, `"error"`, `"warning"`, `"info"` ) , or a property list :
+        - severity
+        - enabled true/false
+        - any of the [rule advanced properties](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)
+
+Example:
+
+```javascript
+module.exports = {
+    extends: "recommended",
+    rules: {
+        "comments.ClassJavadoc": 'off',
+        "formatting.Indentation": {
+            spacesPerIndentLevel: 4,
+            severity: "info"
+        },
+        'unnecessary.UnnecessaryReturnKeyword': "error"
+    }
+}
+```
+
 # EXAMPLES
-
-- Lint a Jenkinsfile
-
-```
-    $ npm-groovy-lint --rulesets Jenkinsfile
-```
-
-- Lint groovy files
-
-```
-    $ npm-groovy-lint --rulesets Groovy
-```
-
-- Lint and fix a Jenkinsfile 
-
-```
-    $ npm-groovy-lint --rulesets Jenkinsfile --fix
-```
 
 - Lint groovy with JSON output
 ```
-    $ npm-groovy-lint --rulesets Groovy --output json
+    $ npm-groovy-lint --output json
 ```
 
 - Advanced config
 ```
-    $ npm-groovy-lint --path "./path/to/my/groovy/files" --files "**/*.groovy" --rulesets "./config/codenarc/RuleSet-Custom.groovy" --loglevel warning --output txt
+    $ npm-groovy-lint --path "./path/to/my/groovy/files" --files "**/*.groovy" --config "./config/codenarc/.groovylintrcCustom.js" --loglevel warning --output txt
 ```
 
 - Lint using core CodeNarc parameters and generate HTML report file
@@ -96,17 +108,23 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 # Autofixable rules (experimental)
 
 - ConsecutiveBlankLines
+- FileEndsWithoutNewline
+- IfStatementBraces
 - Indentation (IfStatementBraces and ElsefStatementBraces must be manually fixed to have correct indentation)
 - NoTabCharacter
 - SpaceAfterCatch
+- SpaceAfterComma
 - SpaceAfterOpeningBrace
 - SpaceAroundOperator
-- SpaceAfterComma
 - SpaceBeforeOpeningBrace
+- TrailingWhitespace
 - UnnecessaryDefInFieldDeclaration
+- UnnecessaryGroovyImport
 - UnnecessaryGString
 - UnnecessarySemicolon
-- TrailingWhitespace
+- UnnecessaryToString
+- UnusedImport
+
 
 [Contribute](#Contribute) to add more [rules](http://codenarc.github.io/CodeNarc/codenarc-rule-index.html) fixes :)
 
@@ -136,7 +154,9 @@ Example
 
 # TROUBLESHOOTING
 
-- Embedded Groovy 3.0.1 has issues with JDK12, please use JDK11 or a precedent version if possible
+- Embedded Groovy 3.0.2 may have issues with JDK12, please use JDK11 or a precedent version if possible
+- CodeNarc server does not seems to Work on some Linux environments (java classes are loaded at each npm-groovy-lint call so performances are slower)
+- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (3.0.2)
 
 # CONTRIBUTE
 
@@ -155,5 +175,6 @@ This package uses :
 - slf4j : http://www.slf4j.org/ (logging for CodeNarc)
 - log4j : https://logging.apache.org/log4j/2.x/ (logging for CodeNarc)
 - GMetrics : https://dx42.github.io/gmetrics/ (Code mesures for CodeNarc)
+- Inspiration from [eslint](https://eslint.org/) about configuration and run patterns
 
 

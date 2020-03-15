@@ -12,11 +12,9 @@ const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js
 // Build codenarc options //
 ////////////////////////////
 
-const notCodeNarcRuleNames = ["Groovy", "Jenkinsfile", "all"];
-
 // Convert NPM-groovy-lint into codeNarc arguments
 // Create temporary files if necessary
-async function prepareCodeNarcCall(options, jdeployRootPath) {
+async function prepareCodeNarcCall(options) {
     const result = { codenarcArgs: [] };
 
     let cnPath = options.path;
@@ -38,36 +36,17 @@ async function prepareCodeNarcCall(options, jdeployRootPath) {
     result.codenarcArgs.push('-basedir="' + result.codeNarcBaseDir + '"');
 
     // Create ruleSet groovy file if necessary
-    const tmpRuleSetFileName = await manageCreateRuleSetFile(options);
-    if (tmpRuleSetFileName && tmpRuleSetFileName !== "") {
-        result.tmpRuleSetFile = tmpRuleSetFileName;
-        options.rulesets = tmpRuleSetFileName;
+    const ruleSetFileName = await manageCreateRuleSetFile(options);
+    options.rulesets = ruleSetFileName;
+    if (ruleSetFileName.includes()) {
+        result.tmpRuleSetFileName = ruleSetFileName;
     }
 
     // Build ruleSet & file CodeNarc arguments
     let defaultFilesPattern = "**/*.groovy,**/Jenkinsfile";
-    let ruleSetFile = jdeployRootPath + "/lib/example/RuleSet-Groovy.groovy";
-    if (options.rulesets) {
-        // Jenkinsfile
-        if (options.rulesets === "Jenkinsfile") {
-            defaultFilesPattern = "**/Jenkinsfile";
-            ruleSetFile = jdeployRootPath + "/lib/example/RuleSet-Jenkinsfile.groovy";
-        }
-        // Groovy
-        else if (options.rulesets === "Groovy") {
-            defaultFilesPattern = "**/*.groovy";
-            ruleSetFile = jdeployRootPath + "/lib/example/RuleSet-Groovy.groovy";
-        }
-        // All
-        else if (options.rulesets === "all") {
-            ruleSetFile = jdeployRootPath + "/lib/example/RuleSet-All.groovy";
-        }
-        // RuleSet file name
-        else {
-            ruleSetFile = options.rulesets.replace(/^"(.*)"$/, "$1");
-        }
-    }
-    result.codenarcArgs.push('-rulesetfiles="file:' + ruleSetFile + '"');
+
+    // RuleSet codeNarc arg
+    result.codenarcArgs.push('-rulesetfiles="file:' + options.rulesets.replace(/^"(.*)"$/, "$1") + '"');
 
     // Matching files pattern(s)
     if (cnFiles) {
@@ -197,45 +176,63 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName) {
 // Build RuleSet file from configuration
 async function manageCreateRuleSetFile(options) {
     // If RuleSet files has already been created, or is groovy file, return it
-    if (options.rulesets && options.rulesets.endsWith(".groovy")) {
+    if (options.rulesets && (options.rulesets.endsWith(".groovy") || options.rulesets.endsWith(".xml"))) {
         return options.rulesets;
     }
 
     let ruleSetsDef = [];
 
     // List of rule strings sent as arguments/options, convert them as ruleSet defs
-    if (options.rulesets && !notCodeNarcRuleNames.includes(options.rulesets) && !options.rulesets.includes(".")) {
+    if (options.rulesets && !options.rulesets.includes(".")) {
         let ruleList = options.rulesets.split(",");
         ruleSetsDef = ruleList.map(ruleName => {
-            return { name: ruleName };
+            const ruleNameShort = ruleName.includes(".") ? ruleName.split(".")[1] : ruleName;
+            return { ruleName: ruleNameShort };
         });
     }
 
     // Rules from config file, only if rulesets has not been sent as argument
     if (ruleSetsDef.length === 0 && options.rules) {
-        for (let ruleName of Object.keys(options.rules)) {
-            if (!(options.rules[ruleName] === "off" || options.rules[ruleName].disabled === true)) {
-                ruleName = ruleName.includes(".") ? ruleName.split(".")[1] : ruleName;
-                ruleSetsDef.push(Object.assign({ name: ruleName }, options.rules[ruleName]));
+        for (const ruleName of Object.keys(options.rules)) {
+            const ruleFromConfig = options.rules[ruleName];
+            if (!(ruleFromConfig === "off" || ruleFromConfig.disabled === true || ruleFromConfig.enabled === false)) {
+                const ruleNameShort = ruleName.includes(".") ? ruleName.split(".")[1] : ruleName;
+                const codeNarcRule = { ruleName: ruleNameShort };
+                // Convert NpmGroovyLint severity into codeNarc priority
+                if (["error", "err"].includes(ruleFromConfig) || ["error", "err"].includes(ruleFromConfig.severity)) {
+                    codeNarcRule.priority = 1;
+                } else if (["warning", "warn"].includes(ruleFromConfig) || ["warning", "warn"].includes(ruleFromConfig.severity)) {
+                    codeNarcRule.priority = 2;
+                } else if (["info", "audi"].includes(ruleFromConfig) || ["info", "audi"].includes(ruleFromConfig.severity)) {
+                    codeNarcRule.priority = 3;
+                }
+                if (typeof ruleFromConfig === "object") {
+                    delete ruleFromConfig.severity;
+                    ruleSetsDef.push(Object.assign(codeNarcRule, ruleFromConfig));
+                } else {
+                    ruleSetsDef.push(codeNarcRule);
+                }
             }
         }
     }
 
-    // If ruleSetDef , create temporary file
+    // If ruleSetDef , create temporary RuleSet file
     if (ruleSetsDef && ruleSetsDef.length > 0) {
-        // Create groovy ruleset definition
+        // Sort & Create groovy ruleset definition
+        ruleSetsDef = ruleSetsDef.sort((a, b) => a.ruleName.localeCompare(b.ruleName));
         let ruleSetSource = `ruleset {\n\n    description 'Generated by npm-groovy-lint (https://github.com/nvuillam/npm-groovy-lint#readme)'\n\n`;
         for (const rule of ruleSetsDef) {
-            if (!(npmGroovyLintRules[rule.name] && npmGroovyLintRules[rule.name].isCodeNarcRule === false)) {
-                ruleSetSource += `    ${rule.name}\n`;
+            if (!(npmGroovyLintRules[rule.ruleName] && npmGroovyLintRules[rule.ruleName].isCodeNarcRule === false)) {
+                const ruleDeclaration = `    ${rule.ruleName}(${stringifyWithoutPropQuotes(rule)})\n`;
+                ruleSetSource += ruleDeclaration;
             }
         }
         ruleSetSource += `\n}\n`;
         // Write file
-        const tmpRuleSetFileNm = os.tmpdir() + "/codeNarcTmpRs_" + Math.random() + ".groovy";
-        await fse.writeFile(tmpRuleSetFileNm, ruleSetSource);
-        debug(`CREATE RULESET tmp file ${tmpRuleSetFileNm} generated from input options, as CodeNarc requires physical files`);
-        return tmpRuleSetFileNm;
+        const tmpRuleSetFileName = os.tmpdir() + "/codeNarcTmpRs_" + Math.random() + ".groovy";
+        await fse.writeFile(tmpRuleSetFileName, ruleSetSource);
+        debug(`CREATE RULESET tmp file ${tmpRuleSetFileName} generated from input options, as CodeNarc requires physical files`);
+        return tmpRuleSetFileName;
     }
     return "";
 }
@@ -253,6 +250,20 @@ async function manageDeleteTmpFiles(tmpGroovyFileName, tmpRuleSetFileName) {
         debug(`Removed temp RuleSet file ${tmpRuleSetFileName} as it is not longer used`);
         tmpRuleSetFileName = null;
     }
+}
+
+function stringifyWithoutPropQuotes(obj_from_json) {
+    if (typeof obj_from_json !== "object" || Array.isArray(obj_from_json)) {
+        // not an object, stringify using native function
+        return JSON.stringify(obj_from_json);
+    }
+    // Implements recursive object serialization according to JSON spec
+    // but without quotes around the keys.
+    delete obj_from_json.ruleName;
+    let props = Object.keys(obj_from_json)
+        .map(key => `${key}:${stringifyWithoutPropQuotes(obj_from_json[key])}`)
+        .join(",");
+    return `${props}`;
 }
 
 module.exports = { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles };

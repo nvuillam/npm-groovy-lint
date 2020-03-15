@@ -38,7 +38,7 @@ for (const fileName of filesToCopy) {
 }
 
 fse.copySync('.groovylintrc-recommended.js', 'dist/.groovylintrc-recommended.js');
-console.info('GroovyLint: Copied .groovylintrc-recommended.js files into dist/.groovylintrc--recommended.js');
+console.info('GroovyLint: Copied .groovylintrc-recommended.js files into dist/.groovylintrc-recommended.js');
 
 fse.copySync('.groovylintrc-all.js', 'dist/.groovylintrc-all.js');
 console.info('GroovyLint: Copied .groovylintrc-all.js files into dist/.groovylintrc-all.js');

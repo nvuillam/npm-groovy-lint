@@ -7,7 +7,15 @@ const importFresh = require("import-fresh");
 const path = require("path");
 const stripComments = require("strip-json-comments");
 
-const configFilenames = [".groovylintrc.js", ".groovylintrc.cjs", ".groovylintrc.json", ".groovylintrc", "package.json"];
+const configFilenames = [
+    ".groovylintrc.js",
+    ".groovylintrc.cjs",
+    ".groovylintrc.json",
+    ".groovylintrc.yml",
+    ".groovylintrc.yaml",
+    ".groovylintrc",
+    "package.json"
+];
 
 // Load configuration from identified file, or find config file from a start path
 async function loadConfig(startPathOrFile) {
@@ -21,8 +29,15 @@ async function loadConfig(startPathOrFile) {
         // If not found, use .groovylintrc-recommended.js delivered with npm-groovy-lint
         configFilePath = await findConfigInPath(__dirname, [".groovylintrc-recommended.js"]);
     }
-    // Load configuration from file
-    return loadConfigFromFile(configFilePath);
+    // Load user configuration from file
+    const configUser = loadConfigFromFile(configFilePath);
+    // If config extends a standard one, merge it
+    if (configUser.extends) {
+        const baseConfigFilePath = await findConfigInPath(__dirname, [`.groovylintrc-${configUser.extends}.js`]);
+        const baseConfig = loadConfigFromFile(baseConfigFilePath);
+        configUser.rules = Object.assign(baseConfig.rules, configUser.rules);
+    }
+    return configUser;
 }
 
 // try to  find a config file or config prop in package.json

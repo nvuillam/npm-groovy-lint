@@ -29,7 +29,6 @@ describe('Lint with API', () => {
             '',
             '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/SampleFile.groovy',
-            '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '--output', 'json',
             '--loglevel', 'warning'
         ],
@@ -44,7 +43,6 @@ describe('Lint with API', () => {
             process.execPath,
             '',
             '--files', '**/Jenkinsfile',
-            '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-All.groovy"',
             '--output', 'ReportTestCodenarc.html'],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
@@ -59,7 +57,6 @@ describe('Lint with API', () => {
             '',
             '--codenarcargs',
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="xml:ReportTestCodenarc.xml"'],
@@ -76,7 +73,6 @@ describe('Lint with API', () => {
             '',
             '--path', '"jdeploy-bundle/lib/example"',
             '-f', '"**/Jenkinsfile"',
-            '-r', '"jdeploy-bundle/lib/example/RuleSet-Jenkinsfile.groovy"',
             '--verbose'
         ], {
             jdeployRootPath: 'jdeploy-bundle',

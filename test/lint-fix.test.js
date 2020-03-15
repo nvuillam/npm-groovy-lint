@@ -58,7 +58,6 @@ describe('Lint & fix with API', function () {
             '',
             '--output', '"npm-groovy-fix-log.json"',
             '--path', '"jdeploy-bundle/lib/example"',
-            '--rulesets', 'Jenkinsfile',
             '--fix',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
@@ -101,7 +100,6 @@ describe('Lint & fix with API', function () {
             '--path', '"jdeploy-bundle/lib/example"',
             '--fixrules', allRules.join(','),
             '--output', '"npm-groovy-fix-log.txt"',
-            '--rulesets', 'Groovy',
             '--fix',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
@@ -121,7 +119,6 @@ describe('Lint & fix with API', function () {
             '',
             '--path', '"jdeploy-bundle/lib/example"',
             '--output', '"npm-groovy-fix-log.txt"',
-            '--rulesets', 'Groovy',
             '--fix',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',

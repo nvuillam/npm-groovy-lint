@@ -10,7 +10,6 @@ describe('Lint with executables (jdeploy-bundle)', () => {
     it('(EXE:file) should generate text console output', async () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',
-            '--rulesets', '"jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '--loglevel', 'warning',
             '--verbose'
         ];
@@ -24,7 +23,6 @@ describe('Lint with executables (jdeploy-bundle)', () => {
     it('(EXE:file) should generate json console output', async () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',
-            '--rulesets', '"Groovy"',
             '--output', 'json'
         ];
         const { stdout, stderr } = await exec('npm-groovy-lint ' + params.join(' '));
@@ -39,7 +37,6 @@ describe('Lint with executables (jdeploy-bundle)', () => {
         const params = [
             '--codenarcargs',
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="html:ReportTestCodenarc.html"'];
@@ -52,7 +49,6 @@ describe('Lint with executables (jdeploy-bundle)', () => {
         const params = [
             '--codenarcargs',
             '-basedir="jdeploy-bundle/lib/example"',
-            '-rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy"',
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="xml:ReportTestCodenarc.xml"'];
@@ -64,7 +60,6 @@ describe('Lint with executables (jdeploy-bundle)', () => {
     it('(EXE:file) should run on a Jenkinsfile', async () => {
         const params = [
             '--path', ' "jdeploy-bundle/lib/example"',
-            '-r', '"Jenkinsfile"',
             '--verbose'];
         const { stdout, stderr } = await exec('npm-groovy-lint ' + params.join(' '));
         if (stderr) {

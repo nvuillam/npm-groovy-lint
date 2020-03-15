@@ -32,14 +32,6 @@ class NpmGroovyLintFix {
         if (this.options.fixrules && this.options.fixrules !== "all") {
             this.fixRules = this.options.fixrules.split(",");
         }
-
-        // Initialize counters
-        this.updatedLintResult.summary.totalFoundErrorNumber = this.updatedLintResult.summary.totalFoundErrorNumber || 0;
-        this.updatedLintResult.summary.totalFoundWarningNumber = this.updatedLintResult.summary.totalFoundWarningNumber || 0;
-        this.updatedLintResult.summary.totalFoundInfoNumber || this.updatedLintResult.summary.totalFoundInfoNumber || 0;
-        this.updatedLintResult.summary.totalFixedErrorNumber = this.updatedLintResult.summary.totalFixedErrorNumber || 0;
-        this.updatedLintResult.summary.totalFixedWarningNumber = this.updatedLintResult.summary.totalFixedWarningNumber || 0;
-        this.updatedLintResult.summary.totalFixedInfoNumber || this.updatedLintResult.summary.totalFixedInfoNumber || 0;
     }
 
     // Fix errors using codenarc result and groovy lint rules
@@ -166,11 +158,10 @@ class NpmGroovyLintFix {
                     }
                 }
                 const newSources = allLines.join("\r\n") + "\r\n";
+                this.updatedLintResult.files[fileNm].updatedSource = newSources;
                 // Write new file content if it has been updated
                 if (this.options.save && fixedInFileNb > 0) {
                     fse.writeFileSync(fileNm, newSources);
-                } else if (fixedInFileNb > 0) {
-                    this.updatedLintResult.files[fileNm].updatedSource = newSources;
                 }
             })
         );
