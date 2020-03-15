@@ -38,7 +38,7 @@ async function prepareCodeNarcCall(options) {
     // Create ruleSet groovy file if necessary
     const ruleSetFileName = await manageCreateRuleSetFile(options);
     options.rulesets = ruleSetFileName;
-    if (ruleSetFileName.includes()) {
+    if (ruleSetFileName.includes("codeNarcTmpRs_")) {
         result.tmpRuleSetFileName = ruleSetFileName;
     }
 
@@ -190,7 +190,6 @@ async function manageCreateRuleSetFile(options) {
             return { ruleName: ruleNameShort };
         });
     }
-
     // Rules from config file, only if rulesets has not been sent as argument
     if (ruleSetsDef.length === 0 && options.rules) {
         for (const ruleName of Object.keys(options.rules)) {
@@ -234,7 +233,6 @@ async function manageCreateRuleSetFile(options) {
         debug(`CREATE RULESET tmp file ${tmpRuleSetFileName} generated from input options, as CodeNarc requires physical files`);
         return tmpRuleSetFileName;
     }
-    return "";
 }
 
 async function manageDeleteTmpFiles(tmpGroovyFileName, tmpRuleSetFileName) {

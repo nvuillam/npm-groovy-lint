@@ -112,7 +112,7 @@ class CodeNarcServer {
                 }
             } catch (Throwable t) {
                 def respObj = [ status: 'error' ,
-                                errorDtl: t.getStackTrace(),
+                                errorDtl: t.getStackTrace().join("\n"),
                                 stdout: StorePrintStream.printList.join("\n") ]
                 def respJson = JsonOutput.toJson(respObj)
                 http.responseHeaders.add("Content-type", "application/json")
@@ -142,7 +142,7 @@ class CodeNarcServer {
         }
         catch(Throwable t) {
             println "CodeNarcServer ERROR: ${t.toString()}"
-            t.printStackTrace()
+            throw t ;
         }
     }
 

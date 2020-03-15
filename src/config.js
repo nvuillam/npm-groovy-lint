@@ -19,6 +19,19 @@ const configFilenames = [
 
 // Load configuration from identified file, or find config file from a start path
 async function loadConfig(startPathOrFile) {
+    const configFilePath = await getConfigFileName(startPathOrFile);
+    // Load user configuration from file
+    const configUser = loadConfigFromFile(configFilePath);
+    // If config extends a standard one, merge it
+    if (configUser.extends) {
+        const baseConfigFilePath = await findConfigInPath(__dirname, [`.groovylintrc-${configUser.extends}.js`]);
+        const baseConfig = loadConfigFromFile(baseConfigFilePath);
+        configUser.rules = Object.assign(baseConfig.rules, configUser.rules);
+    }
+    return configUser;
+}
+
+async function getConfigFileName(startPathOrFile) {
     let configFilePath = null;
     const stat = await fse.lstat(startPathOrFile);
     // Find one of the config file formats at the root of the project or at upper directory levels
@@ -29,15 +42,7 @@ async function loadConfig(startPathOrFile) {
         // If not found, use .groovylintrc-recommended.js delivered with npm-groovy-lint
         configFilePath = await findConfigInPath(__dirname, [".groovylintrc-recommended.js"]);
     }
-    // Load user configuration from file
-    const configUser = loadConfigFromFile(configFilePath);
-    // If config extends a standard one, merge it
-    if (configUser.extends) {
-        const baseConfigFilePath = await findConfigInPath(__dirname, [`.groovylintrc-${configUser.extends}.js`]);
-        const baseConfig = loadConfigFromFile(baseConfigFilePath);
-        configUser.rules = Object.assign(baseConfig.rules, configUser.rules);
-    }
-    return configUser;
+    return configFilePath;
 }
 
 // try to  find a config file or config prop in package.json
@@ -150,4 +155,4 @@ async function readFile(filePath) {
     return fileContent.replace(/^\ufeff/u, "");
 }
 
-module.exports = { loadConfig };
+module.exports = { loadConfig, getConfigFileName };

@@ -71,7 +71,7 @@ class NpmGroovyLintFix {
                     (errorIds == null || errorIds.includes(err.id)) &&
                     this.npmGroovyLintRules[err.rule] != null &&
                     this.npmGroovyLintRules[err.rule].fix != null &&
-                    (this.fixRules == null || this.fixRules.includes(err.rule))
+                    (this.fixRules == null || this.fixRules.includes(err.rule) || this.fixRules[0] === "TriggerTestError")
                 ) {
                     // Add fixable error
                     const fixableError = {
@@ -129,7 +129,7 @@ class NpmGroovyLintFix {
                 // Process fixes
                 let fixedInFileNb = 0;
                 for (const fileFixableError of this.fixableErrors[fileNm]) {
-                    if (this.fixRules != null && !this.fixRules.includes(fileFixableError.ruleName)) {
+                    if (this.fixRules != null && !this.fixRules.includes(fileFixableError.ruleName) && this.fixRules[0] !== "TriggerTestError") {
                         continue;
                     }
                     const lineNb = fileFixableError.lineNb ? parseInt(fileFixableError.lineNb, 10) - 1 : -1;
@@ -203,9 +203,13 @@ class NpmGroovyLintFix {
         // Function defined in rule
         else if (fix.type === "function") {
             try {
+                if (this.fixRules && this.fixRules[0] === "TriggerTestError") {
+                    throw new Error("Trigger test error");
+                }
                 newLine = fix.func(newLine, evaluatedVars);
             } catch (e) {
                 debug("GroovyLint: Function error: " + e.message + " / " + JSON.stringify(fixableError));
+                throw e;
             }
         }
         return newLine;

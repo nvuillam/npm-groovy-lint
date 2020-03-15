@@ -8,7 +8,7 @@ const debug = require("debug")("npm-groovy-lint");
 const NpmGroovyLintFix = require("./groovy-lint-fix");
 const CodeNarcCaller = require("./codenarc-caller");
 const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = require("./codenarc-factory");
-const { loadConfig } = require("./config.js");
+const { loadConfig, getConfigFileName } = require("./config.js");
 const optionsDefinition = require("./options");
 const { computeStats, processOutput } = require("./output.js");
 
@@ -85,6 +85,11 @@ class NpmGroovyLint {
         this.outputString = await processOutput(this.outputType, this.output, this.lintResult, this.options, this.fixer);
         // Delete Tmp file if existing
         manageDeleteTmpFiles(this.tmpGroovyFileName, this.tmpRuleSetFileName);
+    }
+
+    // Returns the full path of the configuration file
+    async getConfigFilePath() {
+        return getConfigFileName(this.options.config);
     }
 
     // Actions before call to CodeNarc
@@ -186,7 +191,7 @@ class NpmGroovyLint {
     // After CodeNarc call
     async postProcess() {
         // CodeNarc error
-        if (this.codeNarcStdErr && [null, "", undefined].includes(this.codeNarcStdOut)) {
+        if ((this.codeNarcStdErr && [null, "", undefined].includes(this.codeNarcStdOut)) || this.status > 0) {
             this.status = 1;
             console.error("GroovyLint: Error running CodeNarc: \n" + this.codeNarcStdErr);
         }
