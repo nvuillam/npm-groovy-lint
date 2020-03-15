@@ -1,5 +1,26 @@
 # Changelog
 
+## [3.0.0] 2020-03-23
+
+### Added 
+
+- Local microservice "CodeNarcServer" called via Http by npm-groovy-lint, to avoid loading all groovy/java classes at each lint request. This microservice autokills itself after one hour idle.
+- Capability to define RuleSets in argument or js/json/yml config file formats instead of groovy/xml RuleSet format
+- Test classes for rules fix (before / after fix defined in rule definitions)
+- Add debug logs (use it by setting DEBUG env variable , ex: `DEBUG=npm-groovy-lint npm-groovy-lint args...`)
+- Update lines and ranges of other errors after a fix updated the number of lines
+- Generate automatically .groovylintrc-all.js during build 
+
+## Changes
+
+- Split rules definition into files instead of all in a huge single file
+- Reorganise groovy-lint.js code, using codenarc-factory.js and codenarc-caller.js
+- New lib utils.js that can be used by rules definition
+- Fix: Crash when there was no error found in a file
+- Fix: Remove Promise error display in log after launching CodeNarcServer
+- Fix: Add more options exclusivity arguments rules
+- Removed "Groovy", "Jenkinsfile" and "All" identifiers for --rulesets arguments. Please now use .groovylintrc.js configuration
+
 ## [2.2.0] 2020-02-28
 
 ### Added

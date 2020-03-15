@@ -109,5 +109,9 @@ dist/
 
 Report*
 
-
 npm-groovy-fix-log.txt
+
+CodeNarcReport.html
+
+lib/com/
+

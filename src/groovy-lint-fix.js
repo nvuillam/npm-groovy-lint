@@ -3,6 +3,7 @@
 // Imports
 const fse = require("fs-extra");
 const cliProgress = require("cli-progress");
+const debug = require("debug")("npm-groovy-lint");
 const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
 const { evaluateVariables, getSourceLines } = require("./utils.js");
 
@@ -31,22 +32,15 @@ class NpmGroovyLintFix {
         if (this.options.fixrules && this.options.fixrules !== "all") {
             this.fixRules = this.options.fixrules.split(",");
         }
-
-        // Initialize counters
-        this.updatedLintResult.summary.totalFoundErrorNumber = this.updatedLintResult.summary.totalFoundErrorNumber || 0;
-        this.updatedLintResult.summary.totalFoundWarningNumber = this.updatedLintResult.summary.totalFoundWarningNumber || 0;
-        this.updatedLintResult.summary.totalFoundInfoNumber || this.updatedLintResult.summary.totalFoundInfoNumber || 0;
-        this.updatedLintResult.summary.totalFixedErrorNumber = this.updatedLintResult.summary.totalFixedErrorNumber || 0;
-        this.updatedLintResult.summary.totalFixedWarningNumber = this.updatedLintResult.summary.totalFixedWarningNumber || 0;
-        this.updatedLintResult.summary.totalFixedInfoNumber || this.updatedLintResult.summary.totalFixedInfoNumber || 0;
     }
 
     // Fix errors using codenarc result and groovy lint rules
-    async run(errorIds = null) {
+    async run(optns = { errorIds: null, propagate: false }) {
+        debug(`<<<<<< NpmGroovyLintFix.run START >>>>>>`);
         // Start progress bar
         this.bar = new cliProgress.SingleBar(
             {
-                format: "NGL [{bar}] Fixing {file}",
+                format: "GroovyLint [{bar}] Fixing {file}",
                 clearOnComplete: true
             },
             cliProgress.Presets.shades_classic
@@ -54,14 +48,12 @@ class NpmGroovyLintFix {
         this.bar.start(Object.keys(this.updatedLintResult.files).length, 0);
 
         // Parse fixes and process them
-        await this.parseFixableErrors(errorIds);
-        await this.fixErrors();
-
-        this.updateResultCounters();
+        await this.parseFixableErrors(optns.errorIds);
+        await this.fixErrors(optns.propagate);
 
         // Clear progress bar
         this.bar.stop();
-
+        debug(`>>>>>> NpmGroovyLintFix.run END <<<<<<`);
         return this;
     }
 
@@ -111,6 +103,7 @@ class NpmGroovyLintFix {
                 return a.rule.priority > b.rule.priority ? 1 : a.rule.priority < b.rule.priority ? -1 : 0;
             });
         }
+        debug(`Parsed fixable errors: ${JSON.stringify(this.fixableErrors)}`);
     }
 
     // Add fixable error but do not add twice if scope if the full file
@@ -142,13 +135,13 @@ class NpmGroovyLintFix {
                     const lineNb = fileFixableError.lineNb ? parseInt(fileFixableError.lineNb, 10) - 1 : -1;
                     // File scope violation
                     if (fileFixableError.rule.scope === "file") {
-                        const allLinesNew = this.tryApplyFixRule(allLines, lineNb, fileFixableError).slice(); // copy result lines
-                        if (JSON.stringify(allLinesNew) !== JSON.stringify(allLines.toString)) {
-                            allLines = allLinesNew;
+                        const allLinesNew = this.tryApplyFixRule([...allLines], lineNb, fileFixableError).slice(); // copy result lines
+                        if (JSON.stringify(allLinesNew) !== JSON.stringify(allLines)) {
                             fixedInFileNb = fixedInFileNb + 1;
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
                             this.fixedErrorsIds.push(fileFixableError.id);
                             this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
+                            allLines = allLinesNew;
                         }
                     }
                     // Line scope violation
@@ -165,11 +158,10 @@ class NpmGroovyLintFix {
                     }
                 }
                 const newSources = allLines.join("\r\n") + "\r\n";
+                this.updatedLintResult.files[fileNm].updatedSource = newSources;
                 // Write new file content if it has been updated
                 if (this.options.save && fixedInFileNb > 0) {
                     fse.writeFileSync(fileNm, newSources);
-                } else if (fixedInFileNb > 0) {
-                    this.updatedLintResult.files[fileNm].updatedSource = newSources;
                 }
             })
         );
@@ -180,8 +172,8 @@ class NpmGroovyLintFix {
             return this.applyFixRule(line, lineNb, fixableError);
         } catch (e) {
             if (this.verbose) {
-                console.error(e.message);
-                console.error(fixableError);
+                debug(e.message);
+                debug(fixableError);
             }
             return line;
         }
@@ -204,8 +196,8 @@ class NpmGroovyLintFix {
             // Process replacement with evualuated expressions (except if issue in evaluated expression)
             if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
                 newLine = newLine.replace(strBefore, strAfter);
-            } else if (this.verbose) {
-                console.error("NGL: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n" + JSON.stringify(fixableError));
+            } else {
+                debug("GroovyLint: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n" + JSON.stringify(fixableError));
             }
         }
         // Function defined in rule
@@ -213,9 +205,7 @@ class NpmGroovyLintFix {
             try {
                 newLine = fix.func(newLine, evaluatedVars);
             } catch (e) {
-                if (this.verbose) {
-                    console.error("NGL: Function error: " + e.message + " / " + JSON.stringify(fixableError));
-                }
+                debug("GroovyLint: Function error: " + e.message + " / " + JSON.stringify(fixableError));
             }
         }
         return newLine;
@@ -233,41 +223,13 @@ class NpmGroovyLintFix {
     // Update lint result of an identified error
     updateLintResult(fileNm, errId, errDataToSet) {
         const errIndex = this.updatedLintResult.files[fileNm].errors.findIndex(error => error.id === errId);
-        if (errIndex < 0) {
-            // No error to update in case of fix from triggers of another rule
-            return;
+        // Update error in lint result {mostly fixed: true}
+        // It not in list of errors, it means it's from a triggered error
+        if (errIndex > -1) {
+            const error = this.updatedLintResult.files[fileNm].errors[errIndex];
+            Object.assign(error, errDataToSet);
+            this.updatedLintResult.files[fileNm].errors[errIndex] = error;
         }
-        const error = this.updatedLintResult.files[fileNm].errors[errIndex];
-        Object.assign(error, errDataToSet);
-        this.updatedLintResult.files[fileNm].errors[errIndex] = error;
-        if (errDataToSet.fixed === true) {
-            switch (error.severity) {
-                case "error":
-                    this.updatedLintResult.summary.totalFixedErrorNumber++;
-                    break;
-                case "warning":
-                    this.updatedLintResult.summary.totalFixedWarningNumber++;
-                    break;
-                case "info":
-                    this.updatedLintResult.summary.totalFixedInfoNumber++;
-                    break;
-            }
-        }
-    }
-
-    // Update result counters
-    updateResultCounters() {
-        // Build remaining errors number if a fix has been performed
-        this.updatedLintResult.summary.totalRemainingErrorNumber =
-            this.updatedLintResult.summary.totalFoundErrorNumber - this.updatedLintResult.summary.totalFixedErrorNumber;
-        this.updatedLintResult.summary.totalRemainingWarningNumber =
-            this.updatedLintResult.summary.totalFoundWarningNumber - this.updatedLintResult.summary.totalFixedWarningNumber;
-        this.updatedLintResult.summary.totalRemainingInfoNumber =
-            this.updatedLintResult.summary.totalFoundInfoNumber - this.updatedLintResult.summary.totalFixedInfoNumber;
-
-        // Return list of fixed error ids
-        this.updatedLintResult.summary.fixedErrorsNumber = this.fixedErrorsNumber;
-        this.updatedLintResult.summary.fixedErrorsIds = [...new Set(this.fixedErrorsIds)];
     }
 }
 

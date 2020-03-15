@@ -49,6 +49,15 @@ module.exports = optionator({
             example: ["import groovyx.net.http.HTTPBuilder\n\nimport class Toto { \n }"]
         },
         {
+            option: "config",
+            alias: "c",
+            type: "String",
+            default: process.cwd(),
+            description:
+                "Custom path to GroovyLint config file.\n Default: Found groovylintrc.js/json/yml/package.json config file, or default npm-groovy-lint config if not defined. \nNote: command-line arguments have priority on config file properties",
+            example: ["./config/.groovylintrc-custom.js", "./config/.groovylintrc-custom.json"]
+        },
+        {
             option: "rulesets",
             alias: "r",
             type: "String",
@@ -75,7 +84,6 @@ module.exports = optionator({
         },
         {
             option: "verbose",
-            alias: "v",
             type: "Boolean",
             description: "More outputs in console, including performed fixes"
         },
@@ -132,16 +140,46 @@ module.exports = optionator({
                 "Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored). Doc: http://codenarc.github.io/CodeNarc/codenarc-command-line.html"
         },
         {
+            option: "noserver",
+            type: "Boolean",
+            description:
+                "For better perfs, npm-groovy-lint runs a local server to eep CodeNarc alive instead of loading java/groovy at each call. If you don't want that, send this argument"
+        },
+        {
+            option: "serverhost",
+            type: "String",
+            default: "http://" + require("ip").address(), //Usually localhost, but not always on CIs (Circle, Jenkins ...)
+            description: "If use of CodeNarc server, host where is the CodeNarc server (default: localhost)"
+        },
+        {
+            option: "serverport",
+            type: "String",
+            default: "7484",
+            description: "If use of CodeNarc server, port of the CodeNarc server (default: 7484)"
+        },
+        {
+            option: "killserver",
+            type: "Boolean",
+            description: "Terminate the CodeNarcServer if running"
+        },
+        {
             option: "help",
             alias: "h",
             type: "Boolean",
             description: "Show help (npm-groovy-lint -help OPTIONNAME to see option detail)"
+        },
+        {
+            option: "version",
+            alias: "v",
+            type: "Boolean",
+            description: "Show version"
         }
     ],
     mutuallyExclusive: [
-        ["files", "source", "codenarcargs", "help"],
+        ["files", "source", "codenarcargs", "help", "version"],
         [["path", "files"], "source"],
         ["failonerror", "failonwarning", "failoninfo"],
-        ["codenarcargs", ["failonerror", "failonwarning", "failoninfo", "path", "files", "source", "fix", "fixrules"]]
+        ["codenarcargs", ["failonerror", "failonwarning", "failoninfo", "path", "files", "source", "fix", "fixrules"]],
+        [["noserver"], ["serverhost", "serverport", "killserver"]]
     ]
 });
