@@ -36,8 +36,6 @@ function evaluateVariables(variableDefs, msg) {
             } else {
                 debug("GroovyLint: Unable to match " + varDef.regex + " in " + msg);
             }
-        } else if (varDef.value) {
-            evaluatedVars.push({ name: varDef.name, value: varDef.value });
         }
     }
     return evaluatedVars;
