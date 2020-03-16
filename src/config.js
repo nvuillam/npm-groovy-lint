@@ -28,6 +28,13 @@ async function loadConfig(startPathOrFile) {
     if (configUser.extends) {
         const baseConfigFilePath = await findConfigInPath(__dirname, [`.groovylintrc-${configUser.extends}.json`]);
         const baseConfig = await loadConfigFromFile(baseConfigFilePath);
+        for (const baseRuleName of Object.keys(baseConfig.rules)) {
+            for (const userRuleName of Object.keys(configUser.rules)) {
+                if (baseRuleName.includes(userRuleName)) {
+                    delete baseConfig.rules[baseRuleName];
+                }
+            }
+        }
         configUser.rules = Object.assign(baseConfig.rules, configUser.rules);
     }
     return configUser;
@@ -54,7 +61,7 @@ async function findConfigInPath(directoryPath, configFilenamesIn) {
         if (await fse.exists(filePath)) {
             if (filename === "package.json") {
                 try {
-                    loadPackageJSONConfigFile(filePath);
+                    await loadPackageJSONConfigFile(filePath);
                     return filePath;
                 } catch (error) {
                     /* ignore */

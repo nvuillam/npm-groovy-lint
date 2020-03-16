@@ -9,7 +9,11 @@
             "request": "attach",
             "name": "Attach to Remote",
             "address": "127.0.0.1",
-            "port": 9229
+            "port": 9229,
+            "smartStep": true,
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
         }
     ]
 }
