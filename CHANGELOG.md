@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.0.1] 2020-03-17
+
+### Added
+
+- Add new test suites: errors.test.js and miscellaneous.test.js
+
+### Changed
+
+- Use JSON as default GroovyLint configuration file type
+- Order of fixable rules must be defined in groovy-lint-rules.js
+- Do not load rules test data except during tests
+- Do not lint again after a call to fixErrors on an existing NpmGroovyLint instance (except if lintAgainAfterFix : true is sent in options)
+- Fix: Deletion of temp RuleSite file
+- Fix: UnnecessarySemiColon rule
+- Fix: ClosingBraceNotAlone rule
+
 ## [3.0.0] 2020-03-15
 
 ### Added 
@@ -11,7 +27,7 @@
 - Update lines and ranges of other errors after a fix updated the number of lines
 - Generate automatically .groovylintrc-all.js during build 
 
-## Changes
+## Changed
 
 - Split rules definition into files instead of all in a huge single file
 - Reorganise groovy-lint.js code, using codenarc-factory.js and codenarc-caller.js

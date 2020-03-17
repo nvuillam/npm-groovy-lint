@@ -1,0 +1,10 @@
+{
+    "extends": "all",
+    "rules": {
+        "convention.NoDef": "off",
+        "convention.VariableTypeRequired": "off",
+        "dry.DuplicateStringLiteral": "off",
+        "formatting.LineLength": "off",
+        "logging.Println": "off"
+    }
+}

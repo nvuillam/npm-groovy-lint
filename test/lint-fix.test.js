@@ -111,7 +111,7 @@ describe('Lint & fix with API', function () {
         assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
 
         fse.removeSync('npm-groovy-fix-log.txt');
-    }).timeout(60000);
+    }).timeout(120000);
 
     it('(API:file) should fix groovy files', async function () {
         const linter = await new NpmGroovyLint([

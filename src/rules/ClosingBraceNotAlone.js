@@ -19,12 +19,15 @@ const rule = {
             let prevLine = "";
             for (const line of allLines) {
                 const newLine = line.replace("{{{NEWLINECLOSINGBRACE}}}", "");
-                const prevLineIndent = prevLine.search(/\S/);
                 newFileLines.push(newLine);
                 if (newLine !== line) {
-                    newFileLines.push(" ".repeat(prevLineIndent) + "}");
+                    const prevLineIndent = prevLine.search(/\S/);
+                    const closingBraceLine = prevLineIndent > -1 ? " ".repeat(prevLineIndent) + "}" : "}";
+                    newFileLines.push(closingBraceLine);
+                    prevLine = closingBraceLine;
+                } else {
+                    prevLine = newLine;
                 }
-                prevLine = newLine;
             }
             return newFileLines;
         }

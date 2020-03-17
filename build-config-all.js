@@ -3,7 +3,6 @@
 "use strict";
 
 // Imports
-const beautify = require('js-beautify').js;
 const fse = require('fs-extra');
 const ruleSetAll = fse.readFileSync('lib/example/RuleSet-All.groovy', 'utf8');
 
@@ -34,16 +33,10 @@ function buildAllRules(allLines) {
     return configurationProperties;
 }
 
-const allRulesConfig = JSON.stringify(buildAllRules(allLines), null, 4);
-const fullConfig = `module.exports = {
-    rules: ${allRulesConfig}
-}
-`
+const allRulesConfig = buildAllRules(allLines);
 
-const fullConfigIndented = beautify(fullConfig, { indent_size: 4, space_in_empty_paren: true });
+const fullConfigIndented = JSON.stringify({ "rules": allRulesConfig }, null, 4);
 
-fse.writeFileSync('.groovylintrc-all.js', fullConfigIndented);
+fse.writeFileSync('.groovylintrc-all.json', fullConfigIndented);
 
-
-
-console.log('Generated .groovylintrc-all.js fullConfig');
+console.log('Generated .groovylintrc-all.json fullConfig');

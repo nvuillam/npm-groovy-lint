@@ -14,7 +14,10 @@ const rule = {
         type: "function",
         func: line => {
             if ((line.match(/;/g) || []).length === 1) {
-                line = line.split(";").join("");
+                line = line
+                    .split(";")
+                    .join("")
+                    .trimRight();
             }
             return line;
         }

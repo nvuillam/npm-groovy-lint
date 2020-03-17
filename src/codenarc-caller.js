@@ -74,11 +74,23 @@ class CodeNarcCaller {
             this.serverStatus = "error";
             return { status: 1 };
         }
-        return {
-            codeNarcStdOut: parsedBody.stdout,
-            codeNarcStdErr: parsedBody.stderr,
-            status: parsedBody.status === "success" ? 0 : 1
-        };
+
+        // Success result
+        if (parsedBody.status === "success") {
+            return {
+                codeNarcStdOut: parsedBody.stdout,
+                codeNarcStdErr: parsedBody.stderr,
+                status: 0
+            };
+        }
+        // Codenarc error
+        else {
+            return {
+                codeNarcStdOut: parsedBody.stdout,
+                codeNarcStdErr: parsedBody.stderr || parsedBody.errorDtl,
+                status: 1
+            };
+        }
     }
 
     // Call CodeNard java class from renamed jdeploy.js
