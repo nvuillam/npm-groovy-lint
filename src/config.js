@@ -24,10 +24,12 @@ async function loadConfig(startPathOrFile) {
     const configFilePath = await getConfigFileName(startPathOrFile);
     // Load user configuration from file
     const configUser = await loadConfigFromFile(configFilePath);
+    configUser.rules = await shortenRuleNames(configUser.rules || {});
     // If config extends a standard one, merge it
     if (configUser.extends) {
         const baseConfigFilePath = await findConfigInPath(__dirname, [`.groovylintrc-${configUser.extends}.json`]);
         const baseConfig = await loadConfigFromFile(baseConfigFilePath);
+        baseConfig.rules = await shortenRuleNames(baseConfig.rules || {});
         for (const baseRuleName of Object.keys(baseConfig.rules)) {
             for (const userRuleName of Object.keys(configUser.rules)) {
                 if (baseRuleName.includes(userRuleName)) {
@@ -161,6 +163,16 @@ async function loadPackageJSONConfigFile(filePath) {
 async function readFile(filePath) {
     const fileContent = await fse.readFile(filePath, "utf8");
     return fileContent.replace(/^\ufeff/u, "");
+}
+
+// Remove rule category of rule name if defined. Ex: "basic.ConstantAssertExpression" beccomes "ConstantAssertExpression"
+async function shortenRuleNames(rules) {
+    const shortenedRules = {};
+    for (const ruleName of Object.keys(rules)) {
+        const ruleNameShort = ruleName.includes(".") ? ruleName.split(".")[1] : ruleName;
+        shortenedRules[ruleNameShort] = rules[ruleName];
+    }
+    return shortenedRules;
 }
 
 module.exports = { loadConfig, getConfigFileName };

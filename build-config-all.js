@@ -33,7 +33,7 @@ function buildAllRules(allLines) {
     return configurationProperties;
 }
 
-const allRulesConfig = JSON.stringify(buildAllRules(allLines), null, 4);
+const allRulesConfig = buildAllRules(allLines);
 
 const fullConfigIndented = JSON.stringify({ "rules": allRulesConfig }, null, 4);
 
