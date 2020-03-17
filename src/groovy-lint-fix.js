@@ -4,7 +4,7 @@
 const fse = require("fs-extra");
 const cliProgress = require("cli-progress");
 const debug = require("debug")("npm-groovy-lint");
-const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
+const { getNpmGroovyLintRules } = require("./groovy-lint-rules.js");
 const { evaluateVariables, getSourceLines } = require("./utils.js");
 
 class NpmGroovyLintFix {
@@ -28,7 +28,7 @@ class NpmGroovyLintFix {
         this.options = optionsIn;
         this.verbose = optionsIn.verbose || false;
         // Load available fix rules
-        this.npmGroovyLintRules = this.options.groovyLintRulesOverride ? require(this.options.groovyLintRulesOverride) : npmGroovyLintRules;
+        this.npmGroovyLintRules = this.options.groovyLintRulesOverride ? require(this.options.groovyLintRulesOverride) : getNpmGroovyLintRules();
         if (this.options.fixrules && this.options.fixrules !== "all") {
             this.fixRules = this.options.fixrules.split(",");
         }

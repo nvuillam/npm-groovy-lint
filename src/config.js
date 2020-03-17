@@ -23,13 +23,22 @@ const configFilenames = [
 async function loadConfig(startPathOrFile) {
     const configFilePath = await getConfigFileName(startPathOrFile);
     // Load user configuration from file
-    const configUser = await loadConfigFromFile(configFilePath);
+    let configUser = await loadConfigFromFile(configFilePath);
     configUser.rules = await shortenRuleNames(configUser.rules || {});
     // If config extends a standard one, merge it
+    configUser = await manageExtends(configUser);
+    return configUser;
+}
+
+// If extends defined, gather base level rules and append them to current rules
+async function manageExtends(configUser) {
     if (configUser.extends) {
         const baseConfigFilePath = await findConfigInPath(__dirname, [`.groovylintrc-${configUser.extends}.json`]);
-        const baseConfig = await loadConfigFromFile(baseConfigFilePath);
+        let baseConfig = await loadConfigFromFile(baseConfigFilePath);
         baseConfig.rules = await shortenRuleNames(baseConfig.rules || {});
+        // A config can extend another config that extends another config
+        baseConfig = await manageExtends(baseConfig);
+        // Delete doublons
         for (const baseRuleName of Object.keys(baseConfig.rules)) {
             for (const userRuleName of Object.keys(configUser.rules)) {
                 if (baseRuleName.includes(userRuleName)) {
@@ -38,6 +47,7 @@ async function loadConfig(startPathOrFile) {
             }
         }
         configUser.rules = Object.assign(baseConfig.rules, configUser.rules);
+        delete configUser.extends;
     }
     return configUser;
 }

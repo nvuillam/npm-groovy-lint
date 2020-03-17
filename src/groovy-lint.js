@@ -68,8 +68,10 @@ class NpmGroovyLint {
 
     // Call an existing NpmGroovyLint instance to request fix of errors
     async fixErrors(errorIds, optns = {}) {
-        // Run fixer on existing NpmGroovyLint instance
+        // Create and run fixer
         debug(`Fix errors for ${JSON.stringify(errorIds)} on existing NpmGroovyLint instance`);
+        const codeNarcFactoryResult = await prepareCodeNarcCall(this.options, this.jdeployRootPath);
+        this.setMethodResult(codeNarcFactoryResult);
         this.fixer = new NpmGroovyLintFix(this.lintResult, {
             verbose: optns.verbose || this.options.verbose,
             fixrules: optns.fixrules || this.options.fixrules,
@@ -78,8 +80,11 @@ class NpmGroovyLint {
         });
         await this.fixer.run({ errorIds: errorIds, propagate: true });
         this.lintResult = this.fixer.updatedLintResult;
-        // Control fix result by calling a new lint
-        await this.lintAgainAfterFix();
+        // Lint again after fix if requested (for the moment we prefer to trigger that from VsCode, for better UX)
+        if (optns.lintAgainAfterFix) {
+            // Control fix result by calling a new lint
+            await this.lintAgainAfterFix();
+        }
         // Compute stats & build output result
         this.lintResult = computeStats(this.lintResult);
         this.outputString = await processOutput(this.outputType, this.output, this.lintResult, this.options, this.fixer);

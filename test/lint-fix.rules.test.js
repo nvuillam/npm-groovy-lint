@@ -1,9 +1,11 @@
 #! /usr/bin/env node
 "use strict";
 const NpmGroovyLint = require('../src/groovy-lint.js');
-const { npmGroovyLintRules } = require("../src/groovy-lint-rules.js");
+const { getNpmGroovyLintRules } = require("../src/groovy-lint-rules.js");
 let assert = require('assert');
 const jsdiff = require('diff');
+
+const npmGroovyLintRules = getNpmGroovyLintRules({ loadTests: true });
 
 // Read rules file and test all fixes
 describe('Check rules auto-fixes', () => {
@@ -47,12 +49,19 @@ async function checkRuleFix(ruleName, testRule) {
         output: 'none',
         verbose: true
     };
-    const linter = await new NpmGroovyLint(
-        npmGroovyLintConfig, {
-        jdeployRootPath: 'jdeploy-bundle'
-    }).run();
+    let err = null;
+    let linter;
+    try {
+        linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+    } catch (e) {
+        console.error(e.message);
+        err = e;
+    }
     // Check results
-
+    assert(err == null, "No crash during NpmGroovyLint run");
     assert(linter.status === 0, 'Linter status is 0');
     assert(linter.lintResult.summary.totalFixedNumber > 0, 'Errors have been fixed');
     const updatedSource = linter.lintResult.files[0].updatedSource;

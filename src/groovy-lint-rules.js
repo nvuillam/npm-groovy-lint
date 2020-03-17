@@ -82,13 +82,14 @@ str = "lelamanul"
 
 const fse = require("fs-extra");
 
-// If you add a new global rule, it's very important to think about their order.
+// If you add a new global rule with a fix function, it's very important to think about their order.
 // Rules modifiyng the number of lines must arrive last !
 const rulesFixPriorityOrder = [
     // Line rules or not changing line rules
     "NoTabCharacter",
     "Indentation",
     "UnnecessaryGString",
+    "UnnecessaryToString",
     "SpaceBeforeOpeningBrace",
     "SpaceAfterOpeningBrace",
     "SpaceAfterCatch",
@@ -99,27 +100,38 @@ const rulesFixPriorityOrder = [
     "TrailingWhitespace",
 
     // Rule that can change the numbers of lines, so they must be processed after line scope rules
+    "UnnecessaryGroovyImport",
+    "UnusedImport",
     "IfStatementBraces",
     "ElseBlocktBraces",
-    "ConsecutiveBlankLines",
     "ClosingBraceNotAlone",
     "IndentationClosingBraces",
     "IndentationComments",
+    "ConsecutiveBlankLines",
     "FileEndsWithoutNewline"
 ];
 
 const RULES_FOLDER = __dirname + "/rules";
 
-const ruleFiles = fse.readdirSync(RULES_FOLDER);
-const npmGroovyLintRules = {};
-for (const file of ruleFiles) {
-    const ruleName = file.replace(".js", "");
-    const { rule } = require(`${RULES_FOLDER}/${file}`);
-    if (rule.disabled) {
-        continue;
+function getNpmGroovyLintRules(optns = {}) {
+    const ruleFiles = fse.readdirSync(RULES_FOLDER);
+    const npmGroovyLintRules = {};
+    for (const file of ruleFiles) {
+        const ruleName = file.replace(".js", "");
+        const { rule } = require(`${RULES_FOLDER}/${file}`);
+        if (rule.disabled) {
+            continue;
+        }
+        rule.priority = rulesFixPriorityOrder.indexOf(ruleName);
+        if (rule.fix && rule.priority < 0) {
+            throw new Error(`Rule ${ruleName} must have an order defined in groovy-lint-rules.js/rulesFixPriorityOrder`);
+        }
+        if (!optns.loadTests && optns.loadTests === true) {
+            delete rule.tests;
+        }
+        npmGroovyLintRules[ruleName] = rule;
     }
-    rule.priority = rulesFixPriorityOrder.indexOf(ruleName);
-    npmGroovyLintRules[ruleName] = rule;
+    return npmGroovyLintRules;
 }
 
-module.exports = { npmGroovyLintRules };
+module.exports = { getNpmGroovyLintRules };

@@ -5,12 +5,14 @@ const debug = require("debug")("npm-groovy-lint");
 const fse = require("fs-extra");
 const os = require("os");
 const xml2js = require("xml2js");
-const { npmGroovyLintRules } = require("./groovy-lint-rules.js");
+const { getNpmGroovyLintRules } = require("./groovy-lint-rules.js");
 const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js");
 
 ////////////////////////////
 // Build codenarc options //
 ////////////////////////////
+
+const npmGroovyLintRules = getNpmGroovyLintRules();
 
 // Convert NPM-groovy-lint into codeNarc arguments
 // Create temporary files if necessary
