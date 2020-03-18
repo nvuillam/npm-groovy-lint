@@ -75,18 +75,26 @@ function getStringRange(errLine, str, errItem) {
     };
 }
 
-function getStringRangeMultiline(allLines, str, errItem) {
+function getStringRangeMultiline(allLines, str, errItem, levelKey) {
     let range = getDefaultRange(allLines, errItem);
     let pos = errItem.line - 1;
     let isFound = false;
+    let level = 0;
     while (isFound === false && pos < allLines.length) {
+        if (levelKey && allLines[pos].indexOf(levelKey) > -1) {
+            level = level + 1;
+        }
         if (!isFound && allLines[pos].indexOf(str) > -1) {
-            const varStartPos = allLines[pos].indexOf(str);
-            range = {
-                start: { line: errItem.line, character: varStartPos },
-                end: { line: errItem.line, character: varStartPos + str.length }
-            };
-            isFound = true;
+            if (level === 1) {
+                const varStartPos = allLines[pos].indexOf(str);
+                range = {
+                    start: { line: pos + 1, character: varStartPos },
+                    end: { line: pos + 1, character: varStartPos + str.length }
+                };
+                isFound = true;
+            } else {
+                level = level - 1;
+            }
         }
         pos++;
     }
@@ -143,6 +151,22 @@ function isValidCodeLine(line) {
     return line.trim() !== "" && line.trim().split("//")[0] !== "";
 }
 
+function addSpaceAfterChar(line, char) {
+    let pos = -1;
+    const splits = line.split(char);
+    const newArray = splits.map(str => {
+        pos++;
+        if (pos === 0) {
+            return str.trimEnd();
+        } else if (pos === splits.length - 1) {
+            return str.trimStart();
+        } else {
+            return str.trim();
+        }
+    });
+    return newArray.join(char + " ").trimEnd();
+}
+
 function addSpaceAroundChar(line, char) {
     let pos = -1;
     const splits = line.split(char);
@@ -160,6 +184,7 @@ function addSpaceAroundChar(line, char) {
 }
 
 module.exports = {
+    addSpaceAfterChar,
     addSpaceAroundChar,
     evaluateRange,
     evaluateVariables,

@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.0.2-beta.0] 2020-03-18
+
+### Changed
+
+- Test suites: Improve reliability & logs for rule fixes tests
+- Fix: IfStatementBraces rule
+- Fix: ElseBlockBraces rule
+- Fix: ClosingBraceNotAlone rule
+- Fix: Send computed range to fix functions
+
 ## [3.0.1] 2020-03-17
 
 ### Added

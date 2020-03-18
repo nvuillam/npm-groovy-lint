@@ -28,7 +28,7 @@ try {
             sourceAfter: `
 try {
     whatever (    )
-} catch(Exception){ 
+} catch(Exception){
     whateverelse(    )
 }
 `

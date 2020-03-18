@@ -24,7 +24,7 @@ const rule = {
     def str = "lelamanul"                
 `,
             sourceAfter: `
-    str = "lelamanul"
+    def str = "lelamanul"
 `
         }
     ]

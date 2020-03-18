@@ -79,6 +79,7 @@ class NpmGroovyLintFix {
                         ruleName: err.rule,
                         lineNb: err.line,
                         msg: err.msg,
+                        range: err.range,
                         rule: this.npmGroovyLintRules[err.rule]
                     };
                     this.addFixableError(fileNm, fixableError);
@@ -90,6 +91,7 @@ class NpmGroovyLintFix {
                                 ruleName: triggeredRuleName,
                                 lineNb: err.line,
                                 msg: err.msg,
+                                range: err.range,
                                 rule: this.npmGroovyLintRules[triggeredRuleName]
                             };
                             this.addFixableError(fileNm, fixableErrorTriggered);
@@ -157,7 +159,7 @@ class NpmGroovyLintFix {
                         }
                     }
                 }
-                const newSources = allLines.join("\r\n") + "\r\n";
+                const newSources = allLines.join("\r\n");
                 this.updatedLintResult.files[fileNm].updatedSource = newSources;
                 // Write new file content if it has been updated
                 if (this.options.save && fixedInFileNb > 0) {
@@ -184,6 +186,7 @@ class NpmGroovyLintFix {
         // Evaluate variables from message
         const evaluatedVars = evaluateVariables(fixableError.rule.variables, fixableError.msg, { verbose: this.verbose });
         evaluatedVars.push({ name: "lineNb", value: lineNb });
+        evaluatedVars.push({ name: "range", value: fixableError.range || {} });
 
         // Apply fix : replacement or custom function
         let newLine = line;

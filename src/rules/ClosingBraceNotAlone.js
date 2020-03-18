@@ -18,7 +18,7 @@ const rule = {
             const newFileLines = [];
             let prevLine = "";
             for (const line of allLines) {
-                const newLine = line.replace("{{{NEWLINECLOSINGBRACE}}}", "");
+                const newLine = line.replace("###NEWLINECLOSINGBRACE###", "");
                 newFileLines.push(newLine);
                 if (newLine !== line) {
                     const prevLineIndent = prevLine.search(/\S/);
@@ -36,7 +36,7 @@ const rule = {
         {
             sourceBefore: `
 if (a == 1) {
-    whatever(){{{NEWLINECLOSINGBRACE}}}
+    whatever()###NEWLINECLOSINGBRACE###
 `,
             sourceAfter: `
 if (a == 1) {

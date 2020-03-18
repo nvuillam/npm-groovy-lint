@@ -13,7 +13,7 @@ const rule = {
         label: "Remove unnecessary toString()",
         type: "function",
         func: line => {
-            return line.replace(".toString()");
+            return line.replace(".toString()", "");
         }
     },
     tests: [

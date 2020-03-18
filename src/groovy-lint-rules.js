@@ -103,7 +103,7 @@ const rulesFixPriorityOrder = [
     "UnnecessaryGroovyImport",
     "UnusedImport",
     "IfStatementBraces",
-    "ElseBlocktBraces",
+    "ElseBlockBraces",
     "ClosingBraceNotAlone",
     "IndentationClosingBraces",
     "IndentationComments",
