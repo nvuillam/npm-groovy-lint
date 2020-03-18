@@ -125,7 +125,8 @@ async function loadJSConfigFile(filePath) {
 async function loadJSONConfigFile(filePath) {
     debug(`Loading JSON config file: ${filePath}`);
     try {
-        return JSON.parse(stripComments(await readFile(filePath)));
+        const fileContent = await readFile(filePath);
+        return JSON.parse(stripComments(fileContent));
     } catch (e) {
         debug(`Error reading JSON file: ${filePath}`);
         e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
@@ -146,7 +147,8 @@ async function loadYAMLConfigFile(filePath) {
 
     try {
         // empty YAML file can be null, so always use
-        return yaml.safeLoad(await readFile(filePath)) || {};
+        const fileContent = await readFile(filePath);
+        return yaml.safeLoad(fileContent) || {};
     } catch (e) {
         debug(`Error reading YAML file: ${filePath}`);
         e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
@@ -158,7 +160,6 @@ async function loadPackageJSONConfigFile(filePath) {
     debug(`Loading package.json config file: ${filePath}`);
     try {
         const packageData = await loadJSONConfigFile(filePath);
-
         if (!Object.hasOwnProperty.call(packageData, "groovylintConfig")) {
             throw Object.assign(new Error("package.json file doesn't have 'groovylintConfig' field."), { code: "GROOVYLINT_CONFIG_FIELD_NOT_FOUND" });
         }

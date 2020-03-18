@@ -16,7 +16,7 @@ const rule = {
         type: "function",
         func: (allLines, variables) => {
             const range = getVariable(variables, "range", { mandatory: true });
-            const lineNumber = range.start.line;
+            const lineNumber = range.start.line - 1;
             // If next line is also a if/else, this rule can not autofix for now, it has to be done manually
             const nextLineAfterFoundOne = allLines[lineNumber + 1];
             if (

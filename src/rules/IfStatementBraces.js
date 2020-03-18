@@ -62,7 +62,7 @@ if (a == 1)
 `,
             sourceAfter: `
 if (a == 1) {
-    whatever() 
+    whatever()
 }
 `
         },
@@ -77,9 +77,8 @@ else
 if (new File(sfdxWorkingDir + '/.sfdx').exists() && this.promptForReloadMetadatas == true ) {
     doRetrieve = Utils.userPromptOkCancel('Metadatas already existing in local project.\\nDo you want to fetch them again ? (if you don\\'t know, input N)', 5)
 }
-else {
+else
     doRetrieve = true
-}
 `
         }
     ]

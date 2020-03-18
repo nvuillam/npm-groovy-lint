@@ -37,9 +37,11 @@ class MyClass {
         { -> println 456 } as
             Runnable
         { -> println 789
-                }as Runnable
+                } as Runnable
         (int)34.56                          // ignored
     }
+
+    def myField = 'Toto'+'Titi'+'Tutu'
 }
 `,
             sourceAfter: `
@@ -53,6 +55,8 @@ class MyClass {
                 } as Runnable
         (int)34.56                          // ignored
     }
+
+    def myField = 'Toto' + 'Titi' + 'Tutu'
 }
 `
         }

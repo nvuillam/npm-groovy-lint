@@ -117,6 +117,15 @@ class NpmGroovyLintFix {
         ) {
             return;
         }
+        // If
+        if (
+            this.fixRules != null &&
+            typeof fixableError.id === "string" &&
+            fixableError.id.includes("_triggered") &&
+            !this.fixRules.includes(fixableError.ruleName)
+        ) {
+            this.fixRules.push(fixableError.ruleName);
+        }
         this.fixableErrors[fileNm].push(fixableError);
     }
 
@@ -130,7 +139,9 @@ class NpmGroovyLintFix {
 
                 // Process fixes
                 let fixedInFileNb = 0;
-                for (const fileFixableError of this.fixableErrors[fileNm]) {
+                for (let i = 0; i < this.fixableErrors[fileNm].length; i++) {
+                    // Do not use for-of as content can change during the loops
+                    const fileFixableError = this.fixableErrors[fileNm][i];
                     if (this.fixRules != null && !this.fixRules.includes(fileFixableError.ruleName) && this.fixRules[0] !== "TriggerTestError") {
                         continue;
                     }
@@ -143,6 +154,7 @@ class NpmGroovyLintFix {
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
                             this.fixedErrorsIds.push(fileFixableError.id);
                             this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
+                            this.updateNextErrorsRanges(allLines, allLinesNew, lineNb, fileNm);
                             allLines = allLinesNew;
                         }
                     }
@@ -237,6 +249,36 @@ class NpmGroovyLintFix {
             Object.assign(error, errDataToSet);
             this.updatedLintResult.files[fileNm].errors[errIndex] = error;
         }
+    }
+
+    // Update line number & calculated range for following errors
+    updateNextErrorsRanges(allLines, allLinesNew, lineNb, fileNm) {
+        const lengthDiff = allLinesNew.length - allLines.length;
+        // If same length, range & lineNb do not need to be updated
+        if (lengthDiff === 0) {
+            return;
+        }
+        let pos = lineNb - 1;
+        this.fixableErrors[fileNm] = this.fixableErrors[fileNm].map(fixableError => {
+            // Only update line number & range for next lines
+            if (fixableError.lineNb >= pos) {
+                fixableError.lineNb = fixableError.lineNb + lengthDiff;
+                if (fixableError.range) {
+                    fixableError.range = {
+                        start: {
+                            line: fixableError.range.start.line + lengthDiff,
+                            character: fixableError.range.start.character
+                        },
+                        end: {
+                            line: fixableError.range.end.line + lengthDiff,
+                            character: fixableError.range.end.character
+                        }
+                    };
+                }
+            }
+            pos++;
+            return fixableError;
+        });
     }
 }
 
