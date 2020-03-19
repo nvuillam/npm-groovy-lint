@@ -1,12 +1,12 @@
 // System.exit forbidden
 
-const { getVariableRange } = require("../utils");
+const { getStringRange } = require("../utils");
 
 const rule = {
     range: {
         type: "function",
-        func: (errLine, errItem, evaluatedVars) => {
-            return getVariableRange(errLine, evaluatedVars, "System.exit", errItem);
+        func: (errLine, errItem) => {
+            return getStringRange(errLine, "System.exit", errItem);
         }
     }
 };

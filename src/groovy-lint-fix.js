@@ -79,6 +79,7 @@ class NpmGroovyLintFix {
                         ruleName: err.rule,
                         lineNb: err.line,
                         msg: err.msg,
+                        range: err.range,
                         rule: this.npmGroovyLintRules[err.rule]
                     };
                     this.addFixableError(fileNm, fixableError);
@@ -90,6 +91,7 @@ class NpmGroovyLintFix {
                                 ruleName: triggeredRuleName,
                                 lineNb: err.line,
                                 msg: err.msg,
+                                range: err.range,
                                 rule: this.npmGroovyLintRules[triggeredRuleName]
                             };
                             this.addFixableError(fileNm, fixableErrorTriggered);
@@ -115,6 +117,15 @@ class NpmGroovyLintFix {
         ) {
             return;
         }
+        // Update Fixrules if triggered error
+        if (
+            this.fixRules != null &&
+            typeof fixableError.id === "string" &&
+            fixableError.id.includes("_triggered") &&
+            !this.fixRules.includes(fixableError.ruleName)
+        ) {
+            this.fixRules.push(fixableError.ruleName);
+        }
         this.fixableErrors[fileNm].push(fixableError);
     }
 
@@ -128,7 +139,9 @@ class NpmGroovyLintFix {
 
                 // Process fixes
                 let fixedInFileNb = 0;
-                for (const fileFixableError of this.fixableErrors[fileNm]) {
+                for (let i = 0; i < this.fixableErrors[fileNm].length; i++) {
+                    // Do not use for-of as content can change during the loops
+                    const fileFixableError = this.fixableErrors[fileNm][i];
                     if (this.fixRules != null && !this.fixRules.includes(fileFixableError.ruleName) && this.fixRules[0] !== "TriggerTestError") {
                         continue;
                     }
@@ -141,6 +154,7 @@ class NpmGroovyLintFix {
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
                             this.fixedErrorsIds.push(fileFixableError.id);
                             this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
+                            this.updateNextErrorsRanges(allLines, allLinesNew, lineNb, fileNm);
                             allLines = allLinesNew;
                         }
                     }
@@ -157,7 +171,7 @@ class NpmGroovyLintFix {
                         }
                     }
                 }
-                const newSources = allLines.join("\r\n") + "\r\n";
+                const newSources = allLines.join("\r\n");
                 this.updatedLintResult.files[fileNm].updatedSource = newSources;
                 // Write new file content if it has been updated
                 if (this.options.save && fixedInFileNb > 0) {
@@ -167,15 +181,14 @@ class NpmGroovyLintFix {
         );
     }
 
-    tryApplyFixRule(line, lineNb, fixableError) {
+    // Try to apply fix rule, return original line if error
+    tryApplyFixRule(lineOrAllLines, lineNb, fixableError) {
         try {
-            return this.applyFixRule(line, lineNb, fixableError);
+            return this.applyFixRule(lineOrAllLines, lineNb, fixableError);
         } catch (e) {
-            if (this.verbose) {
-                debug(e.message);
-                debug(fixableError);
-            }
-            return line;
+            debug(e.message);
+            debug(fixableError);
+            return lineOrAllLines;
         }
     }
 
@@ -184,6 +197,7 @@ class NpmGroovyLintFix {
         // Evaluate variables from message
         const evaluatedVars = evaluateVariables(fixableError.rule.variables, fixableError.msg, { verbose: this.verbose });
         evaluatedVars.push({ name: "lineNb", value: lineNb });
+        evaluatedVars.push({ name: "range", value: fixableError.range || {} });
 
         // Apply fix : replacement or custom function
         let newLine = line;
@@ -204,11 +218,11 @@ class NpmGroovyLintFix {
         else if (fix.type === "function") {
             try {
                 if (this.fixRules && this.fixRules[0] === "TriggerTestError") {
-                    throw new Error("Trigger test error");
+                    throw new Error("ERROR: Trigger test error (on purpose)");
                 }
                 newLine = fix.func(newLine, evaluatedVars);
             } catch (e) {
-                debug("GroovyLint: Function error: " + e.message + " / " + JSON.stringify(fixableError));
+                debug("ERROR: Fix function error: " + e.message + " / " + JSON.stringify(fixableError));
                 throw e;
             }
         }
@@ -234,6 +248,36 @@ class NpmGroovyLintFix {
             Object.assign(error, errDataToSet);
             this.updatedLintResult.files[fileNm].errors[errIndex] = error;
         }
+    }
+
+    // Update line number & calculated range for following errors
+    updateNextErrorsRanges(allLines, allLinesNew, lineNb, fileNm) {
+        const lengthDiff = allLinesNew.length - allLines.length;
+        // If same length, range & lineNb do not need to be updated
+        if (lengthDiff === 0) {
+            return;
+        }
+        let pos = lineNb - 1;
+        this.fixableErrors[fileNm] = this.fixableErrors[fileNm].map(fixableError => {
+            // Only update line number & range for next lines
+            if (fixableError.lineNb >= pos) {
+                fixableError.lineNb = fixableError.lineNb + lengthDiff;
+                if (fixableError.range) {
+                    fixableError.range = {
+                        start: {
+                            line: fixableError.range.start.line + lengthDiff,
+                            character: fixableError.range.start.character
+                        },
+                        end: {
+                            line: fixableError.range.end.line + lengthDiff,
+                            character: fixableError.range.end.character
+                        }
+                    };
+                }
+            }
+            pos++;
+            return fixableError;
+        });
     }
 }
 

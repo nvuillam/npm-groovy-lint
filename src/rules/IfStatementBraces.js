@@ -21,7 +21,11 @@ const rule = {
         func: (allLines, variables) => {
             const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
             // If next line is also a if/else, this rule can not autofix for now, it has to be done manually
-            if (allLines[lineNumber + 1] && (allLines[lineNumber + 1].includes("if") || allLines[lineNumber + 1].includes("else"))) {
+            const nextLineAfterFoundOne = allLines[lineNumber + 1];
+            if (
+                nextLineAfterFoundOne &&
+                (nextLineAfterFoundOne.includes("if (") || nextLineAfterFoundOne.includes("if(") || nextLineAfterFoundOne.includes("else {"))
+            ) {
                 return allLines;
             }
             // If line
@@ -36,7 +40,7 @@ const rule = {
                 let nextLine = allLines[lineNumber + pos + 1];
                 if (isValidCodeLine(nextLine) && level === 0) {
                     if (!nextLine.trim().startsWith("if") && !nextLine.includes("{")) {
-                        nextLine = nextLine + "{{{NEWLINECLOSINGBRACE}}}";
+                        nextLine = nextLine + "###NEWLINECLOSINGBRACE###";
                         allLines[lineNumber + pos + 1] = nextLine;
                         match = true;
                     } else if (nextLine.includes("}") && !nextLine.includes("{")) {
@@ -58,8 +62,23 @@ if (a == 1)
 `,
             sourceAfter: `
 if (a == 1) {
-    whatever() 
+    whatever()
 }
+`
+        },
+        {
+            sourceBefore: `
+if (new File(sfdxWorkingDir + '/.sfdx').exists() && this.promptForReloadMetadatas == true )
+    doRetrieve = Utils.userPromptOkCancel('Metadatas already existing in local project.\\nDo you want to fetch them again ? (if you don\\'t know, input N)', 5)
+else
+    doRetrieve = true
+`,
+            sourceAfter: `
+if (new File(sfdxWorkingDir + '/.sfdx').exists() && this.promptForReloadMetadatas == true ) {
+    doRetrieve = Utils.userPromptOkCancel('Metadatas already existing in local project.\\nDo you want to fetch them again ? (if you don\\'t know, input N)', 5)
+}
+else
+    doRetrieve = true
 `
         }
     ]

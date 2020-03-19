@@ -9,8 +9,8 @@ const rule = {
         type: "function",
         func: (allLines, variables) => {
             const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
-            if (allLines[lineNumber].includes("import")) {
-                allLines.splice(lineNumber, 1);
+            if (allLines[lineNumber + 1].includes("import")) {
+                allLines.splice(lineNumber + 1, 1);
             }
             return allLines;
         }

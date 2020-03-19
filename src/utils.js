@@ -75,18 +75,26 @@ function getStringRange(errLine, str, errItem) {
     };
 }
 
-function getStringRangeMultiline(allLines, str, errItem) {
+function getStringRangeMultiline(allLines, str, errItem, levelKey) {
     let range = getDefaultRange(allLines, errItem);
     let pos = errItem.line - 1;
     let isFound = false;
+    let level = 0;
     while (isFound === false && pos < allLines.length) {
-        if (!isFound && allLines[pos].indexOf(str) > -1) {
-            const varStartPos = allLines[pos].indexOf(str);
-            range = {
-                start: { line: errItem.line, character: varStartPos },
-                end: { line: errItem.line, character: varStartPos + str.length }
-            };
-            isFound = true;
+        if (levelKey && allLines[pos].indexOf(levelKey) > -1 && notBetweenQuotesOrComment(allLines[pos], levelKey)) {
+            level = level + 1;
+        }
+        if (!isFound && allLines[pos].indexOf(str) > -1 && notBetweenQuotesOrComment(allLines[pos], str)) {
+            if (level === 1) {
+                const varStartPos = allLines[pos].indexOf(str);
+                range = {
+                    start: { line: pos + 1, character: varStartPos },
+                    end: { line: pos + 1, character: varStartPos + str.length }
+                };
+                isFound = true;
+            } else {
+                level = level - 1;
+            }
         }
         pos++;
     }
@@ -119,11 +127,11 @@ function findRangeBetweenStrings(allLines, errItem, strStart, strEnd) {
     let isStartFound = false;
     let isEndFound = false;
     while ((isStartFound === false || isEndFound === false) && pos < allLines.length) {
-        if (!isStartFound && allLines[pos].indexOf(strStart) > -1) {
+        if (!isStartFound && allLines[pos].indexOf(strStart) > -1 && notBetweenQuotesOrComment(allLines[pos], strStart)) {
             range.start = { line: pos + 1, character: allLines[pos].indexOf(strStart) };
             isStartFound = true;
         }
-        if (!isEndFound && allLines[pos].indexOf(strEnd) > -1) {
+        if (!isEndFound && allLines[pos].indexOf(strEnd) > -1 && notBetweenQuotesOrComment(allLines[pos], strEnd)) {
             range.end = { line: pos + 1, character: allLines[pos].indexOf(strEnd) };
             isEndFound = true;
         }
@@ -143,6 +151,23 @@ function isValidCodeLine(line) {
     return line.trim() !== "" && line.trim().split("//")[0] !== "";
 }
 
+function addSpaceAfterChar(line, char) {
+    let pos = -1;
+    const splits = line.split(char);
+    const newArray = splits.map(str => {
+        pos++;
+        if (pos === 0) {
+            return str.trimEnd();
+        } else if (pos === splits.length - 1) {
+            return str.trimStart();
+        } else {
+            return str.trim();
+        }
+    });
+    return newArray.join(char + " ").trimEnd();
+}
+
+// Add space around an expression
 function addSpaceAroundChar(line, char) {
     let pos = -1;
     const splits = line.split(char);
@@ -159,7 +184,26 @@ function addSpaceAroundChar(line, char) {
     return newArray.join(" " + char + " ").trimEnd();
 }
 
+// Check if a substring is between quotes in a string
+function notBetweenQuotesOrComment(str, substr) {
+    const singleQuotesMatch = str.match(/'(.*?)'/) || [];
+    const doubleQuotesMatch = str.match(/"(.*?)"/) || [];
+    const res = singleQuotesMatch.concat(doubleQuotesMatch).filter(match => match.includes(substr));
+    if (res.length > 0) {
+        return false;
+    }
+    const splitComments = str.split("//");
+    if (splitComments.length > 1 && splitComments[1].includes(substr)) {
+        return false;
+    }
+    if (str.includes("/*")) {
+        return false;
+    }
+    return true;
+}
+
 module.exports = {
+    addSpaceAfterChar,
     addSpaceAroundChar,
     evaluateRange,
     evaluateVariables,

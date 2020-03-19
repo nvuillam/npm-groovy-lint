@@ -1,6 +1,6 @@
 // Add space after a comma
 
-const { getStringRange, addSpaceAroundChar } = require("../utils");
+const { getStringRange, addSpaceAfterChar } = require("../utils");
 
 const rule = {
     range: {
@@ -13,7 +13,7 @@ const rule = {
         label: "Add space after comma",
         type: "function",
         func: line => {
-            return addSpaceAroundChar(line, ",");
+            return addSpaceAfterChar(line, ",");
         }
     },
     tests: [

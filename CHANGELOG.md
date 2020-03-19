@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.1.0] 2020-03-18
+
+### Changed
+
+- Test suites: Improve reliability & logs for rule fixes tests (detected numerous bugs, now corrected)
+- Send computed range to fix functions
+- Fix rules:
+  - ClosingBraceNotAlone
+  - ElseBlockBraces
+  - IfStatementBraces
+  - NoTabCharacter
+  - SpaceAfterComma
+  - SystemExit
+  - TrailingWhitespace
+  - UnnecessaryGroovyImport
+  - UnusedImport
+
 ## [3.0.1] 2020-03-17
 
 ### Added

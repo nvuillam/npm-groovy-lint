@@ -3,6 +3,21 @@
 const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
+const os = require("os");
+const rimraf = require("rimraf");
+
+// Copy files in temp directory to not update the package files
+async function copyFilesInTmpDir() {
+    const rootTmpDir =
+        (os.type().toLowerCase().includes('linux')) ?
+            './jdeploy-bundle/tmptest' :
+            os.tmpdir();
+    const tmpDir = rootTmpDir + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
+    await fse.ensureDir(tmpDir, { mode: '0777' });
+    await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
+    console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
+    return tmpDir;
+}
 
 describe('Lint & fix with API', function () {
 
@@ -52,12 +67,13 @@ describe('Lint & fix with API', function () {
     });
 
     it('(API:file) should lint and fix a Jenkinsfile in one shot', async function () {
-        const prevFileContent = fse.readFileSync('./jdeploy-bundle/lib/example/Jenkinsfile').toString();
+        const tmpDir = await copyFilesInTmpDir();
+        const prevFileContent = fse.readFileSync(tmpDir + '/Jenkinsfile').toString();
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
             '--output', '"npm-groovy-fix-log.json"',
-            '--path', '"jdeploy-bundle/lib/example"',
+            '--path', '"' + tmpDir + '"',
             '--fix',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
@@ -71,14 +87,16 @@ describe('Lint & fix with API', function () {
         assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
 
         fse.removeSync('npm-groovy-fix-log.json');
+        rimraf.sync(tmpDir);
+        return true;
     }).timeout(120000);
 
 
     it('(API:file) should fix only some errors', async function () {
-        const allRules = [
+        const fixRules = [
             // Line rules or not changing line rules
 
-            "Indentation" // ok
+            "Indentation", // ok
             // "UnnecessaryGString", 
             // "SpaceBeforeOpeningBrace", 
             // "SpaceAfterOpeningBrace",
@@ -86,7 +104,7 @@ describe('Lint & fix with API', function () {
             // "SpaceAroundOperator",
             // "SpaceAfterComma",
             // "UnnecessaryDefInFieldDeclaration", 
-            // "UnnecessarySemicolon", 
+            "UnnecessarySemicolon",
             // "IfStatementBraces",
             // "ElseStatementBraces", 
             // "ConsecutiveBlankLines", 
@@ -94,31 +112,35 @@ describe('Lint & fix with API', function () {
             // "IndentationComments",
             // "FileEndsWithoutNewline" // ok
         ];
+        const tmpDir = await copyFilesInTmpDir();
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
-            '--path', '"jdeploy-bundle/lib/example"',
-            '--fixrules', allRules.join(','),
-            '--output', '"npm-groovy-fix-log.txt"',
+            '--path', '"' + tmpDir + '"',
             '--fix',
+            '--fixrules', fixRules.join(','),
+            '--output', '"npm-groovy-fix-log-should-fix-only-some-errors.txt"',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
         }).run();
 
         assert(linter.status === 0);
         assert(linter.lintResult.summary.totalFixedNumber > 0, 'Errors have been fixed');
-        assert(fse.existsSync('npm-groovy-fix-log.txt'), 'Output txt file produced');
+        assert(fse.existsSync('npm-groovy-fix-log-should-fix-only-some-errors.txt'), 'Output txt file produced');
         assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
 
-        fse.removeSync('npm-groovy-fix-log.txt');
+        fse.removeSync('npm-groovy-fix-log-should-fix-only-some-errors.txt');
+        rimraf.sync(tmpDir);
+        return true;
     }).timeout(120000);
 
     it('(API:file) should fix groovy files', async function () {
+        const tmpDir = await copyFilesInTmpDir();
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
-            '--path', '"jdeploy-bundle/lib/example"',
-            '--output', '"npm-groovy-fix-log.txt"',
+            '--path', '"' + tmpDir + '"',
+            '--output', '"npm-groovy-fix-log-should-fix-groovy-files.txt"',
             '--fix',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
@@ -126,10 +148,12 @@ describe('Lint & fix with API', function () {
 
         assert(linter.status === 0, "Status is 0");
         assert(linter.lintResult.summary.totalFixedNumber > 0, 'Errors have been fixed');
-        assert(fse.existsSync('npm-groovy-fix-log.txt'), 'Output txt file produced');
+        assert(fse.existsSync('npm-groovy-fix-log-should-fix-groovy-files.txt'), 'Output txt file produced');
         assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
 
-        fse.removeSync('npm-groovy-fix-log.txt');
+        fse.removeSync('npm-groovy-fix-log-should-fix-groovy-files.txt');
+        rimraf.sync(tmpDir);
+        return true;
     }).timeout(120000);
 
 });

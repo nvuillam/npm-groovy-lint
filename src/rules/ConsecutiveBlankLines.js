@@ -12,11 +12,9 @@ const rule = {
             const newFileLines = [];
             let prevLine = "none";
             let pos = 0;
-            let alreadySkippedLine = false;
             for (const line of allLines) {
                 // Check if previous line is empty: if not do not add line
-                if (line.trim() === "" && prevLine.trim() === "" && alreadySkippedLine === false && pos >= lineNumber) {
-                    alreadySkippedLine = true;
+                if (line.trim() === "" && prevLine.trim() === "" && pos >= lineNumber) {
                     pos++;
                     continue;
                 }
@@ -38,7 +36,7 @@ x = 1
             sourceAfter: `
 if (a == 2){
 
-    x = 1
+x = 1
 }`
         },
         {
@@ -53,7 +51,7 @@ x = 1
             sourceAfter: `
 if (a == 2){
 
-    x = 1
+x = 1
 }`
         }
     ]

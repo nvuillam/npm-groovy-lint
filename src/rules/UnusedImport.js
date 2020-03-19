@@ -11,6 +11,7 @@ const rule = {
             regexPos: 1
         }
     ],
+    unitary: true,
     fix: {
         label: "Remove unused import",
         type: "function",

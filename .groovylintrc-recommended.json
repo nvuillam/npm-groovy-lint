@@ -1,10 +1,14 @@
 {
     "extends": "all",
     "rules": {
+        "comments.ClassJavadoc": "off",
         "convention.NoDef": "off",
         "convention.VariableTypeRequired": "off",
-        "dry.DuplicateStringLiteral": "off",
-        "formatting.LineLength": "off",
-        "logging.Println": "off"
+        "formatting.Indentation": {
+            "spacesPerIndentLevel": 4,
+            "severity": "info"
+        },
+        "logging.Println": "off",
+        "unnecessary.UnnecessaryReturnKeyword": "error"
     }
 }
