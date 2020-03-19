@@ -55,7 +55,9 @@ describe('Lint & fix with API', function () {
 
     it('(API:file) should lint and fix a Jenkinsfile in one shot', async function () {
         const tmpDir = os.tmpdir() + '/' + Math.random();
-        fse.copySync('./jdeploy-bundle/lib/example', tmpDir);
+        await fse.ensureDir(tmpDir);
+        await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
+        console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
         const prevFileContent = fse.readFileSync(tmpDir + '/Jenkinsfile').toString();
         const linter = await new NpmGroovyLint([
             process.execPath,
@@ -101,8 +103,9 @@ describe('Lint & fix with API', function () {
             // "FileEndsWithoutNewline" // ok
         ];
         const tmpDir = os.tmpdir() + '/' + Math.random();
-        fse.copySync('./jdeploy-bundle/lib/example', tmpDir);
-        console.info('GroovyLint: Copied lib files into dist/lib');
+        await fse.ensureDir(tmpDir);
+        await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
+        console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -126,7 +129,9 @@ describe('Lint & fix with API', function () {
 
     it('(API:file) should fix groovy files', async function () {
         const tmpDir = os.tmpdir() + '/' + Math.random();
-        fse.copySync('./jdeploy-bundle/lib/example', tmpDir);
+        await fse.ensureDir(tmpDir);
+        await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
+        console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
