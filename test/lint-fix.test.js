@@ -8,7 +8,11 @@ const rimraf = require("rimraf");
 
 // Copy files in temp directory to not update the package files
 async function copyFilesInTmpDir() {
-    const rootTmpDir = (os.type().toLowerCase().includes('linux')) ? '/tmp' : os.tmpdir();
+    const rootTmpDir = (process.env.CI === 'true' && process.env.CIRCLECI === 'true') ?
+        '/root/project/tmp' : (
+            (os.type().toLowerCase().includes('linux')) ?
+                '/tmp' :
+                os.tmpdir());
     const tmpDir = rootTmpDir + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
     await fse.ensureDir(tmpDir, { mode: '0777' });
     await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
