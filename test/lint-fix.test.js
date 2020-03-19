@@ -6,8 +6,10 @@ const fse = require("fs-extra");
 const os = require("os");
 const rimraf = require("rimraf");
 
+// Copy files in temp directory to not update the package files
 async function copyFilesInTmpDir() {
-    const tmpDir = os.tmpdir() + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
+    const rootTmpDir = (os.type().toLowerCase().includes('linux')) ? '/tmp' : os.tmpdir();
+    const tmpDir = rootTmpDir + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
     await fse.ensureDir(tmpDir, { mode: '0777' });
     await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
     console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
