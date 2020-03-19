@@ -54,7 +54,7 @@ describe('Lint & fix with API', function () {
     });
 
     it('(API:file) should lint and fix a Jenkinsfile in one shot', async function () {
-        const tmpDir = os.tmpdir() + '/' + Math.random();
+        const tmpDir = os.tmpdir() + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
         await fse.ensureDir(tmpDir);
         await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
         console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
@@ -102,7 +102,7 @@ describe('Lint & fix with API', function () {
             // "IndentationComments",
             // "FileEndsWithoutNewline" // ok
         ];
-        const tmpDir = os.tmpdir() + '/' + Math.random();
+        const tmpDir = os.tmpdir() + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
         await fse.ensureDir(tmpDir);
         await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
         console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
@@ -128,7 +128,7 @@ describe('Lint & fix with API', function () {
     }).timeout(120000);
 
     it('(API:file) should fix groovy files', async function () {
-        const tmpDir = os.tmpdir() + '/' + Math.random();
+        const tmpDir = os.tmpdir() + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
         await fse.ensureDir(tmpDir);
         await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
         console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
