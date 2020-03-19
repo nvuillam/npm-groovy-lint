@@ -117,7 +117,7 @@ class NpmGroovyLintFix {
         ) {
             return;
         }
-        // If
+        // Update Fixrules if triggered error
         if (
             this.fixRules != null &&
             typeof fixableError.id === "string" &&
@@ -181,15 +181,14 @@ class NpmGroovyLintFix {
         );
     }
 
-    tryApplyFixRule(line, lineNb, fixableError) {
+    // Try to apply fix rule, return original line if error
+    tryApplyFixRule(lineOrAllLines, lineNb, fixableError) {
         try {
-            return this.applyFixRule(line, lineNb, fixableError);
+            return this.applyFixRule(lineOrAllLines, lineNb, fixableError);
         } catch (e) {
-            if (this.verbose) {
-                debug(e.message);
-                debug(fixableError);
-            }
-            return line;
+            debug(e.message);
+            debug(fixableError);
+            return lineOrAllLines;
         }
     }
 
@@ -219,11 +218,11 @@ class NpmGroovyLintFix {
         else if (fix.type === "function") {
             try {
                 if (this.fixRules && this.fixRules[0] === "TriggerTestError") {
-                    throw new Error("Trigger test error");
+                    throw new Error("ERROR: Trigger test error (on purpose)");
                 }
                 newLine = fix.func(newLine, evaluatedVars);
             } catch (e) {
-                debug("GroovyLint: Function error: " + e.message + " / " + JSON.stringify(fixableError));
+                debug("ERROR: Fix function error: " + e.message + " / " + JSON.stringify(fixableError));
                 throw e;
             }
         }

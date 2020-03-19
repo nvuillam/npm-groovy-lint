@@ -12,6 +12,7 @@
   - IfStatementBraces
   - NoTabCharacter
   - SpaceAfterComma
+  - SystemExit
   - TrailingWhitespace
   - UnnecessaryGroovyImport
   - UnusedImport
