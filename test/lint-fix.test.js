@@ -6,6 +6,14 @@ const fse = require("fs-extra");
 const os = require("os");
 const rimraf = require("rimraf");
 
+async function copyFilesInTmpDir() {
+    const tmpDir = os.tmpdir() + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
+    await fse.ensureDir(tmpDir, { mode: '0777' });
+    await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
+    console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
+    return tmpDir;
+}
+
 describe('Lint & fix with API', function () {
 
     it('(API:source) should lint then fix only a list of errors', async () => {
@@ -54,10 +62,7 @@ describe('Lint & fix with API', function () {
     });
 
     it('(API:file) should lint and fix a Jenkinsfile in one shot', async function () {
-        const tmpDir = os.tmpdir() + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
-        await fse.ensureDir(tmpDir);
-        await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
-        console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
+        const tmpDir = await copyFilesInTmpDir();
         const prevFileContent = fse.readFileSync(tmpDir + '/Jenkinsfile').toString();
         const linter = await new NpmGroovyLint([
             process.execPath,
@@ -102,10 +107,7 @@ describe('Lint & fix with API', function () {
             // "IndentationComments",
             // "FileEndsWithoutNewline" // ok
         ];
-        const tmpDir = os.tmpdir() + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
-        await fse.ensureDir(tmpDir);
-        await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
-        console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
+        const tmpDir = await copyFilesInTmpDir();
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -128,10 +130,7 @@ describe('Lint & fix with API', function () {
     }).timeout(120000);
 
     it('(API:file) should fix groovy files', async function () {
-        const tmpDir = os.tmpdir() + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
-        await fse.ensureDir(tmpDir);
-        await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
-        console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
+        const tmpDir = await copyFilesInTmpDir();
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
