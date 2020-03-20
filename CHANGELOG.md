@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.1.1] 2020-03-20
+
+### Added
+
+- Fix rules:
+  - BlockEndsWithBlankLine
+  - BlockStartsWithBlankLine
+  - MisorderedStaticImports
+  - SpaceAfterIf
+
+### Changed
+
+- Fix rules:
+  - SpaceAroundOperator
+
 ## [3.1.0] 2020-03-18
 
 ### Changed

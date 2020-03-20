@@ -20,7 +20,7 @@ const rule = {
         type: "function",
         func: (line, evaluatedVars) => {
             let operator = getVariable(evaluatedVars, "OPERATOR", { mandatory: true, htmlToString: true, line: line });
-            if (!line.includes("+=") && !line.includes("++") && !line.includes("--") && !line.includes("-=")) {
+            if (!line.includes("+=") && !line.includes("++")) {
                 return addSpaceAroundChar(line, operator);
             } else {
                 return line;
@@ -58,6 +58,14 @@ class MyClass {
 
     def myField = 'Toto' + 'Titi' + 'Tutu'
 }
+`
+        },
+        {
+            sourceBefore: `
+def grantCommand = 'sfdx force:auth:jwt:grant --clientid '+sslParams['clientId']+' --jwtkeyfile ./ssl/'+alias+'.key --username '+sslParams['username']+' --setalias '+alias
+`,
+            sourceAfter: `
+def grantCommand = 'sfdx force:auth:jwt:grant --clientid ' + sslParams['clientId'] + ' --jwtkeyfile ./ssl/' + alias + '.key --username ' + sslParams['username'] + ' --setalias ' + alias
 `
         }
     ]
