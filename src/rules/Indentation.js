@@ -30,7 +30,7 @@ const rule = {
         }
     },
     fix: {
-        label: "Fix indentation",
+        label: "Correct Indentation",
         type: "function",
         func: (line, evaluatedVars) => {
             const expectedCol = parseInt(getVariable(evaluatedVars, "EXPECTED", { mandatory: true, line: line }), 10);

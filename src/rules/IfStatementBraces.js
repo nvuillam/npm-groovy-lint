@@ -20,7 +20,7 @@ const rule = {
         type: "function",
         func: (allLines, variables) => {
             const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
-            // If next line is also a if/else, this rule can not autofix for now, it has to be done manually
+            // If next line is also a if/else, or if line does not contain if this rule can not autofix for now, it has to be done manually
             const nextLineAfterFoundOne = allLines[lineNumber + 1];
             if (
                 nextLineAfterFoundOne &&
@@ -28,8 +28,10 @@ const rule = {
             ) {
                 return allLines;
             }
-            // If line
             let line = allLines[lineNumber];
+            if (!line.includes("if")) {
+                throw new Error('Line does not contain "if" :' + line);
+            }
             line = line.trimEnd() + " {";
             allLines[lineNumber] = line;
             // next line

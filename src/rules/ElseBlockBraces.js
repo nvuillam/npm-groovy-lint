@@ -27,6 +27,9 @@ const rule = {
             }
             // If line
             let line = allLines[lineNumber];
+            if (!line.includes("else")) {
+                throw new Error('Line does not contain "if" :' + line);
+            }
             line = line.trimEnd() + " {";
             allLines[lineNumber] = line;
             // next line
