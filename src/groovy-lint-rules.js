@@ -95,6 +95,7 @@ const rulesFixPriorityOrder = [
     "SpaceAfterCatch",
     "SpaceAroundOperator",
     "SpaceAfterComma",
+    "SpaceAfterIf",
     "UnnecessaryDefInFieldDeclaration",
     "UnnecessarySemicolon",
     "TrailingWhitespace",
@@ -102,6 +103,9 @@ const rulesFixPriorityOrder = [
     // Rule that can change the numbers of lines, so they must be processed after line scope rules
     "UnnecessaryGroovyImport",
     "UnusedImport",
+    "BlockStartsWithBlankLine",
+    "BlockEndsWithBlankLine",
+    "MisorderedStaticImports",
     "IfStatementBraces",
     "ElseBlockBraces",
     "ClosingBraceNotAlone",
