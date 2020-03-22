@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.1.3] 2020-03-22
+
+### Changed
+
+- README: Link to [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint)
+
 ## [3.1.2] 2020-03-22
 
 ### Added
