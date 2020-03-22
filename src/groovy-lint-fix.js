@@ -154,7 +154,7 @@ class NpmGroovyLintFix {
                             this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
                             this.fixedErrorsIds.push(fileFixableError.id);
                             this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
-                            this.updateNextErrorsRanges(allLines, allLinesNew, lineNb, fileNm);
+                            this.updateNextErrorsRanges(allLines, allLinesNew, fileFixableError.lineNb, fileNm);
                             allLines = allLinesNew;
                         }
                     }
@@ -257,10 +257,9 @@ class NpmGroovyLintFix {
         if (lengthDiff === 0) {
             return;
         }
-        let pos = lineNb - 1;
         this.fixableErrors[fileNm] = this.fixableErrors[fileNm].map(fixableError => {
             // Only update line number & range for next lines
-            if (fixableError.lineNb >= pos) {
+            if (fixableError.lineNb > lineNb) {
                 fixableError.lineNb = fixableError.lineNb + lengthDiff;
                 if (fixableError.range) {
                     fixableError.range = {
@@ -275,7 +274,6 @@ class NpmGroovyLintFix {
                     };
                 }
             }
-            pos++;
             return fixableError;
         });
     }

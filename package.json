@@ -1,14 +1,14 @@
 {
   "name": "npm-groovy-lint",
-  "version": "3.1.0",
+  "version": "3.1.2-beta.0",
   "description": "NPM CodeNarc wrapper to easily lint Groovy files",
   "main": "index.js",
   "scripts": {
     "lint": "eslint **/*.js --ignore-pattern /jdeploy-bundle/* --ignore-pattern /dist/*",
     "lint:fix": "eslint **/*.js --ignore-pattern jdeploy-bundle --ignore-pattern dist --fix && prettier --write \"./src/**/*.{js,jsx,json}\" --tab-width 4 --print-width 150",
-    "prebuild": "node build-config-all.js && node patch-jdeploy-before.js",
+    "prebuild": "node script-build-config-all.js && node script-patch-jdeploy-before.js",
     "build": "jdeploy install",
-    "postbuild": "node patch-jdeploy-after.js",
+    "postbuild": "node script-patch-jdeploy-after.js",
     "groovy:run-server-from-source": "groovy -cp \"lib/CodeNarc-1.5.jar;lib/groovy-3.0.2/lib/groovy-3.0.2.jar;lib/groovy-3.0.2/lib/groovy-templates-3.0.2.jar;lib/groovy-3.0.2/lib/groovy-xml-3.0.2.jar;lib/groovy-3.0.2/lib/groovy-json-3.0.2.jar;lib/slf4j-api-1.7.9.jar;lib/log4j-slf4j-impl-2.13.0.jar;lib/log4j-api-2.13.0.jar;lib/log4j-core-2.13.0.jar;lib/GMetrics-0.7.jar\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
     "groovy:build": "groovyc -cp \"./lib/*\" --encoding utf-8 ./groovy/src/main/com/nvuillam/CodeNarcServer.groovy -d lib && jar -cvfm ./lib/CodeNarcServer.jar MANIFEST.txt lib/com/nvuillam/*.class ",
     "test": "mocha \"test/**/*.test.js\"",
@@ -16,7 +16,8 @@
     "test:debug": "mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
     "publish:release": "npm run build && npm publish",
     "publish:beta": "npm run build && npm publish --tag beta",
-    "lint-build-all": "npm run lint:fix && npm run groovy:build && npm run build"
+    "dev:lint-build-all": "npm run lint:fix && npm run groovy:build && npm run build",
+    "dev:test-in-vscode-groovy-lint": "npm run dev:lint-build-all && node script-deploy-in-vscode.js"
   },
   "repository": {
     "type": "git",

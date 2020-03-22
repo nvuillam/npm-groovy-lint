@@ -168,7 +168,7 @@ function addSpaceAfterChar(line, char) {
 }
 
 // Add space around an expression
-function addSpaceAroundChar(line, char) {
+function addSpaceAroundChar(line, char, postReplaces = []) {
     let pos = -1;
     const splits = line.split(char);
     const newArray = splits.map(str => {
@@ -181,7 +181,14 @@ function addSpaceAroundChar(line, char) {
             return str.trim();
         }
     });
-    return newArray.join(" " + char + " ").trimEnd();
+    line = newArray.join(" " + char + " ").trimEnd();
+    // If exceptions, repair the broken string :)
+    if (postReplaces && postReplaces.length > 0) {
+        for (const postReplace of postReplaces) {
+            line = line.replace(postReplace[0], postReplace[1]);
+        }
+    }
+    return line;
 }
 
 // Check if a substring is between quotes in a string

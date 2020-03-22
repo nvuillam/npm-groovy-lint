@@ -91,7 +91,7 @@ async function prepareCodeNarcCall(options) {
 }
 
 // Parse XML result file as js object
-async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName) {
+async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmpGroovyFileName) {
     const parser = new xml2js.Parser();
     const tempXmlFileContent = await parser.parseStringPromise(fse.readFileSync(tmpXmlFileName), {});
     if (!tempXmlFileContent || !tempXmlFileContent.CodeNarc || !tempXmlFileContent.CodeNarc.Package) {
@@ -140,6 +140,7 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName) {
                             : "unknown",
                     msg: violation.Message ? violation.Message[0] : ""
                 };
+                errItem.msg = tmpGroovyFileName ? errItem.msg.replace(tmpGroovyFileName, "") : errItem.msg;
                 // Find range & add error only if severity is matching logLevel
                 if (
                     errItem.severity === "error" ||

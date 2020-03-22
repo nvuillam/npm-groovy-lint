@@ -16,7 +16,7 @@
 
 Based on [CodeNarc](http://codenarc.github.io/CodeNarc/) , this out of the box package allows to track groovy errors and correct a part of them
 
-Use option **--fix** to activate autofixing (the function is still in experimental phase, you may have to run it several times at first so CodeNarc take in account the updates)
+Use option **--fix** to activate autofixing of fixable rules (beta)
 
 Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
 
@@ -64,11 +64,11 @@ Define a file named **.groovylintrc.js** (or .json or .YAML, or include in a pro
 Format : 
 
 - extends: Name of a base configuration ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.js) or [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.js))
-- rules: List of rules definition, following format "RuleSection.RuleName": ruleParameters
+- rules: List of rules definition, following format `"RuleSection.RuleName": ruleParameters` or `"RuleName": ruleParameters`
     - "RuleSection.RuleName": any of the [available rules](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html) 
     - ruleParameters: can be just a severity override ( `"off"`, `"error"`, `"warning"`, `"info"` ) , or a property list :
-        - severity
-        - enabled true/false
+        - severity : off,error,warning,info
+        - enabled : true (default) or false
         - any of the [rule advanced properties](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)
 
 Example:
@@ -82,7 +82,7 @@ module.exports = {
             spacesPerIndentLevel: 4,
             severity: "info"
         },
-        'unnecessary.UnnecessaryReturnKeyword': "error"
+        'UnnecessaryReturnKeyword': "error"
     }
 }
 ```
@@ -105,15 +105,19 @@ module.exports = {
     $ npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -title="TestTitleCodenarc" -maxPriority1Violations=0' -report="html:ReportTestCodenarc.html"
 ```
 
-# Autofixable rules (experimental)
+# Autofixable rules (beta)
 
+- BlockEndsWithBlankLine
+- BlockStartsWithBlankLine
 - ConsecutiveBlankLines
 - FileEndsWithoutNewline
 - IfStatementBraces
-- Indentation (IfStatementBraces and ElsefStatementBraces must be manually fixed to have correct indentation)
+- Indentation (IfStatementBraces and ElsefStatementBraces must be fixed to have correct indentation)
+- MisorderedStaticImports
 - NoTabCharacter
 - SpaceAfterCatch
 - SpaceAfterComma
+- SpaceAfterIf
 - SpaceAfterOpeningBrace
 - SpaceAroundOperator
 - SpaceBeforeOpeningBrace

@@ -117,20 +117,26 @@ const rulesFixPriorityOrder = [
 
 const RULES_FOLDER = __dirname + "/rules";
 
-function getNpmGroovyLintRules(optns = {}) {
+function getNpmGroovyLintRules(optns = { loadTests: false }) {
     const ruleFiles = fse.readdirSync(RULES_FOLDER);
     const npmGroovyLintRules = {};
     for (const file of ruleFiles) {
         const ruleName = file.replace(".js", "");
+        // Remove require cache if tests must be returned (other calls delete them in the cache)
+        if (optns && optns.loadTests === true) {
+            delete require.cache[require.resolve(`${RULES_FOLDER}/${file}`)];
+        }
         const { rule } = require(`${RULES_FOLDER}/${file}`);
         if (rule.disabled) {
             continue;
         }
+        // Check priority is defined
         rule.priority = rulesFixPriorityOrder.indexOf(ruleName);
         if (rule.fix && rule.priority < 0) {
             throw new Error(`Rule ${ruleName} must have an order defined in groovy-lint-rules.js/rulesFixPriorityOrder`);
         }
-        if (!optns.loadTests && optns.loadTests === true) {
+        // Remove tests if not in test mode
+        if (optns && optns.loadTests === false) {
             delete rule.tests;
         }
         npmGroovyLintRules[ruleName] = rule;
