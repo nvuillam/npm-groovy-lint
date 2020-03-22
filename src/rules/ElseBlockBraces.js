@@ -27,12 +27,17 @@ const rule = {
             }
             // If line
             let line = allLines[lineNumber];
+            // Check we are on the correct line to correct, if not trigger error
             if (!line.includes("else")) {
-                throw new Error('Line does not contain "if" :' + line);
+                throw new Error('Line does not contain "else" :' + line);
             }
+            if (line.includes("{")) {
+                throw new Error("Line already has an opening brace :" + line);
+            }
+            // Add opening brace
             line = line.trimEnd() + " {";
             allLines[lineNumber] = line;
-            // next line
+            // Add a tag ###NEWLINECLOSINGBRACE### to indicate rule ClosingBraceNotAlone to replace it by a closing brace & carriage return
             let match = false;
             let pos = 0;
             let level = 0;

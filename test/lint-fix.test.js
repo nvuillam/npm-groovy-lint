@@ -59,12 +59,13 @@ describe('Lint & fix with API', function () {
         }).run();
 
         assert(linter.status === 0, 'Status is 0');
-        assert(linter.lintResult.summary.totalFixedNumber >= 5, 'Errors have been fixed');
+        assert(linter.lintResult.summary.totalFixedNumber >= 975, 'Errors have been fixed');
         assert(linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
             'Source has been updated');
         assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
-    });
+
+    }).timeout(200000);
 
     it('(API:file) should lint and fix a Jenkinsfile in one shot', async function () {
         const tmpDir = await copyFilesInTmpDir();

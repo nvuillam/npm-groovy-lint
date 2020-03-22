@@ -207,7 +207,7 @@ class NpmGroovyLint {
         // process npm-groovy-lint options ( output, fix, formatting ...)
         else {
             // Parse XML result as js object
-            this.lintResult = await parseCodeNarcResult(this.options, this.codeNarcBaseDir, this.tmpXmlFileName);
+            this.lintResult = await parseCodeNarcResult(this.options, this.codeNarcBaseDir, this.tmpXmlFileName, this.tmpGroovyFileName);
             // Fix all found errors if requested
             if (this.options.fix) {
                 this.fixer = new NpmGroovyLintFix(this.lintResult, {

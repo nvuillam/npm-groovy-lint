@@ -20,6 +20,9 @@ const rule = {
             const className = getVariable(variables, "CLASSNAME", { mandatory: true });
             if (allLines[lineNumber].includes(className)) {
                 allLines.splice(lineNumber, 1);
+            } else {
+                const itemIndex = allLines.findIndex(line => line.includes(className));
+                throw new Error(`FIX ERROR: UnusedImport aws expecting ${className} at position ${lineNumber} but it is at position ${itemIndex} `);
             }
             return allLines;
         }
@@ -28,24 +31,20 @@ const rule = {
     tests: [
         {
             sourceBefore: `
-import java.awt.Component
-import java.text.SimpleDateFormat
+import java.awt.notkept.Component
+import java.text.notkept.SimpleDateFormat
 import java.util.regex.Matcher
-import javax.swing.JOptionPane
-import javax.swing.filechooser.FileFilter
+import javax.swing.notkept.JOptionPane
+import javax.swing.notkept.filechooser.FileFilter
 import javax.swing.JFileChooser
-import org.apache.commons.lang3.SystemUtils
+import org.apache.commons.lang3.notkept.SystemUtils
 
 class SaMere {
-
     Matcher inputZ
-
 }
 
 class SaMere2 {
-
     JFileChooser inputX
-
 }
 `,
             sourceAfter: `
@@ -53,14 +52,10 @@ import java.util.regex.Matcher
 import javax.swing.JFileChooser
 
 class SaMere {
-
     Matcher inputZ
-
 }
 class SaMere2 {
-
     JFileChooser inputX
-
 }
 `
         }

@@ -20,11 +20,12 @@ const rule = {
         type: "function",
         func: (line, evaluatedVars) => {
             let operator = getVariable(evaluatedVars, "OPERATOR", { mandatory: true, htmlToString: true, line: line });
-            if (!line.includes("+=") && !line.includes("++")) {
-                return addSpaceAroundChar(line, operator);
-            } else {
-                return line;
-            }
+            return addSpaceAroundChar(line, operator, [
+                ["+ =", "+="],
+                ["+ +", "++"],
+                ["- =", "-="],
+                ["- -", "--"]
+            ]);
         }
     },
     tests: [
@@ -66,6 +67,16 @@ def grantCommand = 'sfdx force:auth:jwt:grant --clientid '+sslParams['clientId']
 `,
             sourceAfter: `
 def grantCommand = 'sfdx force:auth:jwt:grant --clientid ' + sslParams['clientId'] + ' --jwtkeyfile ./ssl/' + alias + '.key --username ' + sslParams['username'] + ' --setalias ' + alias
+`
+        },
+        {
+            sourceBefore: `
+def tutu=8
+tutu+= 10+2
+`,
+            sourceAfter: `
+def tutu = 8
+tutu += 10 + 2
 `
         }
     ]

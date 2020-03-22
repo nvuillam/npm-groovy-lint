@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.1.2] 2020-03-22
+
+### Added
+
+- Fix rules:
+  - BlockEndsWithBlankLine
+  - BlockStartsWithBlankLine
+  - MisorderedStaticImports
+  - SpaceAfterIf
+
+### Changed
+
+- Fix: Update correctly the lineNb & ranges of next errors after an error has been fixed
+- Do not return rules tests if call is not from a test file
+- Fix rules:
+  - ElseBlockBraces
+  - IfStatementBraces
+  - SpaceAroundOperator
+  - UnusedImport
+
 ## [3.1.1] 2020-03-20
 
 ### Added

@@ -4,15 +4,15 @@
 
 // Imports
 const fse = require('fs-extra');
-const rimraf = require('rimraf');
+
+const targetPath = 'dist';
 
 // Reset dist folder
-if (fse.existsSync('dist')) {
-    rimraf.sync("dist");
-    fse.mkdirSync('dist');
+if (fse.existsSync(targetPath)) {
+    fse.emptyDirSync(targetPath);
 }
 else {
-    fse.mkdirSync('dist');
+    fse.mkdirSync(targetPath);
 }
 
 // Copy files into dist folder (where they will be taken by "jdeploy install" command and copied to jdeploy_bundle)
@@ -32,7 +32,7 @@ const filesToCopy =
 
 for (const fileName of filesToCopy) {
     const origin = `src/${fileName}`;
-    const target = `dist/${fileName}`;
+    const target = `${targetPath}/${fileName}`;
     fse.copyFileSync(origin, target);
     console.info(`GroovyLint: Copied ${origin} into ${target} `);
 }
