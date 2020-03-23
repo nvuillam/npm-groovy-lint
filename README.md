@@ -168,9 +168,7 @@ Example
 
 Contributions are very welcome !
 
-- Fork the repo and clone it on your computer
-- Run `npm run lint` then `npm run test` to check your updates didn't break anything
-- Once your code is ready, documented and testing, please make a pull request :)
+Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy-lint/blob/master/CONTRIBUTE.md)
 
 # THANKS
 
