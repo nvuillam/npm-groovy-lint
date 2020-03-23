@@ -3,14 +3,14 @@
     "rules": {
         "basic.DeadCode": "error",
         "formatting.BracesForIfElse": "info",
-        "comments.ClassJavadoc": "off",
-        "convention.NoDef": "off",
-        "convention.VariableTypeRequired": "off",
+        "convention.FieldTypeRequired": "info",
+        "convention.NoDef": "info",
+        "convention.VariableTypeRequired": "info",
         "formatting.Indentation": {
             "spacesPerIndentLevel": 4,
             "severity": "info"
         },
         "logging.Println": "off",
-        "unnecessary.UnnecessaryReturnKeyword": "error"
+        "unnecessary.UnnecessaryReturnKeyword": "off"
     }
 }

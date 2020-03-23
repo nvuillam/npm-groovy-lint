@@ -12,6 +12,8 @@ const jdeployFileAfterRename = './jdeploy-bundle/originaljdeploy.js';
 const jdeployFileAfterRenamePlanB = './jdeploy-bundle/originaljdeployPlanB.js';
 const packageJsonFile = 'package.json';
 
+console.log('---- START PATCH JDEPLOY AFTER ----');
+
 // Process
 console.info('GroovyLint: Patching ' + jdeployFile + '...');
 const packageJsonConfig = fse.readJsonSync(packageJsonFile);
@@ -73,7 +75,7 @@ if (packageJsonConfig.jdeploy.mainClassPlanB) {
 fse.renameSync(runGroovyLintFile, jdeployFile);
 console.info('GroovyLint: ' + runGroovyLintFile + ' renamed into ' + jdeployFile);
 
-
+console.log('---- END PATCH JDEPLOY AFTER ----');
 
 
 

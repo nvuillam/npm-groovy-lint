@@ -24,9 +24,6 @@ module.exports = optionator({
     },
     options: [
         {
-            heading: "Basic configuration"
-        },
-        {
             option: "path",
             alias: "p",
             type: "path::String",
@@ -58,6 +55,31 @@ module.exports = optionator({
             example: ["./config/.groovylintrc-custom.js", "./config/.groovylintrc-custom.json"]
         },
         {
+            option: "format",
+            type: "Boolean",
+            description: "Format source code"
+        },
+        {
+            option: "fix",
+            type: "Boolean",
+            description: "Automatically fix problems when possible"
+        },
+        {
+            option: "fixrules",
+            alias: "x",
+            type: "String",
+            default: "all",
+            dependsOn: ["fix"],
+            description: "List of rule identifiers to fix (if not specified, all available fixes will be applied)"
+        },
+        {
+            option: "ignorepattern",
+            alias: "i",
+            type: "String",
+            description: "Comma-separated list of Ant-style file patterns specifying files that must be ignored. Default: none",
+            example: ["**/test/*"]
+        },
+        {
             option: "rulesets",
             alias: "r",
             type: "String",
@@ -86,35 +108,6 @@ module.exports = optionator({
             option: "verbose",
             type: "Boolean",
             description: "More outputs in console, including performed fixes"
-        },
-        {
-            heading: "Fixing problems"
-        },
-        {
-            option: "fix",
-            type: "Boolean",
-            description: "Automatically fix problems when possible"
-        },
-        {
-            option: "fixrules",
-            alias: "x",
-            type: "String",
-            default: "all",
-            dependsOn: ["fix"],
-            description: "List of rule identifiers to fix (if not specified, all available fixes will be applied)"
-        },
-        {
-            heading: "Ignoring files"
-        },
-        {
-            option: "ignorepattern",
-            alias: "i",
-            type: "String",
-            description: "Comma-separated list of Ant-style file patterns specifying files that must be ignored. Default: none",
-            example: ["**/test/*"]
-        },
-        {
-            heading: "Other"
         },
         {
             option: "failonerror",
@@ -179,7 +172,9 @@ module.exports = optionator({
         ["files", "source", "codenarcargs", "help", "version"],
         [["path", "files"], "source"],
         ["failonerror", "failonwarning", "failoninfo"],
-        ["codenarcargs", ["failonerror", "failonwarning", "failoninfo", "path", "files", "source", "fix", "fixrules"]],
-        [["noserver"], ["serverhost", "serverport", "killserver"]]
+        ["codenarcargs", ["failonerror", "failonwarning", "failoninfo", "path", "files", "source", "fix", "fixrules", "config"]],
+        ["noserver", ["serverhost", "serverport", "killserver"]],
+        ["fix", "format"],
+        ["format", "config"]
     ]
 });

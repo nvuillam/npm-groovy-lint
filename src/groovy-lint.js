@@ -111,7 +111,7 @@ class NpmGroovyLint {
         if (this.parseOptions) {
             try {
                 this.options = optionsDefinition.parse(this.args);
-                const configProperties = await loadConfig(this.options.config);
+                const configProperties = await loadConfig(this.options.config, this.options.format ? "format" : "lint");
                 for (const configProp of Object.keys(configProperties)) {
                     if (this.options[configProp] == null) {
                         this.options[configProp] = configProperties[configProp];
@@ -209,7 +209,7 @@ class NpmGroovyLint {
             // Parse XML result as js object
             this.lintResult = await parseCodeNarcResult(this.options, this.codeNarcBaseDir, this.tmpXmlFileName, this.tmpGroovyFileName);
             // Fix all found errors if requested
-            if (this.options.fix) {
+            if (this.options.fix || this.options.format) {
                 this.fixer = new NpmGroovyLintFix(this.lintResult, {
                     verbose: this.options.verbose,
                     fixrules: this.options.fixrules,

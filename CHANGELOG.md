@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.2.0] 2020-03-26
+
+### Added
+
+- New option "--format", allowing to reformat source code (using .groovylintrc-format.json)
+
+### Changed
+
+- Update default recommended rules
+
 ## [3.1.3] 2020-03-22
 
 ### Changed
