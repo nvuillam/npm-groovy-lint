@@ -8,9 +8,7 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/nvuillam/npm-groovy-lint.svg)](https://gitHub.com/nvuillam/npm-groovy-lint/graphs/contributors/)
 [![GitHub stars](https://img.shields.io/github/stars/nvuillam/npm-groovy-lint?label=Star&maxAge=2592000)](https://GitHub.com/nvuillam/npm-groovy-lint/stargazers/)
 [![License](https://img.shields.io/npm/l/npm-groovy-lint.svg)](https://github.com/nvuillam/npm-groovy-lint/blob/master/package.json) 
-[![HitCount](https://hits.dwyl.com/nvuillam/npm-groovy-lint.svg)](https://hits.dwyl.com/nvuillam/npm-groovy-lint)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/nicolas.vuillamy@gmail.com)
 
 **Groovy / Jenkinsfile linter and autofixer**
 
@@ -63,13 +61,13 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 
 # CONFIGURATION
 
-Define a file named **.groovylintrc.js** (or .json or .YAML, or include in a property groovyLintConfig in package.json)
+Define a file named **.groovylintrc.json** (or .js or .YAML, or include in a property groovyLintConfig in package.json)
 
 Format : 
 
-- extends: Name of a base configuration ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.js) or [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.js))
+- extends: Name of a base configuration ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.json) or [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.json))
 - rules: List of rules definition, following format `"RuleSection.RuleName": ruleParameters` or `"RuleName": ruleParameters`
-    - "RuleSection.RuleName": any of the [available rules](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html) 
+    - "RuleSection.RuleName": any of the **[CodeNarc rules](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)** 
     - ruleParameters: can be just a severity override ( `"off"`, `"error"`, `"warning"`, `"info"` ) , or a property list :
         - severity : off,error,warning,info
         - enabled : true (default) or false
@@ -77,11 +75,11 @@ Format :
 
 Example:
 
-```javascript
-module.exports = {
-    extends: "recommended",
-    rules: {
-        "comments.ClassJavadoc": 'off',
+```json
+{
+    "extends": "recommended",
+    "rules": {
+        "comments.ClassJavadoc": "off",
         "formatting.Indentation": {
             spacesPerIndentLevel: 4,
             severity: "info"
