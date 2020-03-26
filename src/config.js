@@ -7,9 +7,9 @@ const importFresh = require("import-fresh");
 const path = require("path");
 const stripComments = require("strip-json-comments");
 
-const defaultConfigFileName = ".groovylintrc-recommended.json";
+const defaultConfigLintFileName = ".groovylintrc-recommended.json";
 
-const configFilenames = [
+const configLintFilenames = [
     ".groovylintrc.json",
     ".groovylintrc.js",
     ".groovylintrc.cjs",
@@ -19,9 +19,20 @@ const configFilenames = [
     "package.json"
 ];
 
+const defaultConfigFormatFileName = ".groovylintrc-format.json";
+
+const configFormatFilenames = [".groovylintrc-format.json", ".groovylintrc-format.js"];
+
 // Load configuration from identified file, or find config file from a start path
-async function loadConfig(startPathOrFile) {
-    const configFilePath = await getConfigFileName(startPathOrFile);
+async function loadConfig(startPathOrFile, mode = "lint", fileNames = []) {
+    let defaultConfig = defaultConfigLintFileName;
+    if (mode === "lint" && fileNames.length === 0) {
+        fileNames = configLintFilenames;
+    } else if (mode === "format") {
+        fileNames = fileNames.length === 0 ? configFormatFilenames : fileNames;
+        defaultConfig = defaultConfigFormatFileName;
+    }
+    const configFilePath = await getConfigFileName(startPathOrFile, fileNames, defaultConfig);
     // Load user configuration from file
     let configUser = await loadConfigFromFile(configFilePath);
     configUser.rules = await shortenRuleNames(configUser.rules || {});
@@ -52,16 +63,17 @@ async function manageExtends(configUser) {
     return configUser;
 }
 
-async function getConfigFileName(startPathOrFile) {
+// Returns configuration filename
+async function getConfigFileName(startPathOrFile, fileNames = configLintFilenames, defaultConfig = defaultConfigLintFileName) {
     let configFilePath = null;
     const stat = await fse.lstat(startPathOrFile);
     // Find one of the config file formats at the root of the project or at upper directory levels
     if (stat.isDirectory()) {
-        configFilePath = await findConfigInPath(startPathOrFile, configFilenames);
+        configFilePath = await findConfigInPath(startPathOrFile, fileNames);
     }
     if (configFilePath == null) {
         // If not found, use .groovylintrc-recommended.js delivered with npm-groovy-lint
-        configFilePath = await findConfigInPath(__dirname, [defaultConfigFileName]);
+        configFilePath = await findConfigInPath(__dirname, [defaultConfig]);
     }
     return configFilePath;
 }
@@ -91,6 +103,7 @@ async function findConfigInPath(directoryPath, configFilenamesIn) {
     return null;
 }
 
+// Load configuration depending of the file format
 async function loadConfigFromFile(filePath) {
     switch (path.extname(filePath)) {
         case ".js":
@@ -111,6 +124,7 @@ async function loadConfigFromFile(filePath) {
     }
 }
 
+// Javascript format
 async function loadJSConfigFile(filePath) {
     debug(`Loading JS config file: ${filePath}`);
     try {
@@ -122,6 +136,7 @@ async function loadJSConfigFile(filePath) {
     }
 }
 
+// JSON format
 async function loadJSONConfigFile(filePath) {
     debug(`Loading JSON config file: ${filePath}`);
     try {
@@ -139,6 +154,7 @@ async function loadJSONConfigFile(filePath) {
     }
 }
 
+// YAML format
 async function loadYAMLConfigFile(filePath) {
     debug(`Loading YAML config file: ${filePath}`);
 
@@ -156,6 +172,7 @@ async function loadYAMLConfigFile(filePath) {
     }
 }
 
+// json in package.json format
 async function loadPackageJSONConfigFile(filePath) {
     debug(`Loading package.json config file: ${filePath}`);
     try {
@@ -171,6 +188,7 @@ async function loadPackageJSONConfigFile(filePath) {
     }
 }
 
+// Read file
 async function readFile(filePath) {
     const fileContent = await fse.readFile(filePath, "utf8");
     return fileContent.replace(/^\ufeff/u, "");

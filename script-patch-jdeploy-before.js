@@ -5,6 +5,8 @@
 // Imports
 const fse = require('fs-extra');
 
+console.log('---- START PATCH JDEPLOY BEFORE ----');
+
 const targetPath = 'dist';
 
 // Reset dist folder
@@ -43,11 +45,16 @@ console.info('GroovyLint: Copied .groovylintrc-recommended.json file into dist/.
 fse.copySync('.groovylintrc-all.json', 'dist/.groovylintrc-all.json');
 console.info('GroovyLint: Copied .groovylintrc-all.json file into dist/.groovylintrc-all.json');
 
+fse.copySync('.groovylintrc-format.json', 'dist/.groovylintrc-format.json');
+console.info('GroovyLint: Copied .groovylintrc-format.json file into dist/.groovylintrc-format.json');
+
 fse.copySync('src/rules', 'dist/rules');
 console.info('GroovyLint: Copied src/rules files into dist/rules');
 
 fse.copySync('lib', 'dist/lib');
 console.info('GroovyLint: Copied lib files into dist/lib');
+
+console.log('---- END PATCH JDEPLOY BEFORE ----');
 
 process.exit(0);
 
