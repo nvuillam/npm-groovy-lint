@@ -34,7 +34,7 @@
     "wrapper"
   ],
   "author": "Nicolas Vuillamy",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "bugs": {
     "url": "https://github.com/nvuillam/npm-groovy-lint/issues"
   },
