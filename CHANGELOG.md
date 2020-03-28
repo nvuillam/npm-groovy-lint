@@ -6,6 +6,8 @@
 
 - Fix rules:
   - SpaceAfterFor
+  - SpaceAfterSwitch
+  - SpaceAfterWhile
 
 ## [3.2.0] 2020-03-26
 

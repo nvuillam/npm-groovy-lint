@@ -93,6 +93,8 @@ const rulesFixPriorityOrder = [
     "SpaceBeforeOpeningBrace",
     "SpaceAfterOpeningBrace",
     "SpaceAfterCatch",
+    "SpaceAfterSwitch",
+    "SpaceAfterWhile",
     "SpaceAroundOperator",
     "SpaceAfterComma",
     "SpaceAfterFor",
