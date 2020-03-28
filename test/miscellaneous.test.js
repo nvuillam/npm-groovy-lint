@@ -1,7 +1,8 @@
 #! /usr/bin/env node
 "use strict";
 const NpmGroovyLint = require('../src/groovy-lint.js');
-let assert = require('assert');
+let assert = require("assert");
+const path = require("path");
 
 describe('Miscellaneous', function () {
 
@@ -18,7 +19,7 @@ describe('Miscellaneous', function () {
         }).run();
         const filePath = await linter.getConfigFilePath();
         assert(linter.status === 0, 'Linter status is 0');
-        assert(filePath.includes('.groovylintrc.js'), ".groovylintrc.js has been returned")
+        assert(path.resolve(filePath) === path.resolve('./lib/example/.groovylintrc.json'), ".groovylintrc.json has been returned")
     });
 
     it('(API:source) returns config file path using parameter', async () => {
@@ -28,9 +29,9 @@ describe('Miscellaneous', function () {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         });
-        const filePath = await linter.getConfigFilePath('./lib/example/');
+        const filePath = await linter.getConfigFilePath('./lib/example');
         assert(linter.status === 0, 'Linter status is 0');
-        assert(filePath.includes('.groovylintrc.js'), ".groovylintrc.js has been returned")
+        assert(path.resolve(filePath) === path.resolve('./lib/example/.groovylintrc.json'), ".groovylintrc.json has been returned")
     });
 
 });

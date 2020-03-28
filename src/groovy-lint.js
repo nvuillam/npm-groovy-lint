@@ -94,7 +94,7 @@ class NpmGroovyLint {
 
     // Returns the full path of the configuration file
     async getConfigFilePath(path) {
-        return getConfigFileName(path || this.options.config);
+        return getConfigFileName(path || this.options.path || this.options.config, "lint", this.options.sourcefilepath);
     }
 
     // Actions before call to CodeNarc
@@ -111,7 +111,11 @@ class NpmGroovyLint {
         if (this.parseOptions) {
             try {
                 this.options = optionsDefinition.parse(this.args);
-                const configProperties = await loadConfig(this.options.config, this.options.format ? "format" : "lint");
+                const configProperties = await loadConfig(
+                    this.options.config || this.options.path,
+                    this.options.format ? "format" : "lint",
+                    this.options.sourcefilepath
+                );
                 for (const configProp of Object.keys(configProperties)) {
                     if (this.options[configProp] == null) {
                         this.options[configProp] = configProperties[configProp];

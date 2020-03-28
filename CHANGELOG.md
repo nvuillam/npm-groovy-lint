@@ -1,33 +1,28 @@
 # Changelog
 
+## [3.2.1] 2020-03-29
+
+- Return rules descriptions in results
+- Fixes
+  - [Issue #13](https://github.com/nvuillam/npm-groovy-lint/issues/13): False positive error ClassNameSameAsFileName
+  - Sometimes returning wrong .groovylint.json config file
+
 ## [3.2.0] 2020-03-26
 
-### Added
-
 - New option "--format", allowing to reformat source code (using .groovylintrc-format.json)
-
-### Changed
-
 - Update default recommended rules
 
 ## [3.1.3] 2020-03-22
-
-### Changed
 
 - README: Link to [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint)
 
 ## [3.1.2] 2020-03-22
 
-### Added
-
-- Fix rules:
+- New Fix rules:
   - BlockEndsWithBlankLine
   - BlockStartsWithBlankLine
   - MisorderedStaticImports
   - SpaceAfterIf
-
-### Changed
-
 - Fix: Update correctly the lineNb & ranges of next errors after an error has been fixed
 - Do not return rules tests if call is not from a test file
 - Fix rules:
@@ -38,26 +33,19 @@
 
 ## [3.1.1] 2020-03-20
 
-### Added
-
-- Fix rules:
+- New Fix rules:
   - BlockEndsWithBlankLine
   - BlockStartsWithBlankLine
   - MisorderedStaticImports
   - SpaceAfterIf
-
-### Changed
-
-- Fix rules:
+- Updated Fix rules:
   - SpaceAroundOperator
 
 ## [3.1.0] 2020-03-18
 
-### Changed
-
 - Test suites: Improve reliability & logs for rule fixes tests (detected numerous bugs, now corrected)
 - Send computed range to fix functions
-- Fix rules:
+- Updated Fix rules:
   - ClosingBraceNotAlone
   - ElseBlockBraces
   - IfStatementBraces
@@ -70,12 +58,7 @@
 
 ## [3.0.1] 2020-03-17
 
-### Added
-
 - Add new test suites: errors.test.js and miscellaneous.test.js
-
-### Changed
-
 - Use JSON as default GroovyLint configuration file type
 - Order of fixable rules must be defined in groovy-lint-rules.js
 - Do not load rules test data except during tests
@@ -86,17 +69,12 @@
 
 ## [3.0.0] 2020-03-15
 
-### Added 
-
 - Local microservice "CodeNarcServer" called via Http by npm-groovy-lint, to avoid loading all groovy/java classes at each lint request. This microservice autokills itself after one hour idle.
 - Capability to define RuleSets in argument or js/json/yml config file formats instead of groovy/xml RuleSet format
 - Test classes for rules fix (before / after fix defined in rule definitions)
 - Add debug logs (use it by setting DEBUG env variable , ex: `DEBUG=npm-groovy-lint npm-groovy-lint args...`)
 - Update lines and ranges of other errors after a fix updated the number of lines
 - Generate automatically .groovylintrc-all.js during build 
-
-## Changed
-
 - Split rules definition into files instead of all in a huge single file
 - Reorganise groovy-lint.js code, using codenarc-factory.js and codenarc-caller.js
 - New lib utils.js that can be used by rules definition
@@ -107,8 +85,6 @@
 
 ## [2.2.0] 2020-02-28
 
-### Added
-
 - Capability to call NpmGroovyLint with options as object, not only command line arguments
 - New option "source", allowing to call NpmGroovyLint with the groovy code as a string , not only path & files pattern
 - Run lint again after fix all errors, to get updated lintResult
@@ -118,8 +94,6 @@
 - Define range function for existing rules, new fixable rules
 
 ## [2.0.1] - 2020-02-21
-
-### Added
 
 - Capability to fix errors
     - ConsecutiveBlankLines
@@ -141,19 +115,11 @@
 - Defaut recommended RuleSets for Groovy and Jenkins
 - Progress bar in console
 - More code coverage with test campaigns
-- Capability to call NpmGrooyLint from another package (VsCode extension development in progress ^^)
-
-### Changed
-
+- New Capability to call NpmGrooyLint from another package (VsCode extension development in progress ^^)
 - Refactored command line arguments ( simpler, but different from CodeNarc ones : retro-compatibility with CodeNarc arguments assured if you add --codenarcargs)
 - Upgrade to CodeNarc v1.5
 - Upgrade to Groovy v3.0.1
 - Refactored documentation with detailed arguments description & examples
-
-# Removed
-
-- CodeNarc original format of command line arguments
-
 ___
 ## Before
 

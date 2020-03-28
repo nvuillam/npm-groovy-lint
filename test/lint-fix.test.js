@@ -22,9 +22,11 @@ async function copyFilesInTmpDir() {
 describe('Lint & fix with API', function () {
 
     it('(API:source) should lint then fix only a list of errors', async () => {
-        const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
+        const sampleFilePath = './lib/example/SampleFile.groovy';
+        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
+            sourcefilepath: sampleFilePath,
             output: 'none',
             verbose: true
         };
@@ -46,9 +48,11 @@ describe('Lint & fix with API', function () {
     });
 
     it('(API:source) should lint and fix (one shot)', async () => {
-        const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
+        const sampleFilePath = './lib/example/SampleFile.groovy';
+        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
+            sourcefilepath: sampleFilePath,
             fix: true,
             output: 'none',
             verbose: true

@@ -57,8 +57,11 @@ class CodeNarcCaller {
         debug(`CALL CodeNarcServer with ${JSON.stringify(rqstOptions, null, 2)}`);
         let parsedBody = null;
         try {
+            const startCodeNarc = performance.now();
             parsedBody = await rp(rqstOptions);
             this.serverStatus = "running";
+            const elapsed = parseInt(performance.now() - startCodeNarc, 10);
+            debug(`CodeNarc runned in ${elapsed} ms`);
         } catch (e) {
             // If server not started , start it and try again
             if (
