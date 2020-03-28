@@ -1,4 +1,4 @@
-// Space after catch
+// Space after if
 
 const { getStringRange, addSpaceAfterChar } = require("../utils");
 
