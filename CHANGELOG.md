@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1] 2020-03-28
+
+### Added
+
+- Fix rules:
+  - SpaceAfterFor
+
 ## [3.2.0] 2020-03-26
 
 ### Added
