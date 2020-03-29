@@ -97,6 +97,7 @@ const rulesFixPriorityOrder = [
     "SpaceAfterWhile",
     "SpaceAroundOperator",
     "SpaceAfterComma",
+    "SpaceAfterSemicolon",
     "SpaceAfterFor",
     "SpaceAfterIf",
     "UnnecessaryDefInFieldDeclaration",

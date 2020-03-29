@@ -6,6 +6,7 @@
 
 - Fix rules:
   - SpaceAfterFor
+  - SpaceAfterSemicolon
   - SpaceAfterSwitch
   - SpaceAfterWhile
 
