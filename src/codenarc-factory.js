@@ -14,6 +14,7 @@ const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js
 ////////////////////////////
 
 const npmGroovyLintRules = getNpmGroovyLintRules();
+const CODENARC_TMP_FILENAME_BASE = "codeNarcTmpFile_";
 
 // Convert NPM-groovy-lint into codeNarc arguments
 // Create temporary files if necessary
@@ -37,7 +38,7 @@ async function prepareCodeNarcCall(options) {
         }
         // Use default random file name
         else {
-            const tmpFileNm = "codeNarcTmpFile_" + Math.random() + ".groovy";
+            const tmpFileNm = CODENARC_TMP_FILENAME_BASE + Math.random() + ".groovy";
             result.tmpGroovyFileName = path.resolve(cnPath + "/" + tmpFileNm);
             cnFiles = "**/" + tmpFileNm;
         }
@@ -124,6 +125,9 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
     result.summary.totalFoundWarningNumber = parseInt(pcgkSummary.priority2, 10);
     result.summary.totalFoundInfoNumber = parseInt(pcgkSummary.priority3, 10);
 
+    const tmpGroovyFileNameReplace =
+        tmpGroovyFileName && tmpGroovyFileName.includes(CODENARC_TMP_FILENAME_BASE) ? path.parse(tmpGroovyFileName).base : null;
+
     // Parse files & violations
     const files = {};
     let errId = 0;
@@ -156,7 +160,7 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
                             : "unknown",
                     msg: violation.Message ? violation.Message[0] : ""
                 };
-                errItem.msg = tmpGroovyFileName ? errItem.msg.replace(tmpGroovyFileName, "") : errItem.msg;
+                errItem.msg = tmpGroovyFileNameReplace ? errItem.msg.replace(tmpGroovyFileNameReplace, "") : errItem.msg;
                 // Find range & add error only if severity is matching logLevel
                 if (
                     errItem.severity === "error" ||
