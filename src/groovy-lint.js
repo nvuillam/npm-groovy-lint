@@ -81,7 +81,7 @@ class NpmGroovyLint {
         await this.fixer.run({ errorIds: errorIds, propagate: true });
         this.lintResult = this.fixer.updatedLintResult;
         // Lint again after fix if requested (for the moment we prefer to trigger that from VsCode, for better UX)
-        if (optns.lintAgainAfterFix) {
+        if (optns.nolintafter === false) {
             // Control fix result by calling a new lint
             await this.lintAgainAfterFix();
         }
@@ -223,7 +223,7 @@ class NpmGroovyLint {
                 await this.fixer.run();
                 this.lintResult = this.fixer.updatedLintResult;
                 // If there has been fixes, call CodeNarc again to get updated error list
-                if (this.fixer.fixedErrorsNumber > 0) {
+                if (this.fixer.fixedErrorsNumber > 0 && this.options.nolintafter === false) {
                     await this.lintAgainAfterFix();
                 }
             }

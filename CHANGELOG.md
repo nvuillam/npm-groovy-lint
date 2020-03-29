@@ -3,6 +3,7 @@
 ## [3.2.1] 2020-03-29
 
 - Return rules descriptions in results
+- New option nolintafter: do not lint again a format or a fix, as the client prefers to request it
 - Fixes
   - [Issue #13](https://github.com/nvuillam/npm-groovy-lint/issues/13): False positive error ClassNameSameAsFileName
   - Sometimes returning wrong .groovylint.json config file

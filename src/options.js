@@ -166,6 +166,11 @@ module.exports = optionator({
             description: "Terminate the CodeNarcServer if running"
         },
         {
+            option: "nolintafter",
+            type: "Boolean",
+            description: "Do not lint again after format and fix options (useful for client calling Npm Groovy Lint)"
+        },
+        {
             option: "help",
             alias: "h",
             type: "Boolean",
