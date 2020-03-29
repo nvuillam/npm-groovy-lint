@@ -81,7 +81,7 @@ class NpmGroovyLint {
         await this.fixer.run({ errorIds: errorIds, propagate: true });
         this.lintResult = this.fixer.updatedLintResult;
         // Lint again after fix if requested (for the moment we prefer to trigger that from VsCode, for better UX)
-        if (optns.lintAgainAfterFix) {
+        if (optns.nolintafter !== true) {
             // Control fix result by calling a new lint
             await this.lintAgainAfterFix();
         }
@@ -94,7 +94,7 @@ class NpmGroovyLint {
 
     // Returns the full path of the configuration file
     async getConfigFilePath(path) {
-        return getConfigFileName(path || this.options.config);
+        return await getConfigFileName(path || this.options.path || this.options.config, this.options.sourcefilepath);
     }
 
     // Actions before call to CodeNarc
@@ -111,7 +111,11 @@ class NpmGroovyLint {
         if (this.parseOptions) {
             try {
                 this.options = optionsDefinition.parse(this.args);
-                const configProperties = await loadConfig(this.options.config, this.options.format ? "format" : "lint");
+                const configProperties = await loadConfig(
+                    this.options.config || this.options.path,
+                    this.options.format ? "format" : "lint",
+                    this.options.sourcefilepath
+                );
                 for (const configProp of Object.keys(configProperties)) {
                     if (this.options[configProp] == null) {
                         this.options[configProp] = configProperties[configProp];
@@ -219,7 +223,7 @@ class NpmGroovyLint {
                 await this.fixer.run();
                 this.lintResult = this.fixer.updatedLintResult;
                 // If there has been fixes, call CodeNarc again to get updated error list
-                if (this.fixer.fixedErrorsNumber > 0) {
+                if (this.fixer.fixedErrorsNumber > 0 && this.options.nolintafter !== true) {
                     await this.lintAgainAfterFix();
                 }
             }

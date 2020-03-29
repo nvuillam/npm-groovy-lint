@@ -22,9 +22,11 @@ async function copyFilesInTmpDir() {
 describe('Lint & fix with API', function () {
 
     it('(API:source) should lint then fix only a list of errors', async () => {
-        const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
+        const sampleFilePath = './lib/example/SampleFile.groovy';
+        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
+            sourcefilepath: sampleFilePath,
             output: 'none',
             verbose: true
         };
@@ -46,10 +48,37 @@ describe('Lint & fix with API', function () {
     });
 
     it('(API:source) should lint and fix (one shot)', async () => {
-        const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
+        const sampleFilePath = './lib/example/SampleFile.groovy';
+        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
+            sourcefilepath: sampleFilePath,
             fix: true,
+            output: 'none',
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.lintResult.summary.totalFixedNumber >= 975, 'Errors have been fixed');
+        assert(linter.lintResult.files[0].updatedSource &&
+            linter.lintResult.files[0].updatedSource !== prevFileContent,
+            'Source has been updated');
+        assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
+
+    }).timeout(200000);
+
+    it('(API:source) should lint and fix (no lintagainafterfix)', async () => {
+        const sampleFilePath = './lib/example/SampleFile.groovy';
+        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
+        const npmGroovyLintConfig = {
+            source: prevFileContent,
+            sourcefilepath: sampleFilePath,
+            fix: true,
+            nolintafter: true,
             output: 'none',
             verbose: true
         };

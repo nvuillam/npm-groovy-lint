@@ -24,7 +24,7 @@ const defaultConfigFormatFileName = ".groovylintrc-format.json";
 const configFormatFilenames = [".groovylintrc-format.json", ".groovylintrc-format.js"];
 
 // Load configuration from identified file, or find config file from a start path
-async function loadConfig(startPathOrFile, mode = "lint", fileNames = []) {
+async function loadConfig(startPathOrFile, mode = "lint", sourcefilepath, fileNames = []) {
     let defaultConfig = defaultConfigLintFileName;
     if (mode === "lint" && fileNames.length === 0) {
         fileNames = configLintFilenames;
@@ -32,7 +32,7 @@ async function loadConfig(startPathOrFile, mode = "lint", fileNames = []) {
         fileNames = fileNames.length === 0 ? configFormatFilenames : fileNames;
         defaultConfig = defaultConfigFormatFileName;
     }
-    const configFilePath = await getConfigFileName(startPathOrFile, fileNames, defaultConfig);
+    const configFilePath = await getConfigFileName(startPathOrFile, sourcefilepath, fileNames, defaultConfig);
     // Load user configuration from file
     let configUser = await loadConfigFromFile(configFilePath);
     configUser.rules = await shortenRuleNames(configUser.rules || {});
@@ -64,17 +64,27 @@ async function manageExtends(configUser) {
 }
 
 // Returns configuration filename
-async function getConfigFileName(startPathOrFile, fileNames = configLintFilenames, defaultConfig = defaultConfigLintFileName) {
+async function getConfigFileName(startPathOrFile, sourcefilepath, fileNames = configLintFilenames, defaultConfig = defaultConfigLintFileName) {
     let configFilePath = null;
-    const stat = await fse.lstat(startPathOrFile);
+    // Find one of the config file formats are the root of the linted file (if source is sent with sourcefilepath)
+    if ([".", process.cwd()].includes(startPathOrFile) && sourcefilepath) {
+        const stat = await fse.lstat(sourcefilepath);
+        const dir = stat.isDirectory() ? sourcefilepath : path.parse(sourcefilepath).dir;
+        configFilePath = await findConfigInPath(dir, fileNames);
+    }
     // Find one of the config file formats at the root of the project or at upper directory levels
-    if (stat.isDirectory()) {
-        configFilePath = await findConfigInPath(startPathOrFile, fileNames);
+
+    if (configFilePath == null) {
+        const stat = await fse.lstat(startPathOrFile);
+        const dir = stat.isDirectory ? startPathOrFile : path.parse(startPathOrFile).dir;
+        configFilePath = await findConfigInPath(dir, fileNames);
     }
     if (configFilePath == null) {
         // If not found, use .groovylintrc-recommended.js delivered with npm-groovy-lint
         configFilePath = await findConfigInPath(__dirname, [defaultConfig]);
     }
+    configFilePath = path.resolve(configFilePath);
+    debug(`GroovyLint used config file: ${configFilePath}`);
     return configFilePath;
 }
 
@@ -126,7 +136,6 @@ async function loadConfigFromFile(filePath) {
 
 // Javascript format
 async function loadJSConfigFile(filePath) {
-    debug(`Loading JS config file: ${filePath}`);
     try {
         return importFresh(filePath);
     } catch (e) {
@@ -138,7 +147,6 @@ async function loadJSConfigFile(filePath) {
 
 // JSON format
 async function loadJSONConfigFile(filePath) {
-    debug(`Loading JSON config file: ${filePath}`);
     try {
         const fileContent = await readFile(filePath);
         return JSON.parse(stripComments(fileContent));
@@ -156,8 +164,6 @@ async function loadJSONConfigFile(filePath) {
 
 // YAML format
 async function loadYAMLConfigFile(filePath) {
-    debug(`Loading YAML config file: ${filePath}`);
-
     // lazy load YAML to improve performance when not used
     const yaml = require("js-yaml");
 
@@ -174,7 +180,6 @@ async function loadYAMLConfigFile(filePath) {
 
 // json in package.json format
 async function loadPackageJSONConfigFile(filePath) {
-    debug(`Loading package.json config file: ${filePath}`);
     try {
         const packageData = await loadJSONConfigFile(filePath);
         if (!Object.hasOwnProperty.call(packageData, "groovylintConfig")) {

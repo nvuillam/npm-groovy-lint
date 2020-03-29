@@ -23,7 +23,7 @@ describe('Lint with API', () => {
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, 'Infos found');
     });
 
-    it('(API:file) should generate json output', async () => {
+    it('(API:file) should generate json output with rules', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -36,22 +36,44 @@ describe('Lint with API', () => {
         assert(linter.status === 0, 'Status is 0');
         assert(linter.outputString.includes(`"totalFoundWarningNumber":`), 'Property totalFoundWarningNumber is in result');
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
+        const lintResultParsed = JSON.parse(linter.outputString);
+        const rules = lintResultParsed.rules;
+        assert(rules != null, 'Rule descriptions are returned');
+        assert(rules['AbstractClassName'].description != null, "Rule description of AbstractClassName is returned");
     });
 
     it('(API:file) should generate codenarc HTML file report', async () => {
+        const reportFileName = 'ReportTestCodenarc.html';
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
+            '--path', 'jdeploy-bundle/lib/example',
             '--files', '**/Jenkinsfile',
-            '--output', 'ReportTestCodenarc.html'],
+            '--output', reportFileName],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
         assert(linter.status === 0, 'Status is 0');
-        assert(fse.existsSync('ReportTestCodenarc.html'), 'CodeNarc HTML report generated');
-        fse.removeSync('ReportTestCodenarc.html');
+        assert(fse.existsSync(reportFileName), 'CodeNarc HTML report generated');
+        fse.removeSync(reportFileName);
+    });
+
+    it('(API:file) should generate codenarc XML file report', async () => {
+        const reportFileName = "ReportTestCodenarc.xml";
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            '',
+            '--path', 'jdeploy-bundle/lib/example',
+            '--files', '**/Jenkinsfile',
+            '--output', reportFileName],
+            { jdeployRootPath: 'jdeploy-bundle' }).run();
+
+        assert(linter.status === 0, 'Status is 0');
+        assert(fse.existsSync(reportFileName), 'CodeNarc XML report generated');
+        fse.removeSync(reportFileName);
     });
 
     it('(API:file) should use --codenarcargs to generate XML report', async () => {
+        const reportFileName = "./ReportTestCodenarc.xml";
         const linter = await new NpmGroovyLint([
             process.execPath,
             '',
@@ -59,12 +81,12 @@ describe('Lint with API', () => {
             '-basedir="jdeploy-bundle/lib/example"',
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
-            '-report="xml:ReportTestCodenarc.xml"'],
+            `-report="xml:${reportFileName}"`],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
         assert(linter.status === 0, 'Status is 0');
-        assert(fse.existsSync('ReportTestCodenarc.xml'), 'XML CodeNarc report has been generated');
-        fse.removeSync('ReportTestCodenarc.xml');
+        assert(fse.existsSync(reportFileName), 'XML CodeNarc report has been generated');
+        fse.removeSync(reportFileName);
     });
 
     it('(API:file) should run on a Jenkinsfile', async () => {
@@ -166,9 +188,11 @@ describe('Lint with API', () => {
 
 
     it('(API:source) should run with source only', async () => {
+        const sampleFilePath = 'lib/example/SampleFile.groovy';
         const npmGroovyLintConfig = {
-            source: fse.readFileSync('lib/example/SampleFile.groovy').toString(),
-            output: 'none',
+            source: fse.readFileSync(sampleFilePath).toString(),
+            sourcefilepath: sampleFilePath,
+            output: 'txt',
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -180,8 +204,10 @@ describe('Lint with API', () => {
     });
 
     it('(API:source) should run without CodeNarc Server', async () => {
+        const sampleFilePath = 'lib/example/SampleFile.groovy';
         const npmGroovyLintConfig = {
-            source: fse.readFileSync('lib/example/SampleFile.groovy').toString(),
+            source: fse.readFileSync(sampleFilePath).toString(),
+            sourcefilepath: sampleFilePath,
             noserver: true,
             output: 'none',
             verbose: true
