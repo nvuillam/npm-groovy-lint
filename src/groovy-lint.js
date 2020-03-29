@@ -94,7 +94,7 @@ class NpmGroovyLint {
 
     // Returns the full path of the configuration file
     async getConfigFilePath(path) {
-        return getConfigFileName(path || this.options.path || this.options.config, "lint", this.options.sourcefilepath);
+        return await getConfigFileName(path || this.options.path || this.options.config, this.options.sourcefilepath);
     }
 
     // Actions before call to CodeNarc
