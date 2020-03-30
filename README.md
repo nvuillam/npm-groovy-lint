@@ -61,7 +61,11 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 
 # CONFIGURATION
 
+Default rules definition ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.json), based on [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.json) tracks a lot of errors, do not hesitate to ignore some of them (like NoDef ou RequiredVariableType) if they are too mean for your project.
+
 Define a file named **.groovylintrc.json** (or .js or .YAML, or include in a property groovyLintConfig in package.json)
+
+*If you are using [VsCode Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint), just use QuickFix* ***Ignore in all files*** *and it will generate groovylintrc.json file*
 
 Format : 
 
