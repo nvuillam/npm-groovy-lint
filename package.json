@@ -16,8 +16,8 @@
     "test:debug": "mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
     "publish:release": "npm run build && npm publish",
     "publish:beta": "npm run build && npm publish --tag beta",
-    "dev:lint-build-all": "npm run lint:fix && npm run build",
-    "dev:test-in-vscode-groovy-lint": "npm run dev:lint-build-all && node script-deploy-in-vscode.js"
+    "dev:lint-build": "npm run lint:fix && npm run build",
+    "dev:lint-build-copy-vscode": "npm run dev:lint-build && node script-deploy-in-vscode.js"
   },
   "repository": {
     "type": "git",

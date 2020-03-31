@@ -34,4 +34,35 @@ describe('Miscellaneous', function () {
         assert(path.resolve(filePath) === path.resolve('./lib/example/.groovylintrc.json'), ".groovylintrc.json has been returned")
     });
 
+
+    it('(API:source) return rules', async () => {
+        const npmGroovyLintConfig = {
+            path: "./lib/example/",
+            files: '**/Jenkinsfile',
+            returnrules: true,
+            output: 'none'
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.lintResult.rules != null, "Rules are returned ");
+        assert(linter.lintResult.rules['AssertWithinFinallyBlock'].docUrl != null, "Rules doc urls are returned ");
+    });
+
+    it('(API:source) do not return rules', async () => {
+        const npmGroovyLintConfig = {
+            path: "./lib/example/",
+            files: '**/Jenkinsfile',
+            output: 'none'
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.lintResult.rules == null, "Rules are not returned");
+    });
+
 });

@@ -15,7 +15,7 @@
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
-            command: npm install && sudo npm install jdeploy -g
+            command: npm ci && sudo npm install jdeploy -g
         - run: 
             name: Build
             command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 

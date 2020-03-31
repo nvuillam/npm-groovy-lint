@@ -36,10 +36,6 @@ describe('Lint with API', () => {
         assert(linter.status === 0, 'Status is 0');
         assert(linter.outputString.includes(`"totalFoundWarningNumber":`), 'Property totalFoundWarningNumber is in result');
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
-        const lintResultParsed = JSON.parse(linter.outputString);
-        const rules = lintResultParsed.rules;
-        assert(rules != null, 'Rule descriptions are returned');
-        assert(rules['AbstractClassName'].description != null, "Rule description of AbstractClassName is returned");
     });
 
     it('(API:file) should generate codenarc HTML file report', async () => {

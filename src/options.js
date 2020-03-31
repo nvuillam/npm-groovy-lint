@@ -171,6 +171,11 @@ module.exports = optionator({
             description: "Do not lint again after format and fix options (useful for client calling Npm Groovy Lint)"
         },
         {
+            option: "returnrules",
+            type: "Boolean",
+            description: "Return rule descriptions and url if this argument is set"
+        },
+        {
             option: "help",
             alias: "h",
             type: "Boolean",

@@ -11,6 +11,8 @@ const vsCodeGroovyLintPath = process.env.VSCODE_GROOVY_LINT_PATH || './../vscode
 
 const targetPath = `${vsCodeGroovyLintPath}/server/node_modules/npm-groovy-lint/jdeploy-bundle`;
 
+console.info(`GroovyLint: Starting copying package in vscode for testing`);
+
 // Reset target folder
 if (fse.existsSync(targetPath)) {
     fse.emptyDirSync(targetPath);
