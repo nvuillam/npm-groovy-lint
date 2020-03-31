@@ -6,6 +6,7 @@ const fse = require("fs-extra");
 const os = require("os");
 const path = require("path");
 const xml2js = require("xml2js");
+const { getConfigFileName } = require("./config.js");
 const { getNpmGroovyLintRules } = require("./groovy-lint-rules.js");
 const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js");
 
@@ -15,6 +16,7 @@ const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js
 
 const npmGroovyLintRules = getNpmGroovyLintRules();
 const CODENARC_TMP_FILENAME_BASE = "codeNarcTmpFile_";
+const CODENARC_WWW_BASE = "https://codenarc.github.io/CodeNarc";
 
 // Convert NPM-groovy-lint into codeNarc arguments
 // Create temporary files if necessary
@@ -192,11 +194,22 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
     }
     result.files = files;
 
-    // Parse error definitions if not already done
-    if (result.rules == null) {
+    // Parse error definitions & build url if not already done and not noreturnrules option
+    if (result.rules == null && options.returnrules === true) {
+        const configAllFileName = await getConfigFileName(__dirname, null, [".groovylintrc-all.json"]);
+        const grooylintrcAllRules = Object.keys(JSON.parse(fse.readFileSync(configAllFileName, "utf8").toString()).rules);
         const rules = {};
         for (const ruleDef of tempXmlFileContent.CodeNarc.Rules[0].Rule) {
-            rules[ruleDef["$"].name] = { description: ruleDef.Description[0] };
+            const ruleName = ruleDef["$"].name;
+            // Add description from CodeNarc
+            rules[ruleName] = { description: ruleDef.Description[0] };
+            // Try to build codenarc url (ex: https://codenarc.github.io/CodeNarc/codenarc-rules-basic.html#bitwiseoperatorinconditional-rule )
+            const matchRules = grooylintrcAllRules.filter(ruleNameX => ruleNameX.split(".")[1] === ruleName);
+            if (matchRules && matchRules[0]) {
+                const ruleCategory = matchRules[0].split(".")[0];
+                const ruleDocUrl = `${CODENARC_WWW_BASE}/codenarc-rules-${ruleCategory}.html#${ruleName.toLowerCase()}-rule`;
+                rules[ruleName].docUrl = ruleDocUrl;
+            }
         }
         result.rules = rules;
     }
