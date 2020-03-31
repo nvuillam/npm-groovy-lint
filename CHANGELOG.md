@@ -3,6 +3,7 @@
 ## [3.2.2] 2020-03-31
 
 - New option **returnrules** if you want to return rules descriptions and documentation url in results
+- Use npm ci instead of npm install in CircleCI build
 
 ## [3.2.1] 2020-03-29
 
