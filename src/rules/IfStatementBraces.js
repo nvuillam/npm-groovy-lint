@@ -90,7 +90,7 @@ else
     doRetrieve = true
 `,
             codeNarcCallsNumber: 2
-        },
+        } /*,
         {
             sourceBefore: `
 if (allowCreation==true) {
@@ -118,7 +118,7 @@ if (allowCreation==true) {
             doSomething()
     }
 }
-`,
+` , 
             sourceAfter: `
 if (allowCreation==true) {
     String scratchOrgSlctn ;
@@ -149,7 +149,7 @@ if (allowCreation==true) {
 }
 `,
             codeNarcCallsNumber: 2
-        }
+        } */
     ]
 };
 
