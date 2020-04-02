@@ -5,6 +5,7 @@ const rule = {
     scope: "file",
     unitary: true,
     triggers: ["ClosingBraceNotAlone"],
+    triggersAgainAfterFix: ["Indentation", "IndentationClosingBraces", "IndentationComments"],
     range: {
         type: "function",
         func: (_errLine, errItem, _evaluatedVars, allLines) => {
@@ -75,7 +76,8 @@ if (a == 1) {
 else {
     whateverElse()
 }
-`
+`,
+            codeNarcCallsNumber: 2
         },
         {
             sourceBefore: `
@@ -92,7 +94,8 @@ if (new File(sfdxWorkingDir + '/.sfdx').exists() && this.promptForReloadMetadata
 else {
     doRetrieve = true
 }
-`
+`,
+            codeNarcCallsNumber: 2
         },
         {
             sourceBefore: `
@@ -128,7 +131,8 @@ private doReplaceInFile(String fileName, def searchRegex, String replacementValu
         Utils.printlnLog("- file not found for update: $fileName with $replacementValue using pattern $searchRegex")
     }
 }
-`
+`,
+            codeNarcCallsNumber: 2
         }
     ]
 };

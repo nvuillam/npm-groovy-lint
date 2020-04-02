@@ -3,12 +3,13 @@
 const NpmGroovyLint = require('../src/groovy-lint.js');
 const { getNpmGroovyLintRules } = require("../src/groovy-lint-rules.js");
 let assert = require('assert');
-const jsdiff = require('diff');
 
+const { beforeEachTestCase, checkCodeNarcCallsCounter, getDiff } = require('./helpers/common');
 const npmGroovyLintRules = getNpmGroovyLintRules({ loadTests: true });
 
 // Read rules file and test all fixes
 describe('Check rules auto-fixes', () => {
+    beforeEach(beforeEachTestCase);
 
     // Iterate all rules
     for (const ruleName of Object.keys(npmGroovyLintRules)) {
@@ -47,6 +48,7 @@ async function checkRuleFix(ruleName, testRule) {
         rulesets: fixRules,
         fix: true,
         fixrules: fixRules,
+        nolintafter: true,
         output: 'none',
         verbose: true
     };
@@ -58,7 +60,8 @@ async function checkRuleFix(ruleName, testRule) {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
     } catch (e) {
-        console.error(e.message);
+        console.error('NpmGroovyLint fatal error: ' + e.message);
+        console.error(e.stack);
         err = e;
     }
     // Check results
@@ -66,18 +69,10 @@ async function checkRuleFix(ruleName, testRule) {
     assert(linter.status === 0, 'Linter status is 0');
     assert(linter.lintResult.summary.totalFixedNumber > 0, 'Errors have been fixed');
     const updatedSource = linter.lintResult.files[0].updatedSource;
-    const diff = jsdiff.diffChars(testRule.sourceAfter, updatedSource);
-    const effectiveDiffs = diff.filter((item => (item.added || item.removed) && ![`\r`, `\r\n`].includes(item.value)));
-    if (effectiveDiffs.length > 0) {
-        console.error('BeforeFix: \n' + source);
-        console.error('AfterFix: \n' + updatedSource);
-        console.error('Expected: \n' + testRule.sourceAfter);
-        console.error(JSON.stringify(effectiveDiffs, null, 2));
-    } else {
-        console.info('BeforeFix: \n' + source);
-        console.info('Verified: \n' + updatedSource);
-    }
-    assert(effectiveDiffs.length === 0, 'Fix result is not the one expected');
+    const effectiveDiffs = getDiff(testRule.sourceAfter, updatedSource, source);
+    assert(effectiveDiffs.length === 0, `Fix result is not the one expected.\n Diff: \n${JSON.stringify(effectiveDiffs, null, 2)}`);
+    checkCodeNarcCallsCounter(testRule.codeNarcCallsNumber || 1);
 }
+
 
 

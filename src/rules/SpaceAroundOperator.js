@@ -15,6 +15,7 @@ const rule = {
             return getVariableRange(errLine, evaluatedVars, "OPERATOR", errItem);
         }
     },
+    fixesSameErrorOnSameLine: true,
     fix: {
         label: "Add space around operator",
         type: "function",

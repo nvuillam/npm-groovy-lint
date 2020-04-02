@@ -3,13 +3,15 @@
 const util = require("util");
 let assert = require('assert');
 const fse = require("fs-extra");
-
 const exec = util.promisify(require("child_process").exec);
+
+const { SAMPLE_FILE_SMALL } = require('./helpers/common');
 
 describe('Lint with executables (jdeploy-bundle)', () => {
     it('(EXE:file) should generate text console output', async () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',
+            '--files', '**/' + SAMPLE_FILE_SMALL,
             '--loglevel', 'warning',
             '--verbose'
         ];
@@ -23,6 +25,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
     it('(EXE:file) should generate json console output', async () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',
+            '--files', '**/' + SAMPLE_FILE_SMALL,
             '--output', 'json'
         ];
         const { stdout, stderr } = await exec('npm-groovy-lint ' + params.join(' '));
@@ -60,6 +63,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
     it('(EXE:file) should run on a Jenkinsfile', async () => {
         const params = [
             '--path', ' "jdeploy-bundle/lib/example"',
+            '--files', '**/Jenkinsfile',
             '--verbose'];
         const { stdout, stderr } = await exec('npm-groovy-lint ' + params.join(' '));
         if (stderr) {

@@ -3,5 +3,5 @@
 
 const NpmGroovyLint = require("./groovy-lint.js");
 
-const linter = new NpmGroovyLint(process.argv, {});
+const linter = new NpmGroovyLint(process.argv, { origin: "index" });
 linter.run();
