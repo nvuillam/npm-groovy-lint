@@ -90,7 +90,7 @@ else
     doRetrieve = true
 `,
             codeNarcCallsNumber: 2
-        } /*,
+        },
         {
             sourceBefore: `
 if (allowCreation==true) {
@@ -118,7 +118,7 @@ if (allowCreation==true) {
             doSomething()
     }
 }
-` , 
+` ,
             sourceAfter: `
 if (allowCreation==true) {
     String scratchOrgSlctn ;
@@ -128,28 +128,28 @@ if (allowCreation==true) {
     if (scratchOrgSlctn != null && scratchOrgSlctn != '' &&
         orgsChoiceMap[scratchOrgSlctn] != null && orgsChoiceMap[scratchOrgSlctn].alias != null &&
         orgsChoiceMap[scratchOrgSlctn].alias != '' && this.scratchOrgUserEmail == null) {
-            // Select scratch org
-            this.scratchOrgAlias = orgsChoiceMap[scratchOrgSlctn].alias ;
-    } 
+        // Select scratch org
+        this.scratchOrgAlias = orgsChoiceMap[scratchOrgSlctn].alias ;
+        } 
     else {
-            // Create new scratch org
-            if (this.scratchOrgUserEmail == null) {
-                this.scratchOrgAlias = Utils.userInputText('Please enter the name of the new scratch org (without spaces or special characters, AND WITH YOUR NAME IN IT FOR GOD SAKE :) ', 5) 
-                // Store choice if request in config file 
-                if (Utils.userPromptOkCancel('Do you want this new scratch org to be your default one ? (in '+this.ownConfigFile+')', 5)) {
-                    Utils.setPropInJsonFile(this.ownConfigFile,"scratchOrgAlias",this.scratchOrgAlias)
-                }
+        // Create new scratch org
+        if (this.scratchOrgUserEmail == null) {
+            this.scratchOrgAlias = Utils.userInputText('Please enter the name of the new scratch org (without spaces or special characters, AND WITH YOUR NAME IN IT FOR GOD SAKE :) ', 5) 
+            // Store choice if request in config file 
+            if (Utils.userPromptOkCancel('Do you want this new scratch org to be your default one ? (in '+this.ownConfigFile+')', 5)) {
+                Utils.setPropInJsonFile(this.ownConfigFile,"scratchOrgAlias",this.scratchOrgAlias)
             }
-            // Define scratch org description as JSON
-            if (true) {
-                this.defJsonCreation()
-            }
-            doSomething()
+        }
+        // Define scratch org description as JSON
+        if (true) {
+            this.defJsonCreation()
+        }
+        doSomething()
     }
 }
 `,
             codeNarcCallsNumber: 2
-        } */
+        }
     ]
 };
 
