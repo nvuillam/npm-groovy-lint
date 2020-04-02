@@ -194,6 +194,7 @@ module.exports = optionator({
         ["codenarcargs", ["failonerror", "failonwarning", "failoninfo", "path", "files", "source", "fix", "fixrules", "config"]],
         ["noserver", ["serverhost", "serverport", "killserver"]],
         ["fix", "format"],
+        [["fix", "format"], ["failonerror", "failonwarning", "failoninfo"]],
         ["format", "config"]
     ]
 });

@@ -3,6 +3,8 @@
 ## UNRELEASED
 
 - When If or Else brackets are fixed,trigger another rule lint & fix only with Indentation rules so CodeNarc recalculate them correctly
+- New option **nolintafter**: When format or fix is called, a new lint is performed after the fixes to update the error list. If you just want the updated source code and do not care about the error logs, use this parameter to improve performances
+- Manage correctly options **failonerror**, **failonwarning** and **failoninfo**
 - Mocha tests updates:
   - Add stats on calls to CodeNarc (globalThis.codeNarcCallsCounter and globalThis.codeNarcCalls, activated if globalThis.codeNarcCallsCounter is set to 0 before calling NmpGroovyLint)
   - Factorize test classes common code in module helper/common.js
