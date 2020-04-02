@@ -3,9 +3,11 @@
 const util = require("util");
 let assert = require('assert');
 const fse = require("fs-extra");
-const exec = util.promisify(require("child_process").exec);
+const childProcess = require("child_process");
+const exec = util.promisify(childProcess.exec);
+const spawn = childProcess.spawnSync;
 
-const { SAMPLE_FILE_SMALL } = require('./helpers/common');
+const { SAMPLE_FILE_SMALL, NPM_GROOVY_LINT } = require('./helpers/common');
 
 describe('Lint with executables (jdeploy-bundle)', () => {
     it('(EXE:file) should generate text console output', async () => {
@@ -15,7 +17,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
             '--loglevel', 'warning',
             '--verbose'
         ];
-        const { stdout, stderr } = await exec('npm-groovy-lint ' + params.join(' '));
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(' '));
         if (stderr) {
             console.error(stderr);
         }
@@ -28,7 +30,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
             '--files', '**/' + SAMPLE_FILE_SMALL,
             '--output', 'json'
         ];
-        const { stdout, stderr } = await exec('npm-groovy-lint ' + params.join(' '));
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(' '));
         if (stderr) {
             console.error(stderr);
         }
@@ -43,7 +45,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="html:ReportTestCodenarc.html"'];
-        await exec('npm-groovy-lint ' + params.join(' '));
+        await exec(NPM_GROOVY_LINT + params.join(' '));
         assert(fse.existsSync('ReportTestCodenarc.html'), 'html CodeNarc report has been generated');
         fse.removeSync('ReportTestCodenarc.html');
     });
@@ -55,7 +57,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
             '-title="TestTitleCodenarc"',
             '-maxPriority1Violations=0',
             '-report="xml:ReportTestCodenarc.xml"'];
-        await exec('npm-groovy-lint ' + params.join(' '));
+        await exec(NPM_GROOVY_LINT + params.join(' '));
         assert(fse.existsSync('ReportTestCodenarc.xml'), 'xml CodeNarc report has been generated');
         fse.removeSync('ReportTestCodenarc.xml');
     });
@@ -65,7 +67,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
             '--path', ' "jdeploy-bundle/lib/example"',
             '--files', '**/Jenkinsfile',
             '--verbose'];
-        const { stdout, stderr } = await exec('npm-groovy-lint ' + params.join(' '));
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(' '));
         if (stderr) {
             console.error(stderr);
         }
@@ -77,7 +79,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
         const params = [
             '-h'
         ];
-        const { stdout, stderr } = await exec('npm-groovy-lint ' + params.join(' '));
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(' '));
         if (stderr) {
             console.error(stderr);
         }
@@ -90,7 +92,7 @@ describe('Lint with executables (jdeploy-bundle)', () => {
             '--codenarcargs',
             '-help'
         ];
-        const { stdout, stderr } = await exec('npm-groovy-lint ' + params.join(' '));
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(' '));
         if (stderr) {
             console.error(stderr);
         }
@@ -98,5 +100,46 @@ describe('Lint with executables (jdeploy-bundle)', () => {
         assert(stdout.includes('where OPTIONS are zero or more command-line options'), 'stdout should contain word "where OPTIONS are zero or more command-line options"');
     });
 
+    it('(EXE:file) failonerror', async () => {
+        const params = [
+            '--path', '"jdeploy-bundle/lib/example"',
+            '--files', '**/' + SAMPLE_FILE_SMALL,
+            '--failonerror',
+            '--output', 'txt'
+        ];
+        const { stderr, status } = spawn(NPM_GROOVY_LINT + params.join(' '), [], { shell: true });
+        if (stderr) {
+            console.error(stderr.toString());
+        }
+        assert(status === 1, `Status code is 1 (returned: ${status})`);
+    });
+
+    it('(EXE:file) failonwarning', async () => {
+        const params = [
+            '--path', '"jdeploy-bundle/lib/example"',
+            '--files', '**/' + SAMPLE_FILE_SMALL,
+            '--failonwarning',
+            '--output', 'txt'
+        ];
+        const { stderr, status } = spawn(NPM_GROOVY_LINT + params.join(' '), [], { shell: true });
+        if (stderr) {
+            console.error(stderr.toString());
+        }
+        assert(status === 1, `Status code is 1 (returned: ${status})`);
+    });
+
+    it('(EXE:file) failoninfo', async () => {
+        const params = [
+            '--path', '"jdeploy-bundle/lib/example"',
+            '--files', '**/' + SAMPLE_FILE_SMALL,
+            '--failoninfo',
+            '--output', 'txt'
+        ];
+        const { stderr, status } = spawn(NPM_GROOVY_LINT + params.join(' '), [], { shell: true });
+        if (stderr) {
+            console.error(stderr.toString());
+        }
+        assert(status === 1, `Status code is 1 (returned: ${status})`);
+    });
 
 });

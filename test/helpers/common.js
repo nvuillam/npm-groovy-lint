@@ -4,6 +4,13 @@ const os = require("os");
 const fse = require("fs-extra");
 const jsdiff = require("diff");
 
+const NPM_GROOVY_LINT = 'npm-groovy-lint ';
+const startPath = './lib/example/';
+const SAMPLE_FILE_BIG = 'SampleFile.groovy';
+const SAMPLE_FILE_BIG_PATH = startPath + SAMPLE_FILE_BIG;
+const SAMPLE_FILE_SMALL = 'SampleFileSmall.groovy';
+const SAMPLE_FILE_SMALL_PATH = startPath + SAMPLE_FILE_SMALL;
+
 // Reset codeNarcCallsCounter before each test
 const beforeEachTestCase = function () {
     globalThis.codeNarcCallsCounter = 0;
@@ -43,13 +50,8 @@ function getDiff(expected, afterUpdate, beforeUpdate) {
     return effectiveDiffs;
 }
 
-const startPath = './lib/example/';
-const SAMPLE_FILE_BIG = 'SampleFile.groovy';
-const SAMPLE_FILE_BIG_PATH = startPath + SAMPLE_FILE_BIG;
-const SAMPLE_FILE_SMALL = 'SampleFileSmall.groovy';
-const SAMPLE_FILE_SMALL_PATH = startPath + SAMPLE_FILE_SMALL;
-
 module.exports = {
+    NPM_GROOVY_LINT,
     SAMPLE_FILE_BIG,
     SAMPLE_FILE_SMALL,
     SAMPLE_FILE_BIG_PATH,

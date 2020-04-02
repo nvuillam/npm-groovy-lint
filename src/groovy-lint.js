@@ -1,7 +1,5 @@
 #! /usr/bin/env node
 
-const DEFAULT_VERSION = "3.0.0";
-
 // Imports
 const debug = require("debug")("npm-groovy-lint");
 const performance = require("perf_hooks").performance;
@@ -141,9 +139,11 @@ class NpmGroovyLint {
             let v = process.env.npm_package_version;
             if (!v) {
                 try {
-                    v = require("package.json").version;
+                    const FindPackageJson = require("find-package-json");
+                    const finder = FindPackageJson(__dirname);
+                    v = finder.next().value.version;
                 } catch {
-                    v = DEFAULT_VERSION;
+                    v = "error";
                 }
             }
             const vLabel = "npm-groovy-lint v" + v;
@@ -212,7 +212,7 @@ class NpmGroovyLint {
     async postProcess() {
         // CodeNarc error
         if ((this.codeNarcStdErr && [null, "", undefined].includes(this.codeNarcStdOut)) || this.status > 0) {
-            this.status = 1;
+            this.status = 2;
             console.error("GroovyLint: Error running CodeNarc: \n" + this.codeNarcStdErr);
         }
         // only --codenarcargs arguments
@@ -247,8 +247,8 @@ class NpmGroovyLint {
             this.lintResult = computeStats(this.lintResult);
             this.outputString = await processOutput(this.outputType, this.output, this.lintResult, this.options, this.fixer);
         }
-
         manageDeleteTmpFiles(this.tmpGroovyFileName, this.tmpRuleSetFileName);
+        this.manageReturnCode();
     }
 
     // Check if fixed errors required a new lint & fix
@@ -372,6 +372,25 @@ class NpmGroovyLint {
                 options: optionsLog,
                 args: this.codenarcArgs
             });
+        }
+    }
+
+    // Exit with code 1 if failonerror, failonwarning or failoninfo is set
+    manageReturnCode() {
+        // Fail on error
+        if (this.options.failonerror && this.lintResult.summary.totalFoundErrorNumber > 0) {
+            console.error(`Failure: ${this.lintResult.summary.totalFoundErrorNumber} error(s) have been found`);
+            this.status = 1;
+        }
+        // Fail on warning
+        else if (this.options.failonwarning && this.lintResult.summary.totalFoundWarningNumber > 0) {
+            console.error(`Failure: ${this.lintResult.summary.totalFoundWarningNumber} warning(s) have been found`);
+            this.status = 1;
+        }
+        // Fail on info
+        else if (this.options.failoninfo && this.lintResult.summary.totalFoundInfoNumber > 0) {
+            console.error(`Failure: ${this.lintResult.summary.totalFoundInfoNumber} info(s) have been found`);
+            this.status = 1;
         }
     }
 }

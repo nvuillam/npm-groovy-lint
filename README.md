@@ -168,7 +168,7 @@ Example
 
 - Embedded Groovy 3.0.2 may have issues with JDK12, please use JDK11 or a precedent version if possible
 - CodeNarc server does not seems to Work on some Linux environments (java classes are loaded at each npm-groovy-lint call so performances are slower)
-- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (3.0.2)
+- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (Groovy 3.0.2)
 
 # CONTRIBUTE
 

@@ -118,7 +118,7 @@ if (allowCreation==true) {
             doSomething()
     }
 }
-` ,
+`,
             sourceAfter: `
 if (allowCreation==true) {
     String scratchOrgSlctn ;
