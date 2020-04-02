@@ -24,6 +24,7 @@ const rule = {
                             level--;
                             if (level === 0) {
                                 matchingLineIndent = prevLine.search(/\S/);
+                                break;
                             }
                         }
                         j++;

@@ -183,12 +183,12 @@ async function loadPackageJSONConfigFile(filePath) {
     try {
         const packageData = await loadJSONConfigFile(filePath);
         if (!Object.hasOwnProperty.call(packageData, "groovylintConfig")) {
-            throw Object.assign(new Error("package.json file doesn't have 'groovylintConfig' field."), { code: "GROOVYLINT_CONFIG_FIELD_NOT_FOUND" });
+            throw Object.assign(new Error(`${filePath} doesn't have 'groovylintConfig' property`), { code: "GROOVYLINT_CONFIG_FIELD_NOT_FOUND" });
         }
         return packageData.groovylintConfig;
     } catch (e) {
         debug(`Error reading package.json file: ${filePath}`);
-        e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
+        //e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
         throw e;
     }
 }

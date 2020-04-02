@@ -230,8 +230,9 @@ async function manageCreateRuleSetFile(options) {
     if (options.rulesets && !options.rulesets.includes(".")) {
         let ruleList = options.rulesets.split(",");
         ruleSetsDef = ruleList.map(ruleName => {
-            const ruleNameShort = ruleName.includes(".") ? ruleName.split(".")[1] : ruleName;
-            return { ruleName: ruleNameShort };
+            const ruleFromConfig = options.rules[ruleName];
+            const ruleDef = buildCodeNarcRule(ruleName, ruleFromConfig);
+            return ruleDef;
         });
     }
     // Rules from config file, only if rulesets has not been sent as argument
@@ -239,22 +240,8 @@ async function manageCreateRuleSetFile(options) {
         for (const ruleName of Object.keys(options.rules)) {
             const ruleFromConfig = options.rules[ruleName];
             if (!(ruleFromConfig === "off" || ruleFromConfig.disabled === true || ruleFromConfig.enabled === false)) {
-                const ruleNameShort = ruleName.includes(".") ? ruleName.split(".")[1] : ruleName;
-                const codeNarcRule = { ruleName: ruleNameShort };
-                // Convert NpmGroovyLint severity into codeNarc priority
-                if (["error", "err"].includes(ruleFromConfig) || ["error", "err"].includes(ruleFromConfig.severity)) {
-                    codeNarcRule.priority = 1;
-                } else if (["warning", "warn"].includes(ruleFromConfig) || ["warning", "warn"].includes(ruleFromConfig.severity)) {
-                    codeNarcRule.priority = 2;
-                } else if (["info", "audi"].includes(ruleFromConfig) || ["info", "audi"].includes(ruleFromConfig.severity)) {
-                    codeNarcRule.priority = 3;
-                }
-                if (typeof ruleFromConfig === "object") {
-                    delete ruleFromConfig.severity;
-                    ruleSetsDef.push(Object.assign(codeNarcRule, ruleFromConfig));
-                } else {
-                    ruleSetsDef.push(codeNarcRule);
-                }
+                const codeNarcRule = buildCodeNarcRule(ruleName, ruleFromConfig);
+                ruleSetsDef.push(codeNarcRule);
             }
         }
     }
@@ -278,6 +265,36 @@ async function manageCreateRuleSetFile(options) {
         debug(`CREATE RULESET tmp file ${tmpRuleSetFileName} generated from input options, as CodeNarc requires physical files`);
         return tmpRuleSetFileName;
     }
+}
+
+// Build a CodeNarc rule from groovylint.json config rule
+function buildCodeNarcRule(ruleName, ruleFromConfig) {
+    const ruleNameShort = ruleName.includes(".") ? ruleName.split(".")[1] : ruleName;
+    const codeNarcRule = { ruleName: ruleNameShort };
+    // Convert NpmGroovyLint severity into codeNarc priority
+    const codeNarcPriorityCode = getCodeNarcPriorityCode(ruleFromConfig || {});
+    if (codeNarcPriorityCode) {
+        codeNarcRule.priority = codeNarcPriorityCode;
+    }
+    // Asssign extra rule parameters if defined
+    if (ruleFromConfig && typeof ruleFromConfig === "object") {
+        delete ruleFromConfig.severity;
+        return Object.assign(codeNarcRule, ruleFromConfig);
+    } else {
+        return codeNarcRule;
+    }
+}
+
+// Translate config priority into CodeNarc priority code
+function getCodeNarcPriorityCode(ruleFromConfig) {
+    if (["error", "err"].includes(ruleFromConfig) || ["error", "err"].includes(ruleFromConfig.severity)) {
+        return 1;
+    } else if (["warning", "warn"].includes(ruleFromConfig) || ["warning", "warn"].includes(ruleFromConfig.severity)) {
+        return 2;
+    } else if (["info", "audi"].includes(ruleFromConfig) || ["info", "audi"].includes(ruleFromConfig.severity)) {
+        return 3;
+    }
+    return null;
 }
 
 async function manageDeleteTmpFiles(tmpGroovyFileName, tmpRuleSetFileName) {

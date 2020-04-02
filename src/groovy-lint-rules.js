@@ -10,8 +10,17 @@
         // add isCodeNarcRule: false if the rule is not part of CodeNarc list of supported rules ( but triggered by another rule with trigger property)
         isCodeNarcRule: false, // default: true
 
+        // If the fix rule must be runned only once by file, set unitary = true
+        unitary: false,
+
+        // If the fix solves the same errors on the same line, set fixesSameErrorOnSameLine : true,
+        fixesSameErrorOnSameLine: false ,
+
         // List of other rules fix that this rule fix must trigger (if fix defined)
         triggers: ["SomeOtherRule","AnotherRule"],
+
+        // Some rules like IfStatementBraces and ElseBlockBraces require to run again the lint & fix after they are corrected (usually Indentation rule)
+        triggersAgainAfterFix: ["Indentation"],
 
         // Extract variables from CodeNarc error message (optional)
         variables: [

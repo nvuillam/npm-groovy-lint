@@ -1,5 +1,17 @@
 # Changelog
 
+## UNRELEASED
+
+- When If or Else brackets are fixed,trigger another rule lint & fix only with Indentation rules so CodeNarc recalculate them correctly
+- New option `nolintafter`: When format or fix is called, a new lint is performed after the fixes to update the error list. If you just want the updated source code and do not care about the error logs, use this parameter to improve performances
+- Fixes 
+  - Manage correctly options `failonerror`, `failonwarning` and `failoninfo`
+  - `npm-groovy-lint -version` now returns version from package.json
+- Mocha tests updates:
+  - Add stats on calls to CodeNarc (`globalThis.codeNarcCallsCounter` and `globalThis.codeNarcCalls`, activated if `globalThis.codeNarcCallsCounter` is set to 0 before calling NmpGroovyLint)
+  - Factorize test classes common code in module helper/common.js
+  - Use a smaller groovy file for test classes when not impacting the tests quality
+
 ## [3.2.2] 2020-03-31
 
 - New option **returnrules** if you want to return rules descriptions and documentation url in results
