@@ -13,8 +13,6 @@ const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 
 class CodeNarcCaller {
-
-
     args = [];
     options;
     codenarcArgs;
@@ -169,7 +167,7 @@ class CodeNarcCaller {
             let stop = false;
             let eJava;
             exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => { })
+                .then(() => {})
                 .catch(eRun => {
                     stop = true;
                     eJava = eRun;

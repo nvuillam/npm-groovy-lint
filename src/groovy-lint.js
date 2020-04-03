@@ -13,6 +13,7 @@ const optionsDefinition = require("./options");
 const { computeStats, processOutput } = require("./output.js");
 
 class NpmGroovyLint {
+    "use strict";
 
     options = {}; // NpmGroovyLint options
     args = []; // Command line arguments

@@ -91,11 +91,11 @@ async function prepareCodeNarcCall(options) {
             .endsWith("html")
             ? "html"
             : result.output
-                .split(".")
-                .pop()
-                .endsWith("xml")
-                ? "xml"
-                : "";
+                  .split(".")
+                  .pop()
+                  .endsWith("xml")
+            ? "xml"
+            : "";
         const ext = result.output.split(".").pop();
         result.codenarcArgs.push('-report="' + ext + ":" + result.output + '"');
 
@@ -157,10 +157,10 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
                         violation["$"].priority === "1"
                             ? "error"
                             : violation["$"].priority === "2"
-                                ? "warning"
-                                : violation["$"].priority === "3"
-                                    ? "info"
-                                    : "unknown",
+                            ? "warning"
+                            : violation["$"].priority === "3"
+                            ? "info"
+                            : "unknown",
                     msg: violation.Message ? violation.Message[0] : ""
                 };
                 errItem.msg = tmpGroovyFileNameReplace ? errItem.msg.replace(tmpGroovyFileNameReplace, "") : errItem.msg;
