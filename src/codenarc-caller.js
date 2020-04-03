@@ -1,3 +1,6 @@
+#! /usr/bin/env node
+"use strict";
+
 // Call CodeNarc by server or java
 const cliProgress = require("cli-progress");
 const debug = require("debug")("npm-groovy-lint");
@@ -10,7 +13,7 @@ const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 
 class CodeNarcCaller {
-    "use strict";
+
 
     args = [];
     options;
@@ -166,7 +169,7 @@ class CodeNarcCaller {
             let stop = false;
             let eJava;
             exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => {})
+                .then(() => { })
                 .catch(eRun => {
                     stop = true;
                     eJava = eRun;

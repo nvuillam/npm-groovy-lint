@@ -1,9 +1,12 @@
+#! /usr/bin/env node
+"use strict";
+
 /**
  * @fileoverview Options configuration for optionator.
  * @author Nicolas Vuillamy
  */
 
-"use strict";
+
 
 //------------------------------------------------------------------------------
 // Requirements

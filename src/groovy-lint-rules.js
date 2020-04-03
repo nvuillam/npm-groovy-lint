@@ -1,3 +1,6 @@
+#! /usr/bin/env node
+"use strict";
+
 // Additional definition for codenarc rules ( get position & available fix)
 
 // Rule Template:
@@ -86,8 +89,6 @@ str = "lelamanul"
     module.exports = { rule }
 
 */
-
-"use strict";
 
 const fse = require("fs-extra");
 

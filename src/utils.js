@@ -1,5 +1,7 @@
-// Shared functions
+#! /usr/bin/env node
 "use strict";
+
+// Shared functions
 
 const debug = require("debug")("npm-groovy-lint");
 const decodeHtml = require("decode-html");

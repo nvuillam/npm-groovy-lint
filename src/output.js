@@ -1,3 +1,8 @@
+#! /usr/bin/env node
+"use strict";
+
+// Shared functions
+
 // Output management
 const c = require("ansi-colors");
 const fse = require("fs-extra");
