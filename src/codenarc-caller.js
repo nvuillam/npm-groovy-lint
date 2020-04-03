@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-"use strict"
+"use strict";
 
 // Call CodeNarc by server or java
 const cliProgress = require("cli-progress");

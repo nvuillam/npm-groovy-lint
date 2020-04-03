@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-"use strict"
+"use strict";
 
 // Shared functions
 const debug = require("debug")("npm-groovy-lint");

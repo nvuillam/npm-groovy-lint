@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-"use strict"
+"use strict";
 
 // Imports
 const debug = require("debug")("npm-groovy-lint");
@@ -13,7 +13,7 @@ const optionsDefinition = require("./options");
 const { computeStats, processOutput } = require("./output.js");
 
 class NpmGroovyLint {
-    "use strict"
+    "use strict";
 
     options = {}; // NpmGroovyLint options
     args = []; // Command line arguments
