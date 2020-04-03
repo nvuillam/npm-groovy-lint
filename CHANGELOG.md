@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.4] 2020-04-03
+
+- Error message in postinstall if env Node.js is lower than the minimal required (12)
+
 ## [3.2.3] 2020-04-02
 
 - When If or Else brackets are fixed,trigger another rule lint & fix only with Indentation rules so CodeNarc recalculate them correctly
