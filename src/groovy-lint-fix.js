@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-"use strict";
+"use strict"
 
 // Imports
 const fse = require("fs-extra");
@@ -9,7 +9,7 @@ const { getNpmGroovyLintRules } = require("./groovy-lint-rules.js");
 const { evaluateVariables, getSourceLines } = require("./utils.js");
 
 class NpmGroovyLintFix {
-    "use strict";
+    "use strict"
     options = {};
 
     updatedLintResult;

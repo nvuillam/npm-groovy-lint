@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-"use strict";
+"use strict"
 
 // Call CodeNarc by server or java
 const cliProgress = require("cli-progress");
@@ -167,7 +167,7 @@ class CodeNarcCaller {
             let stop = false;
             let eJava;
             exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => {})
+                .then(() => { })
                 .catch(eRun => {
                     stop = true;
                     eJava = eRun;

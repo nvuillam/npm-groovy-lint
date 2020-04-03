@@ -1,5 +1,5 @@
 // Configuration file management
-"use strict";
+"use strict"
 
 const debug = require("debug")("npm-groovy-lint");
 const fse = require("fs-extra");

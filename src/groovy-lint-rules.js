@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-"use strict";
+"use strict"
 
 // Additional definition for codenarc rules ( get position & available fix)
 
