@@ -1,7 +1,7 @@
 ---
   version: 3
   jobs:
-    node-12-jdk-8: 
+    debian-node-12-jdk-8: 
       docker:
         - image: openjdk:8-jdk-stretch
      # working_directory: ~/cli
@@ -20,7 +20,7 @@
             name: Build
             command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 
         - run:
-            name: Testing
+            name: Testing & Code coverage
             command: npm run test:coverage
         - run:
             name: Submitting code coverage to codecov
@@ -28,7 +28,7 @@
               ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
               curl -s https://codecov.io/bash | bash
 
-    node-10-jdk-8: 
+    debian-node-10-jdk-8: 
       docker:
         - image: openjdk:8-jdk-stretch
       # working_directory: ~/cli
@@ -48,11 +48,11 @@
             command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 
         - run:
             name: Testing
-            command: npm run test:coverage
+            command: npm run test
               
   workflows:
     version: 2
     "npm-groovy-lint-build-test":
       jobs:
-        - node-12-jdk-8
-        - node-10-jdk-8
+        - debian-node-12-jdk-8
+        - debian-node-10-jdk-8
