@@ -1,7 +1,7 @@
 ---
   version: 3
   jobs:
-    node-12-jdk-8: 
+    debian-node-12-jdk-8: 
       docker:
         - image: openjdk:8-jdk-stretch
      # working_directory: ~/cli
@@ -32,4 +32,4 @@
     version: 2
     "npm-groovy-lint-build-test":
       jobs:
-        - node-12-jdk-8
+        - debian-node-12-jdk-8
