@@ -27,9 +27,32 @@
             command: |
               ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
               curl -s https://codecov.io/bash | bash
- 
+
+    node-10-jdk-8: 
+      docker:
+        - image: openjdk:8-jdk-stretch
+      # working_directory: ~/cli
+      steps:
+        - checkout
+        - run: 
+            name: Install base tools
+            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
+        - run:
+            name: Install node
+            command: curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get update && apt-get install -y nodejs
+        - run:
+            name: Install dependencies
+            command: npm ci && sudo npm install jdeploy -g
+        - run: 
+            name: Build
+            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 
+        - run:
+            name: Testing
+            command: npm run test:coverage
+              
   workflows:
     version: 2
     "npm-groovy-lint-build-test":
       jobs:
         - node-12-jdk-8
+        - node-10-jdk-8
