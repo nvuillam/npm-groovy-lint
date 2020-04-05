@@ -3,6 +3,7 @@
 ## UNRELEASED
 
 - When formatting, always run some custom npm-groovy-lint fix rules not corresponding to CodeNarc violations
+- Return CodeNarc and Groovy versions when --version options is called
 - Updated fix rules:
   - IndentationClosingBraces
   - IndentationComments

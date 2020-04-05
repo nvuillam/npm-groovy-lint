@@ -9,6 +9,11 @@ const stripComments = require("strip-json-comments");
 
 const defaultConfigLintFileName = ".groovylintrc-recommended.json";
 
+const NPM_GROOVY_LINT_CONSTANTS = {
+    CodeNarcVersion: "1.5",
+    GroovyVersion: "3.0.2"
+};
+
 const configLintFilenames = [
     ".groovylintrc.json",
     ".groovylintrc.js",
@@ -209,4 +214,4 @@ async function shortenRuleNames(rules) {
     return shortenedRules;
 }
 
-module.exports = { loadConfig, getConfigFileName };
+module.exports = { NPM_GROOVY_LINT_CONSTANTS, loadConfig, getConfigFileName };

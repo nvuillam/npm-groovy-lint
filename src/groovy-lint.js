@@ -7,7 +7,7 @@ const performance = require("perf_hooks").performance;
 const NpmGroovyLintFix = require("./groovy-lint-fix");
 const CodeNarcCaller = require("./codenarc-caller");
 const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = require("./codenarc-factory");
-const { loadConfig, getConfigFileName } = require("./config.js");
+const { NPM_GROOVY_LINT_CONSTANTS, loadConfig, getConfigFileName } = require("./config.js");
 const optionsDefinition = require("./options");
 const { computeStats, processOutput } = require("./output.js");
 
@@ -134,7 +134,7 @@ class NpmGroovyLint {
             this.options = this.args;
         }
 
-        // Show version (TODO: more clean)
+        // Show version
         if (this.options.version) {
             let v = process.env.npm_package_version;
             if (!v) {
@@ -146,9 +146,15 @@ class NpmGroovyLint {
                     v = "error";
                 }
             }
-            const vLabel = "npm-groovy-lint v" + v;
-            console.info(vLabel);
-            this.outputString = vLabel;
+            const versions = [];
+            versions.push(`npm-groovy-lint version ${v}`);
+            versions.push("");
+            versions.push("Embeds:");
+            versions.push(`- CodeNarc version ${NPM_GROOVY_LINT_CONSTANTS["CodeNarcVersion"]}`);
+            versions.push(`- Groovy version ${NPM_GROOVY_LINT_CONSTANTS["GroovyVersion"]} (superlite)`);
+            const versionsOut = versions.join("\n");
+            console.info(versionsOut);
+            this.outputString = versionsOut;
             return false;
         }
 
