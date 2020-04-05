@@ -344,10 +344,17 @@ class NpmGroovyLint {
 
     // Merge results after second fix performed (only get updated source)
     mergeFixAgainResults(lintResToUpdate, lintResAfterNewFix) {
-        for (const afterNewFixResFileNm of Object.keys(lintResAfterNewFix.files)) {
-            // Set updatedSource in results in provided
-            if (lintResAfterNewFix.files[afterNewFixResFileNm].updatedSource) {
-                lintResToUpdate.files[afterNewFixResFileNm].updatedSource = lintResAfterNewFix.files[afterNewFixResFileNm].updatedSource;
+        if (lintResToUpdate.files && lintResToUpdate.files[0]) {
+            if (Object.keys(lintResAfterNewFix.files).length > 0) {
+                const updtSource = lintResAfterNewFix.files[Object.keys(lintResAfterNewFix.files)[0]].updatedSource;
+                lintResToUpdate.files[0] = Object.assign(lintResToUpdate.files[0], { updatedSource: updtSource });
+            }
+        } else {
+            for (const afterNewFixResFileNm of Object.keys(lintResAfterNewFix.files)) {
+                // Set updatedSource in results in provided
+                if (lintResAfterNewFix.files[afterNewFixResFileNm].updatedSource) {
+                    lintResToUpdate.files[afterNewFixResFileNm].updatedSource = lintResAfterNewFix.files[afterNewFixResFileNm].updatedSource;
+                }
             }
         }
         return lintResToUpdate;
