@@ -151,8 +151,10 @@ function isValidCodeLine(line) {
     return line.trim() !== "" && line.trim().split("//")[0] !== "";
 }
 
+// Add space after a string in another string
 function addSpaceAfterChar(line, char) {
     let pos = -1;
+    const lineIndent = line.search(/\S/);
     const splits = line.split(char);
     const newArray = splits.map(str => {
         pos++;
@@ -164,7 +166,7 @@ function addSpaceAfterChar(line, char) {
             return str.trim();
         }
     });
-    return newArray.join(char + " ").trimEnd();
+    return " ".repeat(lineIndent) + newArray.join(char + " ").trimEnd();
 }
 
 // Add space around an expression
