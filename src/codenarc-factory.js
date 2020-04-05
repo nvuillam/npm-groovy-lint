@@ -193,6 +193,10 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
         }
     }
     result.files = files;
+    // Add tmp file if no errors and source argument  used
+    if (Object.keys(result.files).length === 0 && tmpGroovyFileName) {
+        result.files[tmpGroovyFileName] = { errors: [] };
+    }
 
     // Parse error definitions & build url if not already done and not noreturnrules option
     if (result.rules == null && options.returnrules === true) {

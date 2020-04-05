@@ -114,6 +114,7 @@ const rulesFixPriorityOrder = [
     "UnusedImport",
     "BlockStartsWithBlankLine",
     "BlockEndsWithBlankLine",
+    "ClassEndsWithBlankLine",
     "MisorderedStaticImports",
     "IfStatementBraces",
     "ElseBlockBraces",
@@ -123,6 +124,10 @@ const rulesFixPriorityOrder = [
     "ConsecutiveBlankLines",
     "FileEndsWithoutNewline"
 ];
+
+// CodeNarc formatting fix rules are triggered after CodeNarc returnes violations
+// Non-CodeNarc formatting fix rules (existing only in npm-groovy-lint) must be runned always
+const formatRulesToAlwaysRun = ["IndentationClosingBraces", "IndentationComments"];
 
 const RULES_FOLDER = __dirname + "/rules";
 
@@ -153,4 +158,8 @@ function getNpmGroovyLintRules(optns = { loadTests: false }) {
     return npmGroovyLintRules;
 }
 
-module.exports = { getNpmGroovyLintRules };
+function getFormattingRulesToAlwaysRun() {
+    return formatRulesToAlwaysRun;
+}
+
+module.exports = { getNpmGroovyLintRules, getFormattingRulesToAlwaysRun };

@@ -22,7 +22,7 @@ const rule = {
                         j++;
                     }
                     // Set new indentation it on this comment line
-                    if (nextLineIndent) {
+                    if (nextLineIndent || nextLineIndent === 0) {
                         line = " ".repeat(nextLineIndent) + line.trimStart();
                     }
                 }

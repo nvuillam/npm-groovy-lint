@@ -226,10 +226,12 @@ class NpmGroovyLint {
             // Fix all found errors if requested
             if (this.options.fix || this.options.format) {
                 this.fixer = new NpmGroovyLintFix(this.lintResult, {
-                    verbose: this.options.verbose,
+                    format: this.options.format === true,
                     fixrules: this.options.fixrules,
                     source: this.options.source,
-                    save: this.tmpGroovyFileName ? false : true
+                    save: this.tmpGroovyFileName ? false : true,
+                    origin: this.origin,
+                    verbose: this.options.verbose
                 });
                 await this.fixer.run();
                 this.lintResult = this.fixer.updatedLintResult;

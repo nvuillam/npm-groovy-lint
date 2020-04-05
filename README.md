@@ -33,6 +33,8 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
     $ npm install -g npm-groovy-lint
 ```
 
+Node.js >= 12 is required to run this package. If you can't upgrade, you can use [nvm](https://github.com/nvm-sh/nvm) to have [different node versions on your computer](https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/)
+
 # USAGE
 
 ```
