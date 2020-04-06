@@ -18,8 +18,7 @@
     "publish:beta": "npm run build && npm publish --tag beta",
     "dev:lint-build": "npm run lint:fix && npm run build",
     "dev:lint-build-copy-vscode": "npm run dev:lint-build && node script-deploy-in-vscode.js",
-    "requirements-check": "node check-version.js",
-    "postinstall": "npm run requirements-check"
+    "requirements-check": "node check-version.js"
   },
   "repository": {
     "type": "git",
