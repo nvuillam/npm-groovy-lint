@@ -75,7 +75,7 @@ if (packageJsonConfig.jdeploy.mainClassPlanB) {
 fse.renameSync(runGroovyLintFile, jdeployFile);
 console.info('GroovyLint: ' + runGroovyLintFile + ' renamed into ' + jdeployFile);
 
-console.log('---- END PATCH JDEPLOY AFTER ----');
+console.log('---- END PATCH JDEPLOY AFTER ----\n');
 
 
 

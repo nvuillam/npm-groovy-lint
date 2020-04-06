@@ -137,7 +137,9 @@ describe('Miscellaneous', function () {
         const FindPackageJson = require("find-package-json");
         const finder = FindPackageJson(__dirname);
         const v = finder.next().value.version;
-        assert(linter.outputString.includes(`npm-groovy-lint v${v}`), `Provides version ${v}\nReturned outputString:\n${linter.outputString}`);
+        assert(linter.outputString.includes(`npm-groovy-lint version ${v}`), `Provides version ${v}\nReturned outputString:\n${linter.outputString}`);
+        assert(linter.outputString.includes(`CodeNarc version`), `Provides CodeNarc version\nReturned outputString:\n${linter.outputString}`);
+        assert(linter.outputString.includes(`Groovy version`), `Provides CodeNarc version\nReturned outputString:\n${linter.outputString}`);
     });
 
     it('(API:help) should show codenarc help', async () => {

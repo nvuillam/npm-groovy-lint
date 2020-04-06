@@ -135,7 +135,7 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
     let errId = 0;
     for (const folderInfo of tempXmlFileContent.CodeNarc.Package) {
         if (!folderInfo.File) {
-            debug(`Warning: ${folderInfo} does not contain any File item`);
+            debug(`Info: CodeNarc.Package does not contain any File item: \n${JSON.stringify(folderInfo)}`);
             continue;
         }
         for (const fileInfo of folderInfo.File) {
@@ -193,6 +193,10 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
         }
     }
     result.files = files;
+    // Add tmp file if no errors and source argument  used
+    if (Object.keys(result.files).length === 0 && tmpGroovyFileName) {
+        result.files[0] = { errors: [] };
+    }
 
     // Parse error definitions & build url if not already done and not noreturnrules option
     if (result.rules == null && options.returnrules === true) {

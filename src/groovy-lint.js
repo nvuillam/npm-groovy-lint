@@ -7,7 +7,7 @@ const performance = require("perf_hooks").performance;
 const NpmGroovyLintFix = require("./groovy-lint-fix");
 const CodeNarcCaller = require("./codenarc-caller");
 const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = require("./codenarc-factory");
-const { loadConfig, getConfigFileName } = require("./config.js");
+const { NPM_GROOVY_LINT_CONSTANTS, loadConfig, getConfigFileName } = require("./config.js");
 const optionsDefinition = require("./options");
 const { computeStats, processOutput } = require("./output.js");
 
@@ -134,7 +134,7 @@ class NpmGroovyLint {
             this.options = this.args;
         }
 
-        // Show version (TODO: more clean)
+        // Show version
         if (this.options.version) {
             let v = process.env.npm_package_version;
             if (!v) {
@@ -146,9 +146,15 @@ class NpmGroovyLint {
                     v = "error";
                 }
             }
-            const vLabel = "npm-groovy-lint v" + v;
-            console.info(vLabel);
-            this.outputString = vLabel;
+            const versions = [];
+            versions.push(`npm-groovy-lint version ${v}`);
+            versions.push("");
+            versions.push("Embeds:");
+            versions.push(`- CodeNarc version ${NPM_GROOVY_LINT_CONSTANTS["CodeNarcVersion"]}`);
+            versions.push(`- Groovy version ${NPM_GROOVY_LINT_CONSTANTS["GroovyVersion"]} (superlite)`);
+            const versionsOut = versions.join("\n");
+            console.info(versionsOut);
+            this.outputString = versionsOut;
             return false;
         }
 
@@ -226,10 +232,12 @@ class NpmGroovyLint {
             // Fix all found errors if requested
             if (this.options.fix || this.options.format) {
                 this.fixer = new NpmGroovyLintFix(this.lintResult, {
-                    verbose: this.options.verbose,
+                    format: this.options.format === true,
                     fixrules: this.options.fixrules,
                     source: this.options.source,
-                    save: this.tmpGroovyFileName ? false : true
+                    save: this.tmpGroovyFileName ? false : true,
+                    origin: this.origin,
+                    verbose: this.options.verbose
                 });
                 await this.fixer.run();
                 this.lintResult = this.fixer.updatedLintResult;
@@ -342,10 +350,17 @@ class NpmGroovyLint {
 
     // Merge results after second fix performed (only get updated source)
     mergeFixAgainResults(lintResToUpdate, lintResAfterNewFix) {
-        for (const afterNewFixResFileNm of Object.keys(lintResAfterNewFix.files)) {
-            // Set updatedSource in results in provided
-            if (lintResAfterNewFix.files[afterNewFixResFileNm].updatedSource) {
-                lintResToUpdate.files[afterNewFixResFileNm].updatedSource = lintResAfterNewFix.files[afterNewFixResFileNm].updatedSource;
+        if (lintResToUpdate.files && lintResToUpdate.files[0]) {
+            if (Object.keys(lintResAfterNewFix.files).length > 0) {
+                const updtSource = lintResAfterNewFix.files[Object.keys(lintResAfterNewFix.files)[0]].updatedSource;
+                lintResToUpdate.files[0] = Object.assign(lintResToUpdate.files[0], { updatedSource: updtSource });
+            }
+        } else {
+            for (const afterNewFixResFileNm of Object.keys(lintResAfterNewFix.files)) {
+                // Set updatedSource in results in provided
+                if (lintResAfterNewFix.files[afterNewFixResFileNm].updatedSource) {
+                    lintResToUpdate.files[afterNewFixResFileNm].updatedSource = lintResAfterNewFix.files[afterNewFixResFileNm].updatedSource;
+                }
             }
         }
         return lintResToUpdate;

@@ -4,7 +4,7 @@
 const fse = require("fs-extra");
 const cliProgress = require("cli-progress");
 const debug = require("debug")("npm-groovy-lint");
-const { getNpmGroovyLintRules } = require("./groovy-lint-rules.js");
+const { getNpmGroovyLintRules, getFormattingRulesToAlwaysRun } = require("./groovy-lint-rules.js");
 const { evaluateVariables, getSourceLines } = require("./utils.js");
 
 class NpmGroovyLintFix {
@@ -14,6 +14,8 @@ class NpmGroovyLintFix {
 
     updatedLintResult;
     npmGroovyLintRules;
+    origin = "unknown";
+    format = false;
     fixRules = null;
     fixableErrors = {};
     fixedErrorsNumber = 0;
@@ -32,6 +34,8 @@ class NpmGroovyLintFix {
         if (this.options.fixrules && this.options.fixrules !== "all") {
             this.fixRules = this.options.fixrules.split(",");
         }
+        this.format = optionsIn.format === true;
+        this.origin = optionsIn.origin || this.origin;
     }
 
     // Fix errors using codenarc result and groovy lint rules
@@ -97,6 +101,21 @@ class NpmGroovyLintFix {
                             this.addFixableError(fileNm, fixableErrorTriggered);
                         }
                     }
+                }
+            }
+            // Add formatting rules to always run if we are in format mode
+            if (this.format) {
+                const formattingRulesToAlwaysRun = getFormattingRulesToAlwaysRun();
+                for (const formattingRuleName of formattingRulesToAlwaysRun) {
+                    const rule = this.npmGroovyLintRules[formattingRuleName];
+                    const fixableErrorTriggered = {
+                        id: "format_triggered",
+                        ruleName: formattingRuleName,
+                        lineNb: 0,
+                        msg: `${formattingRuleName} triggered by format request`,
+                        rule: rule
+                    };
+                    this.addFixableError(fileNm, fixableErrorTriggered);
                 }
             }
 

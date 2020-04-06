@@ -1,5 +1,22 @@
 # Changelog
 
+## UNRELEASED
+
+- When formatting, always run some custom npm-groovy-lint fix rules not corresponding to CodeNarc violations
+- Return CodeNarc and Groovy versions when --version options is called
+- Fixes
+  - Lost indentation when applying some fix rules
+- Updated fix rules:
+  - IndentationClosingBraces
+  - IndentationComments
+  - SpaceAfterCatch
+  - SpaceAfterIf
+- New fix rules:
+  - ClassEndsWithBlankLine
+  - ClassStartsWithNewLine
+  - SpaceAfterFor
+  - SpaceAfterSwitch
+
 ## [3.2.4] 2020-04-03
 
 - Error message in postinstall if env Node.js is lower than the minimal required (12)
