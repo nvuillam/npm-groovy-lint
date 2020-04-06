@@ -2,7 +2,13 @@
 
 Contributions are very welcome !
 
+Instructions :
+
 - Fork the repo and clone it on your computer
+- Install jdeploy: `npm install jdeploy -g`
+- Install dependencies: `npm install`
+- Build executable bundle: `npm run build`
+- Update source code
 - Run `npm run lint` then `npm run test` to check your updates didn't break anything
 - Once your code is ready, documented and testing, please make a [pull request](https://github.com/nvuillam/npm-groovy-lint/pulls) :)
 
