@@ -27,6 +27,27 @@
               ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
               curl -s https://codecov.io/bash | bash
 
+    debian-jdk-9-node-12: 
+      docker:
+        - image: openjdk:9-jdk-stretch
+      steps:
+        - checkout
+        - run: 
+            name: Install base tools
+            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
+        - run:
+            name: Install node
+            command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
+        - run:
+            name: Install dependencies
+            command: npm ci && sudo npm install jdeploy -g
+        - run: 
+            name: Build
+            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 
+        - run:
+            name: Testing
+            command: npm run test
+
     debian-jdk-10-node-12: 
       docker:
         - image: openjdk:10-jdk-stretch
@@ -94,5 +115,9 @@
     version: 2
     "npm-groovy-lint-build-test":
       jobs:
-        - debian-jdk-8-node-12
+#        - debian-jdk-8-node-12
+        - debian-jdk-9-node-12
+        - debian-jdk-10-node-12
+#        - debian-jdk-11-node-12
+#        - debian-jdk-12-node-12
 
