@@ -97,15 +97,15 @@
     # JDK 12 Node 12
     debian-jdk-12-node-12: 
       docker:
-        - image: openjdk:12-oraclelinux7
-      steps:
+        - image: openjdk:12-oracle
+        steps:
         - checkout
         - run: 
             name: Install base tools
-            command: apt update && apt upgrade -y && apt -y install wget zip unzip sudo && apt clean && echo 'Installed wget zip unzip' 
+            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
         - run:
             name: Install node
-            command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt update && apt install -y nodejs
+            command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
             command: npm ci && sudo npm install jdeploy -g
