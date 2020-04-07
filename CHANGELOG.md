@@ -1,5 +1,9 @@
 # Changelog
 
+## UNRELEASED
+
+- Fix [issue](https://github.com/nvuillam/vscode-groovy-lint/issues/16) preventing to run CodeNarcServer on Linux and MacOs: Move classpath from command line to MANIFEST of CodeNarcServer jar
+
 ## [3.3.0] 2020-04-06
 
 - When formatting, always run some custom npm-groovy-lint fix rules not corresponding to CodeNarc violations

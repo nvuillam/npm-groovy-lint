@@ -31,7 +31,7 @@ try {
         process.exit(code);
     });
 } catch (e) {
-    console.log('jdeploy exec error: ' + e.message);
+    console.error('jdeploy exec error: ' + e.message);
     process.exit(1);
 }`
 const onCloseCode = `child.on('close', function(code) {
@@ -65,7 +65,7 @@ console.info('GroovyLint: ' + jdeployFile + ' renamed into ' + jdeployFileAfterR
 if (packageJsonConfig.jdeploy.mainClassPlanB) {
     const jdeployFileContentPlanB = jdeployFileContent
         .replace(packageJsonConfig.jdeploy.mainClass, packageJsonConfig.jdeploy.mainClassPlanB)
-        .replace('lib/CodeNarcServer.jar:', '');
+        .replace(`"lib/CodeNarcServer.jar:lib"`, `"${packageJsonConfig.jdeploy.classPathForCodeNarcAlone}"`);
     fse.writeFileSync(jdeployFileAfterRenamePlanB, jdeployFileContentPlanB);
     console.info('GroovyLint: ' + jdeployFileAfterRenamePlanB + ' created from ' + jdeployFileAfterRename +
         ' by replacing ' + packageJsonConfig.jdeploy.mainClass + ' by ' + packageJsonConfig.jdeploy.mainClassPlanB);

@@ -225,8 +225,7 @@ class CodeNarcCaller {
             clearInterval(interval);
         }
         const errMsg = "GroovyLint: Unable to start CodeNarc Server. Use --noserver if you do not even want to try";
-        debug(errMsg);
-        debug(e.message);
+        debug(`${errMsg}\n${e.message}\n${e.stack}`);
         console.log(errMsg);
     }
 

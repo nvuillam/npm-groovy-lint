@@ -83,7 +83,8 @@
     "jar": "dist/lib/CodeNarcServer.jar",
     "mainClass": "com.nvuillam.CodeNarcServer",
     "mainClassPlanB": "org.codenarc.CodeNarc",
-    "classPath": "lib/CodeNarc-1.5.jar:lib/groovy-3.0.2/lib/groovy-3.0.2.jar:lib/groovy-3.0.2/lib/groovy-templates-3.0.2.jar:lib/groovy-3.0.2/lib/groovy-xml-3.0.2.jar:lib/groovy-3.0.2/lib/groovy-json-3.0.2.jar:lib/slf4j-api-1.7.9.jar:lib/log4j-slf4j-impl-2.13.0.jar:lib/log4j-api-2.13.0.jar:lib/log4j-core-2.13.0.jar:lib/GMetrics-0.7.jar:lib",
+    "classPath": "lib",
+    "classPathForCodeNarcAlone": "lib/CodeNarc-1.5.jar:lib/groovy-3.0.2/lib/groovy-3.0.2.jar:lib/groovy-3.0.2/lib/groovy-templates-3.0.2.jar:lib/groovy-3.0.2/lib/groovy-xml-3.0.2.jar:lib/groovy-3.0.2/lib/groovy-json-3.0.2.jar:lib/slf4j-api-1.7.9.jar:lib/log4j-slf4j-impl-2.13.0.jar:lib/log4j-api-2.13.0.jar:lib/log4j-core-2.13.0.jar:lib/GMetrics-0.7.jar:lib",
     "files": [
       {
         "dir": "dist"
