@@ -1,6 +1,7 @@
 ---
   version: 3
   jobs:
+    # JDK 8 Node 12
     debian-jdk-8-node-12: 
       docker:
         - image: openjdk:8-jdk-stretch
@@ -27,6 +28,7 @@
               ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
               curl -s https://codecov.io/bash | bash
 
+    # JDK 9 Node 12
     debian-jdk-9-node-12: 
       docker:
         - image: openjdk:9
@@ -48,6 +50,7 @@
             name: Testing
             command: npm run test
 
+    # JDK 10 Node 12
     debian-jdk-10-node-12: 
       docker:
         - image: openjdk:10
@@ -69,6 +72,7 @@
             name: Testing
             command: npm run test
 
+    # JDK 11 Node 12
     debian-jdk-11-node-12: 
       docker:
         - image: openjdk:11
@@ -90,6 +94,7 @@
             name: Testing
             command: npm run test
 
+    # JDK 12 Node 12
     debian-jdk-12-node-12: 
       docker:
         - image: openjdk:12
@@ -111,13 +116,14 @@
             name: Testing
             command: npm run test
 
+# As we use free version of CircleCI, uncomment jobs only if there are some detected issues, else debian-jdk-8-node-12 is enough
   workflows:
     version: 2
     "npm-groovy-lint-build-test":
       jobs:
-#        - debian-jdk-8-node-12
-#        - debian-jdk-9-node-12
+        - debian-jdk-8-node-12
+        - debian-jdk-9-node-12
         - debian-jdk-10-node-12
-#        - debian-jdk-11-node-12
-#        - debian-jdk-12-node-12
+        - debian-jdk-11-node-12
+        - debian-jdk-12-node-12
 
