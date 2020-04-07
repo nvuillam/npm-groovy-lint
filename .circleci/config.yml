@@ -100,9 +100,6 @@
         - image: openjdk:12
       steps:
         - checkout
-        - run: 
-            name: Install base tools
-            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
         - run:
             name: Install node
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
@@ -121,9 +118,9 @@
     version: 2
     "npm-groovy-lint-build-test":
       jobs:
-        - debian-jdk-8-node-12
-        - debian-jdk-9-node-12
-        - debian-jdk-10-node-12
-        - debian-jdk-11-node-12
+#        - debian-jdk-8-node-12
+#        - debian-jdk-9-node-12
+#        - debian-jdk-10-node-12
+#        - debian-jdk-11-node-12
         - debian-jdk-12-node-12
 
