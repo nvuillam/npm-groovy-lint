@@ -150,7 +150,12 @@ module.exports = optionator({
         {
             option: "serverhost",
             type: "String",
-            default: "http://" + require("ip").address(), //Usually localhost, but not always on CIs (Circle, Jenkins ...)
+            default: require("os")
+                .platform()
+                .toLowerCase()
+                .includes("win32")
+                ? "http://" + require("ip").address() //Usually localhost, but not always on CIs (Circle, Jenkins ...)
+                : "127.0.1.1", // Can't explain why and can't find how to get this value programatically, but on Linux & Mac, only this adress responds (see server initialization in CodeeNarcServer.groovy)
             description: "If use of CodeNarc server, host where is the CodeNarc server (default: localhost)"
         },
         {
