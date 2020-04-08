@@ -74,6 +74,9 @@ class CodeNarcCaller {
                     return await this.callCodeNarcServer();
                 }
             }
+            else {
+                console.error('CodeNarcServer http call unexpected error:\n' + JSON.stringify(e, null, 2));
+            }
             this.serverStatus = "error";
             return { status: 1 };
         }
@@ -166,7 +169,7 @@ class CodeNarcCaller {
             let stop = false;
             let eJava;
             exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => {})
+                .then(() => { })
                 .catch(eRun => {
                     stop = true;
                     eJava = eRun;
