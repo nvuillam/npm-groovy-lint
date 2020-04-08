@@ -73,6 +73,8 @@ class CodeNarcCaller {
                 if (this.serverStatus === "running") {
                     return await this.callCodeNarcServer();
                 }
+            } else {
+                console.error("CodeNarcServer http call unexpected error:\n" + JSON.stringify(e, null, 2));
             }
             this.serverStatus = "error";
             return { status: 1 };

@@ -77,14 +77,10 @@ describe('Miscellaneous', function () {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        if (process.platform.includes('win')) { // Doesn't work in Linux yet :/ 
-            assert(linter.status === 0, 'Status is 0');
-            assert(linter.outputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
-            checkCodeNarcCallsCounter(1);
-        }
-        else {
-            console.log('Test (API:Server) should kill running server skipped: CodeNarcServer works only on windows for now , and we are on ' + process.platform);
-        }
+
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
+        checkCodeNarcCallsCounter(1);
     });
 
     it('(API:Server) should not succeed to kill running server', async () => {

@@ -24,10 +24,11 @@ const checkCodeNarcCallsCounter = (expectedNb) => {
 
 // Copy files in temp directory to not update the package files
 async function copyFilesInTmpDir() {
+    const osTypeLower = os.type().toLowerCase();
     const rootTmpDir =
-        (os.type().toLowerCase().includes('linux')) ?
+        (osTypeLower.includes('linux') || osTypeLower.includes('darwin')) ? // Linux or mac
             './jdeploy-bundle/tmptest' :
-            os.tmpdir();
+            os.tmpdir(); // Windows / other
     const tmpDir = rootTmpDir + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
     await fse.ensureDir(tmpDir, { mode: '0777' });
     await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
