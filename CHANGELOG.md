@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.0.1] 2020-04-11
+- New fix rules:
+  - SpaceAfterSemicolon
+  - SpaceAfterWhile
+
 ## [4.0.0]
 
 - Fix [issue](https://github.com/nvuillam/vscode-groovy-lint/issues/16) affecting performances on Linux and MacOs
