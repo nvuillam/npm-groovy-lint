@@ -6,11 +6,11 @@ const rule = {
     range: {
         type: "function",
         func: (errLine, errItem) => {
-            return getStringRange(errLine, "){", errItem);
+            return getStringRange(errLine, "catch", errItem);
         }
     },
     fix: {
-        label: "Fix space after catch",
+        label: "Add space after catch",
         type: "replaceString",
         before: "catch(",
         after: "catch ("

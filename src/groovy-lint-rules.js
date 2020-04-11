@@ -10,8 +10,17 @@
         // add isCodeNarcRule: false if the rule is not part of CodeNarc list of supported rules ( but triggered by another rule with trigger property)
         isCodeNarcRule: false, // default: true
 
+        // If the fix rule must be runned only once by file, set unitary = true
+        unitary: false,
+
+        // If the fix solves the same errors on the same line, set fixesSameErrorOnSameLine : true,
+        fixesSameErrorOnSameLine: false ,
+
         // List of other rules fix that this rule fix must trigger (if fix defined)
         triggers: ["SomeOtherRule","AnotherRule"],
+
+        // Some rules like IfStatementBraces and ElseBlockBraces require to run again the lint & fix after they are corrected (usually Indentation rule)
+        triggersAgainAfterFix: ["Indentation"],
 
         // Extract variables from CodeNarc error message (optional)
         variables: [
@@ -95,7 +104,9 @@ const rulesFixPriorityOrder = [
     "SpaceAfterCatch",
     "SpaceAroundOperator",
     "SpaceAfterComma",
+    "SpaceAfterFor",
     "SpaceAfterIf",
+    "SpaceAfterSwitch",
     "UnnecessaryDefInFieldDeclaration",
     "UnnecessarySemicolon",
     "TrailingWhitespace",
@@ -105,6 +116,8 @@ const rulesFixPriorityOrder = [
     "UnusedImport",
     "BlockStartsWithBlankLine",
     "BlockEndsWithBlankLine",
+    "ClassStartsWithBlankLine",
+    "ClassEndsWithBlankLine",
     "MisorderedStaticImports",
     "IfStatementBraces",
     "ElseBlockBraces",
@@ -114,6 +127,10 @@ const rulesFixPriorityOrder = [
     "ConsecutiveBlankLines",
     "FileEndsWithoutNewline"
 ];
+
+// CodeNarc formatting fix rules are triggered after CodeNarc returnes violations
+// Non-CodeNarc formatting fix rules (existing only in npm-groovy-lint) must be runned always
+const formatRulesToAlwaysRun = ["IndentationClosingBraces", "IndentationComments"];
 
 const RULES_FOLDER = __dirname + "/rules";
 
@@ -144,4 +161,8 @@ function getNpmGroovyLintRules(optns = { loadTests: false }) {
     return npmGroovyLintRules;
 }
 
-module.exports = { getNpmGroovyLintRules };
+function getFormattingRulesToAlwaysRun() {
+    return formatRulesToAlwaysRun;
+}
+
+module.exports = { getNpmGroovyLintRules, getFormattingRulesToAlwaysRun };

@@ -4,6 +4,8 @@ const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
 
+const { SAMPLE_FILE_SMALL_PATH } = require('./helpers/common');
+
 describe('Errors', function () {
 
     it('(API:source) should trigger a parse options error', async () => {
@@ -55,7 +57,7 @@ describe('Errors', function () {
     });
 
     it('(API:source) should trigger a fix function error', async () => {
-        const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
+        const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             fix: true,

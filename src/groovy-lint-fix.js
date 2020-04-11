@@ -4,7 +4,7 @@
 const fse = require("fs-extra");
 const cliProgress = require("cli-progress");
 const debug = require("debug")("npm-groovy-lint");
-const { getNpmGroovyLintRules } = require("./groovy-lint-rules.js");
+const { getNpmGroovyLintRules, getFormattingRulesToAlwaysRun } = require("./groovy-lint-rules.js");
 const { evaluateVariables, getSourceLines } = require("./utils.js");
 
 class NpmGroovyLintFix {
@@ -14,6 +14,8 @@ class NpmGroovyLintFix {
 
     updatedLintResult;
     npmGroovyLintRules;
+    origin = "unknown";
+    format = false;
     fixRules = null;
     fixableErrors = {};
     fixedErrorsNumber = 0;
@@ -32,6 +34,8 @@ class NpmGroovyLintFix {
         if (this.options.fixrules && this.options.fixrules !== "all") {
             this.fixRules = this.options.fixrules.split(",");
         }
+        this.format = optionsIn.format === true;
+        this.origin = optionsIn.origin || this.origin;
     }
 
     // Fix errors using codenarc result and groovy lint rules
@@ -99,6 +103,21 @@ class NpmGroovyLintFix {
                     }
                 }
             }
+            // Add formatting rules to always run if we are in format mode
+            if (this.format) {
+                const formattingRulesToAlwaysRun = getFormattingRulesToAlwaysRun();
+                for (const formattingRuleName of formattingRulesToAlwaysRun) {
+                    const rule = this.npmGroovyLintRules[formattingRuleName];
+                    const fixableErrorTriggered = {
+                        id: "format_triggered",
+                        ruleName: formattingRuleName,
+                        lineNb: 0,
+                        msg: `${formattingRuleName} triggered by format request`,
+                        rule: rule
+                    };
+                    this.addFixableError(fileNm, fixableErrorTriggered);
+                }
+            }
 
             // Sort errors putting file scope at last, and sorter file scopes by ascending priority
             this.fixableErrors[fileNm].sort((a, b) => {
@@ -146,14 +165,12 @@ class NpmGroovyLintFix {
                         continue;
                     }
                     const lineNb = fileFixableError.lineNb ? parseInt(fileFixableError.lineNb, 10) - 1 : -1;
+                    let fixSuccess = false;
                     // File scope violation
                     if (fileFixableError.rule.scope === "file") {
-                        const allLinesNew = this.tryApplyFixRule([...allLines], lineNb, fileFixableError).slice(); // copy result lines
+                        const allLinesNew = this.tryApplyFixRule([...allLines], lineNb, fileFixableError, fileNm).slice(); // copy result lines
                         if (JSON.stringify(allLinesNew) !== JSON.stringify(allLines)) {
-                            fixedInFileNb = fixedInFileNb + 1;
-                            this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
-                            this.fixedErrorsIds.push(fileFixableError.id);
-                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
+                            fixSuccess = true;
                             this.updateNextErrorsRanges(allLines, allLinesNew, fileFixableError.lineNb, fileNm);
                             allLines = allLinesNew;
                         }
@@ -161,15 +178,23 @@ class NpmGroovyLintFix {
                     // Line scope violation
                     else {
                         const line = allLines[lineNb];
-                        const fixedLine = this.tryApplyFixRule(line, lineNb, fileFixableError);
+                        const fixedLine = this.tryApplyFixRule(line, lineNb, fileFixableError, fileNm);
                         if (fixedLine !== line) {
+                            fixSuccess = true;
                             allLines[lineNb] = fixedLine;
-                            fixedInFileNb = fixedInFileNb + 1;
-                            this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
-                            this.fixedErrorsIds.push(fileFixableError.id);
-                            this.updateLintResult(fileNm, fileFixableError.id, { fixed: true });
                         }
                     }
+                    // Update lint results
+                    const fixedNb = this.updateLintResult(
+                        fileNm,
+                        fileFixableError.id,
+                        {
+                            fixed: fixSuccess === true,
+                            triggersAgainAfterFix: fileFixableError.rule.triggersAgainAfterFix
+                        },
+                        fileFixableError.rule.fixesSameErrorOnSameLine
+                    );
+                    fixedInFileNb = fixedInFileNb + fixedNb;
                 }
                 const newSources = allLines.join("\r\n");
                 this.updatedLintResult.files[fileNm].updatedSource = newSources;
@@ -182,12 +207,21 @@ class NpmGroovyLintFix {
     }
 
     // Try to apply fix rule, return original line if error
-    tryApplyFixRule(lineOrAllLines, lineNb, fixableError) {
+    tryApplyFixRule(lineOrAllLines, lineNb, fixableError, fileNm) {
         try {
             return this.applyFixRule(lineOrAllLines, lineNb, fixableError);
         } catch (e) {
             debug(e.message);
             debug(fixableError);
+            this.updateLintResult(
+                fileNm,
+                fixableError.id,
+                {
+                    fixed: false,
+                    triggersAgainAfterFix: fixableError.rule.triggersAgainAfterFix
+                },
+                fixableError.rule.fixesSameErrorOnSameLine
+            );
             return lineOrAllLines;
         }
     }
@@ -239,14 +273,31 @@ class NpmGroovyLintFix {
     }
 
     // Update lint result of an identified error
-    updateLintResult(fileNm, errId, errDataToSet) {
+    updateLintResult(fileNm, errId, errDataToSet, fixesSameErrorOnSameLine = false) {
         const errIndex = this.updatedLintResult.files[fileNm].errors.findIndex(error => error.id === errId);
         // Update error in lint result {mostly fixed: true}
         // It not in list of errors, it means it's from a triggered error
+        let error = {};
         if (errIndex > -1) {
-            const error = this.updatedLintResult.files[fileNm].errors[errIndex];
+            error = this.updatedLintResult.files[fileNm].errors[errIndex];
             Object.assign(error, errDataToSet);
+            // If same error has been fixed on the same line, mark failed fix and success as it has been corrected by a previous fix
+            if (fixesSameErrorOnSameLine && errDataToSet.fixed === false) {
+                const sameLineSameRuleFixedErrors = this.updatedLintResult.files[fileNm].errors.filter(err => {
+                    return err.line === error.line && err.rule === error.rule && err.fixed === true && err.id !== error.id;
+                });
+                if (sameLineSameRuleFixedErrors.length > 0) {
+                    error.fixed = true;
+                }
+            }
             this.updatedLintResult.files[fileNm].errors[errIndex] = error;
+        }
+        if (errDataToSet.fixed === true || error.fixed === true) {
+            this.fixedErrorsNumber = this.fixedErrorsNumber + 1;
+            this.fixedErrorsIds.push(errId);
+            return 1;
+        } else {
+            return 0;
         }
     }
 

@@ -14,7 +14,9 @@ module.exports = {
     "process": true,
     "__dirname": true,
     "describe": true,
-    "it": true
+    "it": true,
+    "globalThis": true,
+    "beforeEach": true
   },
   parser: "babel-eslint",
   parserOptions: {

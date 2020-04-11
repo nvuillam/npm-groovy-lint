@@ -7,8 +7,6 @@ package com.nvuillam
 
 // Java Http Server
 import com.sun.net.httpserver.HttpServer
-import com.sun.net.httpserver.HttpExchange
-import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.io.PrintStream
 
@@ -32,7 +30,7 @@ class CodeNarcServer {
     int PORT = 7484 
     int maxIdleTime = 3600000 // 1h
 
-    final ExecutorService ex = Executors.newSingleThreadExecutor()
+    final ExecutorService ex = Executors.newCachedThreadPool()
 
     /**
      * Main command-line entry-point. Run the CodeNarcServer application.
@@ -57,9 +55,8 @@ class CodeNarcServer {
     // Launch HttpServer to receive CodeNarc linting request via Http
     private void initialize() {
         // Create a server who accepts only calls from localhost
-        def localHost = InetAddress.localHost ;
-        InetSocketAddress sockAddr = new InetSocketAddress(InetAddress.localHost, PORT);
-        def server = HttpServer.create(sockAddr, 0)
+        InetSocketAddress socketAddr = new InetSocketAddress(PORT);
+        def server = HttpServer.create(socketAddr, 0);
 
         Timer timer = new Timer();
         TimerTask currentTimerTask ;
@@ -125,7 +122,7 @@ class CodeNarcServer {
         }
         server.setExecutor(ex);      // set up a custom executor for the server
         server.start();              // start the server
-        println "CodeNarcServer is listening on ${localHost}:${PORT}, hit Ctrl+C to exit." 
+        println "CodeNarcServer is listening on ${this.getHostString(socketAddr)}:${PORT}, hit Ctrl+C to exit." 
         currentTimerTask = timer.runAfter(this.maxIdleTime, { timerData ->
             stopServer(ex,server)
         })
@@ -163,6 +160,19 @@ class CodeNarcServer {
             server.stop(0);
             println("CodeNarcServer stopped");
             System.exit(0)
+    }
+
+    private String getHostString(InetSocketAddress socketAddress) {
+        InetAddress address = socketAddress.getAddress();
+        if (address == null) {
+        // The InetSocketAddress was specified with a string (either a numeric IP or a host name). If
+        // it is a name, all IPs for that name should be tried. If it is an IP address, only that IP
+        // address should be tried.
+        return socketAddress.getHostName();
+        }
+        // The InetSocketAddress has a specific address: we should only try that address. Therefore we
+        // return the address and ignore any host name that may be available.
+        return address.getHostAddress();
     }
 
 }
