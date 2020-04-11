@@ -7,9 +7,13 @@
 // Imports
 const fse = require('fs-extra');
 
+console.log('---- START DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----');
+
 const vsCodeGroovyLintPath = process.env.VSCODE_GROOVY_LINT_PATH || './../vscode-groovy-lint';
 
 const targetPath = `${vsCodeGroovyLintPath}/server/node_modules/npm-groovy-lint/jdeploy-bundle`;
+
+console.info(`GroovyLint: Starting copying package in vscode for testing`);
 
 // Reset target folder
 if (fse.existsSync(targetPath)) {
@@ -21,7 +25,9 @@ else {
 
 // Copy files into dist folder (copied from jdeploy_bundle)
 fse.copySync('./jdeploy-bundle', targetPath);
-console.info(`GroovyLint: Copied jdeploy-bundle files into ${targetPath}`);
+console.info(`GroovyLint: Copied ./jdeploy-bundle files into ${targetPath}`);
+
+console.log('---- END DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----\n');
 
 process.exit(0);
 

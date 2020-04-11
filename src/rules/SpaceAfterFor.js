@@ -1,16 +1,15 @@
 // Space after for
-
 const { getStringRange, addSpaceAfterChar } = require("../utils");
 
 const rule = {
     range: {
         type: "function",
         func: (errLine, errItem) => {
-            return getStringRange(errLine, ",", errItem);
+            return getStringRange(errLine, "for", errItem);
         }
     },
     fix: {
-        label: "Fix space after for",
+        label: "Add space after switch",
         type: "function",
         func: line => {
             return addSpaceAfterChar(line, "for");
@@ -19,25 +18,19 @@ const rule = {
     tests: [
         {
             sourceBefore: `
-for  (int i in 1...2) {
-    println(i);
+for(child in this.children) {
+    def foundResults = child.findResultsForPath(path)
+    if (foundResults) {
+        return foundResults
+    }
 }
 `,
             sourceAfter: `
-for (int i in 1...2) {
-    println(i);
-}
-`
-        },
-        {
-            sourceBefore: `
-for(int i in 1...2) {
-    println(i);
-}
-`,
-            sourceAfter: `
-for (int i in 1...2) {
-    println(i);
+for (child in this.children) {
+    def foundResults = child.findResultsForPath(path)
+    if (foundResults) {
+        return foundResults
+    }
 }
 `
         }

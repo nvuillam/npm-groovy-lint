@@ -29,7 +29,7 @@ module.exports = optionator({
             type: "path::String",
             default: ".",
             description: "Directory containing the files to lint (default: current directory)",
-            example: "./path/to/my/groovy/files"
+            example: ["./path/to/my/groovy/files"]
         },
         {
             option: "files",
@@ -46,13 +46,20 @@ module.exports = optionator({
             example: ["import groovyx.net.http.HTTPBuilder\n\nimport class Toto { \n }"]
         },
         {
+            option: "sourcefilepath",
+            type: "String",
+            dependsOn: ["source"],
+            description: "",
+            example: ["C:/some/folder/myScript.groovy", "/var/some/folder/myScript.groovy"]
+        },
+        {
             option: "config",
             alias: "c",
             type: "String",
             default: process.cwd(),
             description:
-                "Custom path to GroovyLint config file.\n Default: Found groovylintrc.js/json/yml/package.json config file, or default npm-groovy-lint config if not defined. \nNote: command-line arguments have priority on config file properties",
-            example: ["./config/.groovylintrc-custom.js", "./config/.groovylintrc-custom.json"]
+                "Custom path to directory containing GroovyLint config file.\n Default: Found groovylintrc.js/json/yml/package.json config file, or default npm-groovy-lint config if not defined. \nNote: command-line arguments have priority on config file properties",
+            example: ["./config", "./config/whatever"]
         },
         {
             option: "format",
@@ -70,7 +77,8 @@ module.exports = optionator({
             type: "String",
             default: "all",
             dependsOn: ["fix"],
-            description: "List of rule identifiers to fix (if not specified, all available fixes will be applied)"
+            description: "List of rule identifiers to fix (if not specified, all available fixes will be applied)",
+            example: ["SpaceBeforeClosingBrace,SpaceAfterClosingBrace,UnusedImport"]
         },
         {
             option: "ignorepattern",
@@ -127,10 +135,11 @@ module.exports = optionator({
         {
             option: "codenarcargs",
             type: "Boolean",
-            example:
-                'npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml',
             description:
-                "Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored). Doc: http://codenarc.github.io/CodeNarc/codenarc-command-line.html"
+                "Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored). Doc: http://codenarc.github.io/CodeNarc/codenarc-command-line.html",
+            example: [
+                'npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml'
+            ]
         },
         {
             option: "noserver",
@@ -141,19 +150,30 @@ module.exports = optionator({
         {
             option: "serverhost",
             type: "String",
-            default: "http://" + require("ip").address(), //Usually localhost, but not always on CIs (Circle, Jenkins ...)
+            default: "http://" + require("ip").address(),
             description: "If use of CodeNarc server, host where is the CodeNarc server (default: localhost)"
         },
         {
             option: "serverport",
             type: "String",
             default: "7484",
-            description: "If use of CodeNarc server, port of the CodeNarc server (default: 7484)"
+            description: "If use of CodeNarc server, port of the CodeNarc server (default: 7484)",
+            example: ["2702"]
         },
         {
             option: "killserver",
             type: "Boolean",
             description: "Terminate the CodeNarcServer if running"
+        },
+        {
+            option: "nolintafter",
+            type: "Boolean",
+            description: "Do not lint again after format and fix options (useful for client calling Npm Groovy Lint)"
+        },
+        {
+            option: "returnrules",
+            type: "Boolean",
+            description: "Return rule descriptions and url if this argument is set"
         },
         {
             option: "help",
@@ -170,11 +190,14 @@ module.exports = optionator({
     ],
     mutuallyExclusive: [
         ["files", "source", "codenarcargs", "help", "version"],
-        [["path", "files"], "source"],
         ["failonerror", "failonwarning", "failoninfo"],
         ["codenarcargs", ["failonerror", "failonwarning", "failoninfo", "path", "files", "source", "fix", "fixrules", "config"]],
         ["noserver", ["serverhost", "serverport", "killserver"]],
         ["fix", "format"],
+        [
+            ["fix", "format"],
+            ["failonerror", "failonwarning", "failoninfo"]
+        ],
         ["format", "config"]
     ]
 });

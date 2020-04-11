@@ -1,30 +1,45 @@
 // Space after switch
 
-const { getStringRange } = require("../utils");
+const { getStringRange, addSpaceAfterChar } = require("../utils");
 
 const rule = {
     range: {
         type: "function",
         func: (errLine, errItem) => {
-            return getStringRange(errLine, "){", errItem);
+            return getStringRange(errLine, "switch", errItem);
         }
     },
     fix: {
-        label: "Fix space after switch",
-        type: "replaceString",
-        before: "switch(",
-        after: "switch ("
+        label: "Add space after switch",
+        type: "function",
+        func: line => {
+            return addSpaceAfterChar(line, "switch");
+        }
     },
     tests: [
         {
             sourceBefore: `
-switch(a) {                                
-    case 1: println 'one'
+if (a == 0) {
+    switch(property.type) {
+        case int:
+            newPropertyValue = Integer.parseInt(propertyValue.trim())
+            break
+        case long:
+            newPropertyValue = Long.parseLong(propertyValue.trim())
+            break
+    }
 }
 `,
             sourceAfter: `
-switch (a) {                                
-    case 1: println 'one'
+if (a == 0) {
+    switch (property.type) {
+        case int:
+            newPropertyValue = Integer.parseInt(propertyValue.trim())
+            break
+        case long:
+            newPropertyValue = Long.parseLong(propertyValue.trim())
+            break
+    }
 }
 `
         }

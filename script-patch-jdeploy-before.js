@@ -48,13 +48,16 @@ console.info('GroovyLint: Copied .groovylintrc-all.json file into dist/.groovyli
 fse.copySync('.groovylintrc-format.json', 'dist/.groovylintrc-format.json');
 console.info('GroovyLint: Copied .groovylintrc-format.json file into dist/.groovylintrc-format.json');
 
+fse.copySync('check-version.js', 'dist/check-version.js');
+console.info('GroovyLint: Copied check-version.js file into dist/check-version.js');
+
 fse.copySync('src/rules', 'dist/rules');
 console.info('GroovyLint: Copied src/rules files into dist/rules');
 
 fse.copySync('lib', 'dist/lib');
 console.info('GroovyLint: Copied lib files into dist/lib');
 
-console.log('---- END PATCH JDEPLOY BEFORE ----');
+console.log('---- END PATCH JDEPLOY BEFORE ----\n');
 
 process.exit(0);
 

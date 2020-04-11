@@ -3,7 +3,7 @@ const rule = {
     scope: "file",
     isCodeNarcRule: false,
     fix: {
-        label: "Fix indentation",
+        label: "Fix indentation closing braces",
         type: "function",
         func: allLines => {
             const newFileLines = [];
@@ -24,12 +24,13 @@ const rule = {
                             level--;
                             if (level === 0) {
                                 matchingLineIndent = prevLine.search(/\S/);
+                                break;
                             }
                         }
                         j++;
                     }
                     // Set new indentation it on this comment line
-                    if (matchingLineIndent) {
+                    if (matchingLineIndent || matchingLineIndent === 0) {
                         line = (" ".repeat(matchingLineIndent) + line.trimStart()).replace(/\t/g, "");
                     }
                 }

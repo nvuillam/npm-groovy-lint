@@ -9,6 +9,7 @@ const rule = {
     scope: "file",
     unitary: true,
     triggers: ["ClosingBraceNotAlone"],
+    triggersAgainAfterFix: ["Indentation", "IndentationClosingBraces", "IndentationComments"],
     range: {
         type: "function",
         func: (errLine, errItem) => {
@@ -71,7 +72,8 @@ if (a == 1)
 if (a == 1) {
     whatever()
 }
-`
+`,
+            codeNarcCallsNumber: 2
         },
         {
             sourceBefore: `
@@ -86,7 +88,8 @@ if (new File(sfdxWorkingDir + '/.sfdx').exists() && this.promptForReloadMetadata
 }
 else
     doRetrieve = true
-`
+`,
+            codeNarcCallsNumber: 2
         },
         {
             sourceBefore: `
@@ -99,7 +102,8 @@ if (allowCreation==true) {
         orgsChoiceMap[scratchOrgSlctn].alias != '' && this.scratchOrgUserEmail == null) {
             // Select scratch org
             this.scratchOrgAlias = orgsChoiceMap[scratchOrgSlctn].alias ;
-    } else {
+    } 
+    else {
             // Create new scratch org
             if (this.scratchOrgUserEmail == null) {
                 this.scratchOrgAlias = Utils.userInputText('Please enter the name of the new scratch org (without spaces or special characters, AND WITH YOUR NAME IN IT FOR GOD SAKE :) ', 5) 
@@ -111,6 +115,7 @@ if (allowCreation==true) {
             // Define scratch org description as JSON
             if (true)
                 this.defJsonCreation()
+            doSomething()
     }
 }
 `,
@@ -123,24 +128,27 @@ if (allowCreation==true) {
     if (scratchOrgSlctn != null && scratchOrgSlctn != '' &&
         orgsChoiceMap[scratchOrgSlctn] != null && orgsChoiceMap[scratchOrgSlctn].alias != null &&
         orgsChoiceMap[scratchOrgSlctn].alias != '' && this.scratchOrgUserEmail == null) {
-            // Select scratch org
-            this.scratchOrgAlias = orgsChoiceMap[scratchOrgSlctn].alias ;
-    } else {
-            // Create new scratch org
-            if (this.scratchOrgUserEmail == null) {
-                this.scratchOrgAlias = Utils.userInputText('Please enter the name of the new scratch org (without spaces or special characters, AND WITH YOUR NAME IN IT FOR GOD SAKE :) ', 5) 
-                // Store choice if request in config file 
-                if (Utils.userPromptOkCancel('Do you want this new scratch org to be your default one ? (in '+this.ownConfigFile+')', 5)) {
-                    Utils.setPropInJsonFile(this.ownConfigFile,"scratchOrgAlias",this.scratchOrgAlias)
-                }
+        // Select scratch org
+        this.scratchOrgAlias = orgsChoiceMap[scratchOrgSlctn].alias ;
+        } 
+    else {
+        // Create new scratch org
+        if (this.scratchOrgUserEmail == null) {
+            this.scratchOrgAlias = Utils.userInputText('Please enter the name of the new scratch org (without spaces or special characters, AND WITH YOUR NAME IN IT FOR GOD SAKE :) ', 5) 
+            // Store choice if request in config file 
+            if (Utils.userPromptOkCancel('Do you want this new scratch org to be your default one ? (in '+this.ownConfigFile+')', 5)) {
+                Utils.setPropInJsonFile(this.ownConfigFile,"scratchOrgAlias",this.scratchOrgAlias)
             }
-            // Define scratch org description as JSON
-            if (true) {
-                this.defJsonCreation()
-            }
+        }
+        // Define scratch org description as JSON
+        if (true) {
+            this.defJsonCreation()
+        }
+        doSomething()
     }
 }
-`
+`,
+            codeNarcCallsNumber: 2
         }
     ]
 };

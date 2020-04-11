@@ -3,28 +3,19 @@
 const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
-const os = require("os");
 const rimraf = require("rimraf");
-
-// Copy files in temp directory to not update the package files
-async function copyFilesInTmpDir() {
-    const rootTmpDir =
-        (os.type().toLowerCase().includes('linux')) ?
-            './jdeploy-bundle/tmptest' :
-            os.tmpdir();
-    const tmpDir = rootTmpDir + '/' + ('tmpGroovyLintTest_' + Math.random()).replace('.', '');
-    await fse.ensureDir(tmpDir, { mode: '0777' });
-    await fse.copy('./jdeploy-bundle/lib/example', tmpDir);
-    console.info('GroovyLint: Copied ./jdeploy-bundle/lib/example into ' + tmpDir);
-    return tmpDir;
-}
+const { beforeEachTestCase, copyFilesInTmpDir, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG_PATH } = require('./helpers/common');
 
 describe('Lint & fix with API', function () {
+    beforeEach(beforeEachTestCase);
 
     it('(API:source) should lint then fix only a list of errors', async () => {
-        const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
+        const sampleFilePath = SAMPLE_FILE_BIG_PATH;
+        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
+            sourcefilepath: sampleFilePath,
+            nolintafter: true,
             output: 'none',
             verbose: true
         };
@@ -43,12 +34,15 @@ describe('Lint & fix with API', function () {
             linter.lintResult.files[0].updatedSource !== prevFileContent,
             'Source has been updated');
         assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
+        checkCodeNarcCallsCounter(2);
     });
 
     it('(API:source) should lint and fix (one shot)', async () => {
-        const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
+        const sampleFilePath = SAMPLE_FILE_BIG_PATH;
+        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
+            sourcefilepath: sampleFilePath,
             fix: true,
             output: 'none',
             verbose: true
@@ -64,7 +58,33 @@ describe('Lint & fix with API', function () {
             linter.lintResult.files[0].updatedSource !== prevFileContent,
             'Source has been updated');
         assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
+        checkCodeNarcCallsCounter(3);
 
+    }).timeout(200000);
+
+    it('(API:source) should lint and fix (no lintagainafterfix)', async () => {
+        const sampleFilePath = SAMPLE_FILE_BIG_PATH;
+        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
+        const npmGroovyLintConfig = {
+            source: prevFileContent,
+            sourcefilepath: sampleFilePath,
+            fix: true,
+            nolintafter: true,
+            output: 'none',
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.lintResult.summary.totalFixedNumber >= 975, 'Errors have been fixed');
+        assert(linter.lintResult.files[0].updatedSource &&
+            linter.lintResult.files[0].updatedSource !== prevFileContent,
+            'Source has been updated');
+        assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
+        checkCodeNarcCallsCounter(2);
     }).timeout(200000);
 
     it('(API:file) should lint and fix a Jenkinsfile in one shot', async function () {
@@ -75,6 +95,8 @@ describe('Lint & fix with API', function () {
             '',
             '--output', '"npm-groovy-fix-log.json"',
             '--path', '"' + tmpDir + '"',
+            '--files', '**/Jenkinsfile',
+            '--nolintafter',
             '--fix',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
@@ -89,7 +111,8 @@ describe('Lint & fix with API', function () {
 
         fse.removeSync('npm-groovy-fix-log.json');
         rimraf.sync(tmpDir);
-        return true;
+        checkCodeNarcCallsCounter(2);
+
     }).timeout(120000);
 
 
@@ -120,6 +143,7 @@ describe('Lint & fix with API', function () {
             '--path', '"' + tmpDir + '"',
             '--fix',
             '--fixrules', fixRules.join(','),
+            '--nolintafter',
             '--output', '"npm-groovy-fix-log-should-fix-only-some-errors.txt"',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
@@ -132,7 +156,8 @@ describe('Lint & fix with API', function () {
 
         fse.removeSync('npm-groovy-fix-log-should-fix-only-some-errors.txt');
         rimraf.sync(tmpDir);
-        return true;
+        checkCodeNarcCallsCounter(1);
+
     }).timeout(120000);
 
     it('(API:file) should fix groovy files', async function () {
@@ -154,7 +179,8 @@ describe('Lint & fix with API', function () {
 
         fse.removeSync('npm-groovy-fix-log-should-fix-groovy-files.txt');
         rimraf.sync(tmpDir);
-        return true;
+        checkCodeNarcCallsCounter(3);
+
     }).timeout(120000);
 
 });
