@@ -122,8 +122,8 @@
     "npm-groovy-lint-build-test":
       jobs:
         - debian-jdk-8-node-12
-#        - debian-jdk-9-node-12
-#        - debian-jdk-10-node-12
-#        - debian-jdk-11-node-12
+        - debian-jdk-9-node-12
+        - debian-jdk-10-node-12
+        - debian-jdk-11-node-12
 #        - debian-jdk-12-node-12 JDK12 image not working because of apt-get not found ... TODO: investigate
 
