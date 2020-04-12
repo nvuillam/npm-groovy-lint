@@ -119,26 +119,33 @@ Example:
 
 - BlockEndsWithBlankLine
 - BlockStartsWithBlankLine
+- ClassEndsWithBlankLine
+- ClassStartsWithBlankLine
+- ClosingBraceNotAlone
 - ConsecutiveBlankLines
+- ElseBlockBraces
 - FileEndsWithoutNewline
 - IfStatementBraces
-- Indentation (IfStatementBraces and ElsefStatementBraces must be fixed to have correct indentation)
+- Indentation
+- IndentationClosingBraces
+- IndentationComments
 - MisorderedStaticImports
 - NoTabCharacter
 - SpaceAfterCatch
 - SpaceAfterComma
+- SpaceAfterFor
 - SpaceAfterIf
 - SpaceAfterOpeningBrace
+- SpaceAfterSwitch
 - SpaceAroundOperator
 - SpaceBeforeOpeningBrace
 - TrailingWhitespace
 - UnnecessaryDefInFieldDeclaration
-- UnnecessaryGroovyImport
 - UnnecessaryGString
+- UnnecessaryGroovyImport
 - UnnecessarySemicolon
 - UnnecessaryToString
 - UnusedImport
-
 
 [Contribute](#Contribute) to add more [rules](http://codenarc.github.io/CodeNarc/codenarc-rule-index.html) fixes :)
 
@@ -168,15 +175,13 @@ Example
 
 # TROUBLESHOOTING
 
-- Embedded Groovy 3.0.2 may have issues with JDK12, please use JDK11 or a precedent version if possible
-- CodeNarc server does not seems to Work on some Linux environments (java classes are loaded at each npm-groovy-lint call so performances are slower)
-- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (Groovy 3.0.2)
+- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (Groovy 3.0.3)
 
 # CONTRIBUTE
 
 Contributions are very welcome !
 
-Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy-lint/blob/master/CONTRIBUTE.md)
+Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy-lint/blob/master/CONTRIBUTING.md)
 
 # THANKS
 
