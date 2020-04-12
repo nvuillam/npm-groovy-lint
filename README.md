@@ -181,7 +181,7 @@ Example
 
 Contributions are very welcome !
 
-Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy-lint/blob/master/CONTRIBUTE.md)
+Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy-lint/blob/master/CONTRIBUTING.md)
 
 # THANKS
 
