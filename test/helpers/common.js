@@ -10,6 +10,8 @@ const SAMPLE_FILE_BIG = 'SampleFile.groovy';
 const SAMPLE_FILE_BIG_PATH = startPath + SAMPLE_FILE_BIG;
 const SAMPLE_FILE_SMALL = 'SampleFileSmall.groovy';
 const SAMPLE_FILE_SMALL_PATH = startPath + SAMPLE_FILE_SMALL;
+const SAMPLE_FILE_PARSE_ERROR = 'WithParseError.groovy';
+const SAMPLE_FILE_PARSE_ERROR_PATH = startPath + SAMPLE_FILE_PARSE_ERROR
 
 // Reset codeNarcCallsCounter before each test
 const beforeEachTestCase = function () {
@@ -57,6 +59,8 @@ module.exports = {
     SAMPLE_FILE_SMALL,
     SAMPLE_FILE_BIG_PATH,
     SAMPLE_FILE_SMALL_PATH,
+    SAMPLE_FILE_PARSE_ERROR,
+    SAMPLE_FILE_PARSE_ERROR_PATH,
     beforeEachTestCase,
     checkCodeNarcCallsCounter,
     copyFilesInTmpDir,

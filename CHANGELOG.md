@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.2.0] 2020-04-13
+
+- New option **--parse**: Capability to parse source code and return compilation errors
+
 ## [4.1.0] 2020-04-12
 
 - Upgrade to [Groovy 3.0.3](https://dl.bintray.com/groovy/maven/apache-groovy-binary-3.0.3.zip)

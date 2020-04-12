@@ -49,8 +49,14 @@ module.exports = optionator({
             option: "sourcefilepath",
             type: "String",
             dependsOn: ["source"],
-            description: "",
+            description: "Full path of the file whose content is sent in source argument ",
             example: ["C:/some/folder/myScript.groovy", "/var/some/folder/myScript.groovy"]
+        },
+        {
+            option: "parse",
+            type: "Boolean",
+            dependsOn: ["and", "source", "sourcefilepath"],
+            description: "Try to compile the source code and return parse errors (works only with source argument)"
         },
         {
             option: "config",

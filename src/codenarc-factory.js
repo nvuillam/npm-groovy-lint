@@ -15,7 +15,7 @@ const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js
 ////////////////////////////
 
 const npmGroovyLintRules = getNpmGroovyLintRules();
-const CODENARC_TMP_FILENAME_BASE = "codeNarcTmpFile_";
+const CODENARC_TMP_FILENAME_BASE = "codeNarcTmpDir_";
 const CODENARC_WWW_BASE = "https://codenarc.github.io/CodeNarc";
 
 // Convert NPM-groovy-lint into codeNarc arguments
@@ -110,7 +110,7 @@ async function prepareCodeNarcCall(options) {
 }
 
 // Parse XML result file as js object
-async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmpGroovyFileName) {
+async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmpGroovyFileName, parseErrors) {
     const parser = new xml2js.Parser();
     const tempXmlFileContent = await parser.parseStringPromise(fse.readFileSync(tmpXmlFileName), {});
     if (!tempXmlFileContent || !tempXmlFileContent.CodeNarc || !tempXmlFileContent.CodeNarc.Package) {
@@ -128,7 +128,7 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
     result.summary.totalFoundInfoNumber = parseInt(pcgkSummary.priority3, 10);
 
     const tmpGroovyFileNameReplace =
-        tmpGroovyFileName && tmpGroovyFileName.includes(CODENARC_TMP_FILENAME_BASE) ? path.parse(tmpGroovyFileName).base : null;
+        tmpGroovyFileName && tmpGroovyFileName.includes(CODENARC_TMP_FILENAME_BASE) ? path.resolve(tmpGroovyFileName) : null;
 
     // Parse files & violations
     const files = {};
@@ -144,9 +144,44 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
             if (files[fileNm] == null) {
                 files[fileNm] = { errors: [] };
             }
+
             // Get source code from file or input parameter
             let allLines = await getSourceLines(options.source, fileNm);
 
+            // Manage parse error ( returned by CodeNarcServer, not CodeNarc)
+            if (parseErrors && parseErrors.length > 0) {
+                for (const parseError of parseErrors) {
+                    // Convert GroovyShell.parse Compilation exception error into NpmGroovyLint exception
+                    let msg =
+                        parseError.cause && parseError.cause.message
+                            ? parseError.cause.message
+                            : `Unknown parsing error: ${JSON.stringify(parseError)}`;
+                    // Remove 'unable to resolve class' error as GroovyShell.parse is called without ClassPath
+                    if (msg.startsWith("unable to resolve class ")) {
+                        continue;
+                    }
+                    // Create new error
+                    const errItemParse = {
+                        id: errId,
+                        line: parseError.cause && parseError.cause.line ? parseError.cause.line : 0,
+                        rule: "NglParseError",
+                        severity: "error",
+                        msg: msg
+                    };
+                    // Add range if provided
+                    if (parseError.cause && parseError.cause.startColumn) {
+                        errItemParse.range = {
+                            start: { line: parseError.cause.startLine, character: parseError.cause.startColumn },
+                            end: { line: parseError.cause.endLine, character: parseError.cause.endColumn }
+                        };
+                    }
+
+                    files[fileNm].errors.push(errItemParse);
+                    errId++;
+                }
+            }
+
+            // Browse CodeNarc XML file reported errors
             for (const violation of fileInfo.Violation) {
                 const errItem = {
                     id: errId,
