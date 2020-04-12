@@ -27,11 +27,12 @@ class NpmGroovyLint {
     tmpGroovyFileName;
     tmpRuleSetFileName;
 
-    // Codenarc
+    // Codenarc / CodeNarcServer
     codenarcArgs = [];
     codeNarcBaseDir;
     codeNarcStdOut;
     codeNarcStdErr;
+    parseErrors = [];
 
     // npm-groovy-lint
     serverStatus = "unknown";
@@ -175,7 +176,8 @@ class NpmGroovyLint {
             const codeNarcCaller = new CodeNarcCaller(this.codenarcArgs, this.serverStatus, this.args, this.options, {
                 jdeployFile: this.jdeployFile,
                 jdeployFilePlanB: this.jdeployFilePlanB,
-                jdeployRootPath: this.jdeployRootPath
+                jdeployRootPath: this.jdeployRootPath,
+                groovyFileName: this.tmpGroovyFileName
             });
             this.outputString = await codeNarcCaller.killCodeNarcServer();
             console.info(this.outputString);
@@ -202,7 +204,8 @@ class NpmGroovyLint {
         const codeNarcCaller = new CodeNarcCaller(this.codenarcArgs, this.serverStatus, this.args, this.options, {
             jdeployFile: this.jdeployFile,
             jdeployFilePlanB: this.jdeployFilePlanB,
-            jdeployRootPath: this.jdeployRootPath
+            jdeployRootPath: this.jdeployRootPath,
+            groovyFileName: this.tmpGroovyFileName ? this.tmpGroovyFileName : null
         });
         if (!this.options.noserver) {
             serverCallResult = await codeNarcCaller.callCodeNarcServer();
@@ -228,7 +231,13 @@ class NpmGroovyLint {
         // process npm-groovy-lint options ( output, fix, formatting ...)
         else {
             // Parse XML result as js object
-            this.lintResult = await parseCodeNarcResult(this.options, this.codeNarcBaseDir, this.tmpXmlFileName, this.tmpGroovyFileName);
+            this.lintResult = await parseCodeNarcResult(
+                this.options,
+                this.codeNarcBaseDir,
+                this.tmpXmlFileName,
+                this.tmpGroovyFileName,
+                this.parseErrors
+            );
             // Fix all found errors if requested
             if (this.options.fix || this.options.format) {
                 this.fixer = new NpmGroovyLintFix(this.lintResult, {

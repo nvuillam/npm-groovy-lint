@@ -25,6 +25,10 @@ import groovy.json.JsonOutput
 // Groovy Transform
 import groovy.transform.CompileDynamic
 
+// Groovy compilation
+import org.codehaus.groovy.control.CompilationFailedException
+import org.codehaus.groovy.control.MultipleCompilationErrorsException
+
 // CodeNarc main class
 import org.codenarc.CodeNarc
 
@@ -96,16 +100,46 @@ class CodeNarcServer {
             try {
                 def body = streamToString(http.getRequestBody())
                 println "CodeNarcServer: received ${body}"
+                def respObj = [:]
                 def jsonSlurper = new JsonSlurper()
                 def bodyObj = jsonSlurper.parseText(body)
+
+                // Try to parse if requested to get compilation errors
+                if (bodyObj.parse == true && bodyObj.file) {
+                    try {
+                        new GroovyShell().parse(new File(bodyObj.file))
+                        println 'Parse success'
+                        respObj.parseErrors = []
+                    }
+                    catch (MultipleCompilationErrorsException ep) {
+                        def excptnJsonTxt = JsonOutput.toJson(ep)
+                        def compileErrors = ep.getErrorCollector().getErrors()
+                        respObj.parseErrors = compileErrors
+                        println 'Parse error (MultipleCompilationErrorsException)\n' + excptnJsonTxt
+                    }
+                    catch (CompilationFailedException ep) {
+                        def excptnJsonTxt = JsonOutput.toJson(ep)
+                        def compileErrors = ep.getErrorCollector().getErrors()
+                        respObj.parseErrors = compileErrors
+                        println 'Parse error (CompilationFailedException)\n' + excptnJsonTxt
+                    }
+                    catch (Exception ep) {
+                        def excptnJsonTxt = JsonOutput.toJson(ep)
+                        respObj.parseErrors = compileErrors
+                        println 'Parse error (Other)\n' + excptnJsonTxt
+                     }
+                }
+
+                // Call CodeNarc
                 def codeNarcArgs = bodyObj.codeNarcArgs
                 def codenarcArgsArray = codeNarcArgs.split(' ')
                 runCodeNarc(codenarcArgsArray)
                 http.responseHeaders.add('Content-type', 'application/json')
                 http.sendResponseHeaders(200, 0)
-                def respObj = [ status: 'success',
-                                stdout: StorePrintStream.printList.join('\n'),
-                                 ]
+                respObj.status = 'success'
+                respObj.stdout =  StorePrintStream.printList.join('\n')
+
+                // Build response
                 def respJson = JsonOutput.toJson(respObj)
                 http.responseBody.withWriter { out ->
                     out << respJson

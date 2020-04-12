@@ -1,6 +1,9 @@
 {
     "extends": "recommended",
     "rules": {
+        "CatchException": {
+            "enabled": false
+        },
         "CatchThrowable": {
             "enabled": false
         },
@@ -22,7 +25,13 @@
         "ExplicitLinkedListInstantiation": {
             "enabled": false
         },
+        "JavaIoPackageAccess": {
+            "enabled": false
+        },
         "MethodParameterTypeRequired": {
+            "enabled": false
+        },
+        "MethodSize": {
             "enabled": false
         },
         "NoDef": {

@@ -3,7 +3,11 @@
 const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
-const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH } = require('./helpers/common');
+const { beforeEachTestCase,
+    checkCodeNarcCallsCounter,
+    SAMPLE_FILE_PARSE_ERROR_PATH,
+    SAMPLE_FILE_SMALL,
+    SAMPLE_FILE_SMALL_PATH } = require('./helpers/common');
 
 describe('Lint with API', () => {
     beforeEach(beforeEachTestCase);
@@ -110,11 +114,45 @@ describe('Lint with API', () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it('(API:source) should run with source only', async () => {
+    it('(API:source) should run with source only (no parsing)', async () => {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             output: 'txt',
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it('(API:source) should run with source only (parse success)', async () => {
+        const npmGroovyLintConfig = {
+            source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
+            sourcefilepath: SAMPLE_FILE_SMALL_PATH,
+            output: 'txt',
+            parse: true,
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it('(API:source) should run with source only (parse error)', async () => {
+        const npmGroovyLintConfig = {
+            source: fse.readFileSync(SAMPLE_FILE_PARSE_ERROR_PATH).toString(),
+            sourcefilepath: SAMPLE_FILE_PARSE_ERROR_PATH,
+            output: 'txt',
+            parse: true,
             verbose: true
         };
         const linter = await new NpmGroovyLint(

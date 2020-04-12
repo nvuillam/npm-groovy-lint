@@ -50,7 +50,9 @@ class CodeNarcCaller {
             method: "POST",
             uri: serverUri,
             body: {
-                codeNarcArgs: codeNarcArgsString
+                codeNarcArgs: codeNarcArgsString,
+                parse: this.options.parse ? true : false,
+                file: this.execOpts.groovyFileName ? this.execOpts.groovyFileName : null
             },
             json: true
         };
@@ -61,7 +63,7 @@ class CodeNarcCaller {
             parsedBody = await rp(rqstOptions);
             this.serverStatus = "running";
             const elapsed = parseInt(performance.now() - startCodeNarc, 10);
-            debug(`CodeNarc runned in ${elapsed} ms`);
+            debug(`CodeNarc runned in ${elapsed} ms and returned ${JSON.stringify(parsedBody)}`);
         } catch (e) {
             // If server not started , start it and try again
             if (
@@ -83,6 +85,7 @@ class CodeNarcCaller {
         // Success result
         if (parsedBody.status === "success") {
             return {
+                parseErrors: parsedBody.parseErrors,
                 codeNarcStdOut: parsedBody.stdout,
                 codeNarcStdErr: parsedBody.stderr,
                 status: 0
@@ -91,6 +94,7 @@ class CodeNarcCaller {
         // Codenarc error
         else {
             return {
+                parseErrors: parsedBody.parseErrors,
                 codeNarcStdOut: parsedBody.stdout,
                 codeNarcStdErr: parsedBody.stderr || parsedBody.errorDtl,
                 status: 1

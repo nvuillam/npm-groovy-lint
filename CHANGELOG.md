@@ -1,8 +1,10 @@
 # Changelog
 
-## [4.1.1] 2020-04-12
-- New fix rules:
-  - SpaceAfterSemicolon
+## [4.2.0] 2020-04-13
+
+- New option **--parse**: Capability to parse source code and return compilation errors
+- New fix rules (thanks [CatSue](https://github.com/CatSue) !):
+  - SpaceAfterSemicolon 
   - SpaceAfterWhile
 
 ## [4.1.0] 2020-04-12
