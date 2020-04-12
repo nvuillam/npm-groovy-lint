@@ -136,7 +136,9 @@ Example:
 - SpaceAfterFor
 - SpaceAfterIf
 - SpaceAfterOpeningBrace
+- SpaceAfterSemicolon
 - SpaceAfterSwitch
+- SpaceAfterWhile
 - SpaceAroundOperator
 - SpaceBeforeOpeningBrace
 - TrailingWhitespace
