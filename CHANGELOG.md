@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.1.1] 2020-04-12
+- New fix rules:
+  - SpaceAfterSemicolon
+  - SpaceAfterWhile
+
 ## [4.1.0] 2020-04-12
 
 - Upgrade to [Groovy 3.0.3](https://dl.bintray.com/groovy/maven/apache-groovy-binary-3.0.3.zip)
