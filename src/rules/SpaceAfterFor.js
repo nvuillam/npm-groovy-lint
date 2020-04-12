@@ -9,7 +9,7 @@ const rule = {
         }
     },
     fix: {
-        label: "Add space after switch",
+        label: "Add space after for",
         type: "function",
         func: line => {
             return addSpaceAfterChar(line, "for");
