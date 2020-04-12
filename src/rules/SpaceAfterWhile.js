@@ -21,7 +21,6 @@ const rule = {
 while(true) { }  
 `,
             sourceAfter: `
-
  while (true) { } 
 `
         }
