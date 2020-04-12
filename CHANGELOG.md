@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.0]
+
+- Upgrade to [Groovy 3.0.3](https://dl.bintray.com/groovy/maven/apache-groovy-binary-3.0.3.zip)
+- Automatic generation of fixable rules list for README
+- Refactor CodeNarcServer.groovy
+
 ## [4.0.0]
 
 - Fix [issue](https://github.com/nvuillam/vscode-groovy-lint/issues/16) affecting performances on Linux and MacOs

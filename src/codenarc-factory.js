@@ -29,12 +29,12 @@ async function prepareCodeNarcCall(options) {
     // If source option, create a temporary Groovy file
     if (options.source) {
         cnPath = path.resolve(os.tmpdir() + "/npm-groovy-lint");
-        await fse.ensureDir(cnPath, { mode: '0777' });
+        await fse.ensureDir(cnPath, { mode: "0777" });
         // File path is sent (recommended): use it to create temp file name
         if (options.sourcefilepath) {
             const pathParse = path.parse(options.sourcefilepath);
             cnPath = cnPath + "/codeNarcTmpDir_" + Math.random();
-            await fse.ensureDir(cnPath, { mode: '0777' });
+            await fse.ensureDir(cnPath, { mode: "0777" });
             result.tmpGroovyFileName = path.resolve(cnPath + "/" + pathParse.base);
             cnFiles = "**/" + pathParse.base;
         }
@@ -80,7 +80,7 @@ async function prepareCodeNarcCall(options) {
     result.output = options.output.replace(/^"(.*)"$/, "$1");
     if (["txt", "json", "none"].includes(result.output) || result.output.endsWith(".txt") || result.output.endsWith(".json")) {
         result.outputType = result.output.endsWith(".txt") ? "txt" : result.output.endsWith(".json") ? "json" : result.output;
-        await fse.ensureDir(os.tmpdir() + "/npm-groovy-lint", { mode: '0777' });
+        await fse.ensureDir(os.tmpdir() + "/npm-groovy-lint", { mode: "0777" });
         result.tmpXmlFileName = path.resolve(os.tmpdir() + "/npm-groovy-lint/codeNarcReportXml_" + Math.random() + ".xml");
         result.codenarcArgs.push('-report=xml:"' + result.tmpXmlFileName + '"');
     } else if (["html", "xml"].includes(result.output.split(".").pop())) {
@@ -90,11 +90,11 @@ async function prepareCodeNarcCall(options) {
             .endsWith("html")
             ? "html"
             : result.output
-                .split(".")
-                .pop()
-                .endsWith("xml")
-                ? "xml"
-                : "";
+                  .split(".")
+                  .pop()
+                  .endsWith("xml")
+            ? "xml"
+            : "";
         const ext = result.output.split(".").pop();
         result.codenarcArgs.push('-report="' + ext + ":" + result.output + '"');
 
@@ -156,10 +156,10 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
                         violation["$"].priority === "1"
                             ? "error"
                             : violation["$"].priority === "2"
-                                ? "warning"
-                                : violation["$"].priority === "3"
-                                    ? "info"
-                                    : "unknown",
+                            ? "warning"
+                            : violation["$"].priority === "3"
+                            ? "info"
+                            : "unknown",
                     msg: violation.Message ? violation.Message[0] : ""
                 };
                 errItem.msg = tmpGroovyFileNameReplace ? errItem.msg.replace(tmpGroovyFileNameReplace, "") : errItem.msg;
@@ -263,7 +263,7 @@ async function manageCreateRuleSetFile(options) {
         }
         ruleSetSource += `\n}\n`;
         // Write file
-        await fse.ensureDir(path.resolve(os.tmpdir() + "/npm-groovy-lint"), { mode: '0777' });
+        await fse.ensureDir(path.resolve(os.tmpdir() + "/npm-groovy-lint"), { mode: "0777" });
         const tmpRuleSetFileName = path.resolve(os.tmpdir() + "/npm-groovy-lint/codeNarcTmpRs_" + Math.random() + ".groovy");
         await fse.writeFile(tmpRuleSetFileName, ruleSetSource);
         debug(`CREATE RULESET tmp file ${tmpRuleSetFileName} generated from input options, as CodeNarc requires physical files`);
