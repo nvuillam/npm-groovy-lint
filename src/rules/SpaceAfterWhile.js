@@ -18,10 +18,18 @@ const rule = {
     tests: [
         {
             sourceBefore: `
-while(true) { }  
+int count = 0;
+while(count<5) {
+    println(count);
+    count++;
+}
 `,
             sourceAfter: `
- while (true) { } 
+int count = 0;
+while (count<5) {
+    println(count);
+    count++;
+}
 `
         }
     ]
