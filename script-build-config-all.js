@@ -1,9 +1,11 @@
 
-// Build Json for VsCode package.json Contribution section
+// Build Json containing all CodeNarc rules
 "use strict";
 
 // Imports
 const fse = require('fs-extra');
+const { getNpmGroovyLintRules } = require("./src/groovy-lint-rules.js");
+
 const ruleSetAll = fse.readFileSync('lib/example/RuleSet-All.groovy', 'utf8');
 
 const allLines = ruleSetAll.replace(/\r?\n/g, "\r\n").split("\r\n");
@@ -40,3 +42,14 @@ const fullConfigIndented = JSON.stringify({ "rules": allRulesConfig }, null, 4);
 fse.writeFileSync('.groovylintrc-all.json', fullConfigIndented);
 
 console.log('Generated .groovylintrc-all.json fullConfig');
+
+const npmDefinedRules = getNpmGroovyLintRules();
+const fixableRules = [];
+for (const rule of Object.keys(npmDefinedRules)) {
+    if (npmDefinedRules[rule].fix) {
+        fixableRules.push('- ' + rule);
+    }
+}
+fixableRules.sort();
+const mdLog = fixableRules.join('\n');
+console.log('Fixable rules :\n' + mdLog);
