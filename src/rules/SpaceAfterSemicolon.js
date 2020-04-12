@@ -1,4 +1,4 @@
-// Space after if
+// Add space after a semicolon
 
 const { getStringRange, addSpaceAfterChar } = require("../utils");
 
@@ -6,39 +6,23 @@ const rule = {
     range: {
         type: "function",
         func: (errLine, errItem) => {
-            return getStringRange(errLine, "if", errItem);
+            return getStringRange(errLine, ";", errItem);
         }
     },
     fix: {
-        label: "Add space after if",
+        label: "Add space after semicolon",
         type: "function",
         func: line => {
-            return addSpaceAfterChar(line, "if");
+            return addSpaceAfterChar(line, ";");
         }
     },
     tests: [
         {
             sourceBefore: `
-if  (true) {
-    def a = 1
-}
+for (int i=0;i * 10;i++) { }
 `,
             sourceAfter: `
-if (true) {
-    def a = 1
-}
-`
-        },
-        {
-            sourceBefore: `
-if(true) {
-    def a = 1
-}
-`,
-            sourceAfter: `
-if (true) {
-    def a = 1
-}
+for (int i=0; i * 10; i++) { }
 `
         }
     ]
