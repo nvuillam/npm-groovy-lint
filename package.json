@@ -9,7 +9,7 @@
     "prebuild": "node script-build-config-all.js && node script-patch-jdeploy-before.js",
     "build": "jdeploy install",
     "postbuild": "node script-patch-jdeploy-after.js",
-    "groovy:run-server-from-source": "groovy -cp \"lib/CodeNarc-1.5.jar;lib/groovy-3.0.2/lib/groovy-3.0.2.jar;lib/groovy-3.0.2/lib/groovy-templates-3.0.2.jar;lib/groovy-3.0.2/lib/groovy-xml-3.0.2.jar;lib/groovy-3.0.2/lib/groovy-json-3.0.2.jar;lib/slf4j-api-1.7.9.jar;lib/log4j-slf4j-impl-2.13.0.jar;lib/log4j-api-2.13.0.jar;lib/log4j-core-2.13.0.jar;lib/GMetrics-0.7.jar\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
+    "groovy:run-server-from-source": "groovy -cp \"lib/CodeNarc-1.5.jar;lib/groovy/lib/groovy-3.0.3.jar;lib/groovy/lib/groovy-templates-3.0.3.jar;lib/groovy/lib/groovy-xml-3.0.3.jar;lib/groovy/lib/groovy-json-3.0.3.jar;lib/slf4j-api-1.7.9.jar;lib/log4j-slf4j-impl-2.13.0.jar;lib/log4j-api-2.13.0.jar;lib/log4j-core-2.13.0.jar;lib/GMetrics-0.7.jar\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
     "groovy:build": "groovyc -cp \"./lib/*\" --encoding utf-8 ./groovy/src/main/com/nvuillam/CodeNarcServer.groovy -d lib && cd lib && jar -cvfm ./CodeNarcServer.jar ./../MANIFEST.txt ./com/nvuillam/*.class",
     "test": "mocha \"test/**/*.test.js\"",
     "test:coverage": "nyc npm run test",
@@ -84,7 +84,7 @@
     "mainClass": "com.nvuillam.CodeNarcServer",
     "mainClassPlanB": "org.codenarc.CodeNarc",
     "classPath": "lib",
-    "classPathForCodeNarcAlone": "lib/CodeNarc-1.5.jar:lib/groovy-3.0.2/lib/groovy-3.0.2.jar:lib/groovy-3.0.2/lib/groovy-templates-3.0.2.jar:lib/groovy-3.0.2/lib/groovy-xml-3.0.2.jar:lib/groovy-3.0.2/lib/groovy-json-3.0.2.jar:lib/slf4j-api-1.7.9.jar:lib/log4j-slf4j-impl-2.13.0.jar:lib/log4j-api-2.13.0.jar:lib/log4j-core-2.13.0.jar:lib/GMetrics-0.7.jar:lib",
+    "classPathForCodeNarcAlone": "lib/CodeNarc-1.5.jar:lib/groovy/lib/groovy-3.0.3.jar:lib/groovy/lib/groovy-templates-3.0.3.jar:lib/groovy/lib/groovy-xml-3.0.3.jar:lib/groovy/lib/groovy-json-3.0.3.jar:lib/slf4j-api-1.7.9.jar:lib/log4j-slf4j-impl-2.13.0.jar:lib/log4j-api-2.13.0.jar:lib/log4j-core-2.13.0.jar:lib/GMetrics-0.7.jar:lib",
     "files": [
       {
         "dir": "dist"
