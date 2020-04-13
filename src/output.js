@@ -64,7 +64,7 @@ function computeStats(lintResult) {
         counterResultsSummary.totalFixedInfoNumber = counterResultsSummary.totalFixedInfoNumber + fileFixedInfoNumber;
         counterResultsSummary.totalRemainingInfoNumber = counterResultsSummary.totalRemainingInfoNumber + fileRemainingInfoNumber;
 
-        // Total undepending of severity
+        // Total ignoring severity
         counterResultsSummary.totalFoundNumber =
             counterResultsSummary.totalFoundNumber + fileFoundErrorsNumber + fileFoundWarningNumber + fileFoundInfoNumber;
         counterResultsSummary.totalFixedNumber =
@@ -83,7 +83,7 @@ async function processOutput(outputType, output, lintResult, options, fixer = nu
     let outputString = "";
     // Display as console log
     if (outputType === "txt") {
-        // Disable colors if outputt results in text file or no output result
+        // Disable colors if output results in text file or no output result
         if (output.includes(".txt") || output === "none") {
             // Disable ansi colors if output in txt file
             c.enabled = false;

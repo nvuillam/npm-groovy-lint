@@ -10,7 +10,7 @@
         // add isCodeNarcRule: false if the rule is not part of CodeNarc list of supported rules ( but triggered by another rule with trigger property)
         isCodeNarcRule: false, // default: true
 
-        // If the fix rule must be runned only once by file, set unitary = true
+        // If the fix rule must be run only once by file, set unitary = true
         unitary: false,
 
         // If the fix solves the same errors on the same line, set fixesSameErrorOnSameLine : true,
@@ -92,7 +92,7 @@ str = "lelamanul"
 const fse = require("fs-extra");
 
 // If you add a new global rule with a fix function, it's very important to think about their order.
-// Rules modifiyng the number of lines must arrive last !
+// Rules modifying the number of lines must arrive last !
 const rulesFixPriorityOrder = [
     // Line rules or not changing line rules
     "NoTabCharacter",
@@ -131,8 +131,8 @@ const rulesFixPriorityOrder = [
     "FileEndsWithoutNewline"
 ];
 
-// CodeNarc formatting fix rules are triggered after CodeNarc returnes violations
-// Non-CodeNarc formatting fix rules (existing only in npm-groovy-lint) must be runned always
+// CodeNarc formatting fix rules are triggered after CodeNarc returns violations
+// Non-CodeNarc formatting fix rules (existing only in npm-groovy-lint) must be run always
 const formatRulesToAlwaysRun = ["IndentationClosingBraces", "IndentationComments"];
 
 const RULES_FOLDER = __dirname + "/rules";

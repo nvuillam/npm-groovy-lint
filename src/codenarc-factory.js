@@ -90,11 +90,11 @@ async function prepareCodeNarcCall(options) {
             .endsWith("html")
             ? "html"
             : result.output
-                  .split(".")
-                  .pop()
-                  .endsWith("xml")
-            ? "xml"
-            : "";
+                .split(".")
+                .pop()
+                .endsWith("xml")
+                ? "xml"
+                : "";
         const ext = result.output.split(".").pop();
         result.codenarcArgs.push('-report="' + ext + ":" + result.output + '"');
 
@@ -120,12 +120,12 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
     const result = { summary: {} };
 
     // Parse main result
-    const pcgkSummary = tempXmlFileContent.CodeNarc.PackageSummary[0]["$"];
-    result.summary.totalFilesWithErrorsNumber = parseInt(pcgkSummary.filesWithViolations, 10);
-    result.summary.totalFilesLinted = parseInt(pcgkSummary.totalFiles, 10);
-    result.summary.totalFoundErrorNumber = parseInt(pcgkSummary.priority1, 10);
-    result.summary.totalFoundWarningNumber = parseInt(pcgkSummary.priority2, 10);
-    result.summary.totalFoundInfoNumber = parseInt(pcgkSummary.priority3, 10);
+    const pckgSummary = tempXmlFileContent.CodeNarc.PackageSummary[0]["$"];
+    result.summary.totalFilesWithErrorsNumber = parseInt(pckgSummary.filesWithViolations, 10);
+    result.summary.totalFilesLinted = parseInt(pckgSummary.totalFiles, 10);
+    result.summary.totalFoundErrorNumber = parseInt(pckgSummary.priority1, 10);
+    result.summary.totalFoundWarningNumber = parseInt(pckgSummary.priority2, 10);
+    result.summary.totalFoundInfoNumber = parseInt(pckgSummary.priority3, 10);
 
     const tmpGroovyFileNameReplace =
         tmpGroovyFileName && tmpGroovyFileName.includes(CODENARC_TMP_FILENAME_BASE) ? path.resolve(tmpGroovyFileName) : null;
@@ -191,10 +191,10 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
                         violation["$"].priority === "1"
                             ? "error"
                             : violation["$"].priority === "2"
-                            ? "warning"
-                            : violation["$"].priority === "3"
-                            ? "info"
-                            : "unknown",
+                                ? "warning"
+                                : violation["$"].priority === "3"
+                                    ? "info"
+                                    : "unknown",
                     msg: violation.Message ? violation.Message[0] : ""
                 };
                 errItem.msg = tmpGroovyFileNameReplace ? errItem.msg.replace(tmpGroovyFileNameReplace, "") : errItem.msg;
@@ -315,7 +315,7 @@ function buildCodeNarcRule(ruleName, ruleFromConfig) {
     if (codeNarcPriorityCode) {
         codeNarcRule.priority = codeNarcPriorityCode;
     }
-    // Asssign extra rule parameters if defined
+    // Assign extra rule parameters if defined
     if (ruleFromConfig && typeof ruleFromConfig === "object") {
         delete ruleFromConfig.severity;
         return Object.assign(codeNarcRule, ruleFromConfig);

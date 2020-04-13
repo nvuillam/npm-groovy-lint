@@ -125,14 +125,14 @@
 
 ## [3.0.0] 2020-03-15
 
-- Local microservice "CodeNarcServer" called via Http by npm-groovy-lint, to avoid loading all groovy/java classes at each lint request. This microservice autokills itself after one hour idle.
+- Local microservice "CodeNarcServer" called via Http by npm-groovy-lint, to avoid loading all groovy/java classes at each lint request. This microservice auto-kills itself after one hour idle.
 - Capability to define RuleSets in argument or js/json/yml config file formats instead of groovy/xml RuleSet format
 - Test classes for rules fix (before / after fix defined in rule definitions)
 - Add debug logs (use it by setting DEBUG env variable , ex: `DEBUG=npm-groovy-lint npm-groovy-lint args...`)
 - Update lines and ranges of other errors after a fix updated the number of lines
 - Generate automatically .groovylintrc-all.js during build 
 - Split rules definition into files instead of all in a huge single file
-- Reorganise groovy-lint.js code, using codenarc-factory.js and codenarc-caller.js
+- Reorganize groovy-lint.js code, using codenarc-factory.js and codenarc-caller.js
 - New lib utils.js that can be used by rules definition
 - Fix: Crash when there was no error found in a file
 - Fix: Remove Promise error display in log after launching CodeNarcServer
@@ -145,7 +145,7 @@
 - New option "source", allowing to call NpmGroovyLint with the groovy code as a string , not only path & files pattern
 - Run lint again after fix all errors, to get updated lintResult
 - Add gitattributes to normalized line-endings (thanks [docwhat](https://github.com/docwhat))
-- API: fix only some errors after an initial lint (better perfs)
+- API: fix only some errors after an initial lint (better performances)
 - Return error range in files for some rules in JSON or API result (will be useful for the VsCode extension currently developed)
 - Define range function for existing rules, new fixable rules
 
@@ -153,9 +153,9 @@
 
 - Capability to fix errors
     - ConsecutiveBlankLines
-    - Indentation (IfStatementBraces and ElsefStatementBraces must be manually fixed to have correct indentation)
-    - IndentationComments (custom npm-groovy-rule triggered by Identation rule)
-    - IdentationClosingBrace (custom npm-groovy-rule triggered by Identation rule)
+    - Indentation (IfStatementBraces and ElseIfStatementBraces must be manually fixed to have correct indentation)
+    - IndentationComments (custom npm-groovy-rule triggered by Indentation rule)
+    - IndentationClosingBrace (custom npm-groovy-rule triggered by Indentation rule)
     - NoTabCharacter
     - SpaceAfterCatch
     - SpaceAfterOpeningBrace
@@ -168,10 +168,10 @@
     - UnnecessarySemicolon
     - TrailingWhitespace
 - Log formatting with severity colors and summary table
-- Defaut recommended RuleSets for Groovy and Jenkins
+- Default recommended RuleSets for Groovy and Jenkins
 - Progress bar in console
 - More code coverage with test campaigns
-- New Capability to call NpmGrooyLint from another package (VsCode extension development in progress ^^)
+- New Capability to call NpmGroovyLint from another package (VsCode extension development in progress ^^)
 - Refactored command line arguments ( simpler, but different from CodeNarc ones : retro-compatibility with CodeNarc arguments assured if you add --codenarcargs)
 - Upgrade to CodeNarc v1.5
 - Upgrade to Groovy v3.0.1
