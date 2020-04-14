@@ -39,7 +39,7 @@ function collectDisabledBlocks(allLines) {
 // Check if an error returned by CodeNarc should be filtered by npm-groovy-lint according to comments instructions
 function isFilteredError(errItem, allLines, disabledBlocks) {
     const linePos = errItem.line - 1;
-    const line = allLines[linePos];
+    const line = allLines[linePos] || '';
     const ruleName = errItem.rule;
 
     // matches groovylint-disable blocks
@@ -55,7 +55,7 @@ function isFilteredError(errItem, allLines, disabledBlocks) {
         return true;
     }
     // groovylint-disable-next-line in previous line
-    const lineConfigNextLine = parseGroovyLintComment("groovylint-disable-next-line", allLines[linePos - 1]);
+    const lineConfigNextLine = parseGroovyLintComment("groovylint-disable-next-line", allLines[linePos - 1] || '');
     if (checkMatch(lineConfigNextLine, ruleName)) {
         return true;
     }
