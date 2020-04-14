@@ -7,6 +7,7 @@ const os = require("os");
 const path = require("path");
 const xml2js = require("xml2js");
 const { getConfigFileName } = require("./config.js");
+const { collectDisabledBlocks, isFilteredError } = require("./filter.js");
 const { getNpmGroovyLintRules } = require("./groovy-lint-rules.js");
 const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js");
 
@@ -90,11 +91,11 @@ async function prepareCodeNarcCall(options) {
             .endsWith("html")
             ? "html"
             : result.output
-                .split(".")
-                .pop()
-                .endsWith("xml")
-                ? "xml"
-                : "";
+                  .split(".")
+                  .pop()
+                  .endsWith("xml")
+            ? "xml"
+            : "";
         const ext = result.output.split(".").pop();
         result.codenarcArgs.push('-report="' + ext + ":" + result.output + '"');
 
@@ -148,6 +149,9 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
             // Get source code from file or input parameter
             let allLines = await getSourceLines(options.source, fileNm);
 
+            // Get groovylint disabled blocks and rules in source comments
+            const disabledBlocks = collectDisabledBlocks(allLines);
+
             // Manage parse error ( returned by CodeNarcServer, not CodeNarc)
             if (parseErrors && parseErrors.length > 0) {
                 for (const parseError of parseErrors) {
@@ -191,13 +195,19 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
                         violation["$"].priority === "1"
                             ? "error"
                             : violation["$"].priority === "2"
-                                ? "warning"
-                                : violation["$"].priority === "3"
-                                    ? "info"
-                                    : "unknown",
+                            ? "warning"
+                            : violation["$"].priority === "3"
+                            ? "info"
+                            : "unknown",
                     msg: violation.Message ? violation.Message[0] : ""
                 };
                 errItem.msg = tmpGroovyFileNameReplace ? errItem.msg.replace(tmpGroovyFileNameReplace, "") : errItem.msg;
+
+                // Check if error must be filtered because of comments
+                if (isFilteredError(errItem, allLines, disabledBlocks)) {
+                    continue;
+                }
+
                 // Find range & add error only if severity is matching logLevel
                 if (
                     errItem.severity === "error" ||

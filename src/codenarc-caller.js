@@ -172,7 +172,7 @@ class CodeNarcCaller {
             let stop = false;
             let eJava;
             exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => { })
+                .then(() => {})
                 .catch(eRun => {
                     stop = true;
                     eJava = eRun;

@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.3.0] 2020-04-14
+
+- Allow to disable rules using comments in source in [eslint style](https://eslint.org/docs/user-guide/configuring#disabling-rules-with-inline-comments)
+
 ## [4.2.0] 2020-04-13
 
 - New option **--parse**: Capability to parse source code and return compilation errors

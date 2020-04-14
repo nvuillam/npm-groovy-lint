@@ -23,6 +23,7 @@ const filesToCopy =
         "codenarc-caller.js",
         "codenarc-factory.js",
         "config.js",
+        "filter.js",
         "groovy-lint.js",
         "groovy-lint-fix.js",
         "groovy-lint-rules.js",
