@@ -204,7 +204,7 @@ async function readFile(filePath) {
     return fileContent.replace(/^\ufeff/u, "");
 }
 
-// Remove rule category of rule name if defined. Ex: "basic.ConstantAssertExpression" beccomes "ConstantAssertExpression"
+// Remove rule category of rule name if defined. Ex: "basic.ConstantAssertExpression" becomes "ConstantAssertExpression"
 async function shortenRuleNames(rules) {
     const shortenedRules = {};
     for (const ruleName of Object.keys(rules)) {

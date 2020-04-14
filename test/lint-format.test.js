@@ -67,7 +67,7 @@ describe('Format with API', function () {
     }).timeout(100000);
 
     for (const [key, val] of getSamplesMap()) {
-        it('(API:source) custom check ' + key, async () => {
+        it('(API:source) ' + key, async () => {
             await checkRule(key, val);
         }).timeout(30000);
     }

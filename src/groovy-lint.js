@@ -318,7 +318,7 @@ class NpmGroovyLint {
         if (this.options.source) {
             fixAgainOptions.source = this.lintResult.files[0].updatedSource;
         }
-        // Lint & fix again only the requested rules for better perfs
+        // Lint & fix again only the requested rules for better performances
         delete fixAgainOptions.format;
         delete fixAgainOptions.rules;
         fixAgainOptions.rulesets = fixRules.join(",");
@@ -326,7 +326,7 @@ class NpmGroovyLint {
         fixAgainOptions.fixrules = fixRules.join(",");
         fixAgainOptions.output = "none";
         // Process lint & fix
-        debug(`Fix triggered rule necessing another lint & fix, do it again with options ${JSON.stringify(fixAgainOptions)}`);
+        debug(`Fix triggered rule requiring another lint & fix, do it again with options ${JSON.stringify(fixAgainOptions)}`);
         const newLinter = new NpmGroovyLint(fixAgainOptions, {
             jdeployFile: this.jdeployFile,
             jdeployRootPath: this.jdeployRootPath,

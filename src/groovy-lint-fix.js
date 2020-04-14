@@ -241,7 +241,7 @@ class NpmGroovyLintFix {
             // Replace {{VARNAME}} by real variables
             const strBefore = this.setVariablesValues(fix.before, evaluatedVars);
             const strAfter = this.setVariablesValues(fix.after, evaluatedVars);
-            // Process replacement with evualuated expressions (except if issue in evaluated expression)
+            // Process replacement with evaluated expressions (except if issue in evaluated expression)
             if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
                 newLine = newLine.replace(strBefore, strAfter);
             } else {

@@ -63,7 +63,7 @@ class CodeNarcCaller {
             parsedBody = await rp(rqstOptions);
             this.serverStatus = "running";
             const elapsed = parseInt(performance.now() - startCodeNarc, 10);
-            debug(`CodeNarc runned in ${elapsed} ms and returned ${JSON.stringify(parsedBody)}`);
+            debug(`CodeNarc run in ${elapsed} ms and returned ${JSON.stringify(parsedBody)}`);
         } catch (e) {
             // If server not started , start it and try again
             if (
@@ -236,7 +236,7 @@ class CodeNarcCaller {
         console.log(errMsg);
     }
 
-    // Kill CodeNarc server by tellim it to do so
+    // Kill CodeNarc server by telling it to do so
     async killCodeNarcServer() {
         const serverUri = this.getCodeNarcServerUri() + "/kill";
         let outputString = "";

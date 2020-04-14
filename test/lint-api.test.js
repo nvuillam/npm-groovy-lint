@@ -180,5 +180,4 @@ describe('Lint with API', () => {
         assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
         checkCodeNarcCallsCounter(1);
     });
-
 });

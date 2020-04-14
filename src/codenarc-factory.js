@@ -7,6 +7,7 @@ const os = require("os");
 const path = require("path");
 const xml2js = require("xml2js");
 const { getConfigFileName } = require("./config.js");
+const { collectDisabledBlocks, isFilteredError } = require("./filter.js");
 const { getNpmGroovyLintRules } = require("./groovy-lint-rules.js");
 const { evaluateRange, evaluateVariables, getSourceLines } = require("./utils.js");
 
@@ -120,12 +121,12 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
     const result = { summary: {} };
 
     // Parse main result
-    const pcgkSummary = tempXmlFileContent.CodeNarc.PackageSummary[0]["$"];
-    result.summary.totalFilesWithErrorsNumber = parseInt(pcgkSummary.filesWithViolations, 10);
-    result.summary.totalFilesLinted = parseInt(pcgkSummary.totalFiles, 10);
-    result.summary.totalFoundErrorNumber = parseInt(pcgkSummary.priority1, 10);
-    result.summary.totalFoundWarningNumber = parseInt(pcgkSummary.priority2, 10);
-    result.summary.totalFoundInfoNumber = parseInt(pcgkSummary.priority3, 10);
+    const pckgSummary = tempXmlFileContent.CodeNarc.PackageSummary[0]["$"];
+    result.summary.totalFilesWithErrorsNumber = parseInt(pckgSummary.filesWithViolations, 10);
+    result.summary.totalFilesLinted = parseInt(pckgSummary.totalFiles, 10);
+    result.summary.totalFoundErrorNumber = parseInt(pckgSummary.priority1, 10);
+    result.summary.totalFoundWarningNumber = parseInt(pckgSummary.priority2, 10);
+    result.summary.totalFoundInfoNumber = parseInt(pckgSummary.priority3, 10);
 
     const tmpGroovyFileNameReplace =
         tmpGroovyFileName && tmpGroovyFileName.includes(CODENARC_TMP_FILENAME_BASE) ? path.resolve(tmpGroovyFileName) : null;
@@ -147,6 +148,9 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
 
             // Get source code from file or input parameter
             let allLines = await getSourceLines(options.source, fileNm);
+
+            // Get groovylint disabled blocks and rules in source comments
+            const disabledBlocks = collectDisabledBlocks(allLines);
 
             // Manage parse error ( returned by CodeNarcServer, not CodeNarc)
             if (parseErrors && parseErrors.length > 0) {
@@ -198,6 +202,12 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
                     msg: violation.Message ? violation.Message[0] : ""
                 };
                 errItem.msg = tmpGroovyFileNameReplace ? errItem.msg.replace(tmpGroovyFileNameReplace, "") : errItem.msg;
+
+                // Check if error must be filtered because of comments
+                if (isFilteredError(errItem, allLines, disabledBlocks)) {
+                    continue;
+                }
+
                 // Find range & add error only if severity is matching logLevel
                 if (
                     errItem.severity === "error" ||
@@ -315,7 +325,7 @@ function buildCodeNarcRule(ruleName, ruleFromConfig) {
     if (codeNarcPriorityCode) {
         codeNarcRule.priority = codeNarcPriorityCode;
     }
-    // Asssign extra rule parameters if defined
+    // Assign extra rule parameters if defined
     if (ruleFromConfig && typeof ruleFromConfig === "object") {
         delete ruleFromConfig.severity;
         return Object.assign(codeNarcRule, ruleFromConfig);
