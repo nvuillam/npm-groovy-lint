@@ -25,6 +25,9 @@
         "ExplicitLinkedListInstantiation": {
             "enabled": false
         },
+        "FieldTypeRequired": {
+            "enabled": false
+        },
         "JavaIoPackageAccess": {
             "enabled": false
         },
@@ -50,6 +53,9 @@
             "enabled": false
         },
         "UnnecessaryGetter": {
+            "enabled": false
+        },
+        "UnnecessaryObjectReferences": {
             "enabled": false
         },
         "UnnecessarySetter": {

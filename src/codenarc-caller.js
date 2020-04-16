@@ -35,7 +35,7 @@ class CodeNarcCaller {
     // Call local CodeNarc server if running
     async callCodeNarcServer() {
         // If use of --codenarcargs, get default values for CodeNarcServer host & port
-        const serverUri = this.getCodeNarcServerUri();
+        const requestUri = this.getCodeNarcServerUri() + "/request";
         // Remove "" around values because they won't get thru system command line parser
         const codeNarcArgsForServer = this.codenarcArgs.map(codeNarcArg => {
             if (codeNarcArg.includes('="') || codeNarcArg.includes(':"')) {
@@ -48,11 +48,12 @@ class CodeNarcCaller {
         const codeNarcArgsString = codeNarcArgsForServer.join(" ");
         const rqstOptions = {
             method: "POST",
-            uri: serverUri,
+            uri: requestUri,
             body: {
                 codeNarcArgs: codeNarcArgsString,
                 parse: this.options.parse ? true : false,
-                file: this.execOpts.groovyFileName ? this.execOpts.groovyFileName : null
+                file: this.execOpts.groovyFileName ? this.execOpts.groovyFileName : null,
+                requestKey: this.execOpts.requestKey || null
             },
             json: true
         };
@@ -75,6 +76,12 @@ class CodeNarcCaller {
                 if (this.serverStatus === "running") {
                     return await this.callCodeNarcServer();
                 }
+            }
+            // Cancelled codeNarcAction (duplicate)
+            else if (e.cause && e.cause.code == "ECONNRESET") {
+                return {
+                    status: 9
+                };
             } else {
                 console.error("CodeNarcServer http call unexpected error:\n" + JSON.stringify(e, null, 2));
             }
@@ -89,6 +96,14 @@ class CodeNarcCaller {
                 codeNarcStdOut: parsedBody.stdout,
                 codeNarcStdErr: parsedBody.stderr,
                 status: 0
+            };
+        }
+        // Cancelled codeNarcAction (duplicate) (TODO: Update CodeNarcServer.groovy to cleanly stop task and not kill the thread !)
+        else if (parsedBody.status === "cancelledByDuplicateRequest") {
+            return {
+                codeNarcStdOut: parsedBody.stdout,
+                codeNarcStdErr: parsedBody.stderr,
+                status: 9
             };
         }
         // Codenarc error

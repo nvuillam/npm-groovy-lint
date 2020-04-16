@@ -1,6 +1,6 @@
 /*
  * CodeNarc main class Wrapper to run a light HttpServer so next calls can have better performances
- * Autokills itself when maximum idle time is reached
+ * Auto-kills itself when maximum idle time is reached
  * @author Nicolas Vuillamy
  */
 package com.nvuillam
@@ -10,7 +10,8 @@ import com.sun.net.httpserver.HttpServer
 import java.net.InetSocketAddress
 import java.io.PrintStream
 
-// Java Executor & Timer management
+// Concurrency & Timer management
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
@@ -35,10 +36,12 @@ import org.codenarc.CodeNarc
 @CompileDynamic
 class CodeNarcServer {
 
+    static Map<String,String> currentThreads = new ConcurrentHashMap<String,String>()
+
     int PORT = 7484
     int maxIdleTime = 3600000 // 1h
 
-    final ExecutorService ex = Executors.newCachedThreadPool()
+    ExecutorService ex = Executors.newFixedThreadPool(10)
 
     /**
      * Main command-line entry-point. Run the CodeNarcServer application.
@@ -53,7 +56,7 @@ class CodeNarcServer {
         if (argsList.contains('--server')) {
             codeNarcServer.initialize()
         }
-        // Do not use server, just call CodeNarc (worse perfs as Java classes mus be reloaded everytime)
+        // Do not use server, just call CodeNarc (worse performances as Java classes must be reloaded each time)
         else  {
             codeNarcServer.runCodeNarc((String[])argsList)
         }
@@ -68,30 +71,36 @@ class CodeNarcServer {
 
         Timer timer = new Timer()
         TimerTask currentTimerTask
+
         // Ping
         server.createContext('/ping') { http ->
+            println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
+            println 'PING'
             http.sendResponseHeaders(200, 0)
             http.responseHeaders.add('Content-type', 'application/json')
             http.responseBody.withWriter { out ->
                 out << '{"status":"running"}'
             }
         }
+
         // Kill server
         server.createContext('/kill') { http ->
             println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
-            println 'Received kill CodeNarcServer request'
+            println 'REQUEST KILL CodeNarc Server'
             stopServer(ex, server)
             http.sendResponseHeaders(200, 0)
             http.responseHeaders.add('Content-type', 'application/json')
             http.responseBody.withWriter { out ->
                 out << '{"status":"killed"}'
             }
-            println 'CodeNarcServer shutting down...'
+            println 'SHUT DOWN CodeNarcServer'
         }
+
         // Request CodeNarc linting
-        server.createContext('/') { http ->
+        server.createContext('/request') { http ->
             System.setOut(new StorePrintStream(System.out))
             println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
+
             // Restart idle timer
             currentTimerTask.cancel()
             timer = new Timer()
@@ -99,23 +108,34 @@ class CodeNarcServer {
             // Parse input and call CodeNarc
             try {
                 def body = streamToString(http.getRequestBody())
-                println "CodeNarcServer: received ${body}"
+                println "REQUEST BODY: ${body}"
                 def respObj = [:]
                 def jsonSlurper = new JsonSlurper()
                 def bodyObj = jsonSlurper.parseText(body)
+
+                def requestKey = bodyObj.requestKey
+                Boolean manageRequestKey = (requestKey != null)
+
+                if (manageRequestKey) {
+                    // Cancel already running request if necessary
+                    cancelConcurrentThread(requestKey)
+                    // Set current thread info in  currentThreads property so it can be cancelled later
+                    def thread = Thread.currentThread()
+                    storeThread(requestKey, thread, ex)
+                }
 
                 // Try to parse if requested to get compilation errors
                 if (bodyObj.parse == true && bodyObj.file) {
                     try {
                         new GroovyShell().parse(new File(bodyObj.file))
-                        println 'Parse success'
+                        println 'PARSE SUCCESS'
                         respObj.parseErrors = []
                     }
                     catch (MultipleCompilationErrorsException ep) {
                         def excptnJsonTxt = JsonOutput.toJson(ep)
                         def compileErrors = ep.getErrorCollector().getErrors()
                         respObj.parseErrors = compileErrors
-                        println 'Parse error (MultipleCompilationErrorsException)\n' + excptnJsonTxt
+                        println 'PARSE ERROR (MultipleCompilationErrorsException)\n' + excptnJsonTxt
                     }
                     catch (CompilationFailedException ep) {
                         def excptnJsonTxt = JsonOutput.toJson(ep)
@@ -127,13 +147,13 @@ class CodeNarcServer {
                         def excptnJsonTxt = JsonOutput.toJson(ep)
                         respObj.parseErrors = compileErrors
                         println 'Parse error (Other)\n' + excptnJsonTxt
-                     }
+                    }
                 }
 
                 // Call CodeNarc
                 def codeNarcArgs = bodyObj.codeNarcArgs
                 def codenarcArgsArray = codeNarcArgs.split(' ')
-                runCodeNarc(codenarcArgsArray)
+                this.runCodeNarc(codenarcArgsArray)
                 http.responseHeaders.add('Content-type', 'application/json')
                 http.sendResponseHeaders(200, 0)
                 respObj.status = 'success'
@@ -144,10 +164,27 @@ class CodeNarcServer {
                 http.responseBody.withWriter { out ->
                     out << respJson
                 }
+
+                // Remove thread info
+                if (manageRequestKey) {
+                    removeThread(requestKey)
+                }
+            } catch (InterruptedException ie) {
+                def respObj = [ status:'cancelledByDuplicateRequest' ,
+                                stdout:StorePrintStream.printList.join('\n'),
+                                ]
+                def respJson = JsonOutput.toJson(respObj)
+                http.responseHeaders.add('Content-type', 'application/json')
+                http.sendResponseHeaders(444 , 0)
+                http.responseBody.withWriter { out ->
+                    out << respJson
+                }
+                println 'INTERRUPTED by duplicate'
             } catch (Throwable t) {
                 def respObj = [ status:'error' ,
                                 errorDtl:t.getStackTrace().join('\n'),
                                 stdout:StorePrintStream.printList.join('\n'),
+                                exceptionType: t.getClass().getName(),
                                 ]
                 def respJson = JsonOutput.toJson(respObj)
                 http.responseHeaders.add('Content-type', 'application/json')
@@ -155,12 +192,14 @@ class CodeNarcServer {
                 http.responseBody.withWriter { out ->
                     out << respJson
                 }
-                t.printStackTrace()
+                println 'UNEXPECTED ERROR ' + respObj
             }
         }
+
+        // Create executor & start server with a timeOut if inactive
         server.setExecutor(ex);      // set up a custom executor for the server
         server.start();              // start the server
-        println "CodeNarcServer is listening on ${this.getHostString(socketAddr)}:${PORT}, hit Ctrl+C to exit."
+        println "LISTENING on ${this.getHostString(socketAddr)}:${PORT}, hit Ctrl+C to exit."
         currentTimerTask = timer.runAfter(this.maxIdleTime,  { timerData -> stopServer(ex, server) })
     }
 
@@ -174,9 +213,38 @@ class CodeNarcServer {
             codeNarc.execute(args)
         }
         catch (Throwable t) {
-            println "CodeNarcServer ERROR: ${t.toString()}"
+            println "ERROR in CodeNarc.execute: ${t.toString()}"
             throw t
         }
+    }
+
+    // Cancel concurrent thread if existing
+    private void cancelConcurrentThread(String requestKey) {
+        def requestKeyCurrentThread = currentThreads.get(requestKey)
+        if (requestKeyCurrentThread != null) {
+            // Kill duplicate thread started previously
+            Set<Thread> threads = Thread.getAllStackTraces().keySet()
+            for (Thread t : threads) {
+                String tName = t.getName()
+                if (tName == requestKeyCurrentThread) {
+                    t.interrupt()
+                    t.stop()
+                    currentThreads.remove(requestKey)
+                    println 'CANCELLED duplicate thread ' + tName + '(requestKey: ' + requestKeyCurrentThread + ')'
+                }
+            }
+        }
+    }
+
+    private void storeThread(String requestKey, def thread, ExecutorService ex) {
+        def threadName = thread.getName()
+        //currentThreads.put(requestKey, [threadInstance:thread, name: threadName])
+        currentThreads.put(requestKey, threadName)
+        println 'THREADS: (var ' + currentThreads.size() + ', threadPool ' + ex.getActiveCount() + ')\n' + currentThreads.toString()
+    }
+
+    private void removeThread(String requestKey) {
+        currentThreads.remove(requestKey)
     }
 
     private String streamToString(def stream) {
