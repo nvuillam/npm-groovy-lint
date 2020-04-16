@@ -122,37 +122,6 @@ describe('Miscellaneous', function () {
 
     });
 
-    it('(API:Server) should kill running server', async () => {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            '',
-            '--killserver',
-            '--verbose'
-        ], {
-            jdeployRootPath: 'jdeploy-bundle',
-            verbose: true
-        }).run();
-
-        assert(linter.status === 0, 'Status is 0');
-        assert(linter.outputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
-        checkCodeNarcCallsCounter(1);
-    });
-
-    it('(API:Server) should not succeed to kill running server', async () => {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            '',
-            '--killserver',
-            '--verbose'
-        ], {
-            jdeployRootPath: 'jdeploy-bundle',
-            verbose: true
-        }).run();
-        assert(linter.status === 0, 'Status is 0');
-        assert(linter.outputString.includes('CodeNarcServer was not running'), 'CodeNarcServer not killed because not running');
-        checkCodeNarcCallsCounter(1);
-    });
-
     it('(API:help) should show npm-groovy-lint help', async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
@@ -203,6 +172,37 @@ describe('Miscellaneous', function () {
         }).run();
         assert(linter.status === 0, 'Status is 0');
         assert(linter.codeNarcStdOut.includes('where OPTIONS are zero or more command-line options'), 'CodeNarc help is displayed');
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it('(API:Server) should kill running server', async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            '',
+            '--killserver',
+            '--verbose'
+        ], {
+            jdeployRootPath: 'jdeploy-bundle',
+            verbose: true
+        }).run();
+
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it('(API:Server) should not succeed to kill running server', async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            '',
+            '--killserver',
+            '--verbose'
+        ], {
+            jdeployRootPath: 'jdeploy-bundle',
+            verbose: true
+        }).run();
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('CodeNarcServer was not running'), 'CodeNarcServer not killed because not running');
         checkCodeNarcCallsCounter(1);
     });
 
