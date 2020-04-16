@@ -3,7 +3,11 @@
 const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require("assert");
 const path = require("path");
-const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_SMALL } = require('./helpers/common');
+const { beforeEachTestCase,
+    checkCodeNarcCallsCounter,
+    SAMPLE_FILE_BIG,
+    SAMPLE_FILE_SMALL
+} = require('./helpers/common');
 
 describe('Miscellaneous', function () {
     beforeEach(beforeEachTestCase);
@@ -67,35 +71,55 @@ describe('Miscellaneous', function () {
         assert(linter.lintResult.rules == null, "Rules are not returned");
     });
 
-    it('(API:Server) should kill running server', async () => {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            '',
-            '--killserver',
-            '--verbose'
-        ], {
+
+
+    it('(API:source) should cancel current request', async () => {
+        const requestKey = 'requestKeyCalculatedByExternal' + Math.random()
+        const npmGroovyLintConfig = {
+            path: "./lib/example/",
+            files: '**/' + SAMPLE_FILE_BIG,
+            output: 'none'
+        };
+        const linter1 = new NpmGroovyLint(
+            npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle',
-            verbose: true
+            requestKey: requestKey
+        });
+        linter1.run();
+        await sleepPromise(3000);
+        const linter2 = new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle',
+            requestKey: requestKey
+        });
+        linter2.run();
+        await sleepPromise(3000);
+        const linter3 = new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle',
+            requestKey: requestKey
+        });
+        linter3.run();
+        await sleepPromise(3000);
+        const linter4 = new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle',
+            requestKey: requestKey
+        });
+        linter4.run();
+        await sleepPromise(3000);
+        const linterLast = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle',
+            requestKey: requestKey
         }).run();
 
-        assert(linter.status === 0, 'Status is 0');
-        assert(linter.outputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
-        checkCodeNarcCallsCounter(1);
-    });
+        assert(linter1.status === 9, `Linter 1 status is 9 (returned ${linter1.status}`);
+        assert(linter2.status === 9, `Linter 2 status is 9 (returned ${linter2.status}`);
+        assert(linter3.status === 9, `Linter 3 status is 9 (returned ${linter3.status}`);
+        assert(linter4.status === 9, `Linter 4 status is 9 (returned ${linter4.status}`);
+        assert(linterLast.status === 0, `LinterLast status = 0 (returned ${linterLast.status}`);
 
-    it('(API:Server) should not succeed to kill running server', async () => {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            '',
-            '--killserver',
-            '--verbose'
-        ], {
-            jdeployRootPath: 'jdeploy-bundle',
-            verbose: true
-        }).run();
-        assert(linter.status === 0, 'Status is 0');
-        assert(linter.outputString.includes('CodeNarcServer was not running'), 'CodeNarcServer not killed because not running');
-        checkCodeNarcCallsCounter(1);
     });
 
     it('(API:help) should show npm-groovy-lint help', async () => {
@@ -151,4 +175,39 @@ describe('Miscellaneous', function () {
         checkCodeNarcCallsCounter(1);
     });
 
+    it('(API:Server) should kill running server', async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            '',
+            '--killserver',
+            '--verbose'
+        ], {
+            jdeployRootPath: 'jdeploy-bundle',
+            verbose: true
+        }).run();
+
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it('(API:Server) should not succeed to kill running server', async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            '',
+            '--killserver',
+            '--verbose'
+        ], {
+            jdeployRootPath: 'jdeploy-bundle',
+            verbose: true
+        }).run();
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.outputString.includes('CodeNarcServer was not running'), 'CodeNarcServer not killed because not running');
+        checkCodeNarcCallsCounter(1);
+    });
+
 });
+
+function sleepPromise(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

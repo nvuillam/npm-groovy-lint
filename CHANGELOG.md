@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.4.0] 2020-04-16
+
+- Cancel a CodeNarc Lint when a similar CodeNarcServer request is received (allowing onType mode for language servers)
+
 ## [4.3.0] 2020-04-14
 
 - Allow to disable rules using comments in source in [eslint style](https://eslint.org/docs/user-guide/configuring#disabling-rules-with-inline-comments)

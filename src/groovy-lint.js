@@ -19,6 +19,7 @@ class NpmGroovyLint {
 
     // Internal
     origin = "initialCall";
+    requestKey;
     jdeployFile;
     jdeployFilePlanB;
     jdeployRootPath;
@@ -54,6 +55,7 @@ class NpmGroovyLint {
         this.jdeployRootPath = internalOpts.jdeployRootPath || process.env.JDEPLOY_ROOT_PATH || __dirname;
         this.parseOptions = internalOpts.parseOptions !== false;
         this.origin = internalOpts.origin || this.origin;
+        this.requestKey = internalOpts.requestKey;
     }
 
     // Run linting (and fixing if --fix)
@@ -135,6 +137,21 @@ class NpmGroovyLint {
             this.options = this.args;
         }
 
+        // Kill running CodeNarcServer
+        if (this.options.killserver) {
+            const startPerf = performance.now();
+            const codeNarcCaller = new CodeNarcCaller(this.codenarcArgs, this.serverStatus, this.args, this.options, {
+                jdeployFile: this.jdeployFile,
+                jdeployFilePlanB: this.jdeployFilePlanB,
+                jdeployRootPath: this.jdeployRootPath,
+                groovyFileName: this.tmpGroovyFileName
+            });
+            this.outputString = await codeNarcCaller.killCodeNarcServer();
+            console.info(this.outputString);
+            this.manageStats(startPerf);
+            return false;
+        }
+
         // Show version
         if (this.options.version) {
             let v = process.env.npm_package_version;
@@ -170,21 +187,6 @@ class NpmGroovyLint {
             return false;
         }
 
-        // Kill running CodeNarcServer
-        if (this.options.killserver) {
-            const startPerf = performance.now();
-            const codeNarcCaller = new CodeNarcCaller(this.codenarcArgs, this.serverStatus, this.args, this.options, {
-                jdeployFile: this.jdeployFile,
-                jdeployFilePlanB: this.jdeployFilePlanB,
-                jdeployRootPath: this.jdeployRootPath,
-                groovyFileName: this.tmpGroovyFileName
-            });
-            this.outputString = await codeNarcCaller.killCodeNarcServer();
-            console.info(this.outputString);
-            this.manageStats(startPerf);
-            return false;
-        }
-
         // Prepare CodeNarc call then set result on NpmGroovyLint instance
         const codeNarcFactoryResult = await prepareCodeNarcCall(this.options, this.jdeployRootPath);
         this.setMethodResult(codeNarcFactoryResult);
@@ -205,7 +207,8 @@ class NpmGroovyLint {
             jdeployFile: this.jdeployFile,
             jdeployFilePlanB: this.jdeployFilePlanB,
             jdeployRootPath: this.jdeployRootPath,
-            groovyFileName: this.tmpGroovyFileName ? this.tmpGroovyFileName : null
+            groovyFileName: this.tmpGroovyFileName ? this.tmpGroovyFileName : null,
+            requestKey: this.requestKey || null
         });
         if (!this.options.noserver) {
             serverCallResult = await codeNarcCaller.callCodeNarcServer();
@@ -219,8 +222,12 @@ class NpmGroovyLint {
 
     // After CodeNarc call
     async postProcess() {
+        // Cancelled request
+        if (this.status === 9) {
+            console.info(`GroovyLint: Request cancelled by duplicate call on requestKey ${this.requestKey}`);
+        }
         // CodeNarc error
-        if ((this.codeNarcStdErr && [null, "", undefined].includes(this.codeNarcStdOut)) || this.status > 0) {
+        else if ((this.codeNarcStdErr && [null, "", undefined].includes(this.codeNarcStdOut)) || this.status > 0) {
             this.status = 2;
             console.error("GroovyLint: Error running CodeNarc: \n" + this.codeNarcStdErr);
         }
