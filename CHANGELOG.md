@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.4.1] 2020-04-16
+
+- Fixes:
+  - CodeNarcServer: Use cachedThreadPool instead of fixedThreadPool
+
 ## [4.4.0] 2020-04-16
 
 - Cancel a CodeNarc Lint when a similar CodeNarcServer request is received (allowing onType mode for language servers)

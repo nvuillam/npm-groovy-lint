@@ -86,28 +86,42 @@ describe('Miscellaneous', function () {
             requestKey: requestKey
         });
         linter1.run();
-        await sleepPromise(3000);
+        await sleepPromise(1000);
         const linter2 = new NpmGroovyLint(
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle',
             requestKey: requestKey
         });
         linter2.run();
-        await sleepPromise(3000);
+        await sleepPromise(1000);
         const linter3 = new NpmGroovyLint(
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle',
             requestKey: requestKey
         });
         linter3.run();
-        await sleepPromise(3000);
+        await sleepPromise(1000);
         const linter4 = new NpmGroovyLint(
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle',
             requestKey: requestKey
         });
         linter4.run();
-        await sleepPromise(3000);
+        await sleepPromise(1000);
+        const linter5 = new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle',
+            requestKey: requestKey
+        });
+        linter5.run();
+        await sleepPromise(1000);
+        const linter6 = new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle',
+            requestKey: requestKey
+        });
+        linter6.run();
+        await sleepPromise(1000);
         const linterLast = await new NpmGroovyLint(
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle',
@@ -118,8 +132,9 @@ describe('Miscellaneous', function () {
         assert(linter2.status === 9, `Linter 2 status is 9 (returned ${linter2.status}`);
         assert(linter3.status === 9, `Linter 3 status is 9 (returned ${linter3.status}`);
         assert(linter4.status === 9, `Linter 4 status is 9 (returned ${linter4.status}`);
+        assert(linter5.status === 9, `Linter 5 status is 9 (returned ${linter5.status}`);
+        assert(linter6.status === 9, `Linter 6 status is 9 (returned ${linter6.status}`);
         assert(linterLast.status === 0, `LinterLast status = 0 (returned ${linterLast.status}`);
-
     });
 
     it('(API:help) should show npm-groovy-lint help', async () => {
