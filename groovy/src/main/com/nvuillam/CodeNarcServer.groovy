@@ -1,3 +1,4 @@
+/* groovylint-disable LineLength */
 /*
  * CodeNarc main class Wrapper to run a light HttpServer so next calls can have better performances
  * Auto-kills itself when maximum idle time is reached
@@ -41,7 +42,7 @@ class CodeNarcServer {
     int PORT = 7484
     int maxIdleTime = 3600000 // 1h
 
-    ExecutorService ex = Executors.newFixedThreadPool(10)
+    ExecutorService ex = Executors.newCachedThreadPool()
 
     /**
      * Main command-line entry-point. Run the CodeNarcServer application.
@@ -64,6 +65,7 @@ class CodeNarcServer {
     }
 
     // Launch HttpServer to receive CodeNarc linting request via Http
+    /* groovylint-disable-next-line UnusedPrivateMethod */
     private void initialize() {
         // Create a server who accepts only calls from localhost
         InetSocketAddress socketAddr = new InetSocketAddress(PORT)
