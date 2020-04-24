@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.5.0] 2020-04-24
+
+- Configuration updates ([#29](https://github.com/nvuillam/npm-groovy-lint/issues/29)):
+  - New default config "recommended-jenkinsfile". Use it with argument `--config recommended-jenkinsfile`
+  - Allow to directly target a config file name. Use it with argument `--config /my/custom/path/.groovylintrc-custom-name.json`
+  - Allow to send a string key that will be used to find config file `--config custom-name`
+- Updated fix rules:
+  - IfStatementBraces
+  - ElseStatementBraces
+
 ## [4.4.1] 2020-04-16
 
 - Fixes:

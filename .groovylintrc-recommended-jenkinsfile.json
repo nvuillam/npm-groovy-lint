@@ -1,0 +1,13 @@
+{
+    "extends": "recommended",
+    "rules": {
+        "convention.CompileStatic": "off",
+        "convention.NoDef": "off",
+        "convention.VariableTypeRequired": "off",
+        "formatting.SpaceAroundMapEntryColon": "off",
+        "naming.VariableName": "off",
+        "unused.UnusedVariable": {
+            "ignoreVariableNames": "_"
+        }
+    }
+}

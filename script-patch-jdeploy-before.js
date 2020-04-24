@@ -49,6 +49,9 @@ console.info('GroovyLint: Copied .groovylintrc-all.json file into dist/.groovyli
 fse.copySync('.groovylintrc-format.json', 'dist/.groovylintrc-format.json');
 console.info('GroovyLint: Copied .groovylintrc-format.json file into dist/.groovylintrc-format.json');
 
+fse.copySync('.groovylintrc-recommended-jenkinsfile.json', 'dist/.groovylintrc-recommended-jenkinsfile.json');
+console.info('GroovyLint: Copied .groovylintrc-recommended-jenkinsfile.json file into dist/.groovylintrc-recommended-jenkinsfile.json');
+
 fse.copySync('check-version.js', 'dist/check-version.js');
 console.info('GroovyLint: Copied check-version.js file into dist/check-version.js');
 

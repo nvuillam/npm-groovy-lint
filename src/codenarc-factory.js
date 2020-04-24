@@ -327,8 +327,9 @@ function buildCodeNarcRule(ruleName, ruleFromConfig) {
     }
     // Assign extra rule parameters if defined
     if (ruleFromConfig && typeof ruleFromConfig === "object") {
-        delete ruleFromConfig.severity;
-        return Object.assign(codeNarcRule, ruleFromConfig);
+        const propsToAssign = Object.assign({}, ruleFromConfig);
+        delete propsToAssign.severity;
+        return Object.assign(codeNarcRule, propsToAssign);
     } else {
         return codeNarcRule;
     }

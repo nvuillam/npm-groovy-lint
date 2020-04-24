@@ -11,7 +11,7 @@ const defaultConfigLintFileName = ".groovylintrc-recommended.json";
 
 const NPM_GROOVY_LINT_CONSTANTS = {
     CodeNarcVersion: "1.5",
-    GroovyVersion: "3.0.2"
+    GroovyVersion: "3.0.3"
 };
 
 const configLintFilenames = [
@@ -24,22 +24,38 @@ const configLintFilenames = [
     "package.json"
 ];
 
+const configExtensions = ["json", "js", "cjs", "yml", "yaml", "groovylintrc"];
+
 const defaultConfigFormatFileName = ".groovylintrc-format.json";
 
 const configFormatFilenames = [".groovylintrc-format.json", ".groovylintrc-format.js"];
 
 // Load configuration from identified file, or find config file from a start path
 async function loadConfig(startPathOrFile, mode = "lint", sourcefilepath, fileNames = []) {
-    let defaultConfig = defaultConfigLintFileName;
-    if (mode === "lint" && fileNames.length === 0) {
-        fileNames = configLintFilenames;
-    } else if (mode === "format") {
-        fileNames = fileNames.length === 0 ? configFormatFilenames : fileNames;
-        defaultConfig = defaultConfigFormatFileName;
+    // Load config
+    let configUser = {};
+    if (configExtensions.includes(startPathOrFile.split(".").pop())) {
+        // Sent file name
+        configUser = await loadConfigFromFile(startPathOrFile);
+    } else if (startPathOrFile.match(/^[a-zA-Z\d-_]+$/)) {
+        // Sent string: file a corresponding file name
+        fileNames = configExtensions.map(ext => `.groovylintrc-${startPathOrFile}.${ext}`);
+        const configFilePath = await getConfigFileName(sourcefilepath || process.cwd(), sourcefilepath, fileNames, "");
+        configUser = await loadConfigFromFile(configFilePath);
+    } else {
+        // sent directory
+        let defaultConfig = defaultConfigLintFileName;
+        if (mode === "lint" && fileNames.length === 0) {
+            fileNames = configLintFilenames;
+        } else if (mode === "format") {
+            fileNames = fileNames.length === 0 ? configFormatFilenames : fileNames;
+            defaultConfig = defaultConfigFormatFileName;
+        }
+        const configFilePath = await getConfigFileName(startPathOrFile, sourcefilepath, fileNames, defaultConfig);
+        // Load user configuration from file
+        configUser = await loadConfigFromFile(configFilePath);
     }
-    const configFilePath = await getConfigFileName(startPathOrFile, sourcefilepath, fileNames, defaultConfig);
-    // Load user configuration from file
-    let configUser = await loadConfigFromFile(configFilePath);
+    // Shorten rule names if long rule names Cat.Rule replaced by Ru
     configUser.rules = await shortenRuleNames(configUser.rules || {});
     // If config extends a standard one, merge it
     configUser = await manageExtends(configUser);
@@ -57,7 +73,7 @@ async function manageExtends(configUser) {
         // Delete doublons
         for (const baseRuleName of Object.keys(baseConfig.rules)) {
             for (const userRuleName of Object.keys(configUser.rules)) {
-                if (baseRuleName.includes(userRuleName)) {
+                if (baseRuleName === userRuleName) {
                     delete baseConfig.rules[baseRuleName];
                 }
             }
@@ -73,16 +89,23 @@ async function getConfigFileName(startPathOrFile, sourcefilepath, fileNames = co
     let configFilePath = null;
     // Find one of the config file formats are the root of the linted file (if source is sent with sourcefilepath)
     if ([".", process.cwd()].includes(startPathOrFile) && sourcefilepath) {
-        const stat = await fse.lstat(sourcefilepath);
-        const dir = stat.isDirectory() ? sourcefilepath : path.parse(sourcefilepath).dir;
-        configFilePath = await findConfigInPath(dir, fileNames);
+        try {
+            const stat = await fse.lstat(sourcefilepath);
+            const dir = stat.isDirectory() ? sourcefilepath : path.parse(sourcefilepath).dir;
+            configFilePath = await findConfigInPath(dir, fileNames);
+        } catch (e) {
+            debug(`Unable to find config file for ${sourcefilepath} (${e.message})`);
+        }
     }
     // Find one of the config file formats at the root of the project or at upper directory levels
-
     if (configFilePath == null) {
-        const stat = await fse.lstat(startPathOrFile);
-        const dir = stat.isDirectory ? startPathOrFile : path.parse(startPathOrFile).dir;
-        configFilePath = await findConfigInPath(dir, fileNames);
+        try {
+            const stat = await fse.lstat(startPathOrFile);
+            const dir = stat.isDirectory ? startPathOrFile : path.parse(startPathOrFile).dir;
+            configFilePath = await findConfigInPath(dir, fileNames);
+        } catch (e) {
+            debug(`Unable to find config file for ${sourcefilepath} (${e.message})`);
+        }
     }
     if (configFilePath == null) {
         // If not found, use .groovylintrc-recommended.js delivered with npm-groovy-lint
@@ -90,6 +113,9 @@ async function getConfigFileName(startPathOrFile, sourcefilepath, fileNames = co
     }
     configFilePath = path.resolve(configFilePath);
     debug(`GroovyLint used config file: ${configFilePath}`);
+    if (!configExtensions.includes(configFilePath.split(".").pop())) {
+        throw new Error(`Unable to find a configuration file ${startPathOrFile}`);
+    }
     return configFilePath;
 }
 

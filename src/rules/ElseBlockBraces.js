@@ -1,5 +1,5 @@
 // Missing else braces
-const { getStringRangeMultiline, getVariable, isValidCodeLine } = require("../utils");
+const { getOutOfBracesStrings, getStringRangeMultiline, getVariable, isValidCodeLine } = require("../utils");
 
 const rule = {
     scope: "file",
@@ -18,16 +18,17 @@ const rule = {
         func: (allLines, variables) => {
             const range = getVariable(variables, "range", { mandatory: true });
             const lineNumber = range.start.line - 1;
-            // If next line is also a if/else, this rule can not autofix for now, it has to be done manually
+            let line = allLines[lineNumber];
+            // If next line is also a if/else, this rule can not auto-fix for now, it has to be done manually
             const nextLineAfterFoundOne = allLines[lineNumber + 1];
             if (
-                nextLineAfterFoundOne &&
-                (nextLineAfterFoundOne.includes("if (") || nextLineAfterFoundOne.includes("if(") || nextLineAfterFoundOne.includes("else {"))
+                (nextLineAfterFoundOne &&
+                    (nextLineAfterFoundOne.includes("if (") || nextLineAfterFoundOne.includes("if(") || nextLineAfterFoundOne.includes("else {"))) ||
+                line.includes(";") ||
+                getOutOfBracesStrings(line, ["else"]).length > 0
             ) {
                 return allLines;
             }
-            // If line
-            let line = allLines[lineNumber];
             // Check we are on the correct line to correct, if not trigger error
             if (!line.includes("else")) {
                 throw new Error('Line does not contain "else" :' + line);

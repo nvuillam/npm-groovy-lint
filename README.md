@@ -48,7 +48,7 @@ Node.js >= 12 is required to run this package. If you can't upgrade, you can use
 | -f<br/> --files          | String  | Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: `"**/*.groovy,**/Jenkinsfile"`<br/>Examples:<br/> - `"**/Jenkinsfile"`<br/> - `"**/*.groovy"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | -o<br/> --output         | String  | Output format (txt,json,html,xml), or path to a file with one of these extensions<br/> Default: `txt`<br/> Examples:<br/> - `"txt"`<br/> - `"json"`<br/> - `"./logs/myLintResults.txt"`<br/> - `"./logs/myLintResults.json"`<br/> - `"./logs/myLintResults.html"`<br/> - `"./logs/myLintResults.xml"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | -l<br/> --loglevel       | String  | Log level (error,warning or info)<br/>Default: info                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| -c<br/> --config         | String  | Custom path to [GroovyLint config file](#Configuration)<br/> Default: Browse current directory to find groovylintrc.json/js/yml/package.json config file, or default npm-groovy-lint config if not defined.<br/>Note: command-line arguments have priority on config file properties                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| -c<br/> --config         | String  | Custom path to [GroovyLint config file](#Configuration)<br/> Default: Browse current directory to find `.groovylintrc.json|js|yml|package.json` config file, or default npm-groovy-lint config if not defined.<br/>Note: command-line arguments have priority on config file properties                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --parse                  | Boolean | Try to compile the source code and return parse errors (works only with source argument)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | --fix                    | Boolean | (beta) Automatically fix problems when possible<br/> See [Autofixable rules](#Autofixable-rules)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | --format                 | Boolean | (beta) Format source code                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -75,7 +75,7 @@ Define a file named **.groovylintrc.json** (or .js or .YAML, or include in a pro
 
 Format : 
 
-- extends: Name of a base configuration ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.json) or [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.json))
+- extends: Name of a base configuration ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.json), [`recommended-jenkinsfile`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended-jenkinsfile.json), [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.json))
 - rules: List of rules definition, following format `"RuleSection.RuleName": ruleParameters` or `"RuleName": ruleParameters`
     - "RuleSection.RuleName": any of the **[CodeNarc rules](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)** 
     - ruleParameters: can be just a severity override ( `"off"`, `"error"`, `"warning"`, `"info"` ) , or a property list :
@@ -83,7 +83,7 @@ Format :
         - enabled : true (default) or false
         - any of the [rule advanced properties](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)
 
-Example:
+Examples:
 
 ```json
 {
@@ -95,6 +95,19 @@ Example:
             "severity": "info"
         },
         "UnnecessaryReturnKeyword": "error"
+    }
+}
+```
+
+```json
+{
+    "extends": "recommended-jenkinsfile",
+    "rules": {
+        "CouldBeElvis": "off",
+        "CouldBeSwitchStatement": "off",
+        "VariableName": {
+            "severity": "info"
+        }
     }
 }
 ```

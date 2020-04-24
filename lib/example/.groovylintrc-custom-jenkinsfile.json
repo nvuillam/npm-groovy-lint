@@ -1,0 +1,10 @@
+{
+    "extends": "recommended-jenkinsfile",
+    "rules": {
+        "CouldBeElvis": "off",
+        "CouldBeSwitchStatement": "off",
+        "VariableName": {
+            "severity": "info"
+        }
+    }
+}
