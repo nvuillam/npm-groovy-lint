@@ -151,6 +151,31 @@ function isValidCodeLine(line) {
     return line.trim() !== "" && line.trim().split("//")[0] !== "";
 }
 
+// Returns all strings which are not inside braces
+function getOutOfBracesStrings(str, exclude = []) {
+    let match = false;
+    let pos = 0;
+    let level = 0;
+    const outOfBracesStrings = [];
+    while (!match && pos < str.length) {
+        if (str[pos] === "(") {
+            level++;
+            if (level === 1 && outOfBracesStrings.length === 0) {
+                outOfBracesStrings.push(str.substr(0, pos).trim());
+            }
+        }
+        if (str[pos] === ")") {
+            level--;
+            if (level === 0 && outOfBracesStrings.length === 1) {
+                outOfBracesStrings.push(str.substr(pos + 1).trim());
+                match = true;
+            }
+        }
+        pos++;
+    }
+    return outOfBracesStrings.filter(item => !exclude.includes(item) && item !== "");
+}
+
 // Add space after a string in another string
 function addSpaceAfterChar(line, char) {
     let pos = -1;
@@ -219,6 +244,7 @@ module.exports = {
     findRangeBetweenStrings,
     getIndentLength,
     getLastStringRange,
+    getOutOfBracesStrings,
     getSourceLines,
     getStringRange,
     getStringRangeMultiline,

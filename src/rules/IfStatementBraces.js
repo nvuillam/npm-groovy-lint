@@ -3,7 +3,7 @@
 // nvuillam: Fix not always working, especially when embedded missing If statements ...
 //   let's let people correct that manually for now :)
 
-const { getStringRange, getVariable, isValidCodeLine } = require("../utils");
+const { getOutOfBracesStrings, getStringRange, getVariable, isValidCodeLine } = require("../utils");
 
 const rule = {
     scope: "file",
@@ -21,15 +21,17 @@ const rule = {
         type: "function",
         func: (allLines, variables) => {
             const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
-            // If next line is also a if/else, or if line does not contain if this rule can not autofix for now, it has to be done manually
+            let line = allLines[lineNumber];
+            // If next line is also a if/else, or if line does not contain if this rule can not auto-fix for now, it has to be done manually
             const nextLineAfterFoundOne = allLines[lineNumber + 1];
             if (
-                nextLineAfterFoundOne &&
-                (nextLineAfterFoundOne.includes("if (") || nextLineAfterFoundOne.includes("if(") || nextLineAfterFoundOne.includes("else {"))
+                (nextLineAfterFoundOne &&
+                    (nextLineAfterFoundOne.includes("if (") || nextLineAfterFoundOne.includes("if(") || nextLineAfterFoundOne.includes("else {"))) ||
+                line.includes(";") ||
+                getOutOfBracesStrings(line, ["if"]).length > 0
             ) {
                 return allLines;
             }
-            let line = allLines[lineNumber];
             // Check we are on the correct line to correct, if not trigger error
             if (!line.includes("if")) {
                 throw new Error('Line does not contain "if" :' + line);
@@ -149,6 +151,15 @@ if (allowCreation==true) {
 }
 `,
             codeNarcCallsNumber: 2
+        },
+        {
+            sourceBefore: `
+if (a == 1 && ( x === 2) && something()) whatever()
+`,
+            sourceAfter: `
+if (a == 1 && ( x === 2) && something()) whatever()
+`,
+            codeNarcCallsNumber: 1
         }
     ]
 };
