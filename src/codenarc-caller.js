@@ -182,6 +182,7 @@ class CodeNarcCaller {
         const serverPingUri = this.getCodeNarcServerUri() + "/ping";
         let interval;
         debug(`ATTEMPT to start CodeNarcServer with ${jDeployCommand}`);
+
         try {
             // Start server using java (we don't care the promise result, as the following promise will poll the server)
             let stop = false;
@@ -194,6 +195,7 @@ class CodeNarcCaller {
                 });
             // Poll it until it is ready
             const start = performance.now();
+            let notified = false;
             await new Promise(resolve => {
                 interval = setInterval(() => {
                     // If java call crashed, don't bother polling
@@ -206,7 +208,10 @@ class CodeNarcCaller {
                         .on("response", response => {
                             if (response.statusCode === 200) {
                                 this.serverStatus = "running";
-                                debug(`SUCCESS: CodeNarcServer is running`);
+                                if (notified === false) {
+                                    debug(`SUCCESS: CodeNarcServer is running`);
+                                    notified = true;
+                                }
                                 clearInterval(interval);
                                 resolve();
                             } else if (this.serverStatus === "unknown" && performance.now() - start > maxAttemptTimeMs) {

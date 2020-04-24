@@ -122,7 +122,7 @@ class NpmGroovyLint {
                 const configProperties = await loadConfig(
                     this.options.config || this.options.path,
                     this.options.format ? "format" : "lint",
-                    this.options.sourcefilepath
+                    this.options.sourcefilepath || this.options.path
                 );
                 for (const configProp of Object.keys(configProperties)) {
                     if (this.options[configProp] == null) {
@@ -131,7 +131,7 @@ class NpmGroovyLint {
                 }
             } catch (error) {
                 this.status = 2;
-                throw new Error(error.message);
+                throw new Error(error.message + "\n" + error.stack);
             }
         } else {
             this.options = this.args;
@@ -368,8 +368,11 @@ class NpmGroovyLint {
     mergeFixAgainResults(lintResToUpdate, lintResAfterNewFix) {
         if (lintResToUpdate.files && lintResToUpdate.files[0]) {
             if (Object.keys(lintResAfterNewFix.files).length > 0) {
-                const updtSource = lintResAfterNewFix.files[Object.keys(lintResAfterNewFix.files)[0]].updatedSource;
-                lintResToUpdate.files[0] = Object.assign(lintResToUpdate.files[0], { updatedSource: updtSource });
+                const key = Object.keys(lintResAfterNewFix.files)[0];
+                const updtSource = lintResAfterNewFix.files[key].updatedSource;
+                if (updtSource) {
+                    lintResToUpdate.files[0] = Object.assign(lintResToUpdate.files[0], { updatedSource: updtSource });
+                }
             }
         } else {
             for (const afterNewFixResFileNm of Object.keys(lintResAfterNewFix.files)) {

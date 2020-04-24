@@ -1,0 +1,20 @@
+{
+    "extends": "recommended",
+    "rules": {
+        "CompileStatic": "off",
+        "ConfusingTernary": "off",
+        "CouldBeElvis": "off",
+        "CouldBeSwitchStatement": "off",
+        "FieldTypeRequired": "off",
+        "HashtableIsObsolete": "off",
+        "IfStatementCouldBeTernary": "off",
+        "InvertedCondition": "off",
+        "InvertedIfElse": "off",
+        "LongLiteralWithLowerCaseL": "off",
+        "MethodParameterTypeRequired": "off",
+        "MethodReturnTypeRequired": "off",
+        "NoDef": "off",
+        "NoJavaUtilDate": "off",
+        "LineLength": "off"
+    }
+}

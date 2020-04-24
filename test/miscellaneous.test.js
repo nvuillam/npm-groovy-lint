@@ -2,6 +2,8 @@
 "use strict";
 const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require("assert");
+const fse = require("fs-extra");
+const os = require("os");
 const path = require("path");
 const { beforeEachTestCase,
     checkCodeNarcCallsCounter,
@@ -12,7 +14,7 @@ const { beforeEachTestCase,
 describe('Miscellaneous', function () {
     beforeEach(beforeEachTestCase);
 
-    it('(API:source) returns config file path using config', async () => {
+    it('(API:source) returns config file using path', async () => {
         const npmGroovyLintConfig = {
             path: "./lib/example/",
             files: '**/' + SAMPLE_FILE_SMALL,
@@ -40,6 +42,72 @@ describe('Miscellaneous', function () {
         assert(path.resolve(filePath) === path.resolve('./lib/example/.groovylintrc.json'), ".groovylintrc.json has been returned")
     });
 
+    it('(API:source) load config using specific file name', async () => {
+        const customConfigFilePath = (os.type() === 'linux') ? '~/.groovylintrc-custom.json' : os.tmpdir() + '\\.groovylintrc-custom.json';
+        await fse.ensureDir('~/', { mode: '0777' });
+        await fse.copy('./lib/example/.groovylintrc-custom.json', customConfigFilePath);
+        const npmGroovyLintConfig = {
+            config: customConfigFilePath,
+            path: "./lib/example/",
+            files: '**/' + SAMPLE_FILE_SMALL,
+            output: 'txt',
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        await fse.remove(customConfigFilePath);
+        const rules = linter.options.rules || {};
+        assert(rules['CompileStatic'] == 'off', 'CompileStatic is off');
+        assert(rules['CouldBeElvis'] == 'off', 'CouldBeElvis is off');
+        assert(rules['NoDef'] == 'off', 'NoDef is off');
+        assert(linter.status === 0, 'Linter status is 0');
+    });
+
+    it('(API:source) load standard config using string key', async () => {
+        const npmGroovyLintConfig = {
+            config: 'recommended-jenkinsfile',
+            path: "./lib/example/",
+            files: '**/' + SAMPLE_FILE_SMALL,
+            output: 'txt',
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        const rules = linter.options.rules || {};
+        assert(rules['UnusedVariable'] && rules['UnusedVariable']['ignoreVariableNames'] == '_',
+            `UnusedVariable.ignoreVariableNames = '_' not found `);
+        assert(rules['NoDef'] == 'off', 'NoDef is off');
+        assert(rules['VariableName'] == 'off', 'VariableName is off');
+        assert(rules['CompileStatic'] == 'off', 'CompileStatic is off');
+        assert(linter.status === 0, 'Linter status is 0');
+    });
+
+    it('(API:source) load custom config using string key', async () => {
+        const npmGroovyLintConfig = {
+            config: 'custom-jenkinsfile',
+            path: "./lib/example/",
+            files: '**/' + SAMPLE_FILE_SMALL,
+            output: 'txt',
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        const rules = linter.options.rules || {};
+        assert(rules['UnusedVariable'] && rules['UnusedVariable']['ignoreVariableNames'] == '_',
+            `UnusedVariable.ignoreVariableNames = '_' not found `);
+        assert(rules['NoDef'] == 'off', 'NoDef is off');
+        assert(rules['VariableName'] && rules['VariableName']["severity"] === "info", 'VariableName is severity info');
+        assert(rules['CompileStatic'] == 'off', 'CompileStatic is off');
+        assert(rules['CouldBeSwitchStatement'] == 'off', 'CouldBeSwitchStatement is off');
+        assert(rules['CouldBeElvis'] == 'off', 'CouldBeElvis is off');
+        assert(linter.status === 0, 'Linter status is 0');
+    });
 
     it('(API:source) return rules', async () => {
         const npmGroovyLintConfig = {
