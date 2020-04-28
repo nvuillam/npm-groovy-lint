@@ -31,13 +31,14 @@ const defaultConfigFormatFileName = ".groovylintrc-format.json";
 const configFormatFilenames = [".groovylintrc-format.json", ".groovylintrc-format.js"];
 
 // Load configuration from identified file, or find config file from a start path
-async function loadConfig(startPathOrFile, mode = "lint", sourcefilepath, fileNames = []) {
+async function loadConfig(startPathOrFile, mode = "lint", sourcefilepath, fileNamesIn = []) {
+    let fileNames = [...fileNamesIn];
     // Load config
     let configUser = {};
-    if (configExtensions.includes(startPathOrFile.split(".").pop())) {
+    if (configExtensions.includes(startPathOrFile.split(".").pop()) && mode !== "format") {
         // Sent file name
         configUser = await loadConfigFromFile(startPathOrFile);
-    } else if (startPathOrFile.match(/^[a-zA-Z\d-_]+$/)) {
+    } else if (startPathOrFile.match(/^[a-zA-Z\d-_]+$/) && mode !== "format") {
         // Sent string: file a corresponding file name
         fileNames = configExtensions.map(ext => `.groovylintrc-${startPathOrFile}.${ext}`);
         const configFilePath = await getConfigFileName(sourcefilepath || process.cwd(), sourcefilepath, fileNames, "");
@@ -59,6 +60,15 @@ async function loadConfig(startPathOrFile, mode = "lint", sourcefilepath, fileNa
     configUser.rules = await shortenRuleNames(configUser.rules || {});
     // If config extends a standard one, merge it
     configUser = await manageExtends(configUser);
+    // If mode = "format", call user defined rules to apply them upon the default formatting rules
+    if (mode === "format") {
+        const customUserConfig = await loadConfig(startPathOrFile, "lint", sourcefilepath, fileNamesIn);
+        for (const ruleKey of Object.keys(customUserConfig)) {
+            if (configUser[ruleKey]) {
+                configUser[ruleKey] = customUserConfig[ruleKey];
+            }
+        }
+    }
     return configUser;
 }
 

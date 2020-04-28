@@ -168,6 +168,7 @@ describe('Lint & fix with API', function () {
             '--path', '"' + tmpDir + '"',
             '--output', '"npm-groovy-fix-log-should-fix-groovy-files.txt"',
             '--fix',
+            '--nolintafter',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
         }).run();
@@ -179,7 +180,7 @@ describe('Lint & fix with API', function () {
 
         fse.removeSync('npm-groovy-fix-log-should-fix-groovy-files.txt');
         rimraf.sync(tmpDir);
-        checkCodeNarcCallsCounter(3);
+        checkCodeNarcCallsCounter(2);
 
     }).timeout(120000);
 

@@ -197,13 +197,32 @@ module.exports = optionator({
     mutuallyExclusive: [
         ["files", "source", "codenarcargs", "help", "version"],
         ["failonerror", "failonwarning", "failoninfo"],
-        ["codenarcargs", ["failonerror", "failonwarning", "failoninfo", "path", "files", "source", "fix", "fixrules", "config"]],
+        [
+            "codenarcargs",
+            [
+                "failonerror",
+                "failonwarning",
+                "failoninfo",
+                "path",
+                "files",
+                "source",
+                "format",
+                "fix",
+                "fixrules",
+                "config",
+                "returnrules",
+                "killserver",
+                "nolintafter",
+                "noserver",
+                "serverhost",
+                "serverport"
+            ]
+        ],
         ["noserver", ["serverhost", "serverport", "killserver"]],
         ["fix", "format"],
         [
             ["fix", "format"],
             ["failonerror", "failonwarning", "failoninfo"]
-        ],
-        ["format", "config"]
+        ]
     ]
 });
