@@ -4,7 +4,14 @@ const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
 const fse = require("fs-extra");
 const rimraf = require("rimraf");
-const { beforeEachTestCase, checkCodeNarcCallsCounter, getDiff, copyFilesInTmpDir, SAMPLE_FILE_BIG, SAMPLE_FILE_BIG_PATH } = require('./helpers/common');
+const { beforeEachTestCase,
+    checkCodeNarcCallsCounter,
+    getDiff,
+    copyFilesInTmpDir,
+    SAMPLE_FILE_BIG,
+    SAMPLE_FILE_BIG_PATH,
+    SAMPLE_FILE_SMALL_PATH
+} = require('./helpers/common');
 
 describe('Format with API', function () {
     beforeEach(beforeEachTestCase);
@@ -24,7 +31,7 @@ describe('Format with API', function () {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
 
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Status is 0 (returned ${linter.status}`);
         assert(linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs, `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`);
         assert(linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
@@ -33,6 +40,37 @@ describe('Format with API', function () {
         assert(fixedNbInLogs >= expectedFixedErrs, `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`);
         assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
         checkCodeNarcCallsCounter(2);
+
+    }).timeout(100000);
+
+    it('(API:source) should format code with custom config', async () => {
+        const expectedFixedErrs = 39;
+        const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
+        const npmGroovyLintConfig = {
+            source: prevFileContent,
+            sourcefilepath: SAMPLE_FILE_SMALL_PATH,
+            config: 'custom',
+            format: true,
+            nolintafter: true,
+            output: 'txt',
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+
+        assert(linter.status === 0, 'Status is 0');
+        assert(linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs, `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`);
+        assert(linter.lintResult.files[0].updatedSource &&
+            linter.lintResult.files[0].updatedSource !== prevFileContent,
+            'Source has been updated');
+        const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
+        assert(fixedNbInLogs >= expectedFixedErrs, `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`);
+        assert(!linter.outputString.includes('NaN'), 'Results does not contain NaN');
+        const rules = linter.options.rules || {};
+        assert(rules['Indentation']["spacesPerIndentLevel"] === 2, 'Indentation rule override has been taken in account')
+        checkCodeNarcCallsCounter(1);
 
     }).timeout(100000);
 

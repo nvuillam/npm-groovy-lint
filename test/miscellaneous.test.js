@@ -62,6 +62,7 @@ describe('Miscellaneous', function () {
         assert(rules['CompileStatic'] == 'off', 'CompileStatic is off');
         assert(rules['CouldBeElvis'] == 'off', 'CouldBeElvis is off');
         assert(rules['NoDef'] == 'off', 'NoDef is off');
+        assert(rules['Indentation']["spacesPerIndentLevel"] === 2, 'Indentation rule override has been taken in account')
         assert(linter.status === 0, 'Linter status is 0');
     });
 

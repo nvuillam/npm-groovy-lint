@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.5.1] 2020-04-28
+
+- Fixes
+  - Take in account user overridden indentation space (and other rules) when using --format option [#31](https://github.com/nvuillam/npm-groovy-lint/issues/31)
+
 ## [4.5.0] 2020-04-24
 
 - Configuration updates ([#29](https://github.com/nvuillam/npm-groovy-lint/issues/29)):

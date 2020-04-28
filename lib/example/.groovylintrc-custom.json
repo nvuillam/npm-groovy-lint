@@ -8,6 +8,10 @@
         "FieldTypeRequired": "off",
         "HashtableIsObsolete": "off",
         "IfStatementCouldBeTernary": "off",
+        "Indentation": {
+            "spacesPerIndentLevel": 2,
+            "severity": "info"
+        },
         "InvertedCondition": "off",
         "InvertedIfElse": "off",
         "LongLiteralWithLowerCaseL": "off",
