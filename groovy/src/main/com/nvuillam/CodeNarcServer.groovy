@@ -107,6 +107,8 @@ class CodeNarcServer {
             currentTimerTask.cancel()
             timer = new Timer()
             currentTimerTask = timer.runAfter(this.maxIdleTime, { timerData -> stopServer(ex, server) })
+            String requestKey
+            Boolean manageRequestKey
             // Parse input and call CodeNarc
             try {
                 def body = streamToString(http.getRequestBody())
@@ -115,8 +117,8 @@ class CodeNarcServer {
                 def jsonSlurper = new JsonSlurper()
                 def bodyObj = jsonSlurper.parseText(body)
 
-                def requestKey = bodyObj.requestKey
-                Boolean manageRequestKey = (requestKey != null)
+                requestKey = bodyObj.requestKey
+                manageRequestKey = (requestKey != null)
 
                 if (manageRequestKey) {
                     // Cancel already running request if necessary
@@ -166,11 +168,6 @@ class CodeNarcServer {
                 http.responseBody.withWriter { out ->
                     out << respJson
                 }
-
-                // Remove thread info
-                if (manageRequestKey) {
-                    removeThread(requestKey)
-                }
             } catch (InterruptedException ie) {
                 def respObj = [ status:'cancelledByDuplicateRequest' ,
                                 stdout:StorePrintStream.printList.join('\n'),
@@ -195,6 +192,12 @@ class CodeNarcServer {
                     out << respJson
                 }
                 println 'UNEXPECTED ERROR ' + respObj
+            }
+            // Remove thread info
+            if (manageRequestKey && requestKey) {
+                removeThread(requestKey)
+                requestKey = null
+                manageRequestKey = false
             }
         }
 
@@ -232,7 +235,7 @@ class CodeNarcServer {
                     t.interrupt()
                     t.stop()
                     currentThreads.remove(requestKey)
-                    println 'CANCELLED duplicate thread ' + tName + '(requestKey: ' + requestKeyCurrentThread + ')'
+                    println 'CANCELLED duplicate thread ' + tName + '(requestKey: ' + requestKey + ')'
                 }
             }
         }

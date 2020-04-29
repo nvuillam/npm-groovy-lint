@@ -8,7 +8,8 @@ const path = require("path");
 const { beforeEachTestCase,
     checkCodeNarcCallsCounter,
     SAMPLE_FILE_BIG,
-    SAMPLE_FILE_SMALL
+    SAMPLE_FILE_SMALL,
+    SAMPLE_FILE_SMALL_PATH
 } = require('./helpers/common');
 
 describe('Miscellaneous', function () {
@@ -108,6 +109,23 @@ describe('Miscellaneous', function () {
         assert(rules['CouldBeSwitchStatement'] == 'off', 'CouldBeSwitchStatement is off');
         assert(rules['CouldBeElvis'] == 'off', 'CouldBeElvis is off');
         assert(linter.status === 0, 'Linter status is 0');
+    });
+
+    it('(API:source) return indent length without linting', async () => {
+        let indentLength = null;
+        const linter = new NpmGroovyLint({
+            sourcefilepath: SAMPLE_FILE_SMALL_PATH,
+            output: 'none'
+        }, {});
+        const tmpStartPath = path.dirname(SAMPLE_FILE_SMALL_PATH);
+        let tmpConfigFilePath = await linter.getConfigFilePath(tmpStartPath);
+        if (tmpConfigFilePath) {
+            const configUser = await linter.loadConfig(tmpConfigFilePath, 'format');
+            if (configUser.rules && configUser.rules['Indentation'] && configUser.rules['Indentation']["spacesPerIndentLevel"]) {
+                indentLength = configUser.rules['Indentation']["spacesPerIndentLevel"];
+            }
+        }
+        assert(indentLength != null && indentLength > 0, "Indent length has been returned");
     });
 
     it('(API:source) return rules', async () => {
