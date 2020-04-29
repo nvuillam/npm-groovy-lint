@@ -63,9 +63,9 @@ async function loadConfig(startPathOrFile, mode = "lint", sourcefilepath, fileNa
     // If mode = "format", call user defined rules to apply them upon the default formatting rules
     if (mode === "format") {
         const customUserConfig = await loadConfig(startPathOrFile, "lint", sourcefilepath, fileNamesIn);
-        for (const ruleKey of Object.keys(customUserConfig)) {
-            if (configUser[ruleKey]) {
-                configUser[ruleKey] = customUserConfig[ruleKey];
+        for (const ruleKey of Object.keys(customUserConfig.rules)) {
+            if (configUser.rules[ruleKey]) {
+                configUser.rules[ruleKey] = customUserConfig.rules[ruleKey];
             }
         }
     }
