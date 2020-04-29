@@ -74,8 +74,7 @@ class NpmGroovyLint {
     async fixErrors(errorIds, optns = {}) {
         // Create and run fixer
         debug(`Fix errors for ${JSON.stringify(errorIds)} on existing NpmGroovyLint instance`);
-        const codeNarcFactoryResult = await prepareCodeNarcCall(this.options, this.jdeployRootPath);
-        this.setMethodResult(codeNarcFactoryResult);
+        await this.preProcess();
         this.fixer = new NpmGroovyLintFix(
             this.lintResult,
             {
@@ -103,6 +102,11 @@ class NpmGroovyLint {
     // Returns the full path of the configuration file
     async getConfigFilePath(path) {
         return await getConfigFileName(path || this.options.path || this.options.config, this.options.sourcefilepath);
+    }
+
+    // Returns the loaded config
+    async loadConfig(configFilePath, mode = "lint") {
+        return await loadConfig(configFilePath, mode, null, []);
     }
 
     // Actions before call to CodeNarc
@@ -374,7 +378,7 @@ class NpmGroovyLint {
                     lintResToUpdate.files[0] = Object.assign(lintResToUpdate.files[0], { updatedSource: updtSource });
                 }
             }
-        } else {
+        } else if (lintResAfterNewFix && lintResAfterNewFix.files) {
             for (const afterNewFixResFileNm of Object.keys(lintResAfterNewFix.files)) {
                 // Set updatedSource in results in provided
                 if (lintResAfterNewFix.files[afterNewFixResFileNm].updatedSource) {

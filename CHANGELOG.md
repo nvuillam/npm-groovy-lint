@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.2] 2020-04-29
+
+- Expose `loadConfig()` method to load rules when npm-groovy-lint is used as a library
+- Fixes
+  - Missing temporary rulesets file missing
+  - Handle better CodeNarcServer concurrent calls
+
 ## [4.5.1] 2020-04-28
 
 - Fixes

@@ -269,7 +269,7 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
 // Build RuleSet file from configuration
 async function manageCreateRuleSetFile(options) {
     // If RuleSet files has already been created, or is groovy file, return it
-    if (options.rulesets && (options.rulesets.endsWith(".groovy") || options.rulesets.endsWith(".xml"))) {
+    if (options.rulesets && (options.rulesets.endsWith(".groovy") || options.rulesets.endsWith(".xml")) && fse.existsSync(options.rulesets)) {
         return options.rulesets;
     }
 
