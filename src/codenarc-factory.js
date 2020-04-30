@@ -77,6 +77,11 @@ async function prepareCodeNarcCall(options) {
         result.codenarcArgs.push('-includes="' + defaultFilesPattern + '"');
     }
 
+    // Ignore pattern
+    if (options.ignorepattern) {
+        result.codenarcArgs.push('-excludes="' + options.ignorepattern + '"');
+    }
+
     // Output
     result.output = options.output.replace(/^"(.*)"$/, "$1");
     if (["txt", "json", "none"].includes(result.output) || result.output.endsWith(".txt") || result.output.endsWith(".json")) {

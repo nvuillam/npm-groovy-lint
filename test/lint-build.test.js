@@ -9,7 +9,7 @@ const spawn = childProcess.spawnSync;
 
 const { SAMPLE_FILE_SMALL, NPM_GROOVY_LINT } = require('./helpers/common');
 
-describe('Lint with executables (jdeploy-bundle)', () => {
+describe('Lint with executable (jdeploy-bundle)', () => {
     it('(EXE:file) should generate text console output', async () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',
@@ -36,6 +36,19 @@ describe('Lint with executables (jdeploy-bundle)', () => {
         }
         assert(stdout, 'stdout is set');
         assert(stdout.includes(`"totalFoundWarningNumber":`), 'Property totalFoundWarningNumber is in result');
+    });
+
+    it('(EXE:file) should ignore node_modules pattern', async () => {
+        const params = [
+            '--ignorepattern', '**/node_modules/**',
+            '--output', 'txt'
+        ];
+        const { stdout, stderr } = await exec('cd jdeploy-bundle/lib/example && ' + NPM_GROOVY_LINT + params.join(' '));
+        if (stderr) {
+            console.error(stderr);
+        }
+        assert(stdout, 'stdout is set');
+        assert(!stdout.includes(`ToIgnore.groovy`), 'ToIgnore.groovy has been ignored');
     });
 
     it('(EXE:file) should generate codenarc HTML file report', async () => {
