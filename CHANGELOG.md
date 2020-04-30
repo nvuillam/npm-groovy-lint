@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.5.3] 2020-04-30
+## [4.5.5] 2020-04-30
 
 - Fixes
   - ignorepattern option not working [#34](https://github.com/nvuillam/npm-groovy-lint/issues/34)
