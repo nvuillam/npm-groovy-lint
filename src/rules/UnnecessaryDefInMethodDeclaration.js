@@ -18,25 +18,13 @@ const rule = {
     tests: [
         {
             sourceBefore: `
-class lelamanul {
-    def private str = "lelamanul"
+static def getCommandLogAsObj(String command) {
+    return Utils.fromJsonLogString(getCommandLog(command))
 }
 `,
             sourceAfter: `
-class lelamanul {
-    private str = "lelamanul"
-}
-`
-        },
-        {
-            sourceBefore: `
-class lelamanul {
-    def public str = "lelamanul"
-}
-`,
-            sourceAfter: `
-class lelamanul {
-    public str = "lelamanul"
+static getCommandLogAsObj(String command) {
+    return Utils.fromJsonLogString(getCommandLog(command))
 }
 `
         }

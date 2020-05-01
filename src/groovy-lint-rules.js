@@ -94,7 +94,7 @@ const fse = require("fs-extra");
 // If you add a new global rule with a fix function, it's very important to think about their order.
 // Rules modifying the number of lines must arrive last !
 const rulesFixPriorityOrder = [
-    // Line rules or not changing line rules
+    // Line rules or not changing number of lines rules
     "NoTabCharacter",
     "Indentation",
     "UnnecessaryGString",
@@ -110,7 +110,11 @@ const rulesFixPriorityOrder = [
     "SpaceAfterFor",
     "SpaceAfterIf",
     "SpaceAfterSwitch",
+    "SpaceBeforeClosingBrace",
     "UnnecessaryDefInFieldDeclaration",
+    "UnnecessaryDefInMethodDeclaration",
+    "UnnecessaryPackageReference",
+    "UnnecessaryParenthesesForMethodCallWithClosure",
     "UnnecessarySemicolon",
     "TrailingWhitespace",
 
