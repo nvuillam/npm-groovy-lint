@@ -53,8 +53,8 @@ const rule = {
             let pos = 0;
             // Parse all lines and store what we need in imports object
             for (const line of allLines) {
-                // Comment line
-                if (line.trimStart().startsWith("//")) {
+                // Comment line preceding import
+                if (line.trimStart().startsWith("//") && allLines[pos + 1].trim().startsWith("import")) {
                     lastCommentFound = line;
                     lastCommentFoundPos = pos;
                 } else if (line.trimStart().startsWith("import")) {
@@ -70,7 +70,7 @@ const rule = {
                             imports.static.filter(importObj => importObj.commentLine === lastCommentFound).length === 0 ? lastCommentFound : "";
                         imports.normal = addInImportsList(imports.normal, commentKey, line);
                     }
-                    // Update positions for later ibuild of ordered imports with comments
+                    // Update positions for later build of ordered imports with comments
                     firstImportFoundPos = firstImportFoundPos || firstImportFoundPos === 0 ? firstImportFoundPos : pos;
                     lastImportFoundPos = pos;
                     firstCommentFoundPos =
@@ -163,6 +163,59 @@ import after.all.does.it.work
 import static groovyx.gpars.GParsPool.withPool
 import static groovyx.zpars.GParsPool.withPoolZ
 
+import groovy.io.FileType
+import groovy.json.*
+import groovy.time.TimeCategory
+import groovy.transform.Field
+import groovy.xml.*
+
+// Some other imports
+import java.io.File
+
+// And again other imports
+import after.all.does.it.work
+
+// The rest of the file below ...
+`
+        },
+        {
+            sourceBefore: `
+// Blablabla grapes
+@Grapes([
+    @Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.7.1'),
+    @Grab(group='com.google.guava', module='guava', version='19.0'),
+    @Grab(group='org.apache.commons', module='commons-lang3', version='3.7')
+    ])
+// Blablabla imports
+import groovy.io.FileType
+import groovy.transform.Field
+import groovy.xml.*
+import groovy.json.*
+import groovy.time.TimeCategory
+
+// Some other imports
+import java.io.File
+
+// Yeah my static imports
+import static groovyx.zpars.GParsPool.withPoolZ
+import static groovyx.gpars.GParsPool.withPool
+// And again other imports
+import after.all.does.it.work
+
+// The rest of the file below ...
+`,
+            sourceAfter: `
+// Blablabla grapes
+@Grapes([
+    @Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.7.1'),
+    @Grab(group='com.google.guava', module='guava', version='19.0'),
+    @Grab(group='org.apache.commons', module='commons-lang3', version='3.7')
+    ])
+// Yeah my static imports
+import static groovyx.gpars.GParsPool.withPool
+import static groovyx.zpars.GParsPool.withPoolZ
+
+// Blablabla imports
 import groovy.io.FileType
 import groovy.json.*
 import groovy.time.TimeCategory

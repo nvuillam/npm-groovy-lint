@@ -236,9 +236,26 @@ function notBetweenQuotesOrComment(str, substr) {
     return true;
 }
 
+// Checks that a string contains other things than a list of strings
+function containsOtherThan(str, stringArray) {
+    const splits = splitMulti(str, stringArray);
+    return splits.filter(item => item !== "").length > 0;
+}
+
+// Split with multiple characters
+function splitMulti(str, tokens) {
+    var tempChar = tokens[0]; // We can use the first token as a temporary join character
+    for (var i = 1; i < tokens.length; i++) {
+        str = str.split(tokens[i]).join(tempChar);
+    }
+    str = str.split(tempChar);
+    return str;
+}
+
 module.exports = {
     addSpaceAfterChar,
     addSpaceAroundChar,
+    containsOtherThan,
     evaluateRange,
     evaluateVariables,
     findRangeBetweenStrings,

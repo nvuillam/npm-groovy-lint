@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.6.0] 2020-05-01
+
+- New fix rules
+  - SpaceBeforeClosingBrace
+  - UnnecessaryDefInMethodDeclaration
+  - UnnecessaryPackageReference
+  - UnnecessaryParenthesesForMethodCallWithClosure
+
+- Updated fix rules
+  - MisorderedStaticImports: Fix `@Grapes` killer fixing rule
+  - ElseBlockBrace :issue when instruction is on the same line than `else`
+
 ## [4.5.5] 2020-04-30
 
 - Fixes
@@ -44,7 +56,7 @@
 
 - New option **--parse**: Capability to parse source code and return compilation errors
 - New fix rules (thanks [CatSue](https://github.com/CatSue) !):
-  - SpaceAfterSemicolon 
+  - SpaceAfterSemicolon
   - SpaceAfterWhile
 
 ## [4.1.0] 2020-04-12
@@ -82,7 +94,7 @@
 
 - When If or Else brackets are fixed,trigger another rule lint & fix only with Indentation rules so CodeNarc recalculate them correctly
 - New option `nolintafter`: When format or fix is called, a new lint is performed after the fixes to update the error list. If you just want the updated source code and do not care about the error logs, use this parameter to improve performances
-- Fixes 
+- Fixes
   - Manage correctly options `failonerror`, `failonwarning` and `failoninfo`
   - `npm-groovy-lint -version` now returns version from package.json
 - Mocha tests updates:
@@ -170,7 +182,7 @@
 - Test classes for rules fix (before / after fix defined in rule definitions)
 - Add debug logs (use it by setting DEBUG env variable , ex: `DEBUG=npm-groovy-lint npm-groovy-lint args...`)
 - Update lines and ranges of other errors after a fix updated the number of lines
-- Generate automatically .groovylintrc-all.js during build 
+- Generate automatically .groovylintrc-all.js during build
 - Split rules definition into files instead of all in a huge single file
 - Reorganize groovy-lint.js code, using codenarc-factory.js and codenarc-caller.js
 - New lib utils.js that can be used by rules definition
@@ -192,7 +204,7 @@
 ## [2.0.1] - 2020-02-21
 
 - Capability to fix errors
-    - ConsecutiveBlankLines
+  - ConsecutiveBlankLines
     - Indentation (IfStatementBraces and ElseIfStatementBraces must be manually fixed to have correct indentation)
     - IndentationComments (custom npm-groovy-rule triggered by Indentation rule)
     - IndentationClosingBrace (custom npm-groovy-rule triggered by Indentation rule)
@@ -216,15 +228,9 @@
 - Upgrade to CodeNarc v1.5
 - Upgrade to Groovy v3.0.1
 - Refactored documentation with detailed arguments description & examples
+
 ___
+
 ## Before
 
- - I wasn't serious enough to keep a changelog, sorry !
-
-
-
-
-
-
-
-
+- I wasn't serious enough to keep a changelog, sorry !

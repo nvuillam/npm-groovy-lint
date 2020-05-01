@@ -201,15 +201,15 @@ def variable = 1;
 
 # AUTO-FIXABLE RULES (beta)
 
-- BlockEndsWithBlankLine
+- BlockEndsWithBlankLine  
 - BlockStartsWithBlankLine
-- ClassEndsWithBlankLine
+- ClassEndsWithBlankLine  
 - ClassStartsWithBlankLine
-- ClosingBraceNotAlone
-- ConsecutiveBlankLines
+- ClosingBraceNotAlone    
+- ConsecutiveBlankLines   
 - ElseBlockBraces
-- FileEndsWithoutNewline
-- IfStatementBraces
+- FileEndsWithoutNewline  
+- IfStatementBraces       
 - Indentation
 - IndentationClosingBraces
 - IndentationComments
@@ -224,11 +224,15 @@ def variable = 1;
 - SpaceAfterSwitch
 - SpaceAfterWhile
 - SpaceAroundOperator
+- SpaceBeforeClosingBrace
 - SpaceBeforeOpeningBrace
 - TrailingWhitespace
 - UnnecessaryDefInFieldDeclaration
+- UnnecessaryDefInMethodDeclaration
 - UnnecessaryGString
 - UnnecessaryGroovyImport
+- UnnecessaryPackageReference
+- UnnecessaryParenthesesForMethodCallWithClosure
 - UnnecessarySemicolon
 - UnnecessaryToString
 - UnusedImport

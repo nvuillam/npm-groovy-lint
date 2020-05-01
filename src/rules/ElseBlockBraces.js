@@ -1,5 +1,5 @@
 // Missing else braces
-const { getOutOfBracesStrings, getStringRangeMultiline, getVariable, isValidCodeLine } = require("../utils");
+const { containsOtherThan, getStringRangeMultiline, getVariable, isValidCodeLine } = require("../utils");
 
 const rule = {
     scope: "file",
@@ -25,7 +25,7 @@ const rule = {
                 (nextLineAfterFoundOne &&
                     (nextLineAfterFoundOne.includes("if (") || nextLineAfterFoundOne.includes("if(") || nextLineAfterFoundOne.includes("else {"))) ||
                 line.includes(";") ||
-                getOutOfBracesStrings(line, ["else"]).length > 0
+                containsOtherThan(line, ["else", "}", "{", " "])
             ) {
                 return allLines;
             }
@@ -134,6 +134,25 @@ private doReplaceInFile(String fileName, def searchRegex, String replacementValu
 }
 `,
             codeNarcCallsNumber: 2
+        },
+        {
+            sourceBefore: `
+static getFileExtension(fileName) {
+    if (fileName.lastIndexOf('.') != -1 && fileName.lastIndexOf('.') != 0) {
+        return fileName.substring(fileName.lastIndexOf('.') + 1)
+    }
+    else return '' 
+}
+`,
+            sourceAfter: `
+static getFileExtension(fileName) {
+    if (fileName.lastIndexOf('.') != -1 && fileName.lastIndexOf('.') != 0) {
+        return fileName.substring(fileName.lastIndexOf('.') + 1)
+    }
+    else return '' 
+}
+`,
+            codeNarcCallsNumber: 1
         }
     ]
 };
