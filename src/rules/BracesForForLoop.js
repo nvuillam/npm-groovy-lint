@@ -1,4 +1,4 @@
-// Braces for if else
+// Braces for for loop
 
 const { moveOpeningBracket, findRangeBetweenStrings } = require("../utils");
 
@@ -7,7 +7,7 @@ const rule = {
     range: {
         type: "function",
         func: (_errLine, errItem, _evaluatedVars, allLines) => {
-            return findRangeBetweenStrings(allLines, errItem, "if", "{");
+            return findRangeBetweenStrings(allLines, errItem, "for", "{");
         }
     },
     fix: {
@@ -20,42 +20,25 @@ const rule = {
     tests: [
         {
             sourceBefore: `
-if (true)
+for (int i = 0; i < toto.length ; i++)
 {
     def a = 1
 }
 `,
             sourceAfter: `
-if (true) {
+for (int i = 0; i < toto.length ; i++) {
     def a = 1
 }
 `
         },
         {
             sourceBefore: `
-if (true)
+for (int i = 0; i < toto.length ; i++)
 {    def a = 1
 }
 `,
             sourceAfter: `
-if (true) {
-    def a = 1
-}
-`
-        },
-        {
-            sourceBefore: `
-if (true &&
-    true &&
-    true )
-{   
-    def a = 1
-}
-`,
-            sourceAfter: `
-if (true &&
-    true &&
-    true ) {
+for (int i = 0; i < toto.length ; i++) {
     def a = 1
 }
 `

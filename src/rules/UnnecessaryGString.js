@@ -29,6 +29,30 @@ String str = "lelamanul"
             sourceAfter: `
 String str = 'lelamanul'
 `
+        },
+        {
+            sourceBefore: `
+String str = 'lelamanul' + "\\n"
+`,
+            sourceAfter: `
+String str = 'lelamanul' + '\\n'
+`
+        },
+        {
+            sourceBefore: `
+String str = 'lelamanul' + "\\n\\r"
+`,
+            sourceAfter: `
+String str = 'lelamanul' + '\\n\\r'
+`
+        },
+        {
+            sourceBefore: `
+String str = 'lelamanul' + "\\n\\r\\n" + "titi\\n" + "\\n\\r" + "lelamanul\\nwesh"
+`,
+            sourceAfter: `
+String str = 'lelamanul' + '\\n\\r\\n' + 'titi\\n' + '\\n\\r' + 'lelamanul\\nwesh'
+`
         }
     ]
 };

@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.6.1] 2020-05-06
+
+- New fix rules
+  - BracesForClass
+  - BracesForForLoop
+  - BracesForIfElse
+  - BracesForMethod
+  - BracesForTryCatchFinally
+  - ExplicitArrayListInstantiation
+  - MissingBlankLineAfterImports
+  - MissingBlankLineAfterPackage
+
+- Updated fix rules
+  - UnnecessaryGString: Fix replacements containing `\n` and `\r`
+
 ## [4.6.0] 2020-05-01
 
 - New fix rules
