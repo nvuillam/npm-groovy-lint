@@ -1,4 +1,4 @@
-// Braces for if else
+// Braces for try catch finally
 
 const { moveOpeningBracket, findRangeBetweenStrings } = require("../utils");
 
@@ -7,7 +7,7 @@ const rule = {
     range: {
         type: "function",
         func: (_errLine, errItem, _evaluatedVars, allLines) => {
-            return findRangeBetweenStrings(allLines, errItem, "if", "{");
+            return findRangeBetweenStrings(allLines, errItem, "try", "{");
         }
     },
     fix: {
@@ -20,43 +20,22 @@ const rule = {
     tests: [
         {
             sourceBefore: `
-if (true)
+try
 {
     def a = 1
+} catch (Throwable t) {
+    def b = 3
+} finally {
+    def c = 6
 }
 `,
             sourceAfter: `
-if (true) {
+try {
     def a = 1
-}
-`
-        },
-        {
-            sourceBefore: `
-if (true)
-{    def a = 1
-}
-`,
-            sourceAfter: `
-if (true) {
-    def a = 1
-}
-`
-        },
-        {
-            sourceBefore: `
-if (true &&
-    true &&
-    true )
-{   
-    def a = 1
-}
-`,
-            sourceAfter: `
-if (true &&
-    true &&
-    true ) {
-    def a = 1
+} catch (Throwable t) {
+    def b = 3
+} finally {
+    def c = 6
 }
 `
         }

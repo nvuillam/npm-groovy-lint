@@ -25,6 +25,7 @@ function evaluateVariables(variableDefs, msg) {
     for (const varDef of variableDefs || []) {
         // regex
         if (varDef.regex) {
+            msg = msg.replace(/\n/g, "\\n").replace(/\r/g, "\\r");
             const regexRes = msg.match(varDef.regex);
             if (regexRes && regexRes.length > 1) {
                 const regexPos = varDef.regexPos || 1;
@@ -218,6 +219,22 @@ function addSpaceAroundChar(line, char, postReplaces = []) {
     return line;
 }
 
+// Move the opening bracket at the same position than its related expression
+function moveOpeningBracket(allLines, variables) {
+    const range = getVariable(variables, "range", { mandatory: true });
+    // Add bracket after if
+    const addedBracketLine = allLines[range.end.line - 2].trimEnd() + " {";
+    allLines[range.end.line - 2] = addedBracketLine;
+    // Remove bracket which was on the wrong line
+    const removedBracketLine = allLines[range.end.line - 1].substring(allLines[range.end.line - 1].indexOf("{") + 1).trimEnd();
+    allLines[range.end.line - 1] = removedBracketLine;
+    // Remove removed bracket line if empty
+    if (allLines[range.end.line - 1].trim() === "") {
+        allLines.splice(range.end.line - 1, 1);
+    }
+    return allLines;
+}
+
 // Check if a substring is between quotes in a string
 function notBetweenQuotesOrComment(str, substr) {
     const singleQuotesMatch = str.match(/'(.*?)'/) || [];
@@ -267,5 +284,6 @@ module.exports = {
     getStringRangeMultiline,
     getVariable,
     getVariableRange,
-    isValidCodeLine
+    isValidCodeLine,
+    moveOpeningBracket
 };

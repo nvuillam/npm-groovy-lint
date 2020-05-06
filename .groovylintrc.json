@@ -19,12 +19,6 @@
         "DuplicateStringLiteral": {
             "enabled": false
         },
-        "ExplicitArrayListInstantiation": {
-            "enabled": false
-        },
-        "ExplicitLinkedListInstantiation": {
-            "enabled": false
-        },
         "FieldTypeRequired": {
             "enabled": false
         },
