@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.6.1] 2020-05-06
+## [4.7.0] 2020-05-06
 
 - New fix rules
   - BracesForClass
