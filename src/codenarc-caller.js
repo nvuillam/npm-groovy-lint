@@ -55,6 +55,7 @@ class CodeNarcCaller {
                 file: this.execOpts.groovyFileName ? this.execOpts.groovyFileName : null,
                 requestKey: this.execOpts.requestKey || null
             },
+            timeout: 360000,
             json: true
         };
         debug(`CALL CodeNarcServer with ${JSON.stringify(rqstOptions, null, 2)}`);
@@ -69,7 +70,7 @@ class CodeNarcCaller {
             // If server not started , start it and try again
             if (
                 e.message &&
-                e.message.includes("ECONNREFUSED") &&
+                (e.message.includes("ECONNREFUSED") || e.message.includes("ETIMEDOUT")) &&
                 ["unknown", "running"].includes(this.serverStatus) &&
                 (await this.startCodeNarcServer())
             ) {
