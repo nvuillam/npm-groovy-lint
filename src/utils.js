@@ -132,7 +132,12 @@ function findRangeBetweenStrings(allLines, errItem, strStart, strEnd) {
             range.start = { line: pos + 1, character: allLines[pos].indexOf(strStart) };
             isStartFound = true;
         }
-        if (!isEndFound && allLines[pos].indexOf(strEnd) > -1 && notBetweenQuotesOrComment(allLines[pos], strEnd)) {
+        if (
+            !isEndFound &&
+            allLines[pos].indexOf(strEnd) > -1 &&
+            (strStart !== strEnd || pos > range.start.line - 1) &&
+            notBetweenQuotesOrComment(allLines[pos], strEnd)
+        ) {
             range.end = { line: pos + 1, character: allLines[pos].indexOf(strEnd) };
             isEndFound = true;
         }

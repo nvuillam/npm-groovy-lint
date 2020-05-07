@@ -1,5 +1,17 @@
 # Changelog
 
+## UNRELEASED
+
+- New fix rules
+  - ExplicitLinkedListInstantiation
+  - UnnecessaryDefInVariableDeclaration
+  - UnnecessaryDotClass
+  - UnnecessaryFinalOnPrivateMethod
+  - UnnecessaryInstantiationToGetClass
+
+- Updated fix rules
+  - UnnecessaryGString: Fix multiline replacements ( `"""` by `'''` )
+
 ## [4.7.0] 2020-05-06
 
 - New fix rules
