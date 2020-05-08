@@ -1,8 +1,6 @@
 # Changelog
 
-## UNRELEASED
-
-- Launch JVM with high memory (`-Xms256m -Xmx2048m`) to improve performances on big files
+## [4.8.0] 2020-05-08
 
 - New fix rules
   - AssignmentInConditional
@@ -17,6 +15,10 @@
 - Updated fix rules
   - BracesForForLoop: False positive triggering messy code after fixing
   - UnnecessaryGString: Fix multiline replacements ( `"""` by `'''` )
+
+- Fixes :
+  - Launch JVM with high memory (`-Xms256m -Xmx2048m`) to improve performances on big files
+  - Increase CodeNarcServ call timeout (+ Manage ETIMEOUT as result, not only ECONNREFUSED )
 
 - Utils
   - Allow regex in range functions
