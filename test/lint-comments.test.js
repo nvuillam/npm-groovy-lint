@@ -27,7 +27,7 @@ async function checkRule(key, check) {
         jdeployRootPath: 'jdeploy-bundle'
     }).run();
 
-    assert(linter.status === 0, 'Status is 0');
+    assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
     assert(linter.lintResult.summary.totalFoundNumber === check.totalFound, `${linter.lintResult.summary.totalFoundNumber} errors found (expected: ${check.totalFound})`);
     checkCodeNarcCallsCounter(1);
 }

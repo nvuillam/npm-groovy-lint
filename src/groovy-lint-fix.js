@@ -242,7 +242,7 @@ class NpmGroovyLintFix {
             const strBefore = this.setVariablesValues(fix.before, evaluatedVars);
             const strAfter = this.setVariablesValues(fix.after, evaluatedVars);
             // Process replacement with evaluated expressions (except if issue in evaluated expression)
-            if (!strBefore.includes("{{") && !strAfter.includes("{{")) {
+            if (strBefore instanceof RegExp || (!strBefore.includes("{{") && !strAfter.includes("{{"))) {
                 newLine = newLine.replace(strBefore, strAfter);
             } else {
                 debug("GroovyLint: missing replacement variable(s):\n" + strBefore + "\n" + strAfter + "\n" + JSON.stringify(fixableError));
@@ -264,8 +264,11 @@ class NpmGroovyLintFix {
     }
 
     // Replace {{VARNAME}} by real variables
-    setVariablesValues(str, variables) {
-        let newStr = str + "";
+    setVariablesValues(strOrRegex, variables) {
+        if (strOrRegex instanceof RegExp) {
+            return strOrRegex;
+        }
+        let newStr = strOrRegex + "";
         for (const variable of variables) {
             newStr = newStr.replace(new RegExp("{{" + variable.name + "}}", "g"), variable.value);
         }

@@ -31,7 +31,7 @@ describe('Format with API', function () {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
 
-        assert(linter.status === 0, `Status is 0 (returned ${linter.status}`);
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs, `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`);
         assert(linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
@@ -60,7 +60,7 @@ describe('Format with API', function () {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
 
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs, `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`);
         assert(linter.lintResult.files[0].updatedSource &&
             linter.lintResult.files[0].updatedSource !== prevFileContent,
@@ -91,7 +91,7 @@ describe('Format with API', function () {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
 
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs, `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`);
         const newFileContent = fse.readFileSync(tmpDir + '/' + SAMPLE_FILE_BIG).toString();
         assert(newFileContent !== prevFileContent, 'File has been updated');
@@ -130,7 +130,7 @@ async function checkRule(key, check) {
     const result = linter.lintResult.files[0].updatedSource;
     const expectedResult = check.after;
     const effectiveDiff = getDiff(expectedResult, result, source)
-    assert(linter.status === 0, 'Status is 0');
+    assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
     assert(effectiveDiff.length === 0, 'Code has been formatted correctly');
     checkCodeNarcCallsCounter(check.codeNarcCallsCounter);
 }

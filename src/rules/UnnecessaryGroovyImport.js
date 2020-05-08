@@ -5,7 +5,7 @@ const { getVariable } = require("../utils");
 const rule = {
     scope: "file",
     fix: {
-        label: "Remove unused groovy import",
+        label: "Remove unnecessary groovy import",
         type: "function",
         func: (allLines, variables) => {
             const lineNumber = getVariable(variables, "lineNb", { mandatory: true });

@@ -55,6 +55,7 @@ class CodeNarcCaller {
                 file: this.execOpts.groovyFileName ? this.execOpts.groovyFileName : null,
                 requestKey: this.execOpts.requestKey || null
             },
+            timeout: 360000,
             json: true
         };
         debug(`CALL CodeNarcServer with ${JSON.stringify(rqstOptions, null, 2)}`);
@@ -69,7 +70,7 @@ class CodeNarcCaller {
             // If server not started , start it and try again
             if (
                 e.message &&
-                e.message.includes("ECONNREFUSED") &&
+                (e.message.includes("ECONNREFUSED") || e.message.includes("ETIMEDOUT")) &&
                 ["unknown", "running"].includes(this.serverStatus) &&
                 (await this.startCodeNarcServer())
             ) {
@@ -123,7 +124,14 @@ class CodeNarcCaller {
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jdeployFileToUse = secondAttempt ? this.execOpts.jdeployFilePlanB : this.execOpts.jdeployFile;
         const jDeployCommand =
-            '"' + nodeExe + '" "' + this.execOpts.jdeployRootPath.trim() + "/" + jdeployFileToUse + '" ' + this.codenarcArgs.join(" ");
+            '"' +
+            nodeExe +
+            '" "' +
+            this.execOpts.jdeployRootPath.trim() +
+            "/" +
+            jdeployFileToUse +
+            '" -Xms256m -Xmx2048m ' +
+            this.codenarcArgs.join(" ");
 
         // Start progress bar
         debug(`CALL CodeNarcJava with ${jDeployCommand}`);
@@ -178,7 +186,8 @@ class CodeNarcCaller {
         const maxAttemptTimeMs = 10000;
         let attempts = 1;
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
-        const jDeployCommand = '"' + nodeExe + '" "' + this.execOpts.jdeployRootPath.trim() + "/" + this.execOpts.jdeployFile + '" --server';
+        const jDeployCommand =
+            '"' + nodeExe + '" "' + this.execOpts.jdeployRootPath.trim() + "/" + this.execOpts.jdeployFile + '" -Xms256m -Xmx2048m --server';
         const serverPingUri = this.getCodeNarcServerUri() + "/ping";
         let interval;
         debug(`ATTEMPT to start CodeNarcServer with ${jDeployCommand}`);

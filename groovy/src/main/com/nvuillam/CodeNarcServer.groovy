@@ -50,7 +50,7 @@ class CodeNarcServer {
      */
     static void main(String[] args) {
         println 'CodeNarcServer: ' + args
-        final List<String> argsList =  new ArrayList<String>()
+        final List<String> argsList =  []
         Collections.addAll(argsList, args)
         CodeNarcServer codeNarcServer = new CodeNarcServer()
         // Initialize CodeNarc Server for later calls
@@ -289,7 +289,7 @@ class CodeNarcServer {
 @CompileDynamic
 class StorePrintStream extends PrintStream {
 
-    static final List<String> printList = new LinkedList<String>()
+    static final List<String> printList = [] as Queue
 
     StorePrintStream(PrintStream org) {
         super(org)

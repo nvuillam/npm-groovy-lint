@@ -66,7 +66,7 @@ async function checkRuleFix(ruleName, testRule) {
     }
     // Check results
     assert(err == null, "No crash during NpmGroovyLint run");
-    assert(linter.status === 0, 'Linter status is 0');
+    assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
     const updatedSource = linter.lintResult.files[0].updatedSource;
     const effectiveDiffs = getDiff(testRule.sourceAfter, updatedSource, source);
     assert(effectiveDiffs.length === 0, `Fix result is not the one expected.\n Diff: \n${JSON.stringify(effectiveDiffs, null, 2)}`);

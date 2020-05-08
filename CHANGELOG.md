@@ -1,5 +1,26 @@
 # Changelog
 
+## UNRELEASED
+
+- Launch JVM with high memory (`-Xms256m -Xmx2048m`) to improve performances on big files
+
+- New fix rules
+  - AssignmentInConditional
+  - DuplicateImport
+  - ExplicitLinkedListInstantiation
+  - InsecureRandom
+  - UnnecessaryDefInVariableDeclaration
+  - UnnecessaryDotClass
+  - UnnecessaryFinalOnPrivateMethod
+  - UnnecessaryInstantiationToGetClass
+
+- Updated fix rules
+  - BracesForForLoop: False positive triggering messy code after fixing
+  - UnnecessaryGString: Fix multiline replacements ( `"""` by `'''` )
+
+- Utils
+  - Allow regex in range functions
+
 ## [4.7.0] 2020-05-06
 
 - New fix rules

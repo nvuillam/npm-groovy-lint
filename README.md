@@ -229,6 +229,7 @@ def variable = 1;
 - ConsecutiveBlankLines
 - ElseBlockBraces
 - ExplicitArrayListInstantiation
+- ExplicitLinkedListInstantiation
 - FileEndsWithoutNewline
 - IfStatementBraces
 - Indentation
@@ -252,6 +253,9 @@ def variable = 1;
 - TrailingWhitespace
 - UnnecessaryDefInFieldDeclaration
 - UnnecessaryDefInMethodDeclaration
+- UnnecessaryDefInVariableDeclaration
+- UnnecessaryDotClass
+- UnnecessaryFinalOnPrivateMethod
 - UnnecessaryGString
 - UnnecessaryGroovyImport
 - UnnecessaryPackageReference
