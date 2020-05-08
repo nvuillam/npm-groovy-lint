@@ -22,7 +22,7 @@ const rule = {
                 allLines.splice(lineNumber, 1);
             } else {
                 const itemIndex = allLines.findIndex(line => line.includes(className));
-                throw new Error(`FIX ERROR: UnusedImport aws expecting ${className} at position ${lineNumber} but it is at position ${itemIndex} `);
+                throw new Error(`FIX ERROR: UnusedImport was expecting ${className} at position ${lineNumber} but it is at position ${itemIndex} `);
             }
             return allLines;
         }

@@ -3,7 +3,10 @@
 ## UNRELEASED
 
 - New fix rules
+  - AssignmentInConditional
+  - DuplicateImport
   - ExplicitLinkedListInstantiation
+  - InsecureRandom
   - UnnecessaryDefInVariableDeclaration
   - UnnecessaryDotClass
   - UnnecessaryFinalOnPrivateMethod
@@ -11,6 +14,9 @@
 
 - Updated fix rules
   - UnnecessaryGString: Fix multiline replacements ( `"""` by `'''` )
+
+- Utils
+  - Allow regex in range functions
 
 ## [4.7.0] 2020-05-06
 

@@ -97,10 +97,12 @@ const rulesFixPriorityOrder = [
     // Line rules or not changing number of lines rules
     "NoTabCharacter",
     "Indentation",
+    "AssignmentInConditional",
     "UnnecessaryGString",
     "UnnecessaryToString",
     "ExplicitArrayListInstantiation",
     "ExplicitLinkedListInstantiation",
+    "InsecureRandom",
     "SpaceBeforeOpeningBrace",
     "SpaceAfterOpeningBrace",
     "SpaceAfterCatch",
@@ -127,6 +129,7 @@ const rulesFixPriorityOrder = [
     // Rule that can change the numbers of lines, so they must be processed after line scope rules
     "UnnecessaryGroovyImport",
     "UnusedImport",
+    "DuplicateImport",
     "BlockStartsWithBlankLine",
     "BlockEndsWithBlankLine",
     "BracesForClass",

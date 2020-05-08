@@ -124,7 +124,14 @@ class CodeNarcCaller {
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jdeployFileToUse = secondAttempt ? this.execOpts.jdeployFilePlanB : this.execOpts.jdeployFile;
         const jDeployCommand =
-            '"' + nodeExe + '" "' + this.execOpts.jdeployRootPath.trim() + "/" + jdeployFileToUse + '" -Xms256m -Xmx2048m ' + this.codenarcArgs.join(" ");
+            '"' +
+            nodeExe +
+            '" "' +
+            this.execOpts.jdeployRootPath.trim() +
+            "/" +
+            jdeployFileToUse +
+            '" -Xms256m -Xmx2048m ' +
+            this.codenarcArgs.join(" ");
 
         // Start progress bar
         debug(`CALL CodeNarcJava with ${jDeployCommand}`);
@@ -179,7 +186,8 @@ class CodeNarcCaller {
         const maxAttemptTimeMs = 10000;
         let attempts = 1;
         const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
-        const jDeployCommand = '"' + nodeExe + '" "' + this.execOpts.jdeployRootPath.trim() + "/" + this.execOpts.jdeployFile + '" -Xms256m -Xmx2048m --server';
+        const jDeployCommand =
+            '"' + nodeExe + '" "' + this.execOpts.jdeployRootPath.trim() + "/" + this.execOpts.jdeployFile + '" -Xms256m -Xmx2048m --server';
         const serverPingUri = this.getCodeNarcServerUri() + "/ping";
         let interval;
         debug(`ATTEMPT to start CodeNarcServer with ${jDeployCommand}`);
@@ -189,7 +197,7 @@ class CodeNarcCaller {
             let stop = false;
             let eJava;
             exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => { })
+                .then(() => {})
                 .catch(eRun => {
                     stop = true;
                     eJava = eRun;
