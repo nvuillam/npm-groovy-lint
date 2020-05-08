@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+- Launch JVM with high memory (`-Xms256m -Xmx2048m`) to improve performances on big files
+
 - New fix rules
   - AssignmentInConditional
   - DuplicateImport
@@ -13,6 +15,7 @@
   - UnnecessaryInstantiationToGetClass
 
 - Updated fix rules
+  - BracesForForLoop: False positive triggering messy code after fixing
   - UnnecessaryGString: Fix multiline replacements ( `"""` by `'''` )
 
 - Utils

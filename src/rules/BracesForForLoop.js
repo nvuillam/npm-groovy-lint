@@ -1,9 +1,10 @@
 // Braces for for loop
 
-const { moveOpeningBracket, findRangeBetweenStrings } = require("../utils");
+const { getVariable, moveOpeningBracket, findRangeBetweenStrings } = require("../utils");
 
 const rule = {
     scope: "file",
+    unitary: true,
     range: {
         type: "function",
         func: (_errLine, errItem, _evaluatedVars, allLines) => {
@@ -14,7 +15,11 @@ const rule = {
         label: "Move opening brace on the same line",
         type: "function",
         func: (allLines, variables) => {
-            return moveOpeningBracket(allLines, variables);
+            const lineNumber = getVariable(variables, "lineNb", { mandatory: true });
+            if (!allLines[lineNumber].includes("{")) {
+                return moveOpeningBracket(allLines, variables);
+            }
+            return allLines;
         }
     },
     tests: [
@@ -35,6 +40,18 @@ for (int i = 0; i < toto.length ; i++) {
             sourceBefore: `
 for (int i = 0; i < toto.length ; i++)
 {    def a = 1
+}
+`,
+            sourceAfter: `
+for (int i = 0; i < toto.length ; i++) {
+    def a = 1
+}
+`
+        },
+        {
+            sourceBefore: `
+for (int i = 0; i < toto.length ; i++) {
+    def a = 1
 }
 `,
             sourceAfter: `
