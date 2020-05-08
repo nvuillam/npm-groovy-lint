@@ -70,7 +70,7 @@ describe('Errors', function () {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
 
-        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
     });
 
 });

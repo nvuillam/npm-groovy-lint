@@ -23,7 +23,7 @@ describe('Lint with API', () => {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes('warning'), 'Output string contains warning');
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, 'Infos found');
@@ -40,7 +40,7 @@ describe('Lint with API', () => {
             '--loglevel', 'warning'
         ],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes(`"totalFoundWarningNumber":`), 'Property totalFoundWarningNumber is in result');
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
         checkCodeNarcCallsCounter(1);
@@ -56,7 +56,7 @@ describe('Lint with API', () => {
             '--output', reportFileName],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(fse.existsSync(reportFileName), 'CodeNarc HTML report generated');
         fse.removeSync(reportFileName);
         checkCodeNarcCallsCounter(1);
@@ -72,7 +72,7 @@ describe('Lint with API', () => {
             '--output', reportFileName],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(fse.existsSync(reportFileName), 'CodeNarc XML report generated');
         fse.removeSync(reportFileName);
         checkCodeNarcCallsCounter(1);
@@ -90,7 +90,7 @@ describe('Lint with API', () => {
             `-report="xml:${reportFileName}"`],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(fse.existsSync(reportFileName), 'XML CodeNarc report has been generated');
         fse.removeSync(reportFileName);
         checkCodeNarcCallsCounter(1);
@@ -107,7 +107,7 @@ describe('Lint with API', () => {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes('warning'), 'Output string contains warning');
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, 'Warnings found');
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, 'Infos found');
@@ -125,7 +125,7 @@ describe('Lint with API', () => {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
         checkCodeNarcCallsCounter(1);
     });
@@ -142,7 +142,7 @@ describe('Lint with API', () => {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
         checkCodeNarcCallsCounter(1);
     });
@@ -159,7 +159,7 @@ describe('Lint with API', () => {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
         checkCodeNarcCallsCounter(1);
     });
@@ -176,7 +176,7 @@ describe('Lint with API', () => {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
         checkCodeNarcCallsCounter(1);
     });

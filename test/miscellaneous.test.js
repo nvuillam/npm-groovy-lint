@@ -27,7 +27,7 @@ describe('Miscellaneous', function () {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
         const filePath = await linter.getConfigFilePath();
-        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(path.resolve(filePath) === path.resolve('./lib/example/.groovylintrc.json'), ".groovylintrc.json has been returned")
     });
 
@@ -39,7 +39,7 @@ describe('Miscellaneous', function () {
             jdeployRootPath: 'jdeploy-bundle'
         });
         const filePath = await linter.getConfigFilePath('./lib/example');
-        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(path.resolve(filePath) === path.resolve('./lib/example/.groovylintrc.json'), ".groovylintrc.json has been returned")
     });
 
@@ -64,7 +64,7 @@ describe('Miscellaneous', function () {
         assert(rules['CouldBeElvis'] == 'off', 'CouldBeElvis is off');
         assert(rules['NoDef'] == 'off', 'NoDef is off');
         assert(rules['Indentation']["spacesPerIndentLevel"] === 2, 'Indentation rule override has been taken in account')
-        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
     });
 
     it('(API:source) load standard config using string key', async () => {
@@ -85,7 +85,7 @@ describe('Miscellaneous', function () {
         assert(rules['NoDef'] == 'off', 'NoDef is off');
         assert(rules['VariableName'] == 'off', 'VariableName is off');
         assert(rules['CompileStatic'] == 'off', 'CompileStatic is off');
-        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
     });
 
     it('(API:source) load custom config using string key', async () => {
@@ -108,7 +108,7 @@ describe('Miscellaneous', function () {
         assert(rules['CompileStatic'] == 'off', 'CompileStatic is off');
         assert(rules['CouldBeSwitchStatement'] == 'off', 'CouldBeSwitchStatement is off');
         assert(rules['CouldBeElvis'] == 'off', 'CouldBeElvis is off');
-        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
     });
 
     it('(API:source) return indent length without linting', async () => {
@@ -139,7 +139,7 @@ describe('Miscellaneous', function () {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.rules != null, "Rules are returned ");
         assert(linter.lintResult.rules['AssertWithinFinallyBlock'].docUrl != null, "Rules doc urls are returned ");
     });
@@ -154,7 +154,7 @@ describe('Miscellaneous', function () {
             npmGroovyLintConfig, {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Linter status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.rules == null, "Rules are not returned");
     });
 
@@ -231,7 +231,7 @@ describe('Miscellaneous', function () {
             '-h'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes('--verbose'), '--verbose is found in output text');
     });
 
@@ -243,7 +243,7 @@ describe('Miscellaneous', function () {
             '-h', 'source'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes('-s, --source'), 'npm-groovy-lint Help is displayed');
     });
 
@@ -255,7 +255,7 @@ describe('Miscellaneous', function () {
             '-v'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         const FindPackageJson = require("find-package-json");
         const finder = FindPackageJson(__dirname);
         const v = finder.next().value.version;
@@ -272,7 +272,7 @@ describe('Miscellaneous', function () {
             '-help'], {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.codeNarcStdOut.includes('where OPTIONS are zero or more command-line options'), 'CodeNarc help is displayed');
         checkCodeNarcCallsCounter(1);
     });
@@ -288,7 +288,7 @@ describe('Miscellaneous', function () {
             verbose: true
         }).run();
 
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes('CodeNarcServer terminated'), 'CodeNarcServer has been terminated');
         checkCodeNarcCallsCounter(1);
     });
@@ -303,7 +303,7 @@ describe('Miscellaneous', function () {
             jdeployRootPath: 'jdeploy-bundle',
             verbose: true
         }).run();
-        assert(linter.status === 0, 'Status is 0');
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes('CodeNarcServer was not running'), 'CodeNarcServer not killed because not running');
         checkCodeNarcCallsCounter(1);
     });
