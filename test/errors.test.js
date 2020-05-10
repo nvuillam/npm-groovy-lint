@@ -12,6 +12,7 @@ describe('Errors', function () {
         const prevFileContent = fse.readFileSync('./lib/example/SampleFile.groovy').toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
+            insight: false,
             someUnknownParam: "lelamanul"
         };
         let errRes;
@@ -30,6 +31,7 @@ describe('Errors', function () {
     it('(API:source) should trigger a codenarc error', async () => {
         const npmGroovyLintConfig = {
             path: '/not/existing/path',
+            insight: false,
             output: 'txt',
             verbose: true
         };
@@ -45,6 +47,7 @@ describe('Errors', function () {
     it('(API:source) should trigger a codenarc error (--noserver)', async () => {
         const npmGroovyLintConfig = {
             path: '/not/existing/path',
+            insight: false,
             noserver: true
         };
         const linter = await new NpmGroovyLint(
@@ -62,6 +65,7 @@ describe('Errors', function () {
             source: prevFileContent,
             fix: true,
             fixrules: "TriggerTestError",
+            insight: false,
             output: 'txt',
             verbose: true
         };

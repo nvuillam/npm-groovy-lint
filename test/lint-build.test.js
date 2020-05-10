@@ -15,6 +15,7 @@ describe('Lint with executable (jdeploy-bundle)', () => {
             '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/' + SAMPLE_FILE_SMALL,
             '--loglevel', 'warning',
+            '--no-insight',
             '--verbose'
         ];
         const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(' '));
@@ -28,6 +29,7 @@ describe('Lint with executable (jdeploy-bundle)', () => {
         const params = [
             '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/' + SAMPLE_FILE_SMALL,
+            '--no-insight',
             '--output', 'json'
         ];
         const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(' '));
@@ -41,6 +43,7 @@ describe('Lint with executable (jdeploy-bundle)', () => {
     it('(EXE:file) should ignore node_modules pattern', async () => {
         const params = [
             '--ignorepattern', '**/node_modules/**',
+            '--no-insight',
             '--output', 'txt'
         ];
         const { stdout, stderr } = await exec('cd jdeploy-bundle/lib/example && ' + NPM_GROOVY_LINT + params.join(' '));
@@ -79,6 +82,7 @@ describe('Lint with executable (jdeploy-bundle)', () => {
         const params = [
             '--path', ' "jdeploy-bundle/lib/example"',
             '--files', '**/Jenkinsfile',
+            '--no-insight',
             '--verbose'];
         const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(' '));
         if (stderr) {
@@ -118,6 +122,7 @@ describe('Lint with executable (jdeploy-bundle)', () => {
             '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/' + SAMPLE_FILE_SMALL,
             '--failonerror',
+            '--no-insight',
             '--output', 'txt'
         ];
         const { stderr, status } = spawn(NPM_GROOVY_LINT + params.join(' '), [], { shell: true });
@@ -132,6 +137,7 @@ describe('Lint with executable (jdeploy-bundle)', () => {
             '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/' + SAMPLE_FILE_SMALL,
             '--failonwarning',
+            '--no-insight',
             '--output', 'txt'
         ];
         const { stderr, status } = spawn(NPM_GROOVY_LINT + params.join(' '), [], { shell: true });
@@ -146,6 +152,7 @@ describe('Lint with executable (jdeploy-bundle)', () => {
             '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/' + SAMPLE_FILE_SMALL,
             '--failoninfo',
+            '--no-insight',
             '--output', 'txt'
         ];
         const { stderr, status } = spawn(NPM_GROOVY_LINT + params.join(' '), [], { shell: true });
@@ -153,6 +160,19 @@ describe('Lint with executable (jdeploy-bundle)', () => {
             console.error(stderr.toString());
         }
         assert(status === 1, `Status code is 1 (returned: ${status})`);
+    });
+
+    it('(EXE:file) Send anonymous usage stats', async () => {
+        const params = [
+            '--path', '"jdeploy-bundle/lib/example"',
+            '--files', '**/' + SAMPLE_FILE_SMALL,
+            '--output', 'txt'
+        ];
+        const { stderr, status } = spawn(NPM_GROOVY_LINT + params.join(' '), [], { shell: true });
+        if (stderr) {
+            console.error(stderr.toString());
+        }
+        assert(status === 0, `Status code is 0 (returned: ${status})`);
     });
 
 });

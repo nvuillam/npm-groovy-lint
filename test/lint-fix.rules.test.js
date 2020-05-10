@@ -49,6 +49,7 @@ async function checkRuleFix(ruleName, testRule) {
         fix: true,
         fixrules: fixRules,
         nolintafter: true,
+        insight: false,
         output: 'none',
         verbose: true
     };

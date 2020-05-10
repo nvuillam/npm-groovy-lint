@@ -20,6 +20,7 @@ describe('Miscellaneous', function () {
             path: "./lib/example/",
             files: '**/' + SAMPLE_FILE_SMALL,
             output: 'txt',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -52,6 +53,7 @@ describe('Miscellaneous', function () {
             path: "./lib/example/",
             files: '**/' + SAMPLE_FILE_SMALL,
             output: 'txt',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -72,6 +74,7 @@ describe('Miscellaneous', function () {
             config: 'recommended-jenkinsfile',
             path: "./lib/example/",
             files: '**/' + SAMPLE_FILE_SMALL,
+            insight: false,
             output: 'txt',
             verbose: true
         };
@@ -94,6 +97,7 @@ describe('Miscellaneous', function () {
             path: "./lib/example/",
             files: '**/' + SAMPLE_FILE_SMALL,
             output: 'txt',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -115,6 +119,7 @@ describe('Miscellaneous', function () {
         let indentLength = null;
         const linter = new NpmGroovyLint({
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
+            insight: false,
             output: 'none'
         }, {});
         const tmpStartPath = path.dirname(SAMPLE_FILE_SMALL_PATH);
@@ -133,6 +138,7 @@ describe('Miscellaneous', function () {
             path: "./lib/example/",
             files: '**/' + SAMPLE_FILE_SMALL,
             returnrules: true,
+            insight: false,
             output: 'none'
         };
         const linter = await new NpmGroovyLint(
@@ -148,6 +154,7 @@ describe('Miscellaneous', function () {
         const npmGroovyLintConfig = {
             path: "./lib/example/",
             files: '**/' + SAMPLE_FILE_SMALL,
+            insight: false,
             output: 'none'
         };
         const linter = await new NpmGroovyLint(
@@ -158,13 +165,28 @@ describe('Miscellaneous', function () {
         assert(linter.lintResult.rules == null, "Rules are not returned");
     });
 
+    it('(API:source) send anonymous usage statistics', async () => {
+        const npmGroovyLintConfig = {
+            path: "./lib/example/",
+            files: '**/' + SAMPLE_FILE_SMALL,
+            returnrules: true,
+            output: 'none'
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.startElapse != null, "Anonymous stats has not been sent");
 
+    });
 
     it('(API:source) should cancel current request', async () => {
         const requestKey = 'requestKeyCalculatedByExternal' + Math.random()
         const npmGroovyLintConfig = {
             path: "./lib/example/",
             files: '**/' + SAMPLE_FILE_BIG,
+            insight: false,
             output: 'none'
         };
         const linter1 = new NpmGroovyLint(
@@ -282,6 +304,7 @@ describe('Miscellaneous', function () {
             process.execPath,
             '',
             '--killserver',
+            '--no-insight',
             '--verbose'
         ], {
             jdeployRootPath: 'jdeploy-bundle',
@@ -298,6 +321,7 @@ describe('Miscellaneous', function () {
             process.execPath,
             '',
             '--killserver',
+            '--no-insight',
             '--verbose'
         ], {
             jdeployRootPath: 'jdeploy-bundle',

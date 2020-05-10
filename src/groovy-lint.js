@@ -10,6 +10,7 @@ const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = requi
 const { NPM_GROOVY_LINT_CONSTANTS, loadConfig, getConfigFileName } = require("./config.js");
 const optionsDefinition = require("./options");
 const { computeStats, processOutput } = require("./output.js");
+const { manageRecordAnonymousStats } = require("./analytics.js");
 
 class NpmGroovyLint {
     "use strict";
@@ -44,6 +45,7 @@ class NpmGroovyLint {
     outputString = "";
     status = 0;
     fixer;
+    startElapse;
 
     // Construction: initialize options & args
     constructor(argsIn, internalOpts = { parseOptions: true }) {
@@ -109,6 +111,10 @@ class NpmGroovyLint {
         return await loadConfig(configFilePath, mode, null, []);
     }
 
+    //////////////////////////////////////////////////////////////////////
+    // Below this point, methods should be called only by NpmGroovyLint //
+    //////////////////////////////////////////////////////////////////////
+
     // Actions before call to CodeNarc
     async preProcess() {
         // Manage when the user wants to use only codenarc args
@@ -139,6 +145,21 @@ class NpmGroovyLint {
             }
         } else {
             this.options = this.args;
+        }
+
+        // Manage anonymous stats
+        if (["initialCall", "index"].includes(this.origin) && this.options.insight !== false) {
+            this.startElapse = performance.now();
+            const callerKey = this.origin === "index" ? "cli" : "module";
+            const actionKey = this.options.format ? "format" : this.options.fix ? "fix" : "lint";
+            manageRecordAnonymousStats(
+                [callerKey, actionKey],
+                {
+                    category: callerKey + "-" + actionKey,
+                    action: "start"
+                },
+                this.options
+            );
         }
 
         // Kill running CodeNarcServer
@@ -277,6 +298,23 @@ class NpmGroovyLint {
         }
         manageDeleteTmpFiles(this.tmpGroovyFileName, this.tmpRuleSetFileName);
         this.manageReturnCode();
+
+        // Manage anonymous usage stats
+        if (this.startElapse && this.options.insight !== false) {
+            const elapsedTimeMs = parseInt(performance.now() - this.startElapse);
+            const callerKey = this.origin === "index" ? "cli" : "module";
+            const actionKey = this.options.format ? "format" : this.options.fix ? "fix" : "lint";
+            const res = Object.assign({ status: this.status, summary: this.lintResult.summary }, this.options);
+            manageRecordAnonymousStats(
+                null,
+                {
+                    category: callerKey + "-" + actionKey,
+                    action: "complete",
+                    value: elapsedTimeMs
+                },
+                res
+            );
+        }
     }
 
     // Check if fixed errors required a new lint & fix
