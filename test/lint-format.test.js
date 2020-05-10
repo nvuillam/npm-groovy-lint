@@ -24,6 +24,7 @@ describe('Format with API', function () {
             format: true,
             nolintafter: true,
             output: 'txt',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -53,6 +54,7 @@ describe('Format with API', function () {
             format: true,
             nolintafter: true,
             output: 'txt',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -84,6 +86,7 @@ describe('Format with API', function () {
             format: true,
             nolintafter: true,
             output: 'txt',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -119,6 +122,7 @@ async function checkRule(key, check) {
         format: true,
         nolintafter: true,
         output: 'none',
+        insight: false,
         verbose: true
     };
     const linter = await new NpmGroovyLint(

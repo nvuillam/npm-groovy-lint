@@ -17,6 +17,7 @@ describe('Lint & fix with API', function () {
             sourcefilepath: sampleFilePath,
             nolintafter: true,
             output: 'none',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -45,6 +46,7 @@ describe('Lint & fix with API', function () {
             sourcefilepath: sampleFilePath,
             fix: true,
             output: 'none',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -71,6 +73,7 @@ describe('Lint & fix with API', function () {
             fix: true,
             nolintafter: true,
             output: 'none',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -98,6 +101,7 @@ describe('Lint & fix with API', function () {
             '--files', '**/Jenkinsfile',
             '--nolintafter',
             '--fix',
+            '--no-insight',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
         }).run();
@@ -145,6 +149,7 @@ describe('Lint & fix with API', function () {
             '--fixrules', fixRules.join(','),
             '--nolintafter',
             '--output', '"npm-groovy-fix-log-should-fix-only-some-errors.txt"',
+            '--no-insight',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
         }).run();
@@ -169,6 +174,7 @@ describe('Lint & fix with API', function () {
             '--output', '"npm-groovy-fix-log-should-fix-groovy-files.txt"',
             '--fix',
             '--nolintafter',
+            '--no-insight',
             '--verbose'], {
             jdeployRootPath: 'jdeploy-bundle',
         }).run();

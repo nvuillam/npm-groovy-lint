@@ -18,6 +18,7 @@ describe('Lint with API', () => {
             '',
             '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/' + SAMPLE_FILE_SMALL,
+            '--no-insight',
             '--verbose'
         ], {
             jdeployRootPath: 'jdeploy-bundle',
@@ -37,6 +38,7 @@ describe('Lint with API', () => {
             '--path', '"jdeploy-bundle/lib/example"',
             '--files', '**/' + SAMPLE_FILE_SMALL,
             '--output', 'json',
+            '--no-insight',
             '--loglevel', 'warning'
         ],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
@@ -53,6 +55,7 @@ describe('Lint with API', () => {
             '',
             '--path', 'jdeploy-bundle/lib/example',
             '--files', '**/' + SAMPLE_FILE_SMALL,
+            '--no-insight',
             '--output', reportFileName],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
@@ -69,6 +72,7 @@ describe('Lint with API', () => {
             '',
             '--path', 'jdeploy-bundle/lib/example',
             '--files', '**/' + SAMPLE_FILE_SMALL,
+            '--no-insight',
             '--output', reportFileName],
             { jdeployRootPath: 'jdeploy-bundle' }).run();
 
@@ -102,6 +106,7 @@ describe('Lint with API', () => {
             '',
             '--path', '"jdeploy-bundle/lib/example"',
             '-f', '**/Jenkinsfile',
+            '--no-insight',
             '--verbose'
         ], {
             jdeployRootPath: 'jdeploy-bundle',
@@ -118,6 +123,7 @@ describe('Lint with API', () => {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
+            insight: false,
             output: 'txt',
             verbose: true
         };
@@ -135,6 +141,7 @@ describe('Lint with API', () => {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             output: 'txt',
+            insight: false,
             parse: true,
             verbose: true
         };
@@ -153,6 +160,7 @@ describe('Lint with API', () => {
             sourcefilepath: SAMPLE_FILE_PARSE_ERROR_PATH,
             output: 'txt',
             parse: true,
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(
@@ -170,6 +178,7 @@ describe('Lint with API', () => {
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             noserver: true,
             output: 'none',
+            insight: false,
             verbose: true
         };
         const linter = await new NpmGroovyLint(

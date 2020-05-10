@@ -20,6 +20,7 @@ else {
 // Copy files into dist folder (where they will be taken by "jdeploy install" command and copied to jdeploy_bundle)
 const filesToCopy =
     [
+        "analytics.js",
         "codenarc-caller.js",
         "codenarc-factory.js",
         "config.js",

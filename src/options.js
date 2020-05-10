@@ -182,6 +182,12 @@ module.exports = optionator({
             description: "Return rule descriptions and url if this argument is set"
         },
         {
+            option: "insight",
+            type: "Boolean",
+            description:
+                "npm-groovy-lint collects anonymous usage statistics using package https://www.npmjs.com/package/insight. If you do not want to share them, use --no-insight option"
+        },
+        {
             option: "help",
             alias: "h",
             type: "Boolean",

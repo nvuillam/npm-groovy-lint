@@ -52,6 +52,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "import-fresh": "^3.2.1",
+    "insight": "^0.10.3",
     "ip": "^1.1.5",
     "optionator": "^0.8.3",
     "request": "^2.88.2",

@@ -20,6 +20,7 @@ async function checkRule(key, check) {
     const npmGroovyLintConfig = {
         source: check.source,
         output: 'txt',
+        insight: false,
         verbose: true
     };
     const linter = await new NpmGroovyLint(
