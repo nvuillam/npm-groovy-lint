@@ -10,7 +10,7 @@ const { prepareCodeNarcCall, parseCodeNarcResult, manageDeleteTmpFiles } = requi
 const { NPM_GROOVY_LINT_CONSTANTS, loadConfig, getConfigFileName } = require("./config.js");
 const optionsDefinition = require("./options");
 const { computeStats, processOutput } = require("./output.js");
-const { manageRecordAnonymousStats } = require("./analytics.js");
+const { recordAnonymousEvent } = require("./analytics.js");
 
 class NpmGroovyLint {
     "use strict";
@@ -150,16 +150,6 @@ class NpmGroovyLint {
         // Manage anonymous stats
         if (["initialCall", "index"].includes(this.origin) && this.options.insight !== false) {
             this.startElapse = performance.now();
-            const callerKey = this.origin === "index" ? "cli" : "module";
-            const actionKey = this.options.format ? "format" : this.options.fix ? "fix" : "lint";
-            manageRecordAnonymousStats(
-                [callerKey, actionKey],
-                {
-                    category: callerKey + "-" + actionKey,
-                    action: "start"
-                },
-                this.options
-            );
         }
 
         // Kill running CodeNarcServer
@@ -297,24 +287,26 @@ class NpmGroovyLint {
             this.outputString = await processOutput(this.outputType, this.output, this.lintResult, this.options, this.fixer);
         }
         manageDeleteTmpFiles(this.tmpGroovyFileName, this.tmpRuleSetFileName);
-        this.manageReturnCode();
 
         // Manage anonymous usage stats
         if (this.startElapse && this.options.insight !== false) {
             const elapsedTimeMs = parseInt(performance.now() - this.startElapse);
             const callerKey = this.origin === "index" ? "cli" : "module";
             const actionKey = this.options.format ? "format" : this.options.fix ? "fix" : "lint";
-            const res = Object.assign({ status: this.status, summary: this.lintResult.summary }, this.options);
-            manageRecordAnonymousStats(
-                null,
-                {
-                    category: callerKey + "-" + actionKey,
-                    action: "complete",
-                    value: elapsedTimeMs
-                },
-                res
-            );
+            const data = {
+                status: this.status,
+                summary: this.lintResult.summary,
+                elapsed: elapsedTimeMs,
+                options: this.options
+            };
+            const eventSentPromise = recordAnonymousEvent(callerKey + "-" + actionKey, data);
+            if (callerKey === "cli") {
+                await eventSentPromise;
+            }
         }
+
+        // Manage return code in case failonerror, failonwarning or failoninfo is called
+        this.manageReturnCode();
     }
 
     // Check if fixed errors required a new lint & fix

@@ -170,7 +170,7 @@ describe('Miscellaneous', function () {
             path: "./lib/example/",
             files: '**/' + SAMPLE_FILE_SMALL,
             returnrules: true,
-            output: 'none'
+            output: 'txt'
         };
         const linter = await new NpmGroovyLint(
             npmGroovyLintConfig, {

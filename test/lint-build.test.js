@@ -104,6 +104,18 @@ describe('Lint with executable (jdeploy-bundle)', () => {
         assert(stdout.includes('--verbose'), 'stdout should contain word "--verbose"');
     });
 
+    it('(EXE:help) should show npm-groovy-lint version', async () => {
+        const params = [
+            '-v'
+        ];
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(' '));
+        if (stderr) {
+            console.error(stderr);
+        }
+        assert(stdout, 'stdout is set');
+        assert(stdout.includes('npm-groovy-lint v'), 'Version is returned');
+    });
+
     it('(EXE:help) should show codenarc help', async () => {
         const params = [
             '--codenarcargs',
@@ -168,8 +180,13 @@ describe('Lint with executable (jdeploy-bundle)', () => {
             '--files', '**/' + SAMPLE_FILE_SMALL,
             '--output', 'txt'
         ];
-        const { stderr, status } = spawn(NPM_GROOVY_LINT + params.join(' '), [], { shell: true });
+        const { stdout, stderr, status } = spawn(NPM_GROOVY_LINT + params.join(' '), [], { shell: true });
+        if (stdout) {
+            console.log('STDOUT:\n');
+            console.log(stdout.toString());
+        }
         if (stderr) {
+            console.log('STDERR:\n');
             console.error(stderr.toString());
         }
         assert(status === 0, `Status code is 0 (returned: ${status})`);
