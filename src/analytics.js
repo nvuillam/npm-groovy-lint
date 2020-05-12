@@ -1,6 +1,7 @@
 const analyticsLib = require("analytics").default;
 const segmentPlugin = require("@analytics/segment");
 const debug = require("debug")("npm-groovy-lint");
+const os = require('os');
 
 const SEGMENT_ID = "hjdIe83s5rbwgDfOWLxq3BkvXqQVEDTz";
 let analyticsInstance;
@@ -19,7 +20,10 @@ function recordAnonymousEvent(eventType, data) {
 }
 
 function buildEventPayload(data) {
-    const payloadFiltered = {};
+    const payloadFiltered = {
+        osPlatform: os.platform(),
+        osRelease: os.release()
+    };
     // Status
     if (data.status) {
         payloadFiltered.status = data.status;
