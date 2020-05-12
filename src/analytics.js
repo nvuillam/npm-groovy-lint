@@ -42,6 +42,8 @@ function buildEventPayload(data) {
         }
         if (data.options.files) {
             payloadFiltered.optionFiles = data.options.files.replace(/\*/g, "#");
+        } else if (data.options.sourcefilepath) {
+            payloadFiltered.optionFiles = data.options.sourcefilepath;
         }
         if (data.options.parse) {
             payloadFiltered.optionParse = data.options.parse;
