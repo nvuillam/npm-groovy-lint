@@ -1,7 +1,7 @@
 const analyticsLib = require("analytics").default;
 const segmentPlugin = require("@analytics/segment");
 const debug = require("debug")("npm-groovy-lint");
-const os = require('os');
+const os = require("os");
 
 const SEGMENT_ID = "hjdIe83s5rbwgDfOWLxq3BkvXqQVEDTz";
 let analyticsInstance;
@@ -41,7 +41,7 @@ function buildEventPayload(data) {
             payloadFiltered.optionPath = data.options.path;
         }
         if (data.options.files) {
-            payloadFiltered.optionFiles = data.options.files;
+            payloadFiltered.optionFiles = data.options.files.replace(/\*/g, "#");
         }
         if (data.options.parse) {
             payloadFiltered.optionParse = data.options.parse;
