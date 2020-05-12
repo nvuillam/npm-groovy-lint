@@ -10,9 +10,9 @@ const linter = new NpmGroovyLint(process.argv, { origin: "index" });
 (async () => {
     try {
         await linter.run();
-        process.exit(linter.status);
+        process.exitCode = linter.status;
     } catch (err) {
         console.error(err);
-        process.exit(1);
+        process.exitCode = 1;
     }
 })();
