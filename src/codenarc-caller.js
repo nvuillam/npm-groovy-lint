@@ -84,10 +84,10 @@ class CodeNarcCaller {
                     status: 9
                 };
             } else {
-                console.error("CodeNarcServer http call unexpected error:\n" + JSON.stringify(e, null, 2));
+                console.error("CodeNarcServer unexpected error:\n" + JSON.stringify(e, null, 2));
             }
             this.serverStatus = "error";
-            return { status: 1 };
+            return { status: 1, error: { msg: e.message, stack: e.stack } };
         }
 
         // Success result
@@ -113,7 +113,15 @@ class CodeNarcCaller {
                 parseErrors: parsedBody.parseErrors,
                 codeNarcStdOut: parsedBody.stdout,
                 codeNarcStdErr: parsedBody.stderr || parsedBody.errorDtl,
-                status: 1
+                status: 1,
+                error: {
+                    msg: "CodeNarc error",
+                    msgDtl: {
+                        parseErrors: parsedBody.parseErrors,
+                        stdout: parsedBody.stdout,
+                        stderr: parsedBody.stderr || parsedBody.errorDtl
+                    }
+                }
             };
         }
     }
@@ -164,7 +172,14 @@ class CodeNarcCaller {
             } else {
                 return {
                     codeNarcStdErr: e.stderr || e.message,
-                    status: 1
+                    status: 1,
+                    error: {
+                        msg: `Call CodeNarc Java error: ${e.message}`,
+                        msgDtl: {
+                            stderr: e.stderr
+                        },
+                        stack: e.stack
+                    }
                 };
             }
         }
@@ -197,7 +212,7 @@ class CodeNarcCaller {
             let stop = false;
             let eJava;
             exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => {})
+                .then(() => { })
                 .catch(eRun => {
                     stop = true;
                     eJava = eRun;
@@ -239,7 +254,7 @@ class CodeNarcCaller {
                                 resolve();
                             }
                         });
-                }, 1000);
+                }, 500);
             });
         } catch (e) {
             this.declareServerError(e, interval);

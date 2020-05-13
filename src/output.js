@@ -168,7 +168,7 @@ async function processOutput(outputType, output, lintResult, options, fixer = nu
     else if (outputType === "json") {
         // Output log
         if (output.endsWith(".json")) {
-            const fullFileContent = JSON.stringify(outputString, null, 2);
+            const fullFileContent = JSON.stringify(lintResult, null, 2);
             fse.writeFileSync(output, fullFileContent);
             const absolutePath = path.resolve(".", output);
             console.info("GroovyLint: Logged results in file " + absolutePath);
