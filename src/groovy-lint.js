@@ -43,7 +43,8 @@ class NpmGroovyLint {
     onlyCodeNarc = false;
     lintResult = {};
     outputString = "";
-    status = 0;
+    status = 0; // 0 if ok, 1 if expected error, 2 if unexpected error, 9 if cancelled request
+    error; //
     fixer;
     startElapse;
 
@@ -139,9 +140,15 @@ class NpmGroovyLint {
                         this.options[configProp] = configProperties[configProp];
                     }
                 }
-            } catch (error) {
+            } catch (err) {
                 this.status = 2;
-                throw new Error(error.message + "\n" + error.stack);
+                const errMsg = `Parse options error: ${err.message}`;
+                console.error(errMsg);
+                this.error = {
+                    msg: errMsg,
+                    stack: err.stack
+                };
+                return false;
             }
         } else {
             this.options = this.args;
@@ -206,7 +213,7 @@ class NpmGroovyLint {
         const codeNarcFactoryResult = await prepareCodeNarcCall(this.options, this.jdeployRootPath);
         this.setMethodResult(codeNarcFactoryResult);
 
-        return true;
+        return this.error == null ? true : false;
     }
 
     /* Order of attempts (supposed to work on every config):
@@ -288,8 +295,8 @@ class NpmGroovyLint {
         }
         manageDeleteTmpFiles(this.tmpGroovyFileName, this.tmpRuleSetFileName);
 
-        // Manage anonymous usage stats
-        if (this.startElapse && this.options.insight !== false) {
+        // Manage anonymous usage stats (except if current lint has been cancelled by a duplicate call)
+        if (this.startElapse && this.options.insight !== false && this.status !== 9) {
             const elapsedTimeMs = parseInt(performance.now() - this.startElapse);
             const callerKey = this.origin === "index" ? "cli" : "module";
             const actionKey = this.options.format ? "format" : this.options.fix ? "fix" : "lint";
@@ -297,7 +304,8 @@ class NpmGroovyLint {
                 status: this.status,
                 summary: this.lintResult.summary,
                 elapsed: elapsedTimeMs,
-                options: this.options
+                options: this.options,
+                error: this.error
             };
             const eventSentPromise = recordAnonymousEvent(callerKey + "-" + actionKey, data);
             if (callerKey === "cli") {
@@ -362,6 +370,7 @@ class NpmGroovyLint {
         // Lint & fix again only the requested rules for better performances
         delete fixAgainOptions.format;
         delete fixAgainOptions.rules;
+        delete fixAgainOptions.overridenRules;
         fixAgainOptions.rulesets = fixRules.join(",");
         fixAgainOptions.fix = true;
         fixAgainOptions.fixrules = fixRules.join(",");

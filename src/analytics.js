@@ -22,11 +22,16 @@ function recordAnonymousEvent(eventType, data) {
 function buildEventPayload(data) {
     const payloadFiltered = {
         osPlatform: os.platform(),
-        osRelease: os.release()
+        osRelease: os.release(),
+        ci: process.env.CI ? true : false // boolean
     };
     // Status
     if (data.status) {
         payloadFiltered.status = data.status;
+    }
+    // Error
+    if (data.error) {
+        payloadFiltered.error = data.error;
     }
     // Elapsed time
     if (data.elapsed) {
@@ -34,8 +39,11 @@ function buildEventPayload(data) {
     }
     // Options
     if (data.options) {
-        if (data.options.rules) {
-            payloadFiltered.rules = data.options.rules;
+        if (data.options.rulesets) {
+            payloadFiltered.rulesets = data.options.rulesets;
+        }
+        if (data.options.overridenRules) {
+            payloadFiltered.overridenRules = data.options.overridenRules;
         }
         if (data.options.path) {
             payloadFiltered.optionPath = data.options.path;

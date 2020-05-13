@@ -8,6 +8,7 @@ const path = require("path");
 const stripComments = require("strip-json-comments");
 
 const defaultConfigLintFileName = ".groovylintrc-recommended.json";
+const allConfigLintFileName = ".groovylintrc-all.json";
 
 const NPM_GROOVY_LINT_CONSTANTS = {
     CodeNarcVersion: "1.5",
@@ -29,6 +30,8 @@ const configExtensions = ["json", "js", "cjs", "yml", "yaml", "groovylintrc"];
 const defaultConfigFormatFileName = ".groovylintrc-format.json";
 
 const configFormatFilenames = [".groovylintrc-format.json", ".groovylintrc-format.js"];
+
+let overridenRules;
 
 // Load configuration from identified file, or find config file from a start path
 async function loadConfig(startPathOrFile, mode = "lint", sourcefilepath, fileNamesIn = []) {
@@ -68,6 +71,9 @@ async function loadConfig(startPathOrFile, mode = "lint", sourcefilepath, fileNa
                 configUser.rules[ruleKey] = customUserConfig.rules[ruleKey];
             }
         }
+    }
+    if (overridenRules != null) {
+        configUser.overridenRules = overridenRules;
     }
     return configUser;
 }
@@ -156,23 +162,30 @@ async function findConfigInPath(directoryPath, configFilenamesIn) {
 
 // Load configuration depending of the file format
 async function loadConfigFromFile(filePath) {
+    let configLoaded;
     switch (path.extname(filePath)) {
         case ".js":
         case ".cjs":
-            return await loadJSConfigFile(filePath);
-
+            configLoaded = await loadJSConfigFile(filePath);
+            break;
         case ".json":
             if (path.basename(filePath) === "package.json") {
-                return await loadPackageJSONConfigFile(filePath);
+                configLoaded = await loadPackageJSONConfigFile(filePath);
+            } else {
+                configLoaded = await loadJSONConfigFile(filePath);
             }
-            return await loadJSONConfigFile(filePath);
-
+            break;
         case ".yaml":
         case ".yml":
-            return await loadYAMLConfigFile(filePath);
+            configLoaded = await loadYAMLConfigFile(filePath);
+            break;
         default:
-            return null;
+            configLoaded = null;
     }
+    if (configLoaded != null && !filePath.includes(defaultConfigLintFileName) && !filePath.includes(allConfigLintFileName)) {
+        overridenRules = configLoaded.rules;
+    }
+    return configLoaded;
 }
 
 // Javascript format
@@ -250,4 +263,4 @@ async function shortenRuleNames(rules) {
     return shortenedRules;
 }
 
-module.exports = { NPM_GROOVY_LINT_CONSTANTS, loadConfig, getConfigFileName };
+module.exports = { NPM_GROOVY_LINT_CONSTANTS, loadConfig, getConfigFileName, overridenRules };

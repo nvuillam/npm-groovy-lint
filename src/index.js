@@ -12,7 +12,7 @@ const linter = new NpmGroovyLint(process.argv, { origin: "index" });
         await linter.run();
         process.exitCode = linter.status;
     } catch (err) {
-        console.error(err);
+        console.error("Unexpected error: " + err.message + "\n" + err.stack);
         process.exitCode = 1;
     }
 })();

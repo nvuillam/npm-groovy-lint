@@ -110,7 +110,11 @@ async function prepareCodeNarcCall(options) {
         }
     } else {
         result.status = 2;
-        throw new Error("For now, only output formats are txt and json in console, and html and xml as files");
+        const errMsg = `Output not managed: ${result.output}. (For now, only output formats are txt and json in console, and html and xml as files)`;
+        console.error(errMsg);
+        result.error = {
+            msg: errMsg
+        };
     }
     return result;
 }
@@ -120,8 +124,14 @@ async function parseCodeNarcResult(options, codeNarcBaseDir, tmpXmlFileName, tmp
     const parser = new xml2js.Parser();
     const tempXmlFileContent = await parser.parseStringPromise(fse.readFileSync(tmpXmlFileName), {});
     if (!tempXmlFileContent || !tempXmlFileContent.CodeNarc || !tempXmlFileContent.CodeNarc.Package) {
-        console.error(JSON.stringify(tempXmlFileContent));
-        throw new Error("Unable to parse temporary codenarc xml report file " + tmpXmlFileName);
+        const errMsg = `Unable to parse temporary codenarc xml report file ${tmpXmlFileName} \n ${JSON.stringify(tempXmlFileContent)}`;
+        console.error(errMsg);
+        return {
+            status: 2,
+            error: {
+                msg: errMsg
+            }
+        };
     }
     const result = { summary: {} };
 

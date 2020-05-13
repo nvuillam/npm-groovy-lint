@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.11.0] 2020-05-13
+
+- Add CI , rule overrides and crashes in anonymous insights for debugging investigation
+- When used as a module, **never crash intentionally with throw**, so when called by module, check linter.status and linter.error instead of try/catch
+  - 0: ok
+  - 1: expected error
+  - 2: unexpected error
+  - 9: if cancelled request
+
 ## [4.10.0] 2020-05-12
 
 - Update analytics to use [analytics](https://www.npmjs.com/package/analytics) & [@analytics-segment](https://github.com/DavidWells/analytics/tree/master/packages/analytics-plugin-segment) instead of [insight](https://www.npmjs.com/package/insight). If you want to disable anonymous usage stats, you can still use `--no-insight` option.
