@@ -72,19 +72,26 @@ Default rules definition ([`recommended`](https://github.com/nvuillam/npm-groovy
 
 Create a file named **.groovylintrc.json** in the current or any parent directory of where your files to analyze are located
 
+- your-repo-root-folder
+  - src
+    - groovy
+      - mygroovyfile.groovy
+  - Jenkinsfile
+  - **.groovylintrc.json** _(do not forget the dot at the beginning of the file name)_
+
 *If you are using [VsCode Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint), just use QuickFix* ***Ignore in all files*** *and it will generate groovylintrc.json file*
 
-Format :
+### Format :
 
-- extends: Name of a base configuration ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.json), [`recommended-jenkinsfile`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended-jenkinsfile.json), [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.json))
-- rules: List of rules definition, following format `"RuleSection.RuleName": ruleParameters` or `"RuleName": ruleParameters`
-  - "RuleSection.RuleName": any of the **[CodeNarc rules](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)**
-    - ruleParameters: can be just a severity override ( `"off"`, `"error"`, `"warning"`, `"info"` ) , or a property list :
-      - severity : off,error,warning,info
-      - enabled : true (default) or false
-      - any of the [rule advanced properties](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)
+- **extends**: Name of a base configuration ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.json), [`recommended-jenkinsfile`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended-jenkinsfile.json), [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.json))
+- **rules**: List of rules definition, following format `"RuleSection.RuleName": ruleParameters` or `"RuleName": ruleParameters`
+  - _RuleName_: any of the **[CodeNarc rules](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)**
+  - _ruleParameters_: can be just a severity override ( `"off"`, `"error"`, `"warning"`, `"info"` ) , or a property list :
+    - severity : off,error,warning,info
+    - enabled : true (default) or false
+    - any of the [rule advanced properties](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)
 
-Examples:
+### Examples:
 
 ```json
 {
