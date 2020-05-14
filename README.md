@@ -70,7 +70,7 @@ Node.js >= 12 is required to run this package. If you can't upgrade, you can use
 
 Default rules definition ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-recommended.json), based on [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/.groovylintrc-all.json) tracks a lot of errors, do not hesitate to ignore some of them (like NoDef ou RequiredVariableType) if they are too mean for your project.
 
-Define a file named **.groovylintrc.json** (or .js or .YAML, or include in a property groovyLintConfig in package.json)
+Create a file named **.groovylintrc.json** in the current or any parent directory of where your files to analyze are located
 
 *If you are using [VsCode Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint), just use QuickFix* ***Ignore in all files*** *and it will generate groovylintrc.json file*
 
