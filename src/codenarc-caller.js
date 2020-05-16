@@ -4,6 +4,7 @@ const debug = require("debug")("npm-groovy-lint");
 const optionsDefinition = require("./options");
 const { performance } = require("perf_hooks");
 const request = require("request");
+
 const rp = require("request-promise-native");
 const util = require("util");
 
@@ -170,11 +171,26 @@ class CodeNarcCaller {
             if (!secondAttempt) {
                 return await this.callCodeNarcJava(true);
             } else {
+                // Check if the reason is "node" missing in PATH
+                if (e.message && /node(.*)is not recognized as an internal or external command/gm.test(e.message)) {
+                    e.message =
+                        "It seems node.js has not been found on your computer. Please install a recent node.js: https://nodejs.org/en/download/\nIf node is already installed, make sure your PATH contains node installation folder: https://love2dev.com/blog/node-is-not-recognized-as-an-internal-or-external-command/";
+                } else {
+                    await new Promise(resolve => {
+                        require("find-java-home")(err => {
+                            if (err) {
+                                e.message =
+                                    "Java is required to run npm-groovy-lint, as CodeNarc is written in Java/Groovy. Please install Java (version 8 minimum) https://www.java.com/download";
+                            }
+                            resolve();
+                        });
+                    });
+                }
                 return {
                     codeNarcStdErr: e.stderr || e.message,
                     status: 1,
                     error: {
-                        msg: `Call CodeNarc Java error: ${e.message}`,
+                        msg: `Call CodeNarc fatal error: ${e.message}`,
                         msgDtl: {
                             stderr: e.stderr
                         },
@@ -212,7 +228,7 @@ class CodeNarcCaller {
             let stop = false;
             let eJava;
             exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => { })
+                .then(() => {})
                 .catch(eRun => {
                     stop = true;
                     eJava = eRun;

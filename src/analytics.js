@@ -5,6 +5,7 @@ const os = require("os");
 
 const SEGMENT_ID = "hjdIe83s5rbwgDfOWLxq3BkvXqQVEDTz";
 let analyticsInstance;
+let pkgJson;
 
 // Record anonymous statistics for better use. Returns a promise that can be awaited by the caller or not
 function recordAnonymousEvent(eventType, data) {
@@ -21,13 +22,15 @@ function recordAnonymousEvent(eventType, data) {
 
 function buildEventPayload(data) {
     const payloadFiltered = {
+        app: pkgJson.name,
+        appVersion: pkgJson.version,
         osPlatform: os.platform(),
         osRelease: os.release(),
         ci: process.env.CI ? true : false // boolean
     };
     // Status
-    if (data.status) {
-        payloadFiltered.status = data.status;
+    if (data.status || data.status === 0) {
+        payloadFiltered.status = data.status === 0 ? 69 : data.status;
     }
     // Error
     if (data.error) {
@@ -89,7 +92,7 @@ function buildEventPayload(data) {
 
 function getAnalyticsInstance(eventType) {
     if (analyticsInstance == null) {
-        const pkgJson = getPackageJson();
+        pkgJson = getPackageJson();
         analyticsInstance = analyticsLib({
             app: pkgJson.name,
             version: pkgJson.version,
