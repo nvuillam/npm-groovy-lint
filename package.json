@@ -50,6 +50,7 @@
     "cli-progress": "^3.6.0",
     "debug": "^4.1.1",
     "decode-html": "^2.0.0",
+    "find-java-home": "^1.1.0",
     "find-package-json": "^1.2.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",

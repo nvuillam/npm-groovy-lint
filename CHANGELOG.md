@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.11.1] 2020-05-16
+
+- Detect when crash is related to "node" or "java" command not found and return a human readable error message
+
 ## [4.11.0] 2020-05-13
 
 - Add CI , rule overrides and crashes in anonymous insights for debugging investigation
