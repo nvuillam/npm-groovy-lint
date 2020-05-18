@@ -3,12 +3,11 @@ const cliProgress = require("cli-progress");
 const debug = require("debug")("npm-groovy-lint");
 const optionsDefinition = require("./options");
 const { performance } = require("perf_hooks");
+const path = require("path");
 const request = require("request");
-
 const rp = require("request-promise-native");
-const util = require("util");
 
-const exec = util.promisify(require("child_process").exec);
+const { fork } = require("child_process");
 
 class CodeNarcCaller {
     "use strict";
@@ -88,7 +87,7 @@ class CodeNarcCaller {
                 console.error("CodeNarcServer unexpected error:\n" + JSON.stringify(e, null, 2));
             }
             this.serverStatus = "error";
-            return { status: 1, error: { msg: e.message, stack: e.stack } };
+            return { status: 2, error: { msg: e.message, stack: e.stack } };
         }
 
         // Success result
@@ -130,20 +129,12 @@ class CodeNarcCaller {
     // Call CodeNard java class from renamed jdeploy.js
     async callCodeNarcJava(secondAttempt = false) {
         // Build jdeploy codenarc command (request to launch server for next call except if --noserver is sent)
-        const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
         const jdeployFileToUse = secondAttempt ? this.execOpts.jdeployFilePlanB : this.execOpts.jdeployFile;
-        const jDeployCommand =
-            '"' +
-            nodeExe +
-            '" "' +
-            this.execOpts.jdeployRootPath.trim() +
-            "/" +
-            jdeployFileToUse +
-            '" -Xms256m -Xmx2048m ' +
-            this.codenarcArgs.join(" ");
+        const scriptPath = path.join(this.execOpts.jdeployRootPath.trim(), jdeployFileToUse);
+        const scriptArgs = ["-Xms256m", "-Xmx2048m", ...this.codenarcArgs];
 
         // Start progress bar
-        debug(`CALL CodeNarcJava with ${jDeployCommand}`);
+        debug(`CALL CodeNarcJava with ${scriptPath} ${scriptArgs.join(" ")}`);
         this.bar = new cliProgress.SingleBar(
             {
                 format: "[{bar}] Running CodeNarc for {duration_formatted}",
@@ -161,9 +152,32 @@ class CodeNarcCaller {
         }, 500);
 
         // originalJDeploy.js Execution using child process (or originaljdeployPlanB if originaljdeploy.js failed)
-        let execRes;
+        const execRes = { stdout: "", stderr: "" };
         try {
-            execRes = await exec(jDeployCommand, { timeout: this.execTimeout });
+            const cp = fork(scriptPath, scriptArgs, {
+                execArgv: process.execArgv.filter(s => {
+                    return !s.includes("--debug") && !s.includes("--inspect");
+                }),
+                silent: true
+            });
+            await new Promise((resolve, reject) => {
+                cp.stdout.on("data", data => {
+                    execRes.stdout += data + "\n";
+                });
+                cp.stderr.on("data", data => {
+                    execRes.stderr += data + "\n";
+                });
+                cp.on("exit", (code, signal) => {
+                    debug("Exited CodeNarcJava", { code: code, signal: signal });
+                    if (code === 1) {
+                        reject({ code: code, signal: signal });
+                    }
+                    resolve();
+                });
+                cp.on("error", eRun => {
+                    reject(eRun);
+                });
+            });
         } catch (e) {
             clearInterval(this.barTimer);
             this.bar.stop();
@@ -172,7 +186,10 @@ class CodeNarcCaller {
                 return await this.callCodeNarcJava(true);
             } else {
                 // Check if the reason is "node" missing in PATH
-                if (e.message && /node(.*)is not recognized as an internal or external command/gm.test(e.message)) {
+                if (
+                    e.message &&
+                    (/node(.*)is not recognized as an internal or external command/gm.test(e.message) || /node: command not found/gm.test(e.message))
+                ) {
                     e.message =
                         "It seems node.js has not been found on your computer. Please install a recent node.js: https://nodejs.org/en/download/\nIf node is already installed, make sure your PATH contains node installation folder: https://love2dev.com/blog/node-is-not-recognized-as-an-internal-or-external-command/";
                 } else {
@@ -187,12 +204,12 @@ class CodeNarcCaller {
                     });
                 }
                 return {
-                    codeNarcStdErr: e.stderr || e.message,
-                    status: 1,
+                    codeNarcStdErr: execRes.stderr,
+                    status: 2,
                     error: {
-                        msg: `Call CodeNarc fatal error: ${e.message}`,
+                        msg: `Call CodeNarc fatal error: ${e.message} :: ${execRes.stderr}`,
                         msgDtl: {
-                            stderr: e.stderr
+                            stderr: execRes.stderr
                         },
                         stack: e.stack
                     }
@@ -216,23 +233,41 @@ class CodeNarcCaller {
         this.serverStatus = "unknown";
         const maxAttemptTimeMs = 10000;
         let attempts = 1;
-        const nodeExe = this.args[0] && this.args[0].includes("node") ? this.args[0] : "node";
-        const jDeployCommand =
-            '"' + nodeExe + '" "' + this.execOpts.jdeployRootPath.trim() + "/" + this.execOpts.jdeployFile + '" -Xms256m -Xmx2048m --server';
+        const scriptPath = path.join(this.execOpts.jdeployRootPath.trim(), this.execOpts.jdeployFile);
+        const scriptArgs = ["-Xms256m", "-Xmx2048m", "--server"];
         const serverPingUri = this.getCodeNarcServerUri() + "/ping";
         let interval;
-        debug(`ATTEMPT to start CodeNarcServer with ${jDeployCommand}`);
-
+        debug(`ATTEMPT to start CodeNarcServer with ${scriptPath} ${scriptArgs.join(" ")}`);
+        const execRes = { stdout: "", stderr: "" };
         try {
             // Start server using java (we don't care the promise result, as the following promise will poll the server)
             let stop = false;
             let eJava;
-            exec(jDeployCommand, { timeout: this.execTimeout })
-                .then(() => {})
-                .catch(eRun => {
-                    stop = true;
-                    eJava = eRun;
-                });
+            const cp = fork(scriptPath, scriptArgs, {
+                execArgv: process.execArgv.filter(s => {
+                    return !s.includes("--debug") && !s.includes("--inspect");
+                }),
+                silent: true
+            });
+            cp.stdout.on("data", data => {
+                execRes.stdout += data + "\n";
+            });
+            cp.stderr.on("data", data => {
+                execRes.stderr += data + "\n";
+            });
+            cp.on("exit", (code, signal) => {
+                debug("Exited CodeNarcServer", { code: code, signal: signal });
+            });
+            cp.on("error", eRun => {
+                stop = true;
+                eJava = eRun;
+            });
+
+            // Disconnect Server process from main process
+            setTimeout(() => {
+                cp.unref();
+            }, maxAttemptTimeMs);
+
             // Poll it until it is ready
             const start = performance.now();
             let notified = false;
@@ -293,7 +328,7 @@ class CodeNarcCaller {
         const errMsg = "GroovyLint: Unable to start CodeNarc Server. Use --noserver if you do not even want to try";
         debug(errMsg);
         debug(e.message);
-        console.log(errMsg);
+        console.error(errMsg);
     }
 
     // Kill CodeNarc server by telling it to do so

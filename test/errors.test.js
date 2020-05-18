@@ -35,7 +35,7 @@ describe('Errors', function () {
         }).run();
 
         assert(linter.status === 2, `Linter status is 2 (${linter.status} returned)`);
-        assert(linter.codeNarcStdErr && linter.codeNarcStdErr.includes('java.io.FileNotFoundException'), 'FileNotFoundException returned by CodeNarc');
+        assert(linter.error && linter.error.msg.includes('java.io.FileNotFoundException'), 'FileNotFoundException returned by CodeNarc');
     });
 
     it('(API:source) should trigger a codenarc error (--noserver)', async () => {
@@ -48,8 +48,8 @@ describe('Errors', function () {
             jdeployRootPath: 'jdeploy-bundle'
         }).run();
 
-        assert(linter.status > 0, 'Linter status is > 0');
-        assert(linter.codeNarcStdErr && linter.codeNarcStdErr.includes('java.io.FileNotFoundException'), 'FileNotFoundException returned by CodeNarc');
+        assert(linter.status === 2, `Linter status is 2 (${linter.status} returned)`);
+        assert(linter.error && linter.error.msg.includes('java.io.FileNotFoundException'), 'FileNotFoundException returned by CodeNarc');
     });
 
     it('(API:source) should trigger a fix function error', async () => {

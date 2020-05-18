@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.12.0] 2020-05-18
+
+- Improve performances and avoid `Unknown command: node` error by using childProcess.fork to call CodeNarcServer
+
 ## [4.11.1] 2020-05-16
 
 - Detect when crash is related to "node" or "java" command not found and return a human readable error message
