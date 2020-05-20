@@ -117,14 +117,15 @@ describe('Format with API', function () {
 
 async function checkRule(key, check) {
     const source = check.before;
-    const npmGroovyLintConfig = {
+    const moreOptions = (check.moreOptions) ? check.moreOptions : {};
+    const npmGroovyLintConfig = Object.assign({
         source: source,
         format: true,
         nolintafter: true,
         output: 'none',
         insight: false,
         verbose: true
-    };
+    }, moreOptions);
     const linter = await new NpmGroovyLint(
         npmGroovyLintConfig, {
         jdeployRootPath: 'jdeploy-bundle'
@@ -174,6 +175,28 @@ if (a == 2) {
 if (a == 2) {
     // And here too
     x = 1
+}
+`
+        }
+        ],
+        ['OverrideIndentation', {
+            moreOptions: {
+                rulesets: "Indentation{\"spacesPerIndentLevel\":2,\"severity\": \"warning\"},UnnecessarySemicolon,UnnecessaryGString,ConsecutiveBlankLines{\"severity\":\"warning\"},NoTabCharacter",
+                rulesetsoverridetype: "appendConfig"
+            },
+            totalFixed: 4,
+            codeNarcCallsCounter: 2,
+            before: `
+private void doSomething(){
+            if (a == 2)
+                doSomething();
+}
+`,
+            after: `
+private void doSomething() {
+  if (a == 2) {
+    doSomething()
+  }
 }
 `
         }

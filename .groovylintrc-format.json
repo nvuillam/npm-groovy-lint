@@ -18,7 +18,10 @@
         "formatting.ClosureStatementOnOpeningLineOfMultipleLineClosure": {},
         "formatting.ConsecutiveBlankLines": {},
         "formatting.FileEndsWithoutNewline": {},
-        "formatting.Indentation": {},
+        "formatting.Indentation": {
+            "spacesPerIndentLevel": 4,
+            "severity": "info"
+        },
         "formatting.MissingBlankLineAfterImports": {},
         "formatting.MissingBlankLineAfterPackage": {},
         "formatting.SpaceAfterCatch": {},

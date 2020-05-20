@@ -98,8 +98,22 @@ module.exports = optionator({
             alias: "r",
             type: "String",
             description:
-                "RuleSet file(s) to use for linting. If it is a directory, all rulesets will be used. RuleSet file definition: http://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html. If not specified, npm-groovy-script default one will be used",
-            example: ["./config/codenarc/RuleSet-Custom.groovy", "./path/to/my/ruleset/files"]
+                "RuleSet file(s) to use for linting. If it is a directory, all rulesets will be used. RuleSet file definition: http://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html. If not specified, npm-groovy-script default one will be used. Can also be a list of rule identifiers with parameters",
+            example: [
+                "./config/codenarc/RuleSet-Custom.groovy",
+                "./path/to/my/ruleset/files",
+                'Indentation{"spacesPerIndentLevel":2,"severity":"warning"},UnnecessarySemicolon,UnnecessaryGString,ConsecutiveBlankLines{"severity":"warning"},NoTabCharacter'
+            ]
+        },
+        {
+            option: "rulesetsoverridetype",
+            type: "String",
+            dependsOn: ["rulesets"],
+            enum: ["replaceConfig", "appendConfig"],
+            default: "replaceConfig",
+            description:
+                "If list of rules sent in rulesets option, defines if they replace rules defined in .groovylintrc.json, or if they are appended",
+            example: ["replaceConfig", "appendConfig"]
         },
         {
             option: "output",

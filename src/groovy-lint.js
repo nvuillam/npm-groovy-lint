@@ -371,7 +371,10 @@ class NpmGroovyLint {
         delete fixAgainOptions.format;
         delete fixAgainOptions.rules;
         delete fixAgainOptions.overridenRules;
-        fixAgainOptions.rulesets = fixRules.join(",");
+        fixAgainOptions.rulesets = Object.keys(this.options.rules)
+            .filter(ruleName => fixRules.includes(ruleName))
+            .map(ruleName => `${ruleName}${JSON.stringify(this.options.rules[ruleName])}`)
+            .join(",");
         fixAgainOptions.fix = true;
         fixAgainOptions.fixrules = fixRules.join(",");
         fixAgainOptions.output = "none";
