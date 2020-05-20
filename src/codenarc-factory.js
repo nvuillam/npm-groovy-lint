@@ -291,21 +291,60 @@ async function manageCreateRuleSetFile(options) {
     let ruleSetsDef = [];
 
     // List of rule strings sent as arguments/options, convert them as ruleSet defs
-    if (options.rulesets && !options.rulesets.includes(".")) {
-        let ruleList = options.rulesets.split(",");
-        ruleSetsDef = ruleList.map(ruleName => {
+    if (
+        options.rulesets &&
+        !options.rulesets.includes(".groovy") &&
+        !options.rulesets.includes(".xml") &&
+        !options.rulesets.includes("/") &&
+        !options.rulesets.includes("\\")
+    ) {
+        let ruleList = options.rulesets.split(/(,(?!"))/gm).filter(elt => elt !== ",");
+        ruleSetsDef = ruleList.map(ruleFromArgument => {
+            let ruleName;
+            let ruleOptions = {};
+            if (ruleFromArgument.includes("{")) {
+                // Format "RuleName(param1:"xxx",param2:12)"
+                ruleName = ruleFromArgument.substring(0, ruleFromArgument.indexOf("{"));
+                const ruleOptionsJson = ruleFromArgument.substring(ruleFromArgument.indexOf("{"));
+                ruleOptions = JSON.parse(ruleOptionsJson);
+            } else {
+                // Format "RuleName"
+                ruleName = ruleFromArgument;
+            }
             const ruleFromConfig = options.rules[ruleName];
-            const ruleDef = buildCodeNarcRule(ruleName, ruleFromConfig);
+            const mergedRuleConfig =
+                typeof ruleFromConfig === "object"
+                    ? Object.assign(ruleFromConfig, ruleOptions)
+                    : Object.keys(ruleOptions).length > 0
+                    ? ruleOptions
+                    : ruleFromConfig;
+            const ruleDef = buildCodeNarcRule(ruleName, mergedRuleConfig);
             return ruleDef;
         });
     }
     // Rules from config file, only if rulesets has not been sent as argument
-    if (ruleSetsDef.length === 0 && options.rules) {
+    if ((ruleSetsDef.length === 0 || options.rulesetsoverridetype === "appendConfig") && options.rules) {
         for (const ruleName of Object.keys(options.rules)) {
-            const ruleFromConfig = options.rules[ruleName];
-            if (!(ruleFromConfig === "off" || ruleFromConfig.disabled === true || ruleFromConfig.enabled === false)) {
-                const codeNarcRule = buildCodeNarcRule(ruleName, ruleFromConfig);
-                ruleSetsDef.push(codeNarcRule);
+            let ruleDef = options.rules[ruleName];
+            // If rule has been overriden in argument, set it on top of config file properties
+            const ruleFromRuleSetsArgPos = ruleSetsDef.findIndex(ruleDef => ruleDef.ruleName === ruleName);
+            if (ruleFromRuleSetsArgPos > -1) {
+                const ruleFromRuleSetsArg = ruleSetsDef[ruleFromRuleSetsArgPos];
+                ruleDef =
+                    typeof ruleDef === "object"
+                        ? Object.assign(ruleDef, ruleFromRuleSetsArg)
+                        : Object.keys(ruleFromRuleSetsArg).length > 0
+                        ? ruleFromRuleSetsArg
+                        : ruleDef;
+            }
+            // Add in the list of rules to test , except if it is disabled
+            if (!(ruleDef === "off" || ruleDef.disabled === true || ruleDef.enabled === false)) {
+                const codeNarcRule = buildCodeNarcRule(ruleName, ruleDef);
+                if (ruleFromRuleSetsArgPos > -1) {
+                    ruleSetsDef[ruleFromRuleSetsArgPos] = codeNarcRule;
+                } else {
+                    ruleSetsDef.push(codeNarcRule);
+                }
             }
         }
     }

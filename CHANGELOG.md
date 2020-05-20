@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.13.0] 2020-05-20
+
+- Manage to send options for rules sent in `rulesets`: Ex: `Indentation{"spacesPerIndentLevel":2,"severity":"warning"},UnnecessarySemicolon`
+- New parameter `--rulesetsoverridetype` : If list of rules sent in rulesets option, defines if they replace rules defined in .groovylintrc.json, or if they are appended
+
+
 ## [4.12.0] 2020-05-18
 
 - Improve performances and avoid `Unknown command: node` error by using childProcess.fork to call CodeNarcServer

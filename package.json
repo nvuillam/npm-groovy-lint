@@ -29,7 +29,7 @@
     "lint",
     "jenkinsfile",
     "codenarc",
-    "npm",
+    "format",
     "linter",
     "package",
     "wrapper"
