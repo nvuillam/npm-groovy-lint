@@ -64,7 +64,7 @@ async function prepareCodeNarcCall(options) {
     }
 
     // Build ruleSet & file CodeNarc arguments
-    let defaultFilesPattern = "**/*.groovy,**/Jenkinsfile";
+    let defaultFilesPattern = "**/*.groovy,**/Jenkinsfile,**/*.gradle";
 
     // RuleSet codeNarc arg
     result.codenarcArgs.push('-rulesetfiles="file:' + options.rulesets.replace(/^"(.*)"$/, "$1") + '"');

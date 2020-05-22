@@ -55,7 +55,7 @@ class CodeNarcCaller {
                 file: this.execOpts.groovyFileName ? this.execOpts.groovyFileName : null,
                 requestKey: this.execOpts.requestKey || null
             },
-            timeout: 360000,
+            timeout: 600000,
             json: true
         };
         debug(`CALL CodeNarcServer with ${JSON.stringify(rqstOptions, null, 2)}`);
@@ -231,7 +231,7 @@ class CodeNarcCaller {
     // Start CodeNarc server so it can be called via Http just after
     async startCodeNarcServer() {
         this.serverStatus = "unknown";
-        const maxAttemptTimeMs = 10000;
+        const maxAttemptTimeMs = 20000;
         let attempts = 1;
         const scriptPath = path.join(this.execOpts.jdeployRootPath.trim(), this.execOpts.jdeployFile);
         const scriptArgs = ["-Xms256m", "-Xmx2048m", "--server"];

@@ -2,6 +2,7 @@
 "use strict";
 const NpmGroovyLint = require('../src/groovy-lint.js');
 let assert = require('assert');
+const c = require("ansi-colors");
 const fse = require("fs-extra");
 const { beforeEachTestCase,
     checkCodeNarcCallsCounter,
@@ -119,6 +120,22 @@ describe('Lint with API', () => {
         checkCodeNarcCallsCounter(1);
     });
 
+    it('(API:files) should ignore node_modules pattern', async () => {
+        const npmGroovyLintConfig = {
+            files: '**/*.groovy',
+            ignorepattern: '**/node_modules/**',
+            output: 'txt',
+            insight: false,
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(
+            npmGroovyLintConfig, {
+            jdeployRootPath: 'jdeploy-bundle'
+        }).run();
+        assert(!linter.outputString.includes(`ToIgnore.groovy`), 'ToIgnore.groovy has been ignored');
+        assert(linter.outputString.includes(`npm-groovy-lint results in ${c.bold(16)} linted files`), 'Number of linted files is displayed in summary');
+    });
+
     it('(API:source) should run with source only (no parsing)', async () => {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
@@ -189,4 +206,5 @@ describe('Lint with API', () => {
         assert(linter.lintResult.files[0].errors.length > 0, 'Errors have been found');
         checkCodeNarcCallsCounter(1);
     });
+
 });
