@@ -45,7 +45,7 @@ Node.js >= 12 is required to run this package. If you can't upgrade, you can use
 | Parameter                | Type    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 |--------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | -p<br/> --path           | String  | Directory containing the files to lint<br/> Example: `./path/to/my/groovy/files`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| -f<br/> --files          | String  | Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: `"**/*.groovy,**/Jenkinsfile"`<br/>Examples:<br/> - `"**/Jenkinsfile"`<br/> - `"**/*.groovy"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| -f<br/> --files          | String  | Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: `"**/*.groovy,**/Jenkinsfile,**/*.gradle"`<br/>Examples:<br/> - `"**/Jenkinsfile"`<br/> - `"**/*.groovy"`<br/> - `"**/*.gradle"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | -o<br/> --output         | String  | Output format (txt,json,html,xml), or path to a file with one of these extensions<br/> Default: `txt`<br/> Examples:<br/> - `"txt"`<br/> - `"json"`<br/> - `"./logs/myLintResults.txt"`<br/> - `"./logs/myLintResults.json"`<br/> - `"./logs/myLintResults.html"`<br/> - `"./logs/myLintResults.xml"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | -l<br/> --loglevel       | String  | Log level (error,warning or info)<br/>Default: info                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | -c<br/> --config         | String  | Custom path to [GroovyLint config file](#Configuration), or preset config `recommended|recommended-jenkinsfile|all`<br/> Default: Browse current directory to find `.groovylintrc.json|js|yml|package.json` config file, or default npm-groovy-lint config if not defined.<br/>Note: command-line arguments have priority on config file properties                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -314,9 +314,45 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 
 This package uses :
 
-- CodeNarc : <https://github.com/CodeNarc/CodeNarc> (groovy lint)
-- jdeploy : <https://github.com/shannah/jdeploy> (jar deployment and run)
-- slf4j : <http://www.slf4j.org/> (logging for CodeNarc)
-- log4j : <https://logging.apache.org/log4j/2.x/> (logging for CodeNarc)
-- GMetrics : <https://dx42.github.io/gmetrics/> (Code measures for CodeNarc)
+- [CodeNarc](https://github.com/CodeNarc/CodeNarc): groovy lint
+- [jdeploy](https://github.com/shannah/jdeploy): jar deployment and run
+- [slf4j](http://www.slf4j.org): logging for CodeNarc
+- [log4j](https://logging.apache.org/log4j/2.x/): logging for CodeNarc
+- [GMetrics](https://dx42.github.io/gmetrics/): Code measures for CodeNarc
 - Inspiration from [eslint](https://eslint.org/) about configuration and run patterns
+
+## RELEASE NOTES
+
+### [4.14.0] 2020-05-22
+
+- Send rule configuration to fix functions
+- Add `.gradle` files in default linted files
+- Fixes:
+  - Missing number of linted files returned in summary
+  - Try to call CodeNarcJava in case there is an error with CodeNarcServer call
+
+### [4.13.0] 2020-05-20
+
+- Manage to send options for rules sent in `rulesets`: Ex: `Indentation{"spacesPerIndentLevel":2,"severity":"warning"},UnnecessarySemicolon`
+- New parameter `--rulesetsoverridetype` : If list of rules sent in rulesets option, defines if they replace rules defined in .groovylintrc.json, or if they are appended
+
+### [4.12.0] 2020-05-18
+
+- Improve performances and avoid `Unknown command: node` error by using childProcess.fork to call CodeNarcServer
+
+### [4.11.1] 2020-05-16
+
+- Detect when crash is related to "node" or "java" command not found and return a human readable error message
+
+### [4.11.0] 2020-05-13
+
+- Add CI , rule overrides and crashes in anonymous insights for debugging investigation
+- When used as a module, **never crash intentionally with throw**, so when called by module, check linter.status and linter.error instead of try/catch
+  - 0: ok
+  - 1: expected error
+  - 2: unexpected error
+  - 9: if cancelled request
+
+### PREVIOUS VERSIONS
+
+See complete [CHANGELOG](https://github.com/nvuillam/npm-groovy-lint/blob/master/CHANGELOG.md)

@@ -235,7 +235,7 @@ class NpmGroovyLint {
         if (!this.options.noserver) {
             serverCallResult = await codeNarcCaller.callCodeNarcServer();
         }
-        if ([1, null].includes(serverCallResult.status)) {
+        if ([1, 2, null].includes(serverCallResult.status)) {
             serverCallResult = await codeNarcCaller.callCodeNarcJava();
         }
         this.setMethodResult(serverCallResult);
@@ -275,6 +275,7 @@ class NpmGroovyLint {
                     source: this.options.source,
                     save: this.tmpGroovyFileName ? false : true,
                     origin: this.origin,
+                    rules: this.options.rules,
                     verbose: this.options.verbose
                 });
                 await this.fixer.run();

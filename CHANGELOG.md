@@ -1,10 +1,17 @@
 # Changelog
 
+## [4.14.0] 2020-05-22
+
+- Send rule configuration to fix functions
+- Add `.gradle` files in default linted files
+- Fixes:
+  - Missing number of linted files returned in summary
+  - Try to call CodeNarcJava in case there is an error with CodeNarcServer call
+
 ## [4.13.0] 2020-05-20
 
 - Manage to send options for rules sent in `rulesets`: Ex: `Indentation{"spacesPerIndentLevel":2,"severity":"warning"},UnnecessarySemicolon`
 - New parameter `--rulesetsoverridetype` : If list of rules sent in rulesets option, defines if they replace rules defined in .groovylintrc.json, or if they are appended
-
 
 ## [4.12.0] 2020-05-18
 

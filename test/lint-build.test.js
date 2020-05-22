@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 "use strict";
 const util = require("util");
+const c = require("ansi-colors");
 let assert = require('assert');
 const fse = require("fs-extra");
 const childProcess = require("child_process");
@@ -51,7 +52,8 @@ describe('Lint with executable (jdeploy-bundle)', () => {
             console.error(stderr);
         }
         assert(stdout, 'stdout is set');
-        assert(!stdout.includes(`ToIgnore.groovy`), 'ToIgnore.groovy has been ignored');
+        assert(!stdout.includes(`ToIgnore.groovy`), `ToIgnore.groovy has been ignored \n${stdout}`);
+        assert(stdout.includes(`npm-groovy-lint results in ${c.bold(6)} linted files`), `Number of linted files is displayed in summary \n${stdout}`);
     });
 
     it('(EXE:file) should generate codenarc HTML file report', async () => {

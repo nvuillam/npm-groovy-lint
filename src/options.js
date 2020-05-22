@@ -36,7 +36,7 @@ module.exports = optionator({
             alias: "f",
             type: "String",
             description: "Comma-separated list of Ant-style file patterns specifying files that must be included",
-            example: ["**/Jenkinsfile", "*/*.groovy"]
+            example: ["**/Jenkinsfile", "**/*.groovy", "**/*.gradle"]
         },
         {
             option: "source",

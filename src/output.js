@@ -74,7 +74,7 @@ function computeStats(lintResult) {
     }
 
     // Set summary
-    lintResult.summary = counterResultsSummary;
+    lintResult.summary = Object.assign(lintResult.summary || {}, counterResultsSummary);
     return lintResult;
 }
 

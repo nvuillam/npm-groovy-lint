@@ -84,7 +84,12 @@ class NpmGroovyLintFix {
                         lineNb: err.line,
                         msg: err.msg,
                         range: err.range,
-                        rule: this.npmGroovyLintRules[err.rule]
+                        rule: Object.assign(
+                            this.npmGroovyLintRules[err.rule],
+                            this.options.rules && this.options.rules[err.rule] && typeof this.options.rules[err.rule] === "object"
+                                ? { config: this.options.rules[err.rule] }
+                                : { config: {} }
+                        )
                     };
                     this.addFixableError(fileNm, fixableError);
                     // Trigger other fixes if defined in the rule
@@ -96,7 +101,14 @@ class NpmGroovyLintFix {
                                 lineNb: err.line,
                                 msg: err.msg,
                                 range: err.range,
-                                rule: this.npmGroovyLintRules[triggeredRuleName]
+                                rule: Object.assign(
+                                    this.npmGroovyLintRules[triggeredRuleName],
+                                    this.options.rules &&
+                                        this.options.rules[triggeredRuleName] &&
+                                        typeof this.options.rules[triggeredRuleName] === "object"
+                                        ? { config: this.options.rules[triggeredRuleName] }
+                                        : { config: {} }
+                                )
                             };
                             this.addFixableError(fileNm, fixableErrorTriggered);
                         }
@@ -254,7 +266,7 @@ class NpmGroovyLintFix {
                 if (this.fixRules && this.fixRules[0] === "TriggerTestError") {
                     throw new Error("ERROR: Trigger test error (on purpose)");
                 }
-                newLine = fix.func(newLine, evaluatedVars);
+                newLine = fix.func(newLine, evaluatedVars, fixableError);
             } catch (e) {
                 debug("ERROR: Fix function error: " + e.message + " / " + JSON.stringify(fixableError));
                 throw e;
