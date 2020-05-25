@@ -103,8 +103,6 @@ typings/
 # TernJS port file
 .tern-port
 
-jdeploy-bundle/
-
 dist/
 
 Report*
@@ -115,3 +113,5 @@ CodeNarcReport.html
 
 lib/com/
 
+
+tmp/

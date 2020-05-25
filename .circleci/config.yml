@@ -9,16 +9,16 @@
         - checkout
         - run: 
             name: Install base tools
-            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
+            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed linux dependencies' 
         - run:
             name: Install node
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
-            command: npm ci && sudo npm install jdeploy -g
+            command: npm ci
         - run: 
-            name: Build
-            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 
+            name: Link
+            command: npm link 
         - run:
             name: Testing
             command: npm run test:coverage
@@ -36,16 +36,16 @@
         - checkout
         - run: 
             name: Install base tools
-            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
+            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed linux dependencies' 
         - run:
             name: Install node
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
-            command: npm ci && sudo npm install jdeploy -g
+            command: npm ci
         - run: 
-            name: Build
-            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 
+            name: Link
+            command: npm link 
         - run:
             name: Testing
             command: npm run test
@@ -58,16 +58,16 @@
         - checkout
         - run: 
             name: Install base tools
-            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
+            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed linux dependencies' 
         - run:
             name: Install node
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
-            command: npm ci && sudo npm install jdeploy -g
+            command: npm ci
         - run: 
-            name: Build
-            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 
+            name: Link
+            command: npm link
         - run:
             name: Testing
             command: npm run test
@@ -80,16 +80,16 @@
         - checkout
         - run: 
             name: Install base tools
-            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
+            command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed linux dependencies' 
         - run:
             name: Install node
             command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
         - run:
             name: Install dependencies
-            command: npm ci && sudo npm install jdeploy -g
+            command: npm ci
         - run: 
-            name: Build
-            command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 
+            name: Link
+            command: npm link
         - run:
             name: Testing
             command: npm run test
@@ -102,16 +102,32 @@
       - checkout
       - run: 
           name: Install base tools
-          command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed wget zip unzip' 
+          command: apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed linux dependencies' 
       - run:
           name: Install node
           command: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
       - run:
           name: Install dependencies
-          command: npm ci && sudo npm install jdeploy -g
+          command: npm ci
       - run: 
-          name: Build
-          command: npm run build && ls /usr/bin/npm-groovy-lint && sudo chmod +x /usr/bin/npm-groovy-lint 
+          name: Link
+          command: npm link
+      - run:
+          name: Testing
+          command: npm run test
+
+    # No Java & Node 12
+    no-java-node-12: 
+      docker:
+        - image: circleci/node:latest
+      steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run: 
+          name: Link
+          command: sudo npm link
       - run:
           name: Testing
           command: npm run test
@@ -121,9 +137,9 @@
     version: 2
     "npm-groovy-lint-build-test":
       jobs:
-        - debian-jdk-8-node-12
-#        - debian-jdk-9-node-12
-#        - debian-jdk-10-node-12
-        - debian-jdk-11-node-12
-#        - debian-jdk-12-node-12 JDK12 image not working because of apt-get not found ... TODO: investigate
-
+         - debian-jdk-8-node-12
+         - debian-jdk-9-node-12
+         - debian-jdk-10-node-12
+         - debian-jdk-11-node-12
+#         - debian-jdk-12-node-12 JDK12 image not working because of apt-get not found ... TODO: investigate
+         - no-java-node-12
