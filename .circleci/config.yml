@@ -21,12 +21,7 @@
             command: npm link 
         - run:
             name: Testing
-            command: npm run test:coverage
-        - run:
-            name: Submitting code coverage to codecov
-            command: |
-              ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
-              curl -s https://codecov.io/bash | bash
+            command: npm run test
 
     # JDK 9 Node 12
     debian-jdk-9-node-12: 
@@ -130,7 +125,12 @@
           command: sudo npm link
       - run:
           name: Testing
-          command: npm run test
+          command: npm run test:coverage
+      - run:
+          name: Submitting code coverage to codecov
+          command: |
+            ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
+            curl -s https://codecov.io/bash | bash
 
 # As we use free version of CircleCI, uncomment jobs only if there are some detected issues, else debian-jdk-8/11-node-12 are enough
   workflows:
@@ -138,8 +138,8 @@
     "npm-groovy-lint-build-test":
       jobs:
          - debian-jdk-8-node-12
-         - debian-jdk-9-node-12
-         - debian-jdk-10-node-12
+#         - debian-jdk-9-node-12
+#         - debian-jdk-10-node-12
          - debian-jdk-11-node-12
 #         - debian-jdk-12-node-12 JDK12 image not working because of apt-get not found ... TODO: investigate
          - no-java-node-12

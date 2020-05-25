@@ -1,8 +1,8 @@
 # Changelog
 
-## [5.0.0] UNRELEASED
+## [5.0.0] 2020-25-05
 
-- **BIG BANG**: Improve performances, compatibility and delivery
+- **BIG BANG**: Improve performances, compatibility, architecture and delivery
   - Get rid of [jDeploy](https://github.com/shannah/jdeploy) dependency
     - Use own [java-caller.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/java-caller.js) for java commands
     - Update CircleCI config to use `npm link`instead of `jdeploy install`
