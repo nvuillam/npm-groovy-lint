@@ -64,7 +64,7 @@ Node.js >= 12 is required to run this package. If you can't upgrade, you can use
 | --failoninfo             | Boolean | Fails if at least one error is found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --returnrules            | Boolean | Return rules descriptions and URL if set                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | --no-insight             | Boolean | npm-groovy-lint collects anonymous usage statistics using [analytics](https://www.npmjs.com/package/analytics) & [@analytics-segment](https://github.com/DavidWells/analytics/tree/master/packages/analytics-plugin-segment), in order to make new improvements based on how users use this package. Analytics obviously does not receive sensitive information like your code, as you can see in [analytics.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/src/analytics.js). If you want to disable anonymous usage statistics, use `--no-insight` option.                                                                                                                                                                                                                                                                                                                                      |
-| --codenarcargs           | String  | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: <http://codenarc.github.io/CodeNarc/codenarc-command-line.html><br/> Example: `npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --codenarcargs           | String  | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: <http://codenarc.github.io/CodeNarc/codenarc-command-line.html><br/> Example: `npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                                                                                                                                                                                                                                    |
 | -h<br/> --help           | Boolean | Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)
 
 ## CONFIGURATION
@@ -138,7 +138,7 @@ Create a file named **.groovylintrc.json** in the current or any parent director
 - Lint using core CodeNarc parameters and generate HTML report file
 
 ```shell
-    npm-groovy-lint --codenarcargs -basedir="jdeploy-bundle/lib/example" -rulesetfiles="file:jdeploy-bundle/lib/example/RuleSet-Groovy.groovy" -title="TestTitleCodenarc" -maxPriority1Violations=0' -report="html:ReportTestCodenarc.html"
+    npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -title="TestTitleCodenarc" -maxPriority1Violations=0' -report="html:ReportTestCodenarc.html"
 ```
 
 ## DISABLING RULES IN SOURCE
@@ -286,7 +286,7 @@ Example
 ```
 
 ```javascript
-    const NpmGroovyLint = require("npm-groovy-lint/jdeploy-bundle/groovy-lint.js");
+    const NpmGroovyLint = require("npm-groovy-lint/groovy-lint.js");
     const fse = require("fs-extra");
 
     const npmGroovyLintConfig = {
@@ -315,13 +315,21 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 This package uses :
 
 - [CodeNarc](https://github.com/CodeNarc/CodeNarc): groovy lint
-- [jdeploy](https://github.com/shannah/jdeploy): jar deployment and run
 - [slf4j](http://www.slf4j.org): logging for CodeNarc
 - [log4j](https://logging.apache.org/log4j/2.x/): logging for CodeNarc
 - [GMetrics](https://dx42.github.io/gmetrics/): Code measures for CodeNarc
 - Inspiration from [eslint](https://eslint.org/) about configuration and run patterns
 
 ## RELEASE NOTES
+
+### [5.0.0] 2020-25-05
+
+- **BIG BANG**: Improve performances, compatibility, architecture and delivery
+  - Get rid of [jDeploy](https://github.com/shannah/jdeploy) dependency
+    - Use own [java-caller.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/java-caller.js) for java commands
+    - Update CircleCI config to use `npm link`instead of `jdeploy install`
+  - Get rid of [request](https://github.com/request/request) dependency
+    - Use [axios](https://github.com/axios/axios) for promisified http calls
 
 ### [4.14.0] 2020-05-22
 
