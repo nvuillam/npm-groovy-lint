@@ -322,7 +322,23 @@ This package uses :
 
 ## RELEASE NOTES
 
-### [5.0.0] 2020-25-05
+## [5.0.2] 2020-05-27
+
+- Avoid to apply wrong fix in case of CodeNarc false positive
+- New fix rules
+  - BlankLineBeforePackage
+- Updated fix rules
+  - BracesForIfElse
+  - BracesForMethod
+  - BracesForTryCatchFinally
+  - ClassEndsWithBlankLine
+  - ClassStartsWithBlankLine
+  - MissingBlankLineAfterImports
+  - MissingBlankLineAfterPackage
+  - UnnecessaryGroovyImport
+  - UnusedImport
+
+### [5.0.0] 2020-05-25
 
 - **BIG BANG**: Improve performances, compatibility, architecture and delivery
   - Get rid of [jDeploy](https://github.com/shannah/jdeploy) dependency
