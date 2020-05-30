@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.1.0] 2020-05-27
+
+- Add Contributors section in README
+
 ## [5.0.2] 2020-05-27
 
 - Avoid to apply wrong fix in case of CodeNarc false positive
