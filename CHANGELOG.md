@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.3] 2020-05-30
+
+- Updated fix rules
+  - Indentation
+  - IndentationClosingBrace
+
 ## [5.0.2] 2020-05-27
 
 - Avoid to apply wrong fix in case of CodeNarc false positive
