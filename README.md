@@ -320,9 +320,19 @@ This package uses :
 - [GMetrics](https://dx42.github.io/gmetrics/): Code measures for CodeNarc
 - Inspiration from [eslint](https://eslint.org/) about configuration and run patterns
 
+[<img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=117 width=117">](https://github.com/nvuillam) |[<img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=117 width=117">](https://github.com/docwhat) |[<img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=117 width=117">](https://github.com/CatSue) |[<img alt="dependabot[bot]" src="https://avatars0.githubusercontent.com/in/29110?v=4&s=117 width=117">](https://github.com/apps/dependabot) |
+:---:|:---:|:---:|:---:|
+[nvuillam](https://github.com/nvuillam)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|[dependabot[bot]](https://github.com/apps/dependabot)|
+
 ## RELEASE NOTES
 
-## [5.0.2] 2020-05-27
+### [5.0.3] 2020-05-30
+
+- Updated fix rules
+  - Indentation
+  - IndentationClosingBrace
+
+### [5.0.2] 2020-05-27
 
 - Avoid to apply wrong fix in case of CodeNarc false positive
 - New fix rules

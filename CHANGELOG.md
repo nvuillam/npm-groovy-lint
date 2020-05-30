@@ -1,8 +1,10 @@
 # Changelog
 
-## [5.1.0] 2020-05-27
+## [5.0.3] 2020-05-30
 
-- Add Contributors section in README
+- Updated fix rules
+  - Indentation
+  - IndentationClosingBrace
 
 ## [5.0.2] 2020-05-27
 
