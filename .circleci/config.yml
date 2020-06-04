@@ -111,8 +111,8 @@
           name: Testing
           command: npm run test
 
-    # No Java & Node 12
-    no-java-node-12: 
+    # No Java & Node latest
+    no-java-node-latest: 
       docker:
         - image: circleci/node:latest
       steps:
@@ -132,6 +132,22 @@
             ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
             curl -s https://codecov.io/bash | bash
 
+    # Java 14 & Node latest
+    java-14-node-latest: 
+      docker:
+        - image: circleci/openjdk:14.0.1-buster-node
+      steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run: 
+          name: Link
+          command: sudo npm link
+      - run:
+          name: Testing
+          command: npm run test
+
 # As we use free version of CircleCI, uncomment jobs only if there are some detected issues, else debian-jdk-8/11-node-12 are enough
   workflows:
     version: 2
@@ -142,4 +158,5 @@
 #         - debian-jdk-10-node-12
          - debian-jdk-11-node-12
 #         - debian-jdk-12-node-12 JDK12 image not working because of apt-get not found ... TODO: investigate
-         - no-java-node-12
+         - no-java-node-latest
+         - java-14-node-latest

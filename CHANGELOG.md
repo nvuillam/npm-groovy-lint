@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.1.0] 2020-06-04
+
+- Install Java 8 using node-jre in case java version found is higher than Java 11 (CodeNarc compatibility is Java 8 to 11)
+
 ## [5.0.3] 2020-05-30
 
 - Updated fix rules
