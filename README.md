@@ -302,7 +302,7 @@ Example
 
 ## TROUBLESHOOTING
 
-- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (Groovy 3.0.3)
+- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (Groovy 3.0.4)
 
 ## CONTRIBUTE
 
@@ -320,11 +320,13 @@ This package uses :
 - [GMetrics](https://dx42.github.io/gmetrics/): Code measures for CodeNarc
 - Inspiration from [eslint](https://eslint.org/) about configuration and run patterns
 
-[<img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=117 width=117">](https://github.com/nvuillam) |[<img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=117 width=117">](https://github.com/docwhat) |[<img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=117 width=117">](https://github.com/CatSue) |[<img alt="dependabot[bot]" src="https://avatars0.githubusercontent.com/in/29110?v=4&s=117 width=117">](https://github.com/apps/dependabot) |
-:---:|:---:|:---:|:---:|
-[nvuillam](https://github.com/nvuillam)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|[dependabot[bot]](https://github.com/apps/dependabot)|
-
 ## RELEASE NOTES
+
+## [6.0.0] 2020-06-15
+
+- Upgrade to [CodeNarc v1.6](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-16----jun-2020)
+- Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
+- Upgrade to [Groovy](https://groovy-lang.org/) v3.0.4
 
 ## [5.1.0] 2020-06-04
 

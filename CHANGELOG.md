@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.0.0] 2020-06-15
+
+- Upgrade to [CodeNarc v1.6](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-16----jun-2020)
+- Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
+- Upgrade to [Groovy](https://groovy-lang.org/) v3.0.4
+
 ## [5.1.0] 2020-06-04
 
 - Install Java 8 using node-jre in case java version found is higher than Java 11 (CodeNarc compatibility is Java 8 to 11)
