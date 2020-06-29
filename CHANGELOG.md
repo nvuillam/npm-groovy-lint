@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.3.0] 2020-06-29
+
+- New option **--failon** , replacing `--failonerror`,`--failonwarning` and `--failoninfo`. It can take error, warning or info values (default: none). Previous options remain working but are deprecated and will be removed in a future major version
+- Update help for `--fixrules` option
+
 ## [5.1.0] 2020-06-04
 
 - Install Java 8 using node-jre in case java version found is higher than Java 11 (CodeNarc compatibility is Java 8 to 11)
