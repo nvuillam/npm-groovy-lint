@@ -11,7 +11,7 @@
     "test:coverage": "nyc npm run test",
     "test:debug": "mocha --reporter spec --inspect-brk \"lib/test/**/*.test.js\"",
     "dev:build-config": "node script-build-config-all.js",
-    "dev:lint-install-local": "npm run lint:fix && npm link",
+    "dev:lint-install-local": "npm run lint:fix && npm link --force",
     "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node script-deploy-in-vscode.js"
   },
   "repository": {
