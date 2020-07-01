@@ -325,6 +325,11 @@ This package uses :
 
 ## RELEASE NOTES
 
+## [5.4.1] 2020-07-01
+
+- CodeNarcServer listens to localhost only [(#59)](https://github.com/nvuillam/npm-groovy-lint/pull/59) solving [(#56)](https://github.com/nvuillam/npm-groovy-lint/issues/56)
+- Replace @analytics/segment with @amplitude/node for anonymous stats
+
 ## [5.3.0] 2020-06-29
 
 - New option **--failon** , replacing `--failonerror`,`--failonwarning` and `--failoninfo`. It can take error, warning or info values (default: none). Previous options remain working but are deprecated and will be removed in a future major version
