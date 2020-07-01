@@ -115,3 +115,5 @@ lib/com/
 
 
 tmp/
+
+local-storage.json
