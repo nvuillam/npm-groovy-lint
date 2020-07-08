@@ -325,17 +325,21 @@ This package uses :
 
 ## RELEASE NOTES
 
-## [5.4.1] 2020-07-01
+### [5.4.2] 2020-07-09
+
+- Use os.EOL [(#65)](https://github.com/nvuillam/npm-groovy-lint/pull/65) solving [(#63)](https://github.com/nvuillam/npm-groovy-lint/issues/63) --fix for indentation adds CRLF line-endings to all files it touches
+
+### [5.4.1] 2020-07-01
 
 - CodeNarcServer listens to localhost only [(#59)](https://github.com/nvuillam/npm-groovy-lint/pull/59) solving [(#56)](https://github.com/nvuillam/npm-groovy-lint/issues/56)
 - Replace @analytics/segment with @amplitude/node for anonymous stats
 
-## [5.3.0] 2020-06-29
+### [5.3.0] 2020-06-29
 
 - New option **--failon** , replacing `--failonerror`,`--failonwarning` and `--failoninfo`. It can take error, warning or info values (default: none). Previous options remain working but are deprecated and will be removed in a future major version
 - Update help for `--fixrules` option
 
-## [5.1.0] 2020-06-04
+### [5.1.0] 2020-06-04
 
 - Install Java 8 using node-jre in case java version found is higher than Java 11 (CodeNarc compatibility is Java 8 to 11)
 
