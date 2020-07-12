@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.5.0] 2020-07-09
+
+- Allow to override java executable and options [(#54)](https://github.com/nvuillam/vscode-groovy-lint/issues/54)
+
 ## [5.4.2] 2020-07-09
 
 - Use os.EOL [(#65)](https://github.com/nvuillam/npm-groovy-lint/pull/65) solving  [(#63)](https://github.com/nvuillam/npm-groovy-lint/issues/63) --fix for indentation adds CRLF line-endings to all files it touches
