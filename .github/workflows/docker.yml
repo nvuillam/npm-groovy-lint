@@ -12,21 +12,15 @@ jobs:
         uses: actions/checkout@v2
       - name: Publish version to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
-        env:
-          VERSION: ${{ steps.vars.outputs.tag }}
         with:
           name: nvuillam/npm-groovy-lint-test
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           tag_semver: true
-          buildargs: VERSION
       - name: Publish latest to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
-        env:
-          VERSION: ${{ steps.vars.outputs.tag }}
         with:
           name: nvuillam/npm-groovy-lint-test
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           tags: "latest"
-          buildargs: VERSION
