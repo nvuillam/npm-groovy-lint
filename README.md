@@ -327,6 +327,11 @@ This package uses :
 
 ## RELEASE NOTES
 
+### [5.5.1] 2020-07-15
+
+- Fixes
+  - [(#64)](https://github.com/nvuillam/vscode-groovy-lint/issues/64) The contents of a string gets formatted unexpectedly
+  
 ### [5.5.0] 2020-07-09
 
 - Allow to override java executable and options [(#54)](https://github.com/nvuillam/vscode-groovy-lint/issues/54)
