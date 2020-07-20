@@ -278,7 +278,7 @@ def variable = 1;
 
 ## CALL VIA DOCKER
 
-You can run npm-groovy-lint using its docker image
+You can run npm-groovy-lint using its [official docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint)
 
 ### Shell example
 
@@ -318,6 +318,7 @@ node {
     }
 }
 ```
+
 ## CALL VIA JS MODULE
 
 You can import npm-groovy-lint into your NPM package and call lint & fix via module, using the same options than from npm-groovy-lint command line
@@ -371,13 +372,13 @@ This package uses :
 
 ### [5.6.0] 2020-07-20
 
-- [(#68)](https://github.com/nvuillam/npm-groovy-lint/pull/68) Generate a ready-to-use docker image when publishing new npm-groovy-lint version (by [Dave Gallant](https://github.com/davegallant))
+- [(#68)](https://github.com/nvuillam/npm-groovy-lint/pull/68) Generate a [ready-to-use docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) when publishing new npm-groovy-lint version (by [Dave Gallant](https://github.com/davegallant))
 
 ### [5.5.1] 2020-07-15
 
 - Fixes
   - [(#64)](https://github.com/nvuillam/vscode-groovy-lint/issues/64) The contents of a string gets formatted unexpectedly
-  
+
 ### [5.5.0] 2020-07-09
 
 - Allow to override java executable and options [(#54)](https://github.com/nvuillam/vscode-groovy-lint/issues/54)
