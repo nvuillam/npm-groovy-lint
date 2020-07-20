@@ -68,47 +68,6 @@ Node.js >= 12 is required to run this package. If you can't upgrade, you can use
 | --codenarcargs           | String  | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: <http://codenarc.github.io/CodeNarc/codenarc-command-line.html><br/> Example: `npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | -h<br/> --help           | Boolean | Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
-### Docker
-
-To run this locally with docker:
-
-```shell
-docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint
-```
-
-#### CircleCI
-
-```yaml
-# .circleci/config.yml
-version: 2.1
-jobs:
-  lint:
-    docker:
-      - image: nvuillam/npm-groovy-lint
-    steps:
-      - checkout
-
-      - run: |
-          npm-groovy-lint
-
-workflows:
-  version: 2
-  "lint":
-    jobs:
-       - lint
-```
-
-#### Jenkinsfile
-
-```groovy
-node {
-    checkout scm
-    docker.image('nvuillam/npm-groovy-lint').inside {
-        sh 'npm-groovy-lint'
-    }
-}
-```
-
 ## CONFIGURATION
 
 Default rules definition ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json), based on [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json) tracks a lot of errors, do not hesitate to ignore some of them (like NoDef ou RequiredVariableType) if they are too mean for your project.
@@ -317,6 +276,48 @@ def variable = 1;
 
 [Contribute](#Contribute) to add more [rules](http://codenarc.github.io/CodeNarc/codenarc-rule-index.html) fixes :)
 
+## CALL VIA DOCKER
+
+You can run npm-groovy-lint using its docker image
+
+### Shell example
+
+```shell
+docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint
+```
+
+### CircleCI example
+
+```yaml
+# .circleci/config.yml
+version: 2.1
+jobs:
+  lint:
+    docker:
+      - image: nvuillam/npm-groovy-lint
+    steps:
+      - checkout
+
+      - run: |
+          npm-groovy-lint
+
+workflows:
+  version: 2
+  "lint":
+    jobs:
+       - lint
+```
+
+### Jenkinsfile example
+
+```groovy
+node {
+    checkout scm
+    docker.image('nvuillam/npm-groovy-lint').inside {
+        sh 'npm-groovy-lint'
+    }
+}
+```
 ## CALL VIA JS MODULE
 
 You can import npm-groovy-lint into your NPM package and call lint & fix via module, using the same options than from npm-groovy-lint command line
@@ -362,11 +363,15 @@ This package uses :
 - [GMetrics](https://dx42.github.io/gmetrics/): Code measures for CodeNarc
 - Inspiration from [eslint](https://eslint.org/) about configuration and run patterns
 
-[<img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=117 width=117">](https://github.com/nvuillam) |[<img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=117 width=117">](https://github.com/docwhat) |[<img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=117 width=117">](https://github.com/CatSue) |[<img alt="dependabot[bot]" src="https://avatars0.githubusercontent.com/in/29110?v=4&s=117 width=117">](https://github.com/apps/dependabot) |
+[<img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=50 width=50">](https://github.com/nvuillam) |[<img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=50 width=50">](https://github.com/docwhat) |[<img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=50 width=50">](https://github.com/CatSue) |[<img alt="Dave Gallant" src="https://avatars2.githubusercontent.com/u/4519234?v=4&s=50 width=50">](https://github.com/davegallant) |
 :---:|:---:|:---:|:---:|
-[nvuillam](https://github.com/nvuillam)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|[dependabot[bot]](https://github.com/apps/dependabot)|
+[nvuillam](https://github.com/nvuillam)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|[Dave Gallant](https://github.com/davegallant)|
 
 ## RELEASE NOTES
+
+### [5.6.0] 2020-07-20
+
+- [(#68)](https://github.com/nvuillam/npm-groovy-lint/pull/68) Generate a ready-to-use docker image when publishing new npm-groovy-lint version (by [Dave Gallant](https://github.com/davegallant))
 
 ### [5.5.1] 2020-07-15
 

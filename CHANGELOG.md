@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.6.0] 2020-07-20
+
+- [(#68)](https://github.com/nvuillam/npm-groovy-lint/pull/68) Generate a ready-to-use docker image when publishing new npm-groovy-lint version (by [Dave Gallant](https://github.com/davegallant))
+
 ## [5.5.1] 2020-07-15
 
 - Fixes
