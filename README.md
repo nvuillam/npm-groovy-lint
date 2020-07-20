@@ -68,6 +68,47 @@ Node.js >= 12 is required to run this package. If you can't upgrade, you can use
 | --codenarcargs           | String  | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: <http://codenarc.github.io/CodeNarc/codenarc-command-line.html><br/> Example: `npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | -h<br/> --help           | Boolean | Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
+### Docker
+
+To run this locally with docker:
+
+```shell
+docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint
+```
+
+#### CircleCI
+
+```yaml
+# .circleci/config.yml
+version: 2.1
+jobs:
+  lint:
+    docker:
+      - image: nvuillam/npm-groovy-lint
+    steps:
+      - checkout
+
+      - run: |
+          npm-groovy-lint
+
+workflows:
+  version: 2
+  "lint":
+    jobs:
+       - lint
+```
+
+#### Jenkinsfile
+
+```groovy
+node {
+    checkout scm
+    docker.image('nvuillam/npm-groovy-lint').inside {
+        sh 'npm-groovy-lint'
+    }
+}
+```
+
 ## CONFIGURATION
 
 Default rules definition ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json), based on [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json) tracks a lot of errors, do not hesitate to ignore some of them (like NoDef ou RequiredVariableType) if they are too mean for your project.
