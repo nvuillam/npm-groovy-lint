@@ -370,6 +370,13 @@ This package uses :
 
 ## RELEASE NOTES
 
+### [5.6.1] 2020-07-20
+
+Fixes:
+
+- [(#62)](https://github.com/nvuillam/npm-groovy-lint/issues/62) using a codenarc ruleset file seems to fail / groovylintrc is not codenarc compatible
+
+
 ### [5.6.0] 2020-07-20
 
 - [(#68)](https://github.com/nvuillam/npm-groovy-lint/pull/68) Generate a [ready-to-use docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) when publishing new npm-groovy-lint version (by [Dave Gallant](https://github.com/davegallant))
