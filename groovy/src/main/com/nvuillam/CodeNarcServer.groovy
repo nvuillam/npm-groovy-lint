@@ -10,7 +10,6 @@ package com.nvuillam
 import com.sun.net.httpserver.HttpServer
 import com.sun.net.httpserver.HttpExchange
 import java.net.InetSocketAddress
-import java.io.PrintStream
 
 // Concurrency & Timer management
 import java.util.concurrent.ConcurrentHashMap
@@ -19,7 +18,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.ThreadFactory
 import java.util.Timer
-import java.util.TimerTask
 
 // Groovy Json Management
 import groovy.json.JsonSlurper
@@ -130,31 +128,8 @@ class CodeNarcServer {
                     storeThread(requestKey, thread, ex)
                 }
 
-                // Try to parse if requested to get compilation errors
-                if (bodyObj.parse == true && bodyObj.file) {
-                    try {
-                        new GroovyShell().parse(new File(bodyObj.file))
-                        println 'PARSE SUCCESS'
-                        respObj.parseErrors = []
-                    }
-                    catch (MultipleCompilationErrorsException ep) {
-                        def excptnJsonTxt = JsonOutput.toJson(ep)
-                        def compileErrors = ep.getErrorCollector().getErrors()
-                        respObj.parseErrors = compileErrors
-                        println 'PARSE ERROR (MultipleCompilationErrorsException)\n' + excptnJsonTxt
-                    }
-                    catch (CompilationFailedException ep) {
-                        def excptnJsonTxt = JsonOutput.toJson(ep)
-                        def compileErrors = ep.getErrorCollector().getErrors()
-                        respObj.parseErrors = compileErrors
-                        println 'Parse error (CompilationFailedException)\n' + excptnJsonTxt
-                    }
-                    catch (Exception ep) {
-                        def excptnJsonTxt = JsonOutput.toJson(ep)
-                        respObj.parseErrors = compileErrors
-                        println 'Parse error (Other)\n' + excptnJsonTxt
-                    }
-                }
+                // Parse files to detect parse errors
+                respObj.parseErrors = parseFiles(bodyObj)
 
                 // Call CodeNarc
                 def codeNarcArgs = bodyObj.codeNarcArgs
@@ -163,7 +138,7 @@ class CodeNarcServer {
                 http.responseHeaders.add('Content-type', 'application/json')
                 http.sendResponseHeaders(200, 0)
                 respObj.status = 'success'
-                respObj.stdout =  StorePrintStream.printList.join('\n')
+                respObj.stdout =  StorePrintStream.collectAndReset().join('\n')
 
                 // Build response
                 def respJson = JsonOutput.toJson(respObj)
@@ -172,7 +147,7 @@ class CodeNarcServer {
                 }
             } catch (InterruptedException ie) {
                 def respObj = [ status:'cancelledByDuplicateRequest' ,
-                                stdout:StorePrintStream.printList.join('\n'),
+                                stdout: StorePrintStream.collectAndReset().join('\n'),
                                 ]
                 def respJson = JsonOutput.toJson(respObj)
                 http.responseHeaders.add('Content-type', 'application/json')
@@ -184,7 +159,7 @@ class CodeNarcServer {
             } catch (Throwable t) {
                 def respObj = [ status:'error' ,
                                 errorDtl:t.getStackTrace().join('\n'),
-                                stdout:StorePrintStream.printList.join('\n'),
+                                stdout: StorePrintStream.collectAndReset().join('\n'),
                                 exceptionType: t.getClass().getName(),
                                 ]
                 def respJson = JsonOutput.toJson(respObj)
@@ -243,9 +218,61 @@ class CodeNarcServer {
         }
     }
 
+    private Map<String,List<Error>> parseFiles(def bodyObj) {
+        def parseErrors = [:]
+        if (bodyObj.parse != true) {
+            return parseErrors
+        }
+        // Parse unique file
+        else if (bodyObj.file) {
+            File f = new File(bodyObj.file)
+            parseErrors.put(f.getAbsolutePath(), parseFile(f))
+            return parseErrors
+        }
+
+        // Ant style pattern is used: list all files
+        println 'Ant file scanner in ' + bodyObj.codeNarcBaseDir + ', includes ' + bodyObj.codeNarcIncludes + ', excludes ' + bodyObj.codeNarcExcludes
+        def ant = new groovy.ant.AntBuilder()
+        def scanner = ant.fileScanner {
+            fileset(dir: bodyObj.codeNarcBaseDir) {
+                include(name: bodyObj.codeNarcIncludes)
+                exclude(name : (bodyObj.codeNarcExcludes) ? bodyObj.codeNarcExcludes : 'no')
+            }
+        }
+        // Parse collected files
+        for (f in scanner) {
+            parseErrors.put(f.getAbsolutePath(), parseFile(f))
+        }
+        return parseErrors
+    }
+
+    private List<Error> parseFile(File file) {
+        // Try to parse if requested to get compilation errors
+        List<Error> parseErrors = []
+        try {
+            new GroovyShell().parse(file)
+            println 'PARSE SUCCESS: ' + file.getAbsolutePath()
+        }
+        catch (MultipleCompilationErrorsException ep) {
+            def excptnJsonTxt = JsonOutput.toJson(ep)
+            parseErrors = ep.getErrorCollector().getErrors()
+            println 'Parse error (MultipleCompilationErrorsException): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
+        }
+        catch (CompilationFailedException ep) {
+            def excptnJsonTxt = JsonOutput.toJson(ep)
+            parseErrors = ep.getErrorCollector().getErrors()
+            println 'Parse error (CompilationFailedException): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
+        }
+        catch (Exception ep) {
+            def excptnJsonTxt = JsonOutput.toJson(ep)
+            parseErrors = ep.getErrorCollector().getErrors()
+            println 'Parse error (Other): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
+        }
+        return parseErrors
+    }
+
     private void storeThread(String requestKey, def thread, ExecutorService ex) {
         def threadName = thread.getName()
-        //currentThreads.put(requestKey, [threadInstance:thread, name: threadName])
         currentThreads.put(requestKey, threadName)
         println 'THREADS: (var ' + currentThreads.size() + ', threadPool ' + ex.getActiveCount() + ')\n' + currentThreads.toString()
     }
@@ -291,10 +318,16 @@ class CodeNarcServer {
 @CompileDynamic
 class StorePrintStream extends PrintStream {
 
-    static final List<String> printList = [] as Queue
+    static List<String> printList = [] as Queue
 
     StorePrintStream(PrintStream org) {
         super(org)
+    }
+
+    static List<String> collectAndReset() {
+        List<String> printListResult = printList.collect()
+        printList = []
+        return printListResult
     }
 
     @Override
