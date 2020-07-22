@@ -8,6 +8,7 @@ package com.nvuillam
 
 // Java Http Server
 import com.sun.net.httpserver.HttpServer
+import com.sun.net.httpserver.HttpExchange
 import java.net.InetSocketAddress
 import java.io.PrintStream
 
@@ -67,9 +68,11 @@ class CodeNarcServer {
     // Launch HttpServer to receive CodeNarc linting request via Http
     /* groovylint-disable-next-line UnusedPrivateMethod */
     private void initialize() {
-        // Create a server who accepts only calls from localhost
-        InetSocketAddress socketAddr = new InetSocketAddress(PORT)
-        def server = HttpServer.create(socketAddr, 0)
+        // Create a server who accepts only calls from localhost ( https://stackoverflow.com/questions/50770747/how-to-configure-com-sun-net-httpserver-to-accept-only-requests-from-localhost )
+
+        InetAddress localHost = InetAddress.getLoopbackAddress()
+        InetSocketAddress sockAddr = new InetSocketAddress(localHost, PORT)
+        HttpServer server = HttpServer.create(sockAddr, 0)
 
         Timer timer = new Timer()
         TimerTask currentTimerTask
@@ -102,7 +105,6 @@ class CodeNarcServer {
         server.createContext('/request') { http ->
             System.setOut(new StorePrintStream(System.out))
             println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
-
             // Restart idle timer
             currentTimerTask.cancel()
             timer = new Timer()
@@ -118,7 +120,7 @@ class CodeNarcServer {
                 def bodyObj = jsonSlurper.parseText(body)
 
                 requestKey = bodyObj.requestKey
-                manageRequestKey = (requestKey != null)
+                manageRequestKey = (requestKey != null && requestKey != 'undefined' )
 
                 if (manageRequestKey) {
                     // Cancel already running request if necessary
@@ -204,7 +206,7 @@ class CodeNarcServer {
         // Create executor & start server with a timeOut if inactive
         server.setExecutor(ex);      // set up a custom executor for the server
         server.start();              // start the server
-        println "LISTENING on ${this.getHostString(socketAddr)}:${PORT}, hit Ctrl+C to exit."
+        println "LISTENING on ${this.getHostString(sockAddr)}:${PORT}, hit Ctrl+C to exit."
         currentTimerTask = timer.runAfter(this.maxIdleTime,  { timerData -> stopServer(ex, server) })
     }
 

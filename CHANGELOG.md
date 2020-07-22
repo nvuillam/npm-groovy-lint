@@ -1,5 +1,38 @@
 # Changelog
 
+## [5.6.1] 2020-07-20
+
+Fixes:
+
+- [(#62)](https://github.com/nvuillam/npm-groovy-lint/issues/62) using a codenarc ruleset file seems to fail / groovylintrc is not codenarc compatible
+
+## [5.6.0] 2020-07-20
+
+- [(#68)](https://github.com/nvuillam/npm-groovy-lint/pull/68) Generate a [ready-to-use docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) when publishing new npm-groovy-lint version (by [Dave Gallant](https://github.com/davegallant))
+
+## [5.5.1] 2020-07-15
+
+- Fixes
+  - [(#64)](https://github.com/nvuillam/vscode-groovy-lint/issues/64) The contents of a string gets formatted unexpectedly
+
+## [5.5.0] 2020-07-09
+
+- Allow to override java executable and options [(#54)](https://github.com/nvuillam/vscode-groovy-lint/issues/54)
+
+## [5.4.2] 2020-07-09
+
+- Use os.EOL [(#65)](https://github.com/nvuillam/npm-groovy-lint/pull/65) solving  [(#63)](https://github.com/nvuillam/npm-groovy-lint/issues/63) --fix for indentation adds CRLF line-endings to all files it touches
+
+## [5.4.1] 2020-07-01
+
+- CodeNarcServer listens to localhost only [(#59)](https://github.com/nvuillam/npm-groovy-lint/pull/59) solving [(#56)](https://github.com/nvuillam/npm-groovy-lint/issues/56)
+- Replace @analytics/segment with @amplitude/node for anonymous stats
+
+## [5.3.0] 2020-06-29
+
+- New option **--failon** , replacing `--failonerror`,`--failonwarning` and `--failoninfo`. It can take error, warning or info values (default: none). Previous options remain working but are deprecated and will be removed in a future major version
+- Update help for `--fixrules` option
+
 ## [6.0.0] 2020-06-15
 
 - Upgrade to [CodeNarc v1.6](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-16----jun-2020)
