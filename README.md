@@ -347,7 +347,7 @@ Example
 
 ## TROUBLESHOOTING
 
-- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (Groovy 3.0.4)
+- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (Groovy 3.0.5)
 
 ## CONTRIBUTE
 
@@ -380,7 +380,6 @@ This package uses :
 Fixes:
 
 - [(#62)](https://github.com/nvuillam/npm-groovy-lint/issues/62) using a codenarc ruleset file seems to fail / groovylintrc is not codenarc compatible
-
 
 ### [5.6.0] 2020-07-20
 

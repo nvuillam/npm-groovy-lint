@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.0.0] 2020-UNRELEASED
+
+- Upgrade to [CodeNarc v1.6](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-16----jun-2020)
+- Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
+- Upgrade to [Groovy](https://groovy-lang.org/) v3.0.5
+
 ## [5.7.0] 2020-07-23
 
 - [(#62)](https://github.com/nvuillam/npm-groovy-lint/pull/74) Check parse error in all files when called via CLI . Closes [#69](https://github.com/nvuillam/npm-groovy-lint/issues/69)
@@ -36,12 +42,6 @@ Fixes:
 
 - New option **--failon** , replacing `--failonerror`,`--failonwarning` and `--failoninfo`. It can take error, warning or info values (default: none). Previous options remain working but are deprecated and will be removed in a future major version
 - Update help for `--fixrules` option
-
-## [6.0.0] 2020-06-15
-
-- Upgrade to [CodeNarc v1.6](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-16----jun-2020)
-- Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
-- Upgrade to [Groovy](https://groovy-lang.org/) v3.0.4
 
 ## [5.1.0] 2020-06-04
 
