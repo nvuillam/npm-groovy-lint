@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Created-By: 1.8.0_144 (Oracle Corporation)
 Main-Class: com.nvuillam.CodeNarcServer
-Class-Path: CodeNarc-1.6.jar groovy/lib/groovy-3.0.4.jar groovy/lib/groovy-templates-3.0.4.jar groovy/lib/groovy-xml-3.0.4.jar groovy/lib/groovy-json-3.0.4.jar slf4j-api-1.7.9.jar log4j-slf4j-impl-2.13.0.jar log4j-api-2.13.0.jar log4j-core-2.13.0.jar gmetrics-1.1.jar
+Class-Path: CodeNarc-1.5.jar groovy/lib/groovy-3.0.3.jar groovy/lib/groovy-templates-3.0.3.jar groovy/lib/groovy-xml-3.0.3.jar groovy/lib/groovy-json-3.0.3.jar groovy/lib/groovy-ant-3.0.3.jar groovy/lib/ant-1.10.7.jar groovy/lib/ant-launcher-1.10.7.jar slf4j-api-1.7.9.jar log4j-slf4j-impl-2.13.0.jar log4j-api-2.13.0.jar log4j-core-2.13.0.jar GMetrics-0.7.jar

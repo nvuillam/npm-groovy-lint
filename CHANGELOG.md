@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.7.0] 2020-07-23
+
+- [(#62)](https://github.com/nvuillam/npm-groovy-lint/pull/74) Check parse error in all files when called via CLI . Closes [#69](https://github.com/nvuillam/npm-groovy-lint/issues/69)
+
 ## [5.6.1] 2020-07-20
 
 Fixes:
