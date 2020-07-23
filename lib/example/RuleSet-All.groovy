@@ -112,12 +112,16 @@ ruleset {
     FieldTypeRequired
     HashtableIsObsolete
     IfStatementCouldBeTernary
+    ImplicitClosureParameter
+    ImplicitReturnStatement
     InvertedCondition
     InvertedIfElse
     LongLiteralWithLowerCaseL
     MethodParameterTypeRequired
     MethodReturnTypeRequired
     NoDef
+    NoDouble
+    NoFloat
     NoJavaUtilDate
     NoTabCharacter
     ParameterReassignment
@@ -233,6 +237,7 @@ ruleset {
     StatelessClass
 
     // rulesets/grails.xml
+    GrailsDomainGormMethods
     GrailsDomainHasEquals
     GrailsDomainHasToString
     GrailsDomainReservedSqlKeywordName
@@ -287,7 +292,7 @@ ruleset {
     MisorderedStaticImports
     NoWildcardImports
     UnnecessaryGroovyImport
-    // UnusedImport // NV: Disabled because of https://github.com/CodeNarc/CodeNarc/issues/426
+    UnusedImport
 
     // rulesets/jdbc.xml
     DirectConnectionManagement
