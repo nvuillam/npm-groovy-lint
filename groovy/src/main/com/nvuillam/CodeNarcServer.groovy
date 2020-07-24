@@ -190,6 +190,10 @@ class CodeNarcServer {
             CodeNarc.main(args)
             return
         }
+        else if (args == ['-version'] as String[]) {
+            CodeNarc.main(args)
+            return
+        }
         CodeNarc codeNarc = new CodeNarc()
         try {
             codeNarc.execute(args)
