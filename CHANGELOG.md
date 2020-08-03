@@ -10,6 +10,10 @@
 - Upgrade to [Groovy v3.0.5](https://groovy-lang.org/)
 - Add anonymous usage stats on types of errors found and fixed
 
+## [5.8.0] 2020-08-01
+
+- Fix & enhance anonymous statistics
+
 ## [5.7.0] 2020-07-23
 
 - [(#62)](https://github.com/nvuillam/npm-groovy-lint/pull/74) Check parse error in all files when called via CLI . Closes [#69](https://github.com/nvuillam/npm-groovy-lint/issues/69)

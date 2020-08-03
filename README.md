@@ -365,9 +365,9 @@ This package uses :
 - [GMetrics](https://dx42.github.io/gmetrics/): Code measures for CodeNarc
 - Inspiration from [eslint](https://eslint.org/) about configuration and run patterns
 
-[<img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=50 width=50">](https://github.com/nvuillam) |[<img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=50 width=50">](https://github.com/docwhat) |[<img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=50 width=50">](https://github.com/CatSue) |[<img alt="Dave Gallant" src="https://avatars2.githubusercontent.com/u/4519234?v=4&s=50 width=50">](https://github.com/davegallant) |
+[<img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=50 width=50">](https://github.com/nvuillam) |[<img alt="Dave Gallant" src="https://avatars2.githubusercontent.com/u/4519234?v=4&s=50 width=50">](https://github.com/davegallant) |[<img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=50 width=50">](https://github.com/docwhat) |[<img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=50 width=50">](https://github.com/CatSue) |
 :---:|:---:|:---:|:---:|
-[nvuillam](https://github.com/nvuillam)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|[Dave Gallant](https://github.com/davegallant)|
+[nvuillam](https://github.com/nvuillam)|[Dave Gallant](https://github.com/davegallant)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|
 
 ## RELEASE NOTES
 
@@ -376,6 +376,10 @@ This package uses :
 - Upgrade to [CodeNarc v1.6](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-16----jun-2020)
 - Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
 - Upgrade to [Groovy v3.0.5](https://groovy-lang.org/)
+
+### [5.8.0] 2020-08-01
+
+- Fix & enhance anonymous statistics
 
 ### [5.7.0] 2020-07-23
 
