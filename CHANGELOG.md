@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.0.0] 2020-UNRELEASED
+
+- Upgrade to [CodeNarc v1.6.1](https://github.com/CodeNarc/CodeNarc/blob/v1.6-patch-releases/CHANGELOG.md#version-161----aug-2020)
+  - Update list of rules
+  - Use new CodeNarc JSON console Output instead of temporary XML files
+  - Call CodeNarc to get its version instead of using npm-groovy-lint hardcoded value
+- Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
+- Upgrade to [Groovy v3.0.5](https://groovy-lang.org/)
+- Add anonymous usage stats on types of errors found and fixed
+
 ## [5.8.0] 2020-08-01
 
 - Fix & enhance anonymous statistics

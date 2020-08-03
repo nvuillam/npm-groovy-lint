@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD033 -->
 # NPM GROOVY LINT (+ Format & Auto-fix)
 
 [![Version](https://img.shields.io/npm/v/npm-groovy-lint.svg)](https://npmjs.org/package/npm-groovy-lint)
@@ -347,7 +348,7 @@ Example
 
 ## TROUBLESHOOTING
 
-- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (Groovy 3.0.3)
+- On some environments, it has been observed that installed Groovy version must match Groovy embedded jars delivered with npm-groovy-lint (Groovy 3.0.5)
 
 ## CONTRIBUTE
 
@@ -371,6 +372,12 @@ This package uses :
 
 ## RELEASE NOTES
 
+### [6.0.0] 2020-UNRELEASED
+
+- Upgrade to [CodeNarc v1.6.1](https://github.com/CodeNarc/CodeNarc/blob/v1.6-patch-releases/CHANGELOG.md#version-161----aug-2020)
+- Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
+- Upgrade to [Groovy v3.0.5](https://groovy-lang.org/)
+
 ### [5.8.0] 2020-08-01
 
 - Fix & enhance anonymous statistics
@@ -384,7 +391,6 @@ This package uses :
 Fixes:
 
 - [(#62)](https://github.com/nvuillam/npm-groovy-lint/issues/62) using a codenarc ruleset file seems to fail / groovylintrc is not codenarc compatible
-
 
 ### [5.6.0] 2020-07-20
 

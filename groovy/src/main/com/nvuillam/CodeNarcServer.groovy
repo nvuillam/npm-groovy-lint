@@ -1,4 +1,4 @@
-/* groovylint-disable LineLength */
+/* groovylint-disable LineLength, TrailingComma */
 /*
  * CodeNarc main class Wrapper to run a light HttpServer so next calls can have better performances
  * Auto-kills itself when maximum idle time is reached
@@ -101,7 +101,7 @@ class CodeNarcServer {
 
         // Request CodeNarc linting
         server.createContext('/request') { http ->
-            System.setOut(new StorePrintStream(System.out))
+            def respObj = [:]
             println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
             // Restart idle timer
             currentTimerTask.cancel()
@@ -113,7 +113,6 @@ class CodeNarcServer {
             try {
                 def body = streamToString(http.getRequestBody())
                 println "REQUEST BODY: ${body}"
-                def respObj = [:]
                 def jsonSlurper = new JsonSlurper()
                 def bodyObj = jsonSlurper.parseText(body)
 
@@ -134,41 +133,28 @@ class CodeNarcServer {
                 // Call CodeNarc
                 def codeNarcArgs = bodyObj.codeNarcArgs
                 def codenarcArgsArray = codeNarcArgs.split(' ')
-                this.runCodeNarc(codenarcArgsArray)
-                http.responseHeaders.add('Content-type', 'application/json')
-                http.sendResponseHeaders(200, 0)
+                respObj.stdout = captureSystemOut {
+                    this.runCodeNarc(codenarcArgsArray)
+                }
+                respObj.statusCode = 200
                 respObj.status = 'success'
-                respObj.stdout =  StorePrintStream.collectAndReset().join('\n')
-
-                // Build response
-                def respJson = JsonOutput.toJson(respObj)
-                http.responseBody.withWriter { out ->
-                    out << respJson
-                }
             } catch (InterruptedException ie) {
-                def respObj = [ status:'cancelledByDuplicateRequest' ,
-                                stdout: StorePrintStream.collectAndReset().join('\n'),
-                                ]
-                def respJson = JsonOutput.toJson(respObj)
-                http.responseHeaders.add('Content-type', 'application/json')
-                http.sendResponseHeaders(444 , 0)
-                http.responseBody.withWriter { out ->
-                    out << respJson
-                }
+                respObj.status = 'cancelledByDuplicateRequest'
+                respObj.statusCode = 444
                 println 'INTERRUPTED by duplicate'
             } catch (Throwable t) {
-                def respObj = [ status:'error' ,
-                                errorDtl:t.getStackTrace().join('\n'),
-                                stdout: StorePrintStream.collectAndReset().join('\n'),
-                                exceptionType: t.getClass().getName(),
-                                ]
-                def respJson = JsonOutput.toJson(respObj)
-                http.responseHeaders.add('Content-type', 'application/json')
-                http.sendResponseHeaders(500, 0)
-                http.responseBody.withWriter { out ->
-                    out << respJson
-                }
+                respObj.status = 'error'
+                respObj.errorDtl = t.getStackTrace().join('\n')
+                respObj.exceptionType =  t.getClass().getName()
+                respObj.statusCode = 500
                 println 'UNEXPECTED ERROR ' + respObj
+            }
+            // Build response
+            def respJson = JsonOutput.toJson(respObj)
+            http.responseHeaders.add('Content-type', 'application/json')
+            http.sendResponseHeaders(respObj.statusCode, 0)
+            http.responseBody.withWriter { out ->
+                out << respJson
             }
             // Remove thread info
             if (manageRequestKey && requestKey) {
@@ -179,14 +165,18 @@ class CodeNarcServer {
         }
 
         // Create executor & start server with a timeOut if inactive
-        server.setExecutor(ex);      // set up a custom executor for the server
-        server.start();              // start the server
+        server.setExecutor(ex)      // set up a custom executor for the server
+        server.start()              // start the server
         println "LISTENING on ${this.getHostString(sockAddr)}:${PORT}, hit Ctrl+C to exit."
         currentTimerTask = timer.runAfter(this.maxIdleTime,  { timerData -> stopServer(ex, server) })
     }
 
     private void runCodeNarc(String[] args) {
         if (args == ['-help'] as String[]) {
+            CodeNarc.main(args)
+            return
+        }
+        else if (args == ['-version'] as String[]) {
             CodeNarc.main(args)
             return
         }
@@ -313,27 +303,17 @@ class CodeNarcServer {
         return address.getHostAddress()
     }
 
-}
-
-@CompileDynamic
-class StorePrintStream extends PrintStream {
-
-    static List<String> printList = [] as Queue
-
-    StorePrintStream(PrintStream org) {
-        super(org)
-    }
-
-    static List<String> collectAndReset() {
-        List<String> printListResult = printList.collect()
-        printList = []
-        return printListResult
-    }
-
-    @Override
-    void println(String line) {
-        printList.add(line)
-        super.println(line)
+    private String captureSystemOut(Closure closure) {
+        def originalSystemOut = System.out
+        def outputStream = new ByteArrayOutputStream()
+        try {
+            System.out = new PrintStream(outputStream)
+            closure()
+        }
+        finally {
+            System.out = originalSystemOut
+        }
+        return outputStream.toString()
     }
 
 }
