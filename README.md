@@ -372,7 +372,7 @@ This package uses :
 
 ## RELEASE NOTES
 
-### [6.0.0] 2020-UNRELEASED
+### [6.0.0] 2020-03-08
 
 - Upgrade to [CodeNarc v1.6.1](https://github.com/CodeNarc/CodeNarc/blob/v1.6-patch-releases/CHANGELOG.md#version-161----aug-2020)
 - Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
