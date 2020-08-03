@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD033 -->
 # NPM GROOVY LINT (+ Format & Auto-fix)
 
 [![Version](https://img.shields.io/npm/v/npm-groovy-lint.svg)](https://npmjs.org/package/npm-groovy-lint)
@@ -373,7 +374,7 @@ This package uses :
 
 ### [6.0.0] 2020-UNRELEASED
 
-- Upgrade to [CodeNarc v1.6](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-16----jun-2020)
+- Upgrade to [CodeNarc v1.6.1](https://github.com/CodeNarc/CodeNarc/blob/v1.6-patch-releases/CHANGELOG.md#version-161----aug-2020)
 - Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
 - Upgrade to [Groovy v3.0.5](https://groovy-lang.org/)
 
