@@ -1,6 +1,10 @@
 # Changelog
 
-## [6.0.0] 2020-03-08
+## [6.1.0] 2020-08-04
+
+- Java 14 compatibility (Closes [#77](https://github.com/nvuillam/npm-groovy-lint/issues/7))
+
+## [6.0.0] 2020-08-03
 
 - Upgrade to [CodeNarc v1.6.1](https://github.com/CodeNarc/CodeNarc/blob/v1.6-patch-releases/CHANGELOG.md#version-161----aug-2020)
   - Update list of rules
