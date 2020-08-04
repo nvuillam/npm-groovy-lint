@@ -372,7 +372,11 @@ This package uses :
 
 ## RELEASE NOTES
 
-## [6.1.0] 2020-08-04
+### [6.1.1] 2020-08-04
+
+- Fix SpaceAfterComma auto-fixing rule
+
+### [6.1.0] 2020-08-04
 
 - Java 14 compatibility (Closes [#77](https://github.com/nvuillam/npm-groovy-lint/issues/7))
 
@@ -381,82 +385,6 @@ This package uses :
 - Upgrade to [CodeNarc v1.6.1](https://github.com/CodeNarc/CodeNarc/blob/v1.6-patch-releases/CHANGELOG.md#version-161----aug-2020)
 - Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
 - Upgrade to [Groovy v3.0.5](https://groovy-lang.org/)
-
-### [5.8.0] 2020-08-01
-
-- Fix & enhance anonymous statistics
-
-### [5.7.0] 2020-07-23
-
-- [(#62)](https://github.com/nvuillam/npm-groovy-lint/pull/74) Check parse error in all files when called via CLI . Closes [#69](https://github.com/nvuillam/npm-groovy-lint/issues/69)
-
-### [5.6.1] 2020-07-20
-
-Fixes:
-
-- [(#62)](https://github.com/nvuillam/npm-groovy-lint/issues/62) using a codenarc ruleset file seems to fail / groovylintrc is not codenarc compatible
-
-### [5.6.0] 2020-07-20
-
-- [(#68)](https://github.com/nvuillam/npm-groovy-lint/pull/68) Generate a [ready-to-use docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) when publishing new npm-groovy-lint version (by [Dave Gallant](https://github.com/davegallant))
-
-### [5.5.1] 2020-07-15
-
-- Fixes
-  - [(#64)](https://github.com/nvuillam/vscode-groovy-lint/issues/64) The contents of a string gets formatted unexpectedly
-
-### [5.5.0] 2020-07-09
-
-- Allow to override java executable and options [(#54)](https://github.com/nvuillam/vscode-groovy-lint/issues/54)
-
-### [5.4.2] 2020-07-09
-
-- Use os.EOL [(#65)](https://github.com/nvuillam/npm-groovy-lint/pull/65) solving [(#63)](https://github.com/nvuillam/npm-groovy-lint/issues/63) --fix for indentation adds CRLF line-endings to all files it touches
-
-### [5.4.1] 2020-07-01
-
-- CodeNarcServer listens to localhost only [(#59)](https://github.com/nvuillam/npm-groovy-lint/pull/59) solving [(#56)](https://github.com/nvuillam/npm-groovy-lint/issues/56)
-- Replace @analytics/segment with @amplitude/node for anonymous stats
-
-### [5.3.0] 2020-06-29
-
-- New option **--failon** , replacing `--failonerror`,`--failonwarning` and `--failoninfo`. It can take error, warning or info values (default: none). Previous options remain working but are deprecated and will be removed in a future major version
-- Update help for `--fixrules` option
-
-### [5.1.0] 2020-06-04
-
-- Install Java 8 using node-jre in case java version found is higher than Java 11 (CodeNarc compatibility is Java 8 to 11)
-
-### [5.0.3] 2020-05-30
-
-- Updated fix rules
-  - Indentation
-  - IndentationClosingBrace
-
-### [5.0.2] 2020-05-27
-
-- Avoid to apply wrong fix in case of CodeNarc false positive
-- New fix rules
-  - BlankLineBeforePackage
-- Updated fix rules
-  - BracesForIfElse
-  - BracesForMethod
-  - BracesForTryCatchFinally
-  - ClassEndsWithBlankLine
-  - ClassStartsWithBlankLine
-  - MissingBlankLineAfterImports
-  - MissingBlankLineAfterPackage
-  - UnnecessaryGroovyImport
-  - UnusedImport
-
-### [5.0.0] 2020-05-25
-
-- **BIG BANG**: Improve performances, compatibility, architecture and delivery
-  - Get rid of [jDeploy](https://github.com/shannah/jdeploy) dependency
-    - Use own [java-caller.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/java-caller.js) for java commands
-    - Update CircleCI config to use `npm link`instead of `jdeploy install`
-  - Get rid of [request](https://github.com/request/request) dependency
-    - Use [axios](https://github.com/axios/axios) for promisified http calls
 
 ### PREVIOUS VERSIONS
 

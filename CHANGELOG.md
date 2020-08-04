@@ -1,5 +1,9 @@
 # Changelog
 
+## [6.1.1] 2020-08-04
+
+- Fix SpaceAfterComma auto-fixing rule
+
 ## [6.1.0] 2020-08-04
 
 - Java 14 compatibility (Closes [#77](https://github.com/nvuillam/npm-groovy-lint/issues/7))
