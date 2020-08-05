@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "lint:fix": "eslint **/*.js --fix && prettier --write \"./lib/**/*.{js,jsx,json}\" --tab-width 4 --print-width 150",
-    "groovy:run-server-from-source": "groovy -cp \"lib/java/CodeNarc-1.6.1.jar;lib/java/groovy/lib/groovy-3.0.5.jar;lib/java/groovy/lib/groovy-templates-3.0.5.jar;lib/java/groovy/lib/groovy-xml-3.0.5.jar;lib/java/groovy/lib/groovy-json-3.0.5.jar;lib/java/groovy/lib/groovy-ant-3.0.5.jar;lib/java/groovy/lib/ant-1.10.8.jar;lib/java/groovy/lib/ant-launcher-1.10.8.jar;lib/java/slf4j-api-1.7.9.jar;lib/java/log4j-slf4j-impl-2.13.0.jar;lib/java/log4j-api-2.13.0.jar;lib/java/log4j-core-2.13.0.jar;lib/java/gmetrics-1.1.jar\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
-    "groovy:build": "groovyc -cp \"./lib/java*\" --encoding utf-8 ./groovy/src/main/com/nvuillam/CodeNarcServer.groovy -d ./tmp && cd ./tmp && jar -cvfm ./../lib/java/CodeNarcServer.jar ./../MANIFEST.txt ./com/nvuillam/*.class && cd ..",
-    "test": "mocha \"lib/test/**/*.test.js\"",
+    "groovy:run-server-from-source": "npm run dev:kill-server && groovy -cp \"lib/java/CodeNarc-1.6.1.jar;lib/java/groovy/lib/groovy-3.0.5.jar;lib/java/groovy/lib/groovy-templates-3.0.5.jar;lib/java/groovy/lib/groovy-xml-3.0.5.jar;lib/java/groovy/lib/groovy-json-3.0.5.jar;lib/java/groovy/lib/groovy-ant-3.0.5.jar;lib/java/groovy/lib/ant-1.10.8.jar;lib/java/groovy/lib/ant-launcher-1.10.8.jar;lib/java/slf4j-api-1.7.9.jar;lib/java/log4j-slf4j-impl-2.13.0.jar;lib/java/log4j-api-2.13.0.jar;lib/java/log4j-core-2.13.0.jar;lib/java/gmetrics-1.1.jar\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
+    "groovy:build": "npm run dev:kill-server && groovyc -cp \"./lib/java*\" --encoding utf-8 ./groovy/src/main/com/nvuillam/CodeNarcServer.groovy -d ./tmp && cd ./tmp && jar -cvfm ./../lib/java/CodeNarcServer.jar ./../MANIFEST.txt ./com/nvuillam/*.class && cd ..",
+    "test": "npm run dev:kill-server && mocha \"lib/test/**/*.test.js\"",
     "test:coverage": "nyc npm run test",
-    "test:debug": "mocha --reporter spec --inspect-brk \"lib/test/**/*.test.js\"",
+    "test:debug": "npm run dev:kill-server && mocha --reporter spec --inspect-brk \"lib/test/**/*.test.js\"",
     "dev:build-config": "node script-build-config-all.js",
-    "dev:lint-install-local": "npm run lint:fix && npm link --force",
+    "dev:kill-server": "npm-groovy-lint --killserver --no-insight",
+    "dev:lint-install-local": "npm run dev:kill-server && npm run lint:fix && npm link --force",
     "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node script-deploy-in-vscode.js"
   },
   "repository": {
