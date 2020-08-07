@@ -376,6 +376,11 @@ This package uses :
 
 ## RELEASE NOTES
 
+### [7.0.0] 2020-08-07
+
+- New default recommended rules (activate/deactivate/change severity)
+- Allow to call `--config recommended-jenkinsfile` to use delivered .groovylintrc-recommended-jenkinsfile.json
+
 ### [6.1.1] 2020-08-04
 
 - Fix SpaceAfterComma auto-fixing rule
