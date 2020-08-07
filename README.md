@@ -228,6 +228,8 @@ def variable = 1;
 
 ## AUTO-FIXABLE RULES (beta)
 
+- AssignmentInConditional
+- BlankLineBeforePackage
 - BlockEndsWithBlankLine
 - BlockStartsWithBlankLine
 - BracesForClass
@@ -239,6 +241,7 @@ def variable = 1;
 - ClassStartsWithBlankLine
 - ClosingBraceNotAlone
 - ConsecutiveBlankLines
+- DuplicateImport
 - ElseBlockBraces
 - ExplicitArrayListInstantiation
 - ExplicitLinkedListInstantiation
@@ -247,6 +250,7 @@ def variable = 1;
 - Indentation
 - IndentationClosingBraces
 - IndentationComments
+- InsecureRandom
 - MisorderedStaticImports
 - MissingBlankLineAfterImports
 - MissingBlankLineAfterPackage
