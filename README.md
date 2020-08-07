@@ -228,6 +228,8 @@ def variable = 1;
 
 ## AUTO-FIXABLE RULES (beta)
 
+- AssignmentInConditional
+- BlankLineBeforePackage
 - BlockEndsWithBlankLine
 - BlockStartsWithBlankLine
 - BracesForClass
@@ -239,6 +241,7 @@ def variable = 1;
 - ClassStartsWithBlankLine
 - ClosingBraceNotAlone
 - ConsecutiveBlankLines
+- DuplicateImport
 - ElseBlockBraces
 - ExplicitArrayListInstantiation
 - ExplicitLinkedListInstantiation
@@ -247,6 +250,7 @@ def variable = 1;
 - Indentation
 - IndentationClosingBraces
 - IndentationComments
+- InsecureRandom
 - MisorderedStaticImports
 - MissingBlankLineAfterImports
 - MissingBlankLineAfterPackage
@@ -371,6 +375,11 @@ This package uses :
 [nvuillam](https://github.com/nvuillam)|[Dave Gallant](https://github.com/davegallant)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|
 
 ## RELEASE NOTES
+
+### [7.0.0] 2020-08-07
+
+- New default recommended rules (activate/deactivate/change severity)
+- Allow to call `--config recommended-jenkinsfile` to use delivered .groovylintrc-recommended-jenkinsfile.json
 
 ### [6.1.1] 2020-08-04
 
