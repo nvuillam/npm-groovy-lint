@@ -12,13 +12,7 @@
         "dry.DuplicateListLiteral": "info",
         "dry.DuplicateMapLiteral": "warning",
         "dry.DuplicateNumberLiteral": {
-            "ignoreNumbers": [
-                0,
-                1,
-                2,
-                3,
-                -1
-            ],
+            "ignoreNumbers": [0, 1, 2, 3, -1],
             "severity": "info"
         },
         "dry.DuplicateStringLiteral": "info",
@@ -35,6 +29,8 @@
             "spacesPerIndentLevel": 4,
             "severity": "info"
         },
+        "formatting.SpaceAroundMapEntryColon": "off",
+        "groovyism.ExplicitCallToEqualsMethod": "info",
         "logging.Println": "off",
         "unused.UnusedArray": "error",
         "unused.UnusedObject": "error",

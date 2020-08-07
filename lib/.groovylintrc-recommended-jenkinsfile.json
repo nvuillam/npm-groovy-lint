@@ -5,7 +5,11 @@
         "convention.NoDef": "off",
         "convention.VariableTypeRequired": "off",
         "formatting.SpaceAroundMapEntryColon": "off",
+        "groovyism.ExplicitCallToEqualsMethod": "off",
         "naming.VariableName": "off",
+        "size.NestedBlockDepth": {
+            "maxNestedBlockDepth": 10
+        },
         "unused.UnusedVariable": {
             "ignoreVariableNames": "_"
         }
