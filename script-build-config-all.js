@@ -39,9 +39,9 @@ const allRulesConfig = buildAllRules(allLines);
 
 const fullConfigIndented = JSON.stringify({ "rules": allRulesConfig }, null, 4);
 
-fse.writeFileSync('.groovylintrc-all.json', fullConfigIndented);
+fse.writeFileSync('./lib/.groovylintrc-all.json', fullConfigIndented);
 
-console.log('Generated .groovylintrc-all.json fullConfig');
+console.log('Generated lib/.groovylintrc-all.json fullConfig');
 
 const npmDefinedRules = getNpmGroovyLintRules();
 const fixableRules = [];
