@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.1.0] 2020-08-10
+
+- Externalize JavaCaller class into a separate package [java-caller](https://www.npmjs.com/package/java-caller) and use it
+
 ## [7.0.0] 2020-08-07
 
 - New default recommended rules (activate/deactivate/change severity)
