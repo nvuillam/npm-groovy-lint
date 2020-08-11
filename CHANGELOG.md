@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.1.1] 2020-08-11
+
+- Upgrade [java-caller](https://www.npmjs.com/package/java-caller) to v2.0.0
+
 ## [7.1.0] 2020-08-10
 
 - Externalize JavaCaller class into a separate package [java-caller](https://www.npmjs.com/package/java-caller) and use it

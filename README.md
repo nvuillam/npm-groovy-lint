@@ -362,19 +362,26 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 
 ## THANKS
 
-This package uses :
+### Other packages used
 
 - [CodeNarc](https://github.com/CodeNarc/CodeNarc): groovy lint
+- [java-caller](https://www.npmjs.com/package/java-caller): Easy call Java commands from Node
 - [slf4j](http://www.slf4j.org): logging for CodeNarc
 - [log4j](https://logging.apache.org/log4j/2.x/): logging for CodeNarc
 - [GMetrics](https://dx42.github.io/gmetrics/): Code measures for CodeNarc
 - Inspiration from [eslint](https://eslint.org/) about configuration and run patterns
+
+### Contributors
 
 [<img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=50 width=50">](https://github.com/nvuillam) |[<img alt="Dave Gallant" src="https://avatars2.githubusercontent.com/u/4519234?v=4&s=50 width=50">](https://github.com/davegallant) |[<img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=50 width=50">](https://github.com/docwhat) |[<img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=50 width=50">](https://github.com/CatSue) |
 :---:|:---:|:---:|:---:|
 [nvuillam](https://github.com/nvuillam)|[Dave Gallant](https://github.com/davegallant)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|
 
 ## RELEASE NOTES
+
+### [7.1.1] 2020-08-11
+
+- Upgrade [java-caller](https://www.npmjs.com/package/java-caller) to v2.0.0
 
 ### [7.1.0] 2020-08-10
 
