@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.2.0] 2020-08-15
+
+- Allow to link to [CodeNarc RuleSet files](https://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html) from `.groovylintrc.json`, using property `"codenarcRulesets"`. Warning: doing so means that all other properties of config file will be ignored.
+
 ## [7.1.1] 2020-08-11
 
 - Upgrade [java-caller](https://www.npmjs.com/package/java-caller) to v2.0.0
