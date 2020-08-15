@@ -95,6 +95,10 @@ Create a file named **.groovylintrc.json** in the current or any parent director
     - enabled : true (default) or false
     - any of the [rule advanced properties](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)
 
+OR
+
+- **codenarcRulesets**: Comma-separated string containing the list of `.xml` or `.groovy` CodeNarc RuleSet files (in case you already are a CodeNarc user and do not wish to switch to npm-groovy-lint config format)
+
 ### Examples
 
 ```json
@@ -124,7 +128,13 @@ Create a file named **.groovylintrc.json** in the current or any parent director
 }
 ```
 
-## EXAMPLES
+```json
+{
+    "codenarcRulesets": "RuleSet-1.groovy,RuleSet-2.groovy"
+}
+```
+
+## EXAMPLE CALLS
 
 - Lint groovy with JSON output
 
@@ -378,6 +388,10 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 [nvuillam](https://github.com/nvuillam)|[Dave Gallant](https://github.com/davegallant)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|
 
 ## RELEASE NOTES
+
+### [7.2.0] 2020-08-15
+
+- Allow to link to [CodeNarc RuleSet files](https://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html) from `.groovylintrc.json`, using property `"codeNarcRulesets"`. Warning: doing so means that all other properties of config file will be ignored.
 
 ### [7.1.1] 2020-08-11
 
