@@ -389,7 +389,7 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 
 ## RELEASE NOTES
 
-### [7.2.0] 2020-08-15
+### [7.3.0] 2020-08-15
 
 - Allow to link to [CodeNarc RuleSet files](https://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html) from `.groovylintrc.json`, using property `"codeNarcRulesets"`. Warning: doing so means that all other properties of config file will be ignored.
 
