@@ -1,5 +1,10 @@
 # Changelog
 
+## [7.3.1] 2020-08-16
+
+- Add number of lines & reorganize anonymous statistics
+- Fix error type counters in anonymous statistics
+
 ## [7.3.0] 2020-08-15
 
 - Allow to link to [CodeNarc RuleSet files](https://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html) from `.groovylintrc.json`, using property `"codenarcRulesets"`. Warning: doing so means that all other properties of config file will be ignored.

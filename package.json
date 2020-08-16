@@ -11,7 +11,7 @@
     "test:coverage": "nyc npm run test",
     "test:debug": "npm run dev:kill-server && mocha --reporter spec --inspect-brk \"lib/test/**/*.test.js\"",
     "dev:build-config": "node script-build-config-all.js",
-    "dev:kill-server": "npm-groovy-lint --killserver --no-insight",
+    "dev:kill-server": "npm-groovy-lint --killserver",
     "dev:lint-install-local": "npm run dev:kill-server && npm run lint:fix && npm link --force",
     "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node script-deploy-in-vscode.js"
   },
