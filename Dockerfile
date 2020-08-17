@@ -6,7 +6,7 @@ RUN apk add --update \
     bash \
     nodejs \
     npm \
-    openjdk8
+    openjdk11
 
 RUN npm i -g
 
