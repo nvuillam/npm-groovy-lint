@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.4.0] 2020-08-17
+
+- [(#87)](https://github.com/nvuillam/npm-groovy-lint/pull/87) update to openjdk 11 in [official Docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) (by [Pawel Kopka](https://github.com/pawelkopka))
+
 ## [7.3.1] 2020-08-16
 
 - Add number of lines & reorganize anonymous statistics
