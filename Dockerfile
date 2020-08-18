@@ -10,4 +10,5 @@ RUN apk add --update \
 
 RUN npm i -g
 
-ENTRYPOINT "npm-groovy-lint"
+ENTRYPOINT ["npm-groovy-lint"]
+CMD ["--help"]
