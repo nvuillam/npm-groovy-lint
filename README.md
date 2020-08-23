@@ -298,8 +298,14 @@ You can run npm-groovy-lint using its [official docker image](https://hub.docker
 
 ### Shell example
 
+Run with default setting
 ```shell
 docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint
+```
+
+Run with additional flags by simply appending them at after docker image name:
+```shell
+docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint --verbose --noserver --no-insight --failon error
 ```
 
 ### CircleCI example
