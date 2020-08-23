@@ -298,14 +298,16 @@ You can run npm-groovy-lint using its [official docker image](https://hub.docker
 
 ### Shell example
 
-Run with default setting
+Run with default settings
+
 ```shell
 docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint
 ```
 
 Run with additional flags by simply appending them at after docker image name:
+
 ```shell
-docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint --verbose --noserver --no-insight --failon error
+docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint --failon warning --verbose
 ```
 
 ### CircleCI example
@@ -389,15 +391,19 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 
 ### Contributors
 
-[<img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=50 width=50">](https://github.com/nvuillam) |[<img alt="Dave Gallant" src="https://avatars2.githubusercontent.com/u/4519234?v=4&s=50 width=50">](https://github.com/davegallant) |[<img alt="pawelkopka" src="https://avatars1.githubusercontent.com/u/17784034?v=4&s=50 width=50">](https://github.com/pawelkopka) |[<img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=50 width=50">](https://github.com/docwhat) |[<img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=50 width=50">](https://github.com/CatSue) |
-:---:|:---:|:---:|:---:|:---:|
-[Nicolas Vuillamy](https://github.com/nvuillam)|[Dave Gallant](https://github.com/davegallant)|[Pawel Kopka](https://github.com/pawelkopka)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|
+[<img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=50 width=50">](https://github.com/nvuillam) |[<img alt="Dave Gallant" src="https://avatars2.githubusercontent.com/u/4519234?v=4&s=50 width=50">](https://github.com/davegallant) |[<img alt="warhod" src="https://avatars1.githubusercontent.com/u/1305176?v=4&s=50 width=50">](https://github.com/warhod) |[<img alt="pawelkopka" src="https://avatars1.githubusercontent.com/u/17784034?v=4&s=50 width=50">](https://github.com/pawelkopka) |[<img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=50 width=50">](https://github.com/docwhat) |[<img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=50 width=50">](https://github.com/CatSue) |
+:---:|:---:|:---:|:---:|:---:|:---:|
+[Nicolas Vuillamy](https://github.com/nvuillam)|[Dave Gallant](https://github.com/davegallant)|[Howard Lo](https://github.com/warhod)|[Pawel Kopka](https://github.com/pawelkopka)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|
 
 ## RELEASE NOTES
 
+### [7.4.1] 2020-08-23
+
+- [(88)](https://github.com/nvuillam/npm-groovy-lint/pull/88) Fix Docker image to allow to use extra parameters (by [Howard Lo](https://github.com/warhod))
+
 ### [7.4.0] 2020-08-17
 
-- [(#87)](https://github.com/nvuillam/npm-groovy-lint/pull/87) update to openjdk 11 in [official Docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) (by [Pawel Kopka](https://github.com/pawelkopka))
+- [(#87)](https://github.com/nvuillam/npm-groovy-lint/pull/87) Update to openjdk 11 in [official Docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) (by [Pawel Kopka](https://github.com/pawelkopka))
 
 ### [7.3.0] 2020-08-15
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.4.1] 2020-08-23
+
+- [(88)](https://github.com/nvuillam/npm-groovy-lint/pull/88) Fix Docker image to allow to use extra parameters (by [Howard Lo](https://github.com/warhod))
+
 ## [7.4.0] 2020-08-17
 
 - [(#87)](https://github.com/nvuillam/npm-groovy-lint/pull/87) update to openjdk 11 in [official Docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) (by [Pawel Kopka](https://github.com/pawelkopka))
