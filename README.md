@@ -397,6 +397,10 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 
 ## RELEASE NOTES
 
+### [7.4.2] 2020-08-26
+
+- Fix [(#90)](https://github.com/nvuillam/npm-groovy-lint/issues/90) When log level is specified number of linted files appear to be off
+
 ### [7.4.1] 2020-08-23
 
 - [(88)](https://github.com/nvuillam/npm-groovy-lint/pull/88) Fix Docker image to allow to use extra parameters (by [Howard Lo](https://github.com/warhod))
