@@ -1,5 +1,10 @@
 # Changelog
 
+## [7.4.3] 2020-08-29
+
+- Upgrade [java-caller](https://github.com/nvuillam/node-java-caller) to v2.2.0
+  - Fix CLASSPATH on windows in case there are spaces in paths
+
 ## [7.4.2] 2020-08-26
 
 - Fix [(#90)](https://github.com/nvuillam/npm-groovy-lint/issues/90) When log level is specified number of linted files appear to be off
