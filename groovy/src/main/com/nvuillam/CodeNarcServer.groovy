@@ -8,7 +8,6 @@ package com.nvuillam
 
 // Java Http Server
 import com.sun.net.httpserver.HttpServer
-import com.sun.net.httpserver.HttpExchange
 import java.net.InetSocketAddress
 
 // Concurrency & Timer management
@@ -16,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.ThreadFactory
 import java.util.Timer
 
 // Groovy Json Management
@@ -128,7 +126,8 @@ class CodeNarcServer {
                 }
 
                 // Parse files to detect parse errors
-                respObj.parseErrors = parseFiles(bodyObj)
+                respObj.fileList = listFiles(bodyObj)
+                respObj.parseErrors = parseFiles(bodyObj, respObj.fileList)
 
                 // Call CodeNarc
                 def codeNarcArgs = bodyObj.codeNarcArgs
@@ -144,6 +143,7 @@ class CodeNarcServer {
                 println 'INTERRUPTED by duplicate'
             } catch (Throwable t) {
                 respObj.status = 'error'
+                respObj.errorMessage = t.getMessage()
                 respObj.errorDtl = t.getStackTrace().join('\n')
                 respObj.exceptionType =  t.getClass().getName()
                 respObj.statusCode = 500
@@ -208,36 +208,47 @@ class CodeNarcServer {
         }
     }
 
-    private Map<String,List<Error>> parseFiles(def bodyObj) {
+    // List files to be parsed / linted
+    private List<String> listFiles(def bodyObj) {
+        def fileList = []
+        // Unique file (usually from GroovyLint Language Server)
+        if (bodyObj.file) {
+            File f = new File(bodyObj.file)
+            fileList << f.getAbsolutePath()
+        }
+        else {
+            // Ant style pattern is used: list all files
+            println 'Ant file scanner in ' + bodyObj.codeNarcBaseDir + ', includes ' + bodyObj.codeNarcIncludes + ', excludes ' + bodyObj.codeNarcExcludes
+            def ant = new groovy.ant.AntBuilder()
+            def scanner = ant.fileScanner {
+                fileset(dir: bodyObj.codeNarcBaseDir) {
+                    include(name: bodyObj.codeNarcIncludes)
+                    exclude(name : (bodyObj.codeNarcExcludes) ? bodyObj.codeNarcExcludes : 'no')
+                }
+            }
+            // Parse collected files
+            for (f in scanner) {
+                fileList << f.getAbsolutePath()
+            }
+        }
+        return fileList
+    }
+
+    // Parse groovy files to detect errors
+    private Map<String, List<Error>> parseFiles(def bodyObj, List<String> fileList) {
         def parseErrors = [:]
         if (bodyObj.parse != true) {
             return parseErrors
         }
-        // Parse unique file
-        else if (bodyObj.file) {
-            File f = new File(bodyObj.file)
-            parseErrors.put(f.getAbsolutePath(), parseFile(f))
-            return parseErrors
-        }
-
-        // Ant style pattern is used: list all files
-        println 'Ant file scanner in ' + bodyObj.codeNarcBaseDir + ', includes ' + bodyObj.codeNarcIncludes + ', excludes ' + bodyObj.codeNarcExcludes
-        def ant = new groovy.ant.AntBuilder()
-        def scanner = ant.fileScanner {
-            fileset(dir: bodyObj.codeNarcBaseDir) {
-                include(name: bodyObj.codeNarcIncludes)
-                exclude(name : (bodyObj.codeNarcExcludes) ? bodyObj.codeNarcExcludes : 'no')
-            }
-        }
         // Parse collected files
-        for (f in scanner) {
-            parseErrors.put(f.getAbsolutePath(), parseFile(f))
+        fileList.each { file ->
+            parseErrors.put(file, parseFile(new File(file)))
         }
         return parseErrors
     }
 
+    // Try to parse file  to get compilation errors
     private List<Error> parseFile(File file) {
-        // Try to parse if requested to get compilation errors
         List<Error> parseErrors = []
         try {
             new GroovyShell().parse(file)
