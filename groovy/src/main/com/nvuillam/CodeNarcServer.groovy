@@ -216,7 +216,7 @@ class CodeNarcServer {
             File f = new File(bodyObj.file)
             fileList << f.getAbsolutePath()
         }
-        else {
+        else if (bodyObj.codeNarcBaseDir) {
             // Ant style pattern is used: list all files
             println 'Ant file scanner in ' + bodyObj.codeNarcBaseDir + ', includes ' + bodyObj.codeNarcIncludes + ', excludes ' + bodyObj.codeNarcExcludes
             def ant = new groovy.ant.AntBuilder()
