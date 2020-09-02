@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.5.0] 2020-09-02
+
+- Add anonymous framework usage stats for Groovy core Team
+
 ## [7.4.3] 2020-08-29
 
 - Upgrade [java-caller](https://github.com/nvuillam/node-java-caller) to v2.2.0
