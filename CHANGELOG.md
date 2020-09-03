@@ -1,5 +1,10 @@
 # Changelog
 
+## [7.5.1] 2020-09-02
+
+- Fix [(#96)](https://github.com/nvuillam/npm-groovy-lint/issues/96) --fix adds redundant space into `${VARIABLE}` (SpaceBeforeOpeningBrace fix rule error)
+- Fix grails framework detection
+
 ## [7.5.0] 2020-09-02
 
 - Add anonymous framework usage stats for Groovy core Team
