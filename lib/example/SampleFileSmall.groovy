@@ -1,7 +1,7 @@
 import groovy.io.FileType
 import groovy.json.*
 import groovy.time.TimeCategory
-import static groovyx.gpars.GParsPool.withPool
+import static groovyx2.gpars.GParsPool.withPool
 
         def script = new GroovyScriptEngine( '.' ).with{
                 loadScriptByName( 'Utils.groovy' ) ;

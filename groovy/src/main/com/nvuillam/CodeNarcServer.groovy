@@ -218,12 +218,18 @@ class CodeNarcServer {
         }
         else if (bodyObj.codeNarcBaseDir) {
             // Ant style pattern is used: list all files
-            println 'Ant file scanner in ' + bodyObj.codeNarcBaseDir + ', includes ' + bodyObj.codeNarcIncludes + ', excludes ' + bodyObj.codeNarcExcludes
+            println 'Ant file scanner in ' + bodyObj.codeNarcBaseDir + ', includes ' + bodyObj.codeNarcIncludes + ', excludes ' + ((bodyObj.codeNarcExcludes) ? bodyObj.codeNarcExcludes : 'no')
             def ant = new groovy.ant.AntBuilder()
             def scanner = ant.fileScanner {
                 fileset(dir: bodyObj.codeNarcBaseDir) {
-                    include(name: bodyObj.codeNarcIncludes)
-                    exclude(name : (bodyObj.codeNarcExcludes) ? bodyObj.codeNarcExcludes : 'no')
+                    bodyObj.codeNarcIncludes.split(',').each { includeExpr ->
+                        include(name: includeExpr)
+                    }
+                    if (bodyObj.codeNarcExcludes) {
+                        bodyObj.codeNarcIncludes.split(',').each { excludeExpr ->
+                            exclude(name: excludeExpr)
+                        }
+                    }
                 }
             }
             // Parse collected files
@@ -257,17 +263,17 @@ class CodeNarcServer {
         catch (MultipleCompilationErrorsException ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = ep.getErrorCollector().getErrors()
-            println 'Parse error (MultipleCompilationErrorsException): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
+            println 'PARSE ERROR (MultipleCompilationErrorsException): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
         }
         catch (CompilationFailedException ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = ep.getErrorCollector().getErrors()
-            println 'Parse error (CompilationFailedException): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
+            println 'PARSE ERROR (CompilationFailedException): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
         }
         catch (Exception ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = ep.getErrorCollector().getErrors()
-            println 'Parse error (Other): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
+            println 'PARSE ERROR (Other): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
         }
         return parseErrors
     }
