@@ -1,5 +1,9 @@
 # Changelog
 
+## UNRELEASED
+
+- Add GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter) to the repository
+
 ## [7.5.4] 2020-09-04
 
 - Update frameworks detection
