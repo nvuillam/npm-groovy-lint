@@ -1,5 +1,10 @@
 # Changelog
 
+## [7.5.5] 2020-09-05
+
+- Upgrade [java-caller](https://github.com/nvuillam/node-java-caller) to v2.2.3
+  - Fix Java 8 detection ([#101](https://github.com/nvuillam/npm-groovy-lint/issues/101))
+
 ## [7.5.4] 2020-09-04
 
 - Update frameworks detection
