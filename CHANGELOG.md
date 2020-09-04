@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.5.4] 2020-09-04
+
+- Update frameworks detection
+
 ## [7.5.1] 2020-09-02
 
 - Fix [(#96)](https://github.com/nvuillam/npm-groovy-lint/issues/96) --fix adds redundant space into `${VARIABLE}` (SpaceBeforeOpeningBrace fix rule error)
