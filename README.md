@@ -22,7 +22,10 @@ Based on [CodeNarc](http://codenarc.github.io/CodeNarc/) , this out of the box p
 
 Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
 
-You can also use this package in [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint) and [Docker Image](#CALL-VIA-DOCKER)
+You can also use this package in :
+- [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint)
+- [Docker Image](#CALL-VIA-DOCKER)
+- GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter)
 
 ![https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png](https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png)
 
