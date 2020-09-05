@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.6.0] 2020-09-05
+
+- Disable TrailingComma rule by default until crash is solved in [CodeNarc](https://codenarc.github.io/) ([#75@vscode-groovy-lint](https://github.com/nvuillam/vscode-groovy-lint/issues/75))
+
 ## [7.5.5] 2020-09-05
 
 - Upgrade [java-caller](https://github.com/nvuillam/node-java-caller) to v2.2.3

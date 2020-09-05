@@ -8,6 +8,7 @@
         "convention.FieldTypeRequired": "info",
         "convention.IfStatementCouldBeTernary": "info",
         "convention.NoDef": "info",
+        "convention.TrailingComma": "off",
         "convention.VariableTypeRequired": "info",
         "dry.DuplicateListLiteral": "info",
         "dry.DuplicateMapLiteral": "warning",

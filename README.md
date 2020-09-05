@@ -23,6 +23,7 @@ Based on [CodeNarc](http://codenarc.github.io/CodeNarc/) , this out of the box p
 Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
 
 You can also use this package in :
+
 - [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint)
 - [Docker Image](#CALL-VIA-DOCKER)
 - GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter)
@@ -399,6 +400,10 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 [Nicolas Vuillamy](https://github.com/nvuillam)|[Dave Gallant](https://github.com/davegallant)|[Howard Lo](https://github.com/warhod)|[Pawel Kopka](https://github.com/pawelkopka)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|
 
 ## RELEASE NOTES
+
+### [7.6.0] 2020-09-05
+
+- Disable TrailingComma rule by default until crash is solved by CodeNarc ([#75@vscode-groovy-lint](https://github.com/nvuillam/vscode-groovy-lint/issues/75))
 
 ### [7.5.5] 2020-09-05
 
