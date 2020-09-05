@@ -1,6 +1,6 @@
 {
   "name": "npm-groovy-lint",
-  "version": "7.5.4",
+  "version": "7.5.5",
   "description": "Lint, format and auto-fix your Groovy / Jenkinsfile / Gradle files",
   "main": "index.js",
   "scripts": {
@@ -56,7 +56,7 @@
     "glob": "^7.1.6",
     "import-fresh": "^3.2.1",
     "ip": "^1.1.5",
-    "java-caller": "^2.2.2",
+    "java-caller": "^2.2.3",
     "optionator": "^0.8.3",
     "semver": "^7.1.3",
     "strip-json-comments": "^3.0.1",

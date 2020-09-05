@@ -22,7 +22,10 @@ Based on [CodeNarc](http://codenarc.github.io/CodeNarc/) , this out of the box p
 
 Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
 
-You can also use this package in [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint) and [Docker Image](#CALL-VIA-DOCKER)
+You can also use this package in :
+- [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint)
+- [Docker Image](#CALL-VIA-DOCKER)
+- GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter)
 
 ![https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png](https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png)
 
@@ -396,6 +399,11 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 [Nicolas Vuillamy](https://github.com/nvuillam)|[Dave Gallant](https://github.com/davegallant)|[Howard Lo](https://github.com/warhod)|[Pawel Kopka](https://github.com/pawelkopka)|[docwhat](https://github.com/docwhat)|[CatSue](https://github.com/CatSue)|
 
 ## RELEASE NOTES
+
+### [7.5.5] 2020-09-05
+
+- Upgrade [java-caller](https://github.com/nvuillam/node-java-caller) to v2.2.3
+  - Fix Java 8 detection ([#101](https://github.com/nvuillam/npm-groovy-lint/issues/101))
 
 ### [7.5.4] 2020-09-04
 
