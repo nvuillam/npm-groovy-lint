@@ -1,8 +1,9 @@
 # Changelog
 
-## UNRELEASED
+## [7.6.0] 2020-09-08
 
 - Add GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter) to the repository
+- Update Dockerfile to pass Docker lint rules
 
 ## [7.5.5] 2020-09-05
 
