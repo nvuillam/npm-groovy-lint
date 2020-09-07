@@ -1,12 +1,12 @@
-FROM alpine
+FROM alpine:3.7
 
 COPY . .
 
-RUN apk add --update --no-cache \
-    bash \
-    nodejs \
-    npm \
-    openjdk11
+RUN apk add --no-cache \
+bash=latest \
+nodejs=latest \
+npm=latest \
+openjdk11=latest
 
 RUN npm i -g
 
