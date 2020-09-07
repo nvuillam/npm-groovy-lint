@@ -1,5 +1,9 @@
 # Changelog
 
+## UNRELEASED
+
+- Add GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter) to the repository
+
 ## [7.5.5] 2020-09-05
 
 - Upgrade [java-caller](https://github.com/nvuillam/node-java-caller) to v2.2.3
