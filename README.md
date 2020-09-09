@@ -1,6 +1,7 @@
 <!-- markdownlint-disable MD033 -->
 # NPM GROOVY LINT (+ Format & Auto-fix)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e06391904bd54746b3e6f6a2a472f32d)](https://app.codacy.com/manual/nvuillam/npm-groovy-lint?utm_source=github.com&utm_medium=referral&utm_content=nvuillam/npm-groovy-lint&utm_campaign=Badge_Grade_Dashboard)
 [![Version](https://img.shields.io/npm/v/npm-groovy-lint.svg)](https://npmjs.org/package/npm-groovy-lint)
 [![Downloads/week](https://img.shields.io/npm/dw/npm-groovy-lint.svg)](https://npmjs.org/package/npm-groovy-lint)
 [![Downloads/total](https://img.shields.io/npm/dt/npm-groovy-lint.svg)](https://npmjs.org/package/npm-groovy-lint)
