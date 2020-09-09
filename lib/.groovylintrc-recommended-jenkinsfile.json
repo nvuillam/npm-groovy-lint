@@ -4,7 +4,6 @@
         "convention.CompileStatic": "off",
         "convention.NoDef": "off",
         "convention.VariableTypeRequired": "off",
-        "formatting.SpaceAroundMapEntryColon": "off",
         "groovyism.ExplicitCallToEqualsMethod": "off",
         "naming.VariableName": "off",
         "size.NestedBlockDepth": {

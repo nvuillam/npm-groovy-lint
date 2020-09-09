@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.6.2] 2020-09-09
+
+- Disable TrailingComma rule by default until crash is solved in [CodeNarc](https://codenarc.github.io/) ([#75@vscode-groovy-lint](https://github.com/nvuillam/vscode-groovy-lint/issues/75))
+
 ## [7.6.0] 2020-09-08
 
 - Add GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter) to the repository
