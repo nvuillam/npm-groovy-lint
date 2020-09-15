@@ -45,11 +45,11 @@ jobs:
       # Run Linter against code base #
       ################################
       - name: Lint Code Base
-        uses: github/super-linter@latest
+        uses: github/super-linter@v3
         env:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILTER_REGEX_EXCLUDE: .*(lib/example|\.github)/.*
+          FILTER_REGEX_EXCLUDE: .*(lib/example|\.github|\.vscode|pull_request_template).*
           VALIDATE_EDITORCONFIG: false
           # VALIDATE_GROOVY: false # To reactivate once SuperLinter allows to ignore example folder
           VALIDATE_JAVASCRIPT_STANDARD: false
