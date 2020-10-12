@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.7.0] 2020-09-09
+
+- Replace Super-Linter by [Mega-Linter](https://github.com/nvuillam/mega-linter)
+
 ## [7.6.2] 2020-09-09
 
 - Disable TrailingComma rule by default until crash is solved in [CodeNarc](https://codenarc.github.io/) ([#75@vscode-groovy-lint](https://github.com/nvuillam/vscode-groovy-lint/issues/75))

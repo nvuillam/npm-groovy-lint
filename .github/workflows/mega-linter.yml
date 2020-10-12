@@ -4,7 +4,7 @@
 ## Linter GitHub Actions ##
 ###########################
 ###########################
-name: Lint Code Base
+name: Mega-Linter
 
 #
 # Documentation:
@@ -27,7 +27,7 @@ on:
 jobs:
   build:
     # Name the Job
-    name: Lint Code Base
+    name: Mega-Linter
     # Set the agent to run on
     runs-on: ubuntu-latest
 
@@ -44,8 +44,8 @@ jobs:
       ################################
       # Run Linter against code base #
       ################################
-      - name: Lint Code Base
-        uses: github/super-linter@v3
+      - name: Mega-Linter
+        uses: nvuillam/mega-linter@v4
         env:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
