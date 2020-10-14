@@ -57,4 +57,3 @@ jobs:
           # VALIDATE_MD: false # To reactivate once SuperLinter allows to ignore .github folder
           LINTER_RULES_PATH: "."
           JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.js
-          LOG_LEVEL: DEBUG
