@@ -45,7 +45,7 @@ jobs:
       # Run Linter against code base #
       ################################
       - name: Mega-Linter
-        uses: nvuillam/mega-linter@latest
+        uses: nvuillam/mega-linter@4.1.0
         env:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
