@@ -57,3 +57,13 @@ jobs:
           # VALIDATE_MD: false # To reactivate once SuperLinter allows to ignore .github folder
           LINTER_RULES_PATH: "."
           JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.js
+
+      # Upload Mega-Linter artifacts
+      - name: Archive production artifacts
+        if: ${{ success() }} || ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: Mega-Linter reports
+          path: |
+            report
+            mega-linter.log
