@@ -1,0 +1,43 @@
+---
+# Mega-Linter GitHub Action configuration file
+# More info at https://github.com/nvuillam/mega-linter#readme
+name: Mega-Linter
+
+on:
+  # Trigger mega-linter at every push. Action will also be visible from Pull Requests to master
+  push: # Comment this line to trigger action only on pull-requests (not recommended if you don't pay for GH Actions)
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    name: Mega-Linter
+    runs-on: ubuntu-latest
+    steps:
+      # Git Checkout
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # Mega-Linter
+      - name: Mega-Linter
+        uses: nvuillam/mega-linter@v4
+        env:
+          # All available variables are described in documentation
+          # https://github.com/nvuillam/mega-linter#configuration
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }} # Validates all source when push on master, else just the git diff with master. Override with true if you always want to lint all sources
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILTER_REGEX_EXCLUDE: .*(lib/example|\.github|\.vscode|pull_request_template).*
+          DISABLE_LINTERS: JAVASCRIPT_STANDARD
+          JAVASCRIPT_ES_CONFIG_FILE: LINTER_DEFAULT
+
+      # Upload Mega-Linter artifacts. They will be available on Github action page "Artifacts" section
+      - name: Archive production artifacts
+        if: ${{ success() }} || ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: Mega-Linter reports
+          path: |
+            report
+            mega-linter.log
