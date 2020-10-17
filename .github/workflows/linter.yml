@@ -4,7 +4,7 @@
 ## Linter GitHub Actions ##
 ###########################
 ###########################
-name: Lint Code Base
+name: Mega-Linter
 
 #
 # Documentation:
@@ -16,8 +16,6 @@ name: Lint Code Base
 #############################
 on:
   push:
-    branches-ignore: [master]
-    # Remove the line above to run when pushing to master
   pull_request:
     branches: [master]
 
@@ -27,7 +25,7 @@ on:
 jobs:
   build:
     # Name the Job
-    name: Lint Code Base
+    name: Mega-Linter
     # Set the agent to run on
     runs-on: ubuntu-latest
 
@@ -44,8 +42,8 @@ jobs:
       ################################
       # Run Linter against code base #
       ################################
-      - name: Lint Code Base
-        uses: github/super-linter@v3
+      - name: Mega-Linter
+        uses: nvuillam/mega-linter@v4
         env:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,3 +55,13 @@ jobs:
           # VALIDATE_MD: false # To reactivate once SuperLinter allows to ignore .github folder
           LINTER_RULES_PATH: "."
           JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.js
+
+      # Upload Mega-Linter artifacts. They will be available on Github action page "Artifacts" section
+      - name: Archive production artifacts
+        if: ${{ success() }} || ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: Mega-Linter reports
+          path: |
+            report
+            mega-linter.log
