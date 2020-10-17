@@ -27,8 +27,8 @@ Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your
 You can also use this package in :
 
 - [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint)
-- [Docker Image](#CALL-VIA-DOCKER)
-- GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter)
+- [Mega-Linter](https://github.com/nvuillam/mega-linter#readme) (can be used as GitHub Action, and lints all other languages and formats)
+- [Docker Image](#call-via-docker)
 
 ![https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png](https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png)
 
