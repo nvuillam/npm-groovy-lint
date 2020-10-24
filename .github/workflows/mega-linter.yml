@@ -29,6 +29,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }} # Validates all source when push on master, else just the git diff with master. Override with true if you always want to lint all sources
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILTER_REGEX_EXCLUDE: .*(lib/example|\.github|\.vscode|pull_request_template).*
+          DISABLE: COPYPASTE
           DISABLE_LINTERS: JAVASCRIPT_STANDARD
           JAVASCRIPT_ES_CONFIG_FILE: LINTER_DEFAULT
 
