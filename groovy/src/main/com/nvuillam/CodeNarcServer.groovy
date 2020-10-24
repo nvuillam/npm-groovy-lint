@@ -16,7 +16,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.Timer
-import some.useless.import
+import some.useless.import.hey
 
 // Groovy Json Management
 import groovy.json.JsonSlurper
