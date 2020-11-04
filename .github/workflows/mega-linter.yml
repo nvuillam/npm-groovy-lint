@@ -37,6 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILTER_REGEX_EXCLUDE: .*(lib/example|\.github|\.vscode|pull_request_template).*
           DISABLE: COPYPASTE,SPELL
+          DISABLE_LINTERS: JAVASCRIPT_STANDARD
           JAVASCRIPT_ES_CONFIG_FILE: LINTER_DEFAULT
 
       # Upload Mega-Linter artifacts. They will be available on Github action page "Artifacts" section
