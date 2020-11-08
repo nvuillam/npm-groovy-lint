@@ -206,7 +206,8 @@ Fixes:
 
 ## [4.9.0] 2020-05-10
 
-- Add anonymous usage statistics using [insight](https://www.npmjs.com/package/insight), in order to make new improvements based on how users use this package. Analytics obviously does not receive sensitive information like your code, as you can see in [analytics.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/src/analytics.js). If you want to disable anonymous usage stats, use `--no-insight` option.
+- Add anonymous usage statistics using [insight](https://www.npmjs.com/package/insight), in order to make new improvements based on how users use this package.
+  - Note: Analytics obviously does not receive sensitive information like your code, as you can see in [analytics.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/src/analytics.js). If you want to disable anonymous usage stats, use `--no-insight` option.
 
 ## [4.8.0] 2020-05-08
 
