@@ -403,11 +403,19 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 
 ## RELEASE NOTES
 
-## [7.6.2] 2020-09-09
+### [8.0.0] 2020-08-11
+
+- Upgrade to CodeNarc 2.0.0
+  - Upgrade jars
+  - Adapt Indentation rule to new behaviour
+  - Use codenarc --ruleset arg instead of temp ruleset file
+- Replace super-linter by [Mega-Linter](https://github.com/nvuillam/mega-linter#readme)
+
+### [7.6.2] 2020-09-09
 
 - Disable TrailingComma rule by default until crash is solved by CodeNarc ([#75@vscode-groovy-lint](https://github.com/nvuillam/vscode-groovy-lint/issues/75))
 
-## [7.6.0] 2020-09-08
+### [7.6.0] 2020-09-08
 
 - Add GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter) to the repository
 - Update Dockerfile to pass Docker lint rules
@@ -461,20 +469,6 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 
 - New default recommended rules (activate/deactivate/change severity)
 - Allow to call `--config recommended-jenkinsfile` to use delivered .groovylintrc-recommended-jenkinsfile.json
-
-### [6.1.1] 2020-08-04
-
-- Fix SpaceAfterComma auto-fixing rule
-
-### [6.1.0] 2020-08-04
-
-- Java 14 compatibility (Closes [#77](https://github.com/nvuillam/npm-groovy-lint/issues/7))
-
-### [6.0.0] 2020-08-03
-
-- Upgrade to [CodeNarc v1.6.1](https://github.com/CodeNarc/CodeNarc/blob/v1.6-patch-releases/CHANGELOG.md#version-161----aug-2020)
-- Upgrade to [GMetrics v1.1](https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020)
-- Upgrade to [Groovy v3.0.5](https://groovy-lang.org/)
 
 ### PREVIOUS VERSIONS
 

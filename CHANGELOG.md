@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.0.0] 2020-08-11
+
+- Upgrade to CodeNarc 2.0.0
+  - Upgrade jars
+  - Adapt Indentation rule to new behaviour
+  - Use codenarc --ruleset arg instead of temp ruleset file
+- Replace super-linter by [Mega-Linter](https://github.com/nvuillam/mega-linter#readme)
+
 ## [7.6.2] 2020-09-09
 
 - Disable TrailingComma rule by default until crash is solved in [CodeNarc](https://codenarc.github.io/) ([#75@vscode-groovy-lint](https://github.com/nvuillam/vscode-groovy-lint/issues/75))
