@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.0.0] 2020-08-11
+## [8.0.0] 2020-11-08
 
 - Upgrade to CodeNarc 2.0.0
   - Upgrade jars
