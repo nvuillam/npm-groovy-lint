@@ -26,7 +26,7 @@ Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your
 You can also use this package in :
 
 - [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint)
-- [Mega-Linter](https://github.com/nvuillam/mega-linter#readme) (can be used as GitHub Action, and lints all other languages and formats)
+- [Mega-Linter](https://nvuillam.github.io/mega-linter/) (can be used as GitHub Action, and lints all other languages and formats)
 - [Docker Image](#call-via-docker)
 
 ![https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png](https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png)
@@ -408,7 +408,7 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
   - Upgrade jars
   - Adapt Indentation rule to new behaviour
   - Use codenarc --ruleset arg instead of temp ruleset file
-- Replace super-linter by [Mega-Linter](https://github.com/nvuillam/mega-linter#readme)
+- Replace super-linter by [Mega-Linter](https://nvuillam.github.io/mega-linter/)
 - Fixes
   - [(#127)](https://github.com/nvuillam/npm-groovy-lint/issues/127) Formatting breaks code, converting `else if` into `elseif` in some cases
 

@@ -6,7 +6,7 @@
   - Upgrade jars
   - Adapt Indentation rule to new behaviour
   - Use codenarc --ruleset arg instead of temp ruleset file
-- Replace super-linter by [Mega-Linter](https://github.com/nvuillam/mega-linter#readme)
+- Replace super-linter by [Mega-Linter](https://nvuillam.github.io/mega-linter/)
 - Fixes
   - [(#127)](https://github.com/nvuillam/npm-groovy-lint/issues/127) Formatting breaks code, converting `else if` into `elseif` in some cases
   - Apply formatting rules also for --fix mode
