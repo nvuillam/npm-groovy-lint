@@ -10,10 +10,11 @@
 - Fixes
   - [(#127)](https://github.com/nvuillam/npm-groovy-lint/issues/127) Formatting breaks code, converting `else if` into `elseif` in some cases
   - Apply formatting rules also for --fix mode
+  - Fix Markdown dead links
 
 ## [7.6.2] 2020-09-09
 
-- Disable TrailingComma rule by default until crash is solved in [CodeNarc](https://codenarc.github.io/) ([#75@vscode-groovy-lint](https://github.com/nvuillam/vscode-groovy-lint/issues/75))
+- Disable TrailingComma rule by default until crash is solved in [CodeNarc](https://codenarc.github.io/CodeNarc) ([#75@vscode-groovy-lint](https://github.com/nvuillam/vscode-groovy-lint/issues/75))
 
 ## [7.6.0] 2020-09-08
 
@@ -168,7 +169,7 @@ Fixes:
 
 - **BIG BANG**: Improve performances, compatibility, architecture and delivery
   - Get rid of [jDeploy](https://github.com/shannah/jdeploy) dependency
-    - Use own [java-caller.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/java-caller.js) for java commands
+    - Use own **java-caller.js** for java commands
     - Update CircleCI config to use `npm link`instead of `jdeploy install`
   - Get rid of [request](https://github.com/request/request) dependency
     - Use [axios](https://github.com/axios/axios) for promisified http calls
@@ -210,7 +211,7 @@ Fixes:
 ## [4.9.0] 2020-05-10
 
 - Add anonymous usage statistics using [insight](https://www.npmjs.com/package/insight), in order to make new improvements based on how users use this package.
-  - Note: Analytics obviously does not receive sensitive information like your code, as you can see in [analytics.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/src/analytics.js). If you want to disable anonymous usage stats, use `--no-insight` option.
+  - Note: Analytics obviously does not receive sensitive information like your code, as you can see in [analytics.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/analytics.js). If you want to disable anonymous usage stats, use `--no-insight` option.
 
 ## [4.8.0] 2020-05-08
 
