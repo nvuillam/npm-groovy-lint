@@ -11,6 +11,8 @@
   - [(#127)](https://github.com/nvuillam/npm-groovy-lint/issues/127) Formatting breaks code, converting `else if` into `elseif` in some cases
   - Apply formatting rules also for --fix mode
   - Fix Markdown dead links
+- CI
+  - Migrate from CircleCI to GitHub Actions: now tests are on Linux, Windows & MacOs
 
 ## [7.6.2] 2020-09-09
 
