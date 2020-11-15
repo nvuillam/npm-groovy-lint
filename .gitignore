@@ -119,3 +119,5 @@ tmp/
 local-storage.json
 
 npm-groovy-fix-log.json
+
+site/
