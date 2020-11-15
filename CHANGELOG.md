@@ -14,6 +14,7 @@
 - CI
   - Migrate from CircleCI to GitHub Actions: now tests are on Linux, Windows & MacOs
   - Activate spelling linter of Mega-Linter (+ `.cspell.json` file)
+  - Add test cases for format and fix using CLI
 
 ## [7.6.2] 2020-09-09
 

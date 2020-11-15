@@ -117,3 +117,5 @@ lib/com/
 tmp/
 
 local-storage.json
+
+npm-groovy-fix-log.json
