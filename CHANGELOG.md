@@ -1,11 +1,11 @@
 # Changelog
 
-## [8.0.0] Unreleased
+## [8.0.0] 2020-11-15
 
 - Upgrade to CodeNarc 2.0.0
   - Upgrade jars
   - Adapt Indentation rule to new behaviour
-  - Use codenarc --ruleset arg instead of temp ruleset file
+  - Use codenarc --ruleset argument instead of temp ruleset file
 - Replace super-linter by [Mega-Linter](https://nvuillam.github.io/mega-linter/)
 - Fixes
   - [(#127)](https://github.com/nvuillam/npm-groovy-lint/issues/127) Formatting breaks code, converting `else if` into `elseif` in some cases
