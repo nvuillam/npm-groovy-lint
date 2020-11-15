@@ -29,7 +29,7 @@ You can also use this package in :
 - [Mega-Linter](https://nvuillam.github.io/mega-linter/) (can be used as GitHub Action, and lints all other languages and formats)
 - [Docker Image](#call-via-docker)
 
-![https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png](https://github.com/nvuillam/npm-groovy-lint/raw/master/doc/images/npm-groovy-lint-results.png)
+![image](https://github.com/nvuillam/npm-groovy-lint/raw/master/docs/assets/images/npm-groovy-lint-results.png)
 
 See [CHANGELOG](https://github.com/nvuillam/npm-groovy-lint/blob/master/CHANGELOG.md)
 
@@ -404,15 +404,21 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 
 ## Release notes
 
-### [8.0.0] Unreleased
+## [8.0.0] 2020-11-15
 
 - Upgrade to CodeNarc 2.0.0
   - Upgrade jars
   - Adapt Indentation rule to new behaviour
-  - Use codenarc --ruleset arg instead of temp ruleset file
+  - Use codenarc --ruleset argument instead of temp ruleset file
 - Replace super-linter by [Mega-Linter](https://nvuillam.github.io/mega-linter/)
 - Fixes
   - [(#127)](https://github.com/nvuillam/npm-groovy-lint/issues/127) Formatting breaks code, converting `else if` into `elseif` in some cases
+  - Apply formatting rules also for --fix mode
+  - Fix Markdown dead links
+- CI
+  - Migrate from CircleCI to GitHub Actions: now tests are on Linux, Windows & MacOs
+  - Activate spelling linter of Mega-Linter (+ `.cspell.json` file)
+  - Add test cases for format and fix using CLI
 
 ### [7.6.2] 2020-09-09
 
