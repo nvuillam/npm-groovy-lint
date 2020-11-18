@@ -1,5 +1,9 @@
 # Changelog
 
+## [8.0.1] 2020-11-19
+
+- Add a test case where variable includes if in its name for fix of rule SpaceAfterIf ([Behlül Uçar](https://github.com/ucarbehlul))
+
 ## [8.0.0] 2020-11-15
 
 - Upgrade to CodeNarc 2.0.0
@@ -15,7 +19,6 @@
   - Migrate from CircleCI to GitHub Actions: now tests are on Linux, Windows & MacOs
   - Activate spelling linter of Mega-Linter (+ `.cspell.json` file)
   - Add test cases for format and fix using CLI
-  - Add a test case where variable includes if in its name for fix of rule SpaceAfterIf
 
 ## [7.6.2] 2020-09-09
 
