@@ -8,14 +8,12 @@ package com.nvuillam
 
 // Java Http Server
 import com.sun.net.httpserver.HttpServer
-import java.net.InetSocketAddress
 
 // Concurrency & Timer management
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
-import java.util.Timer
 
 // Groovy Json Management
 import groovy.json.JsonSlurper
@@ -185,7 +183,7 @@ class CodeNarcServer {
             codeNarc.execute(args)
         }
         catch (Throwable t) {
-            println "ERROR in CodeNarc.execute: ${t.toString()}"
+            println "ERROR in CodeNarc.execute: ${t}"
             throw t
         }
     }
