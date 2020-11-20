@@ -302,7 +302,8 @@ def variable = 1;
 
 ### Mega-Linter
 
-Latest npm-groovy-lint version is natively integrated in [**Mega-Linter**](https://nvuillam.github.io/mega-linter/), that you can use as GitHub action or in other CI tools
+Latest npm-groovy-lint version is **natively integrated** in [**Mega-Linter**](https://nvuillam.github.io/mega-linter/), that you can use as GitHub action or in other CI tools
+This tool can also **automatically apply fixes** on Pull Request branches
 
 ### CircleCI
 
