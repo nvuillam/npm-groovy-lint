@@ -10,7 +10,7 @@
     "test": "npm run dev:kill-server && mocha \"lib/test/**/*.test.js\"",
     "test:coverage": "nyc npm run test",
     "test:debug": "npm run dev:kill-server && mocha --reporter spec --inspect-brk \"lib/test/**/*.test.js\"",
-    "build": "node script-build-config-all.js && cp -f README.md docs/index.md",
+    "build": "node script-build-config-all.js && cp -f README.md docs/index.md && cp -f CHANGELOG.md docs/CHANGELOG.md",
     "dev:kill-server": "npm-groovy-lint --killserver",
     "dev:lint-install-local": "npm run dev:kill-server && npm run lint:fix && npm link --force",
     "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node script-deploy-in-vscode.js"

@@ -44,7 +44,7 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 | Parameter                | Type    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 |--------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | -p<br/> --path           | String  | Directory containing the files to lint<br/> Example: `./path/to/my/groovy/files`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| -f<br/> --files          | String  | Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: `"**/*.groovy,**/Jenkinsfile,**/*.gradle"`<br/>Examples:<br/> - `"**/Jenkinsfile"`<br/> - `"**/*.groovy"`<br/> - `"**/*.gradle"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| -f<br/> --files          | String  | Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: `"**/*.groovy,**/Jenkinsfile,**/*.gradle"`<br/>Examples:<br/> - `"**/Jenkinsfile"`<br/> - `"**/*.groovy"`<br/> - `"**/*.gradle"`<br/> - `"**/mySingleFile.groovy"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | -o<br/> --output         | String  | Output format (txt,json,html,xml), or path to a file with one of these extensions<br/> Default: `txt`<br/> Examples:<br/> - `"txt"`<br/> - `"json"`<br/> - `"./logs/myLintResults.txt"`<br/> - `"./logs/myLintResults.json"`<br/> - `"./logs/myLintResults.html"`<br/> - `"./logs/myLintResults.xml"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | -l<br/> --loglevel       | String  | Log level (error,warning or info)<br/>Default: info                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | --failon                 | String  | Defines the error level where CLI will fail (return code = 1). error,warning,info or none. Each failure level includes the more critical ones.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -57,7 +57,7 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 | -r<br/> --rulesets       | String  | [RuleSet file(s)](http://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html) to use for linting, if you do not want to use recommended rules or .groovylintrc.js defined rules.<br/>If list of comma separated strings corresponding to CodeNarc rules, a RuleSet file will be dynamically generated </br>  Examples:<br/> - `"./config/codenarc/RuleSet-Custom.groovy"`<br/> - `"./path/to/my/ruleset/files"`<br/>- `Indentation{"spacesPerIndentLevel":2,"severity":"warning"},UnnecessarySemicolon,UnnecessaryGString`                                                                                                                                                                                                                                                 |
 | --rulesetsoverridetype   | String  | If list of rules sent in rulesets option, defines if they replace rules defined in .groovylintrc.json, or if they are appended<br/> Values: `replaceConfig` (default), `appendConfig`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | -s<br/> --source         | String  | If path and files are not set, you can directly send the source code string to analyze                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| -v<br/> --verbose        | Boolean | More outputs in console, including performed fixes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --verbose                | Boolean | More outputs in console, including performed fixes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | -i<br/> --ignorepattern  | String  | Comma-separated list of Ant-style file patterns specifying files that must be ignored<br/> Default: none<br/> Example: `"**/test/*""`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | --noserver               | Boolean | npm-groovy-lint launches a microservice to avoid performance issues caused by loading java/groovy each time,that auto kills itself after 1h idle. Use this argument if you do not want to use this feature                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | --returnrules            | Boolean | Return rules descriptions and URL if set                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -66,6 +66,7 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 | --no-insight             | Boolean | npm-groovy-lint collects anonymous usage statistics using [amplitude](https://www.npmjs.com/package/amplitude), in order to make new improvements based on how users use this package. <br/> Summary charts are available at [https://tinyurl.com/groovy-stats](https://tinyurl.com/groovy-stats).<br/> Analytics obviously does not receive sensitive information like your code, as you can see in [analytics.js](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/analytics.js).<br/> If you want to disable anonymous usage statistics, use `--no-insight` option.                                                                                                                                                                                                         |
 | --codenarcargs           | String  | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: <http://codenarc.github.io/CodeNarc/codenarc-command-line.html><br/> Example: `npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | -h<br/> --help           | Boolean | Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -v<br/> --version        | Boolean | Show npm-groovy-lint version (with CodeNarc version)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 ## Installation
 
@@ -301,7 +302,8 @@ def variable = 1;
 
 ### Mega-Linter
 
-Latest npm-groovy-lint version is natively integrated in [**Mega-Linter**](https://nvuillam.github.io/mega-linter/), that you can use as GitHub action or in other CI tools
+Latest npm-groovy-lint version is **natively integrated** in [**Mega-Linter**](https://nvuillam.github.io/mega-linter/), that you can use as GitHub action or in other CI tools
+This tool can also **automatically apply fixes** on Pull Request branches
 
 ### CircleCI
 
@@ -404,81 +406,4 @@ Please follow [Contribution instructions](https://github.com/nvuillam/npm-groovy
 
 ## Release notes
 
-## [8.0.0] 2020-11-15
-
-- Upgrade to CodeNarc 2.0.0
-  - Upgrade jars
-  - Adapt Indentation rule to new behaviour
-  - Use codenarc --ruleset argument instead of temp ruleset file
-- Replace super-linter by [Mega-Linter](https://nvuillam.github.io/mega-linter/)
-- Fixes
-  - [(#127)](https://github.com/nvuillam/npm-groovy-lint/issues/127) Formatting breaks code, converting `else if` into `elseif` in some cases
-  - Apply formatting rules also for --fix mode
-  - Fix Markdown dead links
-- CI
-  - Migrate from CircleCI to GitHub Actions: now tests are on Linux, Windows & MacOs
-  - Activate spelling linter of Mega-Linter (+ `.cspell.json` file)
-  - Add test cases for format and fix using CLI
-
-### [7.6.2] 2020-09-09
-
-- Disable TrailingComma rule by default until crash is solved by CodeNarc ([#75@vscode-groovy-lint](https://github.com/nvuillam/vscode-groovy-lint/issues/75))
-
-### [7.6.0] 2020-09-08
-
-- Add GitHub Action [GitHub Super-Linter](https://github.com/marketplace/actions/super-linter) to the repository
-- Update Dockerfile to pass Docker lint rules
-
-### [7.5.5] 2020-09-05
-
-- Upgrade [java-caller](https://github.com/nvuillam/node-java-caller) to v2.2.3
-  - Fix Java 8 detection ([#101](https://github.com/nvuillam/npm-groovy-lint/issues/101))
-
-### [7.5.4] 2020-09-04
-
-- Update frameworks detection
-
-### [7.5.1] 2020-09-02
-
-- Fix [(#96)](https://github.com/nvuillam/npm-groovy-lint/issues/96) --fix adds redundant space into `${VARIABLE}` (SpaceBeforeOpeningBrace fix rule error)
-- Fix grails framework detection
-- Fix Groovy parsing parsing when multiple files
-- Add `.gvy` and `.nf` in default browsed files extensions
-
-### [7.4.3] 2020-08-29
-
-- Upgrade [java-caller](https://github.com/nvuillam/node-java-caller) to v2.2.0
-  - Fix CLASSPATH on windows in case there are spaces in paths
-
-### [7.4.2] 2020-08-26
-
-- Fix [(#90)](https://github.com/nvuillam/npm-groovy-lint/issues/90) When log level is specified number of linted files appear to be off
-
-### [7.4.1] 2020-08-23
-
-- [(88)](https://github.com/nvuillam/npm-groovy-lint/pull/88) Fix Docker image to allow to use extra parameters (by [Howard Lo](https://github.com/warhod))
-
-### [7.4.0] 2020-08-17
-
-- [(#87)](https://github.com/nvuillam/npm-groovy-lint/pull/87) Update to openjdk 11 in [official Docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) (by [Pawel Kopka](https://github.com/pawelkopka))
-
-### [7.3.0] 2020-08-15
-
-- Allow to link to [CodeNarc RuleSet files](https://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html) from `.groovylintrc.json`, using property `"codeNarcRulesets"`. Warning: doing so means that all other properties of config file will be ignored.
-
-### [7.1.1] 2020-08-11
-
-- Upgrade [java-caller](https://www.npmjs.com/package/java-caller) to v2.0.0
-
-### [7.1.0] 2020-08-10
-
-- Externalize JavaCaller class into a separate package [java-caller](https://www.npmjs.com/package/java-caller) and use it
-
-### [7.0.0] 2020-08-07
-
-- New default recommended rules (activate/deactivate/change severity)
-- Allow to call `--config recommended-jenkinsfile` to use delivered .groovylintrc-recommended-jenkinsfile.json
-
-### PREVIOUS VERSIONS
-
-See complete [CHANGELOG](https://github.com/nvuillam/npm-groovy-lint/blob/master/CHANGELOG.md)
+See complete [CHANGELOG](CHANGELOG.md)

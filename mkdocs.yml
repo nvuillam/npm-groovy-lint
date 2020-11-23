@@ -9,44 +9,44 @@ site_description: Linter, formatter and auto-fixer for Groovy, Jenkinsfile and G
 copyright: Copyright &copy; 2020 <a href="https://github.com/nvuillam">Nicolas Vuillamy</a>
 # google_analytics: ["G-3DM50255LC", "nvuillam.github.io/nvuillam"]
 theme:
-    name: material
-    features:
-        - navigation.instant
-        - navigation.expand
+  name: material
+  features:
+    - navigation.instant
+    - navigation.expand
 #    logo: assets/images/npm-groovy-lint-square.png
 #    favicon: assets/images/npm-groovy-lint-square.png
 markdown_extensions:
-    - pymdownx.emoji:
-          emoji_index: !!python/name:materialx.emoji.twemoji
-          emoji_generator: !!python/name:materialx.emoji.to_svg
-    - mdx_truly_sane_lists
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - mdx_truly_sane_lists
 extra_javascript:
-    - https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js
-    - javascripts/tables.js
+  - https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js
+  - javascripts/tables.js
 extra_css:
-    - stylesheets/extra.css
+  - stylesheets/extra.css
 extra:
-    social:
-        - icon: fontawesome/regular/question-circle
-          link: https://github.com/nvuillam/npm-groovy-lint/issues
-          title: Need help ? Post an issue :)
-        - icon: fontawesome/brands/github
-          link: https://github.com/nvuillam/npm-groovy-lint
-        - icon: fontawesome/brands/docker
-          link: https://hub.docker.com/r/nvuillam/npm-groovy-lint
-        - icon: fontawesome/brands/twitter
-          link: https://twitter.com/nvuillam
-    generator: false
+  social:
+    - icon: fontawesome/regular/question-circle
+      link: https://github.com/nvuillam/npm-groovy-lint/issues
+      title: Need help ? Post an issue :)
+    - icon: fontawesome/brands/github
+      link: https://github.com/nvuillam/npm-groovy-lint
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/nvuillam/npm-groovy-lint
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/nvuillam
+  generator: false
 nav:
-    - "Home": "index.md"
-    - "Usage": "./#usage"
-    - "Installation": "./#installation"
-    - "Configuration": "./#configuration"
-    - "Examples": "./#example-calls"
-    - "Disabling rules in source": "./#disabling-rules-in-source"
-    - "Auto-fixable rules": "./#auto-fixable-rules"
-    - "CD/CI": "./#cdci"
-    - "Use as module": "./#use-as-module"
-    - "Contribute": "./#contribute"
-    - "Thanks": "./#thanks"
-    - "Release notes": "./#release-notes"
+  - "Home": "index.md"
+  - "Usage": "./#usage"
+  - "Installation": "./#installation"
+  - "Configuration": "./#configuration"
+  - "Examples": "./#example-calls"
+  - "Disabling rules in source": "./#disabling-rules-in-source"
+  - "Auto-fixable rules": "./#auto-fixable-rules"
+  - "CD/CI": "./#cdci"
+  - "Use as module": "./#use-as-module"
+  - "Contribute": "./#contribute"
+  - "Thanks": "./#thanks"
+  - "Changelog": "CHANGELOG.md"
