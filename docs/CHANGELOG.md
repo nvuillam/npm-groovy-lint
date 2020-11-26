@@ -1,5 +1,10 @@
 # Changelog
 
+## [8.0.2] 2020-11-26
+
+- Fix documentation about --verbose and --version options
+- Use GitHub action to deploy to NPM
+
 ## [8.0.1] 2020-11-19
 
 - Add a test case where variable includes if in its name for fix of rule SpaceAfterIf ([Behlül Uçar](https://github.com/ucarbehlul))
