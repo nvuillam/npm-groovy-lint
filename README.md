@@ -18,12 +18,12 @@
 
 Based on [CodeNarc](http://codenarc.github.io/CodeNarc/) , this out of the box package allows to **track groovy errors** and **correct a part of them**
 
-- Use option **--format** to format & prettify source code          
+- Use option **--format** to format & prettify source code
 - Use option **--fix** to activate autofixing of fixable rules
 
 Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
 
-You can also use this package in :         
+You can also use this package in :
 
 - [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint)
 - [Mega-Linter](https://nvuillam.github.io/mega-linter/) (can be used as GitHub Action, and lints all other languages and formats)
