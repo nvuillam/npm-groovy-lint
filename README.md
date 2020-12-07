@@ -21,7 +21,7 @@ Based on [CodeNarc](http://codenarc.github.io/CodeNarc/) , this out of the box p
 - Use option **--format** to format & prettify source code
 - Use option **--fix** to activate autofixing of fixable rules
 
-Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
+Easy to integrate in a CD/CI processs (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)
 
 You can also use this package in :
 
