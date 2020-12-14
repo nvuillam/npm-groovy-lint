@@ -25,6 +25,7 @@
         "ECONNREFUSED",
         "ENTRYPOINT",
         "ETIMEOUT",
+        "FILEIO",
         "Finalizers",
         "Fixrules",
         "Gorm",
