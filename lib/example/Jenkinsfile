@@ -168,7 +168,7 @@ pipeline {
                             GLOBAL_KEY_PREFIX = env.BRANCH_NAME + '_' + GIT_COMMIT ;
                             if (params.GLOBAL_KEY_PREFIX_OVERRIDE != null && params.GLOBAL_KEY_PREFIX_OVERRIDE != '' && params.GLOBAL_KEY_PREFIX_OVERRIDE != 'none') {
                                 GLOBAL_KEY_PREFIX = params.GLOBAL_KEY_PREFIX_OVERRIDE
-                                echo 'GLOBAL_KEY_PREFIX: '+GLOBAL_KEY_PREFIX+' (overriden via Parameters)'
+                                echo 'GLOBAL_KEY_PREFIX: '+GLOBAL_KEY_PREFIX+' (overridden via Parameters)'
                             }
                             else {
                                 // If Test is to check demos are ok, do not reuse tests from previous runs, even if the commit is the same
