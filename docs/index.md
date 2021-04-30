@@ -162,7 +162,7 @@ OR
 
 ## Disabling rules in source
 
-You can disable rules directly by adding comment in file, using [eslint style](https://eslint.org/docs/user-guide/configuring/rules#disabling-rules)
+You can disable rules directly by adding comment in file, using [eslint style](https://eslint.org/docs/user-guide/configuring#disabling-rules-with-inline-comments)
 
 To temporarily disable rule warnings in your file, use block comments in the following format:
 
