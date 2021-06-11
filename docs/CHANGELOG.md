@@ -1,5 +1,10 @@
 # Changelog
 
+## [8.2.0] 2020-12-14
+
+- Upgrade dependencies advised by dependabot
+- Fix Mega-Linter errors found
+
 ## [8.1.0] 2020-12-14
 
 - Exclude `UnnecessaryGetter`, `FactoryMethodName`, `MethodReturnTypeRequired`, and `GStringExpressionWithinString` in `recommended-jenkinsfile` ([#140](https://github.com/nvuillam/npm-groovy-lint/pull/140)) ([Felipe Santos](https://github.com/felipecrs))
