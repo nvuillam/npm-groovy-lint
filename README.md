@@ -27,7 +27,7 @@ You can also use this package in :
 
 - [Visual Studio Code Groovy Lint extension](https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint)
 - [Mega-Linter](https://nvuillam.github.io/mega-linter/) (can be used as GitHub Action, and lints all other languages and formats)
-- [Docker Image](#call-via-docker)
+- [Docker Image](#other)
 
 ![image](https://github.com/nvuillam/npm-groovy-lint/raw/master/docs/assets/images/npm-groovy-lint-results.png)
 
