@@ -1,0 +1,1351 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Linter, formatter and auto-fixer for Groovy, Jenkinsfile and Gradle files">
+      
+      
+      
+        <meta name="author" content="Nicolas Vuillamy">
+      
+      
+        <link rel="canonical" href="https://nvuillam.github.io/npm-groovy-lint/">
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.7">
+    
+    
+      
+        <title>NPM Groovy Lint</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.ca7ac06f.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.f1a3b89f.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="stylesheets/extra.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#npm-groovy-lint-format-auto-fix" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="NPM Groovy Lint" class="md-header__button md-logo" aria-label="NPM Groovy Lint" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NPM Groovy Lint
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/nvuillam/npm-groovy-lint/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="NPM Groovy Lint" class="md-nav__button md-logo" aria-label="NPM Groovy Lint" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    NPM Groovy Lint
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/nvuillam/npm-groovy-lint/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Home
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        Home
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#groovy-jenkinsfile-linter-formatter-and-auto-fixer" class="md-nav__link">
+    Groovy &amp; Jenkinsfile Linter, Formatter and Auto-fixer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    Format
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-calls" class="md-nav__link">
+    Example calls
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disabling-rules-in-source" class="md-nav__link">
+    Disabling rules in source
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auto-fixable-rules" class="md-nav__link">
+    Auto-Fixable rules
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cdci" class="md-nav__link">
+    CD/CI
+  </a>
+  
+    <nav class="md-nav" aria-label="CD/CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mega-linter" class="md-nav__link">
+    Mega-Linter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circleci" class="md-nav__link">
+    CircleCI
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jenkins" class="md-nav__link">
+    Jenkins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shell" class="md-nav__link">
+    Shell
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other" class="md-nav__link">
+    Other
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-as-module" class="md-nav__link">
+    Use as module
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribute" class="md-nav__link">
+    Contribute
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thanks" class="md-nav__link">
+    Thanks
+  </a>
+  
+    <nav class="md-nav" aria-label="Thanks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#other-packages-used" class="md-nav__link">
+    Other packages used
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contributors" class="md-nav__link">
+    Contributors
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-notes" class="md-nav__link">
+    Release notes
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#usage" class="md-nav__link">
+        Usage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#installation" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#configuration" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#example-calls" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#disabling-rules-in-source" class="md-nav__link">
+        Disabling rules in source
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#auto-fixable-rules" class="md-nav__link">
+        Auto-fixable rules
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#cdci" class="md-nav__link">
+        CD/CI
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#use-as-module" class="md-nav__link">
+        Use as module
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#contribute" class="md-nav__link">
+        Contribute
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="#thanks" class="md-nav__link">
+        Thanks
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CHANGELOG/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#groovy-jenkinsfile-linter-formatter-and-auto-fixer" class="md-nav__link">
+    Groovy &amp; Jenkinsfile Linter, Formatter and Auto-fixer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    Format
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-calls" class="md-nav__link">
+    Example calls
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disabling-rules-in-source" class="md-nav__link">
+    Disabling rules in source
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auto-fixable-rules" class="md-nav__link">
+    Auto-Fixable rules
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cdci" class="md-nav__link">
+    CD/CI
+  </a>
+  
+    <nav class="md-nav" aria-label="CD/CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mega-linter" class="md-nav__link">
+    Mega-Linter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circleci" class="md-nav__link">
+    CircleCI
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jenkins" class="md-nav__link">
+    Jenkins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shell" class="md-nav__link">
+    Shell
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other" class="md-nav__link">
+    Other
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-as-module" class="md-nav__link">
+    Use as module
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribute" class="md-nav__link">
+    Contribute
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thanks" class="md-nav__link">
+    Thanks
+  </a>
+  
+    <nav class="md-nav" aria-label="Thanks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#other-packages-used" class="md-nav__link">
+    Other packages used
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contributors" class="md-nav__link">
+    Contributors
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-notes" class="md-nav__link">
+    Release notes
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/nvuillam/npm-groovy-lint/tree/master/docs/index.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <!-- markdownlint-disable MD013 MD033 MD034 -->
+<h1 id="npm-groovy-lint-format-auto-fix">NPM GROOVY LINT (+ Format &amp; Auto-fix)</h1>
+<p><a href="https://npmjs.org/package/npm-groovy-lint"><img alt="Version" src="https://img.shields.io/npm/v/npm-groovy-lint.svg" /></a>
+<a href="https://npmjs.org/package/npm-groovy-lint"><img alt="Downloads/week" src="https://img.shields.io/npm/dw/npm-groovy-lint.svg" /></a>
+<a href="https://npmjs.org/package/npm-groovy-lint"><img alt="Downloads/total" src="https://img.shields.io/npm/dt/npm-groovy-lint.svg" /></a>
+<a href="https://github.com/nvuillam/npm-groovy-lint/actions?query=workflow%3ATest+branch%3Amaster"><img alt="Test" src="https://github.com/nvuillam/npm-groovy-lint/workflows/Test/badge.svg?branch=master" /></a>
+<a href="https://codecov.io/gh/nvuillam/npm-groovy-lint"><img alt="codecov" src="https://codecov.io/gh/nvuillam/npm-groovy-lint/branch/master/graph/badge.svg" /></a>
+<a href="https://nvuillam.github.io/mega-linter"><img alt="Mega-Linter" src="https://github.com/nvuillam/npm-groovy-lint/workflows/Mega-Linter/badge.svg?branch=master" /></a>
+<a href="https://gitHub.com/nvuillam/npm-groovy-lint/graphs/contributors/"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/nvuillam/npm-groovy-lint.svg" /></a>
+<a href="https://GitHub.com/nvuillam/npm-groovy-lint/stargazers/"><img alt="GitHub stars" src="https://img.shields.io/github/stars/nvuillam/npm-groovy-lint?label=Star&amp;maxAge=2592000" /></a>
+<a href="https://hub.docker.com/r/nvuillam/npm-groovy-lint"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/nvuillam/npm-groovy-lint" /></a>
+<a href="https://hub.docker.com/r/nvuillam/npm-groovy-lint"><img alt="Docker Stars" src="https://img.shields.io/docker/stars/nvuillam/npm-groovy-lint" /></a>
+<a href="https://github.com/nvuillam/npm-groovy-lint/blob/master/package.json"><img alt="License" src="https://img.shields.io/npm/l/npm-groovy-lint.svg" /></a>
+<a href="http://makeapullrequest.com"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" /></a></p>
+<h2 id="groovy-jenkinsfile-linter-formatter-and-auto-fixer">Groovy &amp; Jenkinsfile Linter, Formatter and Auto-fixer</h2>
+<p>Based on <a href="http://codenarc.github.io/CodeNarc/">CodeNarc</a> , this out of the box package allows to <strong>track groovy errors</strong> and <strong>correct a part of them</strong></p>
+<ul>
+<li>Use option <strong>--format</strong> to format &amp; prettify source code</li>
+<li>Use option <strong>--fix</strong> to activate autofixing of fixable rules</li>
+</ul>
+<p>Easy to integrate in a CD/CI process (Jenkins Pipeline,CircleCI...) to lint your groovy or Jenkinsfile at each build :)</p>
+<p>You can also use this package in :</p>
+<ul>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint">Visual Studio Code Groovy Lint extension</a></li>
+<li><a href="https://nvuillam.github.io/mega-linter/">Mega-Linter</a> (can be used as GitHub Action, and lints all other languages and formats)</li>
+<li><a href="#other">Docker Image</a></li>
+</ul>
+<p><img alt="image" src="https://github.com/nvuillam/npm-groovy-lint/raw/master/docs/assets/images/npm-groovy-lint-results.png" /></p>
+<p>See <a href="https://github.com/nvuillam/npm-groovy-lint/blob/master/CHANGELOG.md">CHANGELOG</a></p>
+<p>Any <strong>question</strong>, <strong>problem</strong> or <strong>enhancement request</strong> ? Ask <a href="https://github.com/nvuillam/npm-groovy-lint/issues"><strong>here</strong></a> :)</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="language-shell">    npm-groovy-lint OPTIONS
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-p<br/> --path</td>
+<td>String</td>
+<td>Directory containing the files to lint<br/> Example: <code>./path/to/my/groovy/files</code></td>
+</tr>
+<tr>
+<td>-f<br/> --files</td>
+<td>String</td>
+<td>Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: <code>"**/*.groovy,**/Jenkinsfile,**/*.gradle"</code><br/>Examples:<br/> - <code>"**/Jenkinsfile"</code><br/> - <code>"**/*.groovy"</code><br/> - <code>"**/*.gradle"</code><br/> - <code>"**/mySingleFile.groovy"</code></td>
+</tr>
+<tr>
+<td>-o<br/> --output</td>
+<td>String</td>
+<td>Output format (txt,json,html,xml), or path to a file with one of these extensions<br/> Default: <code>txt</code><br/> Examples:<br/> - <code>"txt"</code><br/> - <code>"json"</code><br/> - <code>"./logs/myLintResults.txt"</code><br/> - <code>"./logs/myLintResults.json"</code><br/> - <code>"./logs/myLintResults.html"</code><br/> - <code>"./logs/myLintResults.xml"</code></td>
+</tr>
+<tr>
+<td>-l<br/> --loglevel</td>
+<td>String</td>
+<td>Log level (error,warning or info)<br/>Default: info</td>
+</tr>
+<tr>
+<td>--failon</td>
+<td>String</td>
+<td>Defines the error level where CLI will fail (return code = 1). error,warning,info or none. Each failure level includes the more critical ones.</td>
+</tr>
+<tr>
+<td>-c<br/> --config</td>
+<td>String</td>
+<td>Custom path to <a href="#Configuration">GroovyLint config file</a>, or preset config <code>recommended|recommended-jenkinsfile|all</code><br/> Default: Browse current directory to find <code>.groovylintrc.json|js|yml|package.json</code> config file, or default npm-groovy-lint config if not defined.<br/>Note: command-line arguments have priority on config file properties</td>
+</tr>
+<tr>
+<td>--parse</td>
+<td>Boolean</td>
+<td>Try to compile the source code and return parse errors (since v5.7.0, default to true, use --no-parse to deactivate)</td>
+</tr>
+<tr>
+<td>--format</td>
+<td>Boolean</td>
+<td>Format source code</td>
+</tr>
+<tr>
+<td>--fix</td>
+<td>Boolean</td>
+<td>Automatically fix problems when possible<br/> See <a href="#Autofixable-rules">Autofixable rules</a></td>
+</tr>
+<tr>
+<td>-x<br/> --fixrules</td>
+<td>String</td>
+<td>Option for --fix argument: List of rule identifiers to fix (if not specified, all available fixes will be applied). See <a href="#Autofixable-rules">Autofixable rules</a> <br/> Examples:<br/> - <code>"SpaceBeforeClosingBrace,SpaceAfterClosingBrace,UnusedImport"</code><br/> - <code>"Indentation"</code><br/></td>
+</tr>
+<tr>
+<td>--nolintafter</td>
+<td>Boolean</td>
+<td>When format or fix is called, a new lint is performed after the fixes to update the returned error list. If you just want the updated source code and do not care about the error logs, use this parameter to improve performances</td>
+</tr>
+<tr>
+<td>-r<br/> --rulesets</td>
+<td>String</td>
+<td><a href="http://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html">RuleSet file(s)</a> to use for linting, if you do not want to use recommended rules or .groovylintrc.js defined rules.<br/>If list of comma separated strings corresponding to CodeNarc rules, a RuleSet file will be dynamically generated </br>  Examples:<br/> - <code>"./config/codenarc/RuleSet-Custom.groovy"</code><br/> - <code>"./path/to/my/ruleset/files"</code><br/>- <code>Indentation{"spacesPerIndentLevel":2,"severity":"warning"},UnnecessarySemicolon,UnnecessaryGString</code></td>
+</tr>
+<tr>
+<td>--rulesetsoverridetype</td>
+<td>String</td>
+<td>If list of rules sent in rulesets option, defines if they replace rules defined in .groovylintrc.json, or if they are appended<br/> Values: <code>replaceConfig</code> (default), <code>appendConfig</code></td>
+</tr>
+<tr>
+<td>-s<br/> --source</td>
+<td>String</td>
+<td>If path and files are not set, you can directly send the source code string to analyze</td>
+</tr>
+<tr>
+<td>--verbose</td>
+<td>Boolean</td>
+<td>More outputs in console, including performed fixes</td>
+</tr>
+<tr>
+<td>-i<br/> --ignorepattern</td>
+<td>String</td>
+<td>Comma-separated list of Ant-style file patterns specifying files that must be ignored<br/> Default: none<br/> Example: <code>"**/test/*""</code></td>
+</tr>
+<tr>
+<td>--noserver</td>
+<td>Boolean</td>
+<td>npm-groovy-lint launches a microservice to avoid performance issues caused by loading java/groovy each time,that auto kills itself after 1h idle. Use this argument if you do not want to use this feature</td>
+</tr>
+<tr>
+<td>--returnrules</td>
+<td>Boolean</td>
+<td>Return rules descriptions and URL if set</td>
+</tr>
+<tr>
+<td>--javaexecutable</td>
+<td>String</td>
+<td>Override java executable to use  <br/>Default: java<br/>Example: C:\Program Files\Java\jdk1.8.0_144\bin\java.exe</td>
+</tr>
+<tr>
+<td>--javaoptions</td>
+<td>String</td>
+<td>Override java options to use  <br/>Default: "-Xms256m,-Xmx2048m"</td>
+</tr>
+<tr>
+<td>--no-insight</td>
+<td>Boolean</td>
+<td>npm-groovy-lint collects anonymous usage statistics using <a href="https://www.npmjs.com/package/amplitude">amplitude</a>, in order to make new improvements based on how users use this package. <br/> Summary charts are available at <a href="https://tinyurl.com/groovy-stats">https://tinyurl.com/groovy-stats</a>.<br/> Analytics obviously does not receive sensitive information like your code, as you can see in <a href="https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/analytics.js">analytics.js</a>.<br/> If you want to disable anonymous usage statistics, use <code>--no-insight</code> option.</td>
+</tr>
+<tr>
+<td>--codenarcargs</td>
+<td>String</td>
+<td>Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: <a href="http://codenarc.github.io/CodeNarc/codenarc-command-line.html">http://codenarc.github.io/CodeNarc/codenarc-command-line.html</a><br/> Example: <code>npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml</code></td>
+</tr>
+<tr>
+<td>-h<br/> --help</td>
+<td>Boolean</td>
+<td>Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)</td>
+</tr>
+<tr>
+<td>-v<br/> --version</td>
+<td>Boolean</td>
+<td>Show npm-groovy-lint version (with CodeNarc version)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="installation">Installation</h2>
+<pre><code class="language-shell">    npm install -g npm-groovy-lint
+</code></pre>
+<p>Node.js &gt;= 12 is required to run this package. If you can't upgrade, you can use <a href="https://github.com/nvm-sh/nvm">nvm</a> to have <a href="https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/">different node versions on your computer</a></p>
+<h2 id="configuration">Configuration</h2>
+<p>Default rules definition (<a href="https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json"><code>recommended</code></a>, based on <a href="https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json"><code>all</code></a> tracks a lot of errors, do not hesitate to ignore some of them (like NoDef ou RequiredVariableType) if they are too mean for your project.</p>
+<p>Create a file named <strong>.groovylintrc.json</strong> in the current or any parent directory of where your files to analyze are located</p>
+<ul>
+<li>your-repo-root-folder<ul>
+<li>src<ul>
+<li>groovy<ul>
+<li>mygroovyfile.groovy</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Jenkinsfile</li>
+<li><strong>.groovylintrc.json</strong> <em>(do not forget the dot at the beginning of the file name)</em></li>
+</ul>
+</li>
+</ul>
+<p><em>If you are using <a href="https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint">VsCode Groovy Lint extension</a>, just use QuickFix</em> <strong><em>Ignore in all files</em></strong> <em>and it will generate groovylintrc.json file</em></p>
+<h3 id="format">Format</h3>
+<ul>
+<li><strong>extends</strong>: Name of a base configuration (<a href="https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json"><code>recommended</code></a>, <a href="https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended-jenkinsfile.json"><code>recommended-jenkinsfile</code></a>, <a href="https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json"><code>all</code></a>)</li>
+<li><strong>rules</strong>: List of rules definition, following format <code>"RuleSection.RuleName": ruleParameters</code> or <code>"RuleName": ruleParameters</code><ul>
+<li><em>RuleName</em>: any of the <strong><a href="https://codenarc.github.io/CodeNarc/codenarc-rule-index.html">CodeNarc rules</a></strong></li>
+<li><em>ruleParameters</em>: can be just a severity override ( <code>"off"</code>, <code>"error"</code>, <code>"warning"</code>, <code>"info"</code> ) , or a property list :<ul>
+<li>severity : off,error,warning,info</li>
+<li>enabled : true (default) or false</li>
+<li>any of the <a href="https://codenarc.github.io/CodeNarc/codenarc-rule-index.html">rule advanced properties</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>OR</p>
+<ul>
+<li><strong>codenarcRulesets</strong>: Comma-separated string containing the list of <code>.xml</code> or <code>.groovy</code> CodeNarc RuleSet files (in case you already are a CodeNarc user and do not wish to switch to npm-groovy-lint config format)</li>
+</ul>
+<h3 id="examples">Examples</h3>
+<pre><code class="language-json">{
+    &quot;extends&quot;: &quot;recommended&quot;,
+    &quot;rules&quot;: {
+        &quot;comments.ClassJavadoc&quot;: &quot;off&quot;,
+        &quot;formatting.Indentation&quot;: {
+            &quot;spacesPerIndentLevel&quot;: 4,
+            &quot;severity&quot;: &quot;info&quot;
+        },
+        &quot;UnnecessaryReturnKeyword&quot;: &quot;error&quot;
+    }
+}
+</code></pre>
+<pre><code class="language-json">{
+    &quot;extends&quot;: &quot;recommended-jenkinsfile&quot;,
+    &quot;rules&quot;: {
+        &quot;CouldBeElvis&quot;: &quot;off&quot;,
+        &quot;CouldBeSwitchStatement&quot;: &quot;off&quot;,
+        &quot;VariableName&quot;: {
+            &quot;severity&quot;: &quot;info&quot;
+        }
+    }
+}
+</code></pre>
+<pre><code class="language-json">{
+    &quot;codenarcRulesets&quot;: &quot;RuleSet-1.groovy,RuleSet-2.groovy&quot;
+}
+</code></pre>
+<h2 id="example-calls">Example calls</h2>
+<ul>
+<li>Lint groovy with JSON output</li>
+</ul>
+<pre><code class="language-shell">    npm-groovy-lint --output json
+</code></pre>
+<ul>
+<li>Advanced config</li>
+</ul>
+<pre><code class="language-shell">    npm-groovy-lint --path &quot;./path/to/my/groovy/files&quot; --files &quot;**/*.groovy&quot; --config &quot;./config/codenarc/.groovylintrcCustom.js&quot; --loglevel warning --output txt
+</code></pre>
+<ul>
+<li>Lint using core CodeNarc parameters and generate HTML report file</li>
+</ul>
+<pre><code class="language-shell">    npm-groovy-lint --codenarcargs -basedir=&quot;lib/example&quot; -rulesetfiles=&quot;file:lib/example/RuleSet-Groovy.groovy&quot; -title=&quot;TestTitleCodenarc&quot; -maxPriority1Violations=0' -report=&quot;html:ReportTestCodenarc.html&quot;
+</code></pre>
+<h2 id="disabling-rules-in-source">Disabling rules in source</h2>
+<p>You can disable rules directly by adding comment in file, using <a href="https://eslint.org/docs/user-guide/configuring#disabling-rules-with-inline-comments">eslint style</a></p>
+<p>To temporarily disable rule warnings in your file, use block comments in the following format:</p>
+<pre><code class="language-groovy">/* groovylint-disable */
+
+def variable = 1;
+
+/* groovylint-enable */
+</code></pre>
+<p>You can also disable or enable warnings for specific rules:</p>
+<pre><code class="language-groovy">/* groovylint-disable NoDef, UnnecessarySemicolon */
+
+def variable = 1;
+
+/* groovylint-enable NoDef, UnnecessarySemicolon */
+</code></pre>
+<p>To disable rule warnings in an entire file, put a <code>/* groovylint-disable */</code> block comment at the top of the file:</p>
+<pre><code class="language-groovy">/* groovylint-disable */
+
+def variable = 1;
+</code></pre>
+<p>You can also disable or enable specific rules for an entire file:</p>
+<pre><code class="language-groovy">/* groovylint-disable NoDef */
+
+def variable = 1;
+</code></pre>
+<p>To disable all rules on a specific line, use a line or block comment in one of the following formats:</p>
+<pre><code class="language-groovy">def variable = 1; // groovylint-disable-line
+
+// groovylint-disable-next-line
+def variable = 1;
+
+/* groovylint-disable-next-line */
+def variable = 1;
+
+def variable = 1; /* groovylint-disable-line */
+</code></pre>
+<p>To disable a specific rule on a specific line:</p>
+<pre><code class="language-groovy">def variable = 1; // groovylint-disable-line NoDef
+
+// groovylint-disable-next-line NoDef
+def variable = 1;
+
+def variable = 1; /* groovylint-disable-line NoDef */
+
+/* groovylint-disable-next-line NoDef */
+def variable = 1;
+</code></pre>
+<p>To disable multiple rules on a specific line:</p>
+<pre><code class="language-groovy">def variable = 1; // groovylint-disable-line NoDef, UnnecessarySemicolon
+
+// groovylint-disable-next-line NoDef, UnnecessarySemicolon
+def variable = 1;
+
+def variable = 1; /* groovylint-disable-line NoDef, UnnecessarySemicolon */
+
+/* groovylint-disable-next-line NoDef, UnnecessarySemicolon */
+def variable = 1;
+</code></pre>
+<h2 id="auto-fixable-rules">Auto-Fixable rules</h2>
+<ul>
+<li>AssignmentInConditional</li>
+<li>BlankLineBeforePackage</li>
+<li>BlockEndsWithBlankLine</li>
+<li>BlockStartsWithBlankLine</li>
+<li>BracesForClass</li>
+<li>BracesForForLoop</li>
+<li>BracesForIfElse</li>
+<li>BracesForMethod</li>
+<li>BracesForTryCatchFinally</li>
+<li>ClassEndsWithBlankLine</li>
+<li>ClassStartsWithBlankLine</li>
+<li>ClosingBraceNotAlone</li>
+<li>ConsecutiveBlankLines</li>
+<li>DuplicateImport</li>
+<li>ElseBlockBraces</li>
+<li>ExplicitArrayListInstantiation</li>
+<li>ExplicitLinkedListInstantiation</li>
+<li>FileEndsWithoutNewline</li>
+<li>IfStatementBraces</li>
+<li>Indentation</li>
+<li>IndentationClosingBraces</li>
+<li>IndentationComments</li>
+<li>InsecureRandom</li>
+<li>MisorderedStaticImports</li>
+<li>MissingBlankLineAfterImports</li>
+<li>MissingBlankLineAfterPackage</li>
+<li>NoTabCharacter</li>
+<li>SpaceAfterCatch</li>
+<li>SpaceAfterComma</li>
+<li>SpaceAfterFor</li>
+<li>SpaceAfterIf</li>
+<li>SpaceAfterOpeningBrace</li>
+<li>SpaceAfterSemicolon</li>
+<li>SpaceAfterSwitch</li>
+<li>SpaceAfterWhile</li>
+<li>SpaceAroundOperator</li>
+<li>SpaceBeforeClosingBrace</li>
+<li>SpaceBeforeOpeningBrace</li>
+<li>TrailingWhitespace</li>
+<li>UnnecessaryDefInFieldDeclaration</li>
+<li>UnnecessaryDefInMethodDeclaration</li>
+<li>UnnecessaryDefInVariableDeclaration</li>
+<li>UnnecessaryDotClass</li>
+<li>UnnecessaryFinalOnPrivateMethod</li>
+<li>UnnecessaryGString</li>
+<li>UnnecessaryGroovyImport</li>
+<li>UnnecessaryPackageReference</li>
+<li>UnnecessaryParenthesesForMethodCallWithClosure</li>
+<li>UnnecessarySemicolon</li>
+<li>UnnecessaryToString</li>
+<li>UnusedImport</li>
+</ul>
+<p><a href="#Contribute">Contribute</a> to add more <a href="http://codenarc.github.io/CodeNarc/codenarc-rule-index.html">rules</a> fixes :)</p>
+<h2 id="cdci">CD/CI</h2>
+<h3 id="mega-linter">Mega-Linter</h3>
+<p>Latest npm-groovy-lint version is <strong>natively integrated</strong> in <a href="https://nvuillam.github.io/mega-linter/"><strong>Mega-Linter</strong></a>, that you can use as GitHub action or in other CI tools
+This tool can also <strong>automatically apply fixes</strong> on Pull Request branches</p>
+<h3 id="circleci">CircleCI</h3>
+<pre><code class="language-yaml"># .circleci/config.yml
+version: 2.1
+jobs:
+  lint:
+    docker:
+      - image: nvuillam/npm-groovy-lint
+    steps:
+      - checkout
+
+      - run: |
+          npm-groovy-lint
+
+workflows:
+  version: 2
+  &quot;lint&quot;:
+    jobs:
+       - lint
+</code></pre>
+<h3 id="jenkins">Jenkins</h3>
+<pre><code class="language-groovy">node {
+    checkout scm
+    docker.image('nvuillam/npm-groovy-lint').inside {
+        sh 'npm-groovy-lint'
+    }
+}
+</code></pre>
+<h3 id="shell">Shell</h3>
+<p>Run with default settings</p>
+<pre><code class="language-shell">docker run -u &quot;$(id -u):$(id -g)&quot; -w=/tmp -v &quot;$PWD&quot;:/tmp nvuillam/npm-groovy-lint
+</code></pre>
+<p>Run with additional flags by simply appending them at after docker image name:</p>
+<pre><code class="language-shell">docker run -u &quot;$(id -u):$(id -g)&quot; -w=/tmp -v &quot;$PWD&quot;:/tmp nvuillam/npm-groovy-lint --failon warning --verbose
+</code></pre>
+<h3 id="other">Other</h3>
+<p>You can run npm-groovy-lint using its <a href="https://hub.docker.com/r/nvuillam/npm-groovy-lint">official docker image</a></p>
+<h2 id="use-as-module">Use as module</h2>
+<p>You can import npm-groovy-lint into your NPM package and call lint &amp; fix via module, using the same options than from npm-groovy-lint command line</p>
+<p>Example</p>
+<pre><code class="language-shell">    npm install npm-groovy-lint --save
+</code></pre>
+<pre><code class="language-javascript">    const NpmGroovyLint = require(&quot;npm-groovy-lint/groovy-lint.js&quot;);
+    const fse = require(&quot;fs-extra&quot;);
+
+    const npmGroovyLintConfig = {
+        source: fse.readFileSync('./lib/example/SampleFile.groovy').toString(),
+        fix: true,
+        loglevel: 'warning',
+        output: 'none'
+    };
+    const linter = new NpmGroovyLint(npmGroovyLintConfig, {});
+    await linter.run();
+    console.log(JSON.stringify(linter.lintResult));
+</code></pre>
+<h2 id="contribute">Contribute</h2>
+<p>Contributions are very welcome !</p>
+<p>Please follow <a href="https://github.com/nvuillam/npm-groovy-lint/blob/master/CONTRIBUTING.md">Contribution instructions</a></p>
+<h2 id="thanks">Thanks</h2>
+<h3 id="other-packages-used">Other packages used</h3>
+<ul>
+<li><a href="https://github.com/CodeNarc/CodeNarc">CodeNarc</a>: groovy lint</li>
+<li><a href="https://www.npmjs.com/package/java-caller">java-caller</a>: Easy call Java commands from Node</li>
+<li><a href="http://www.slf4j.org">slf4j</a>: logging for CodeNarc</li>
+<li><a href="https://logging.apache.org/log4j/2.x/">log4j</a>: logging for CodeNarc</li>
+<li><a href="https://dx42.github.io/gmetrics/">GMetrics</a>: Code measures for CodeNarc</li>
+<li>Inspiration from <a href="https://eslint.org/">eslint</a> about configuration and run patterns</li>
+</ul>
+<h3 id="contributors">Contributors</h3>
+<table>
+<thead>
+<tr>
+<th align="center"><a href="https://github.com/nvuillam"><img alt="nvuillam" src="https://avatars1.githubusercontent.com/u/17500430?v=4&s=50 width=50"></a></th>
+<th align="center"><a href="https://github.com/davegallant"><img alt="Dave Gallant" src="https://avatars2.githubusercontent.com/u/4519234?v=4&s=50 width=50"></a></th>
+<th align="center"><a href="https://github.com/warhod"><img alt="warhod" src="https://avatars1.githubusercontent.com/u/1305176?v=4&s=50 width=50"></a></th>
+<th align="center"><a href="https://github.com/pawelkopka"><img alt="pawelkopka" src="https://avatars1.githubusercontent.com/u/17784034?v=4&s=50 width=50"></a></th>
+<th align="center"><a href="https://github.com/docwhat"><img alt="docwhat" src="https://avatars1.githubusercontent.com/u/40799?v=4&s=50 width=50"></a></th>
+<th align="center"><a href="https://github.com/CatSue"><img alt="CatSue" src="https://avatars3.githubusercontent.com/u/26134618?v=4&s=50 width=50"></a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><a href="https://github.com/nvuillam">Nicolas Vuillamy</a></td>
+<td align="center"><a href="https://github.com/davegallant">Dave Gallant</a></td>
+<td align="center"><a href="https://github.com/warhod">Howard Lo</a></td>
+<td align="center"><a href="https://github.com/pawelkopka">Pawel Kopka</a></td>
+<td align="center"><a href="https://github.com/docwhat">docwhat</a></td>
+<td align="center"><a href="https://github.com/CatSue">CatSue</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="release-notes">Release notes</h2>
+<p>See complete <a href="CHANGELOG/">CHANGELOG</a></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+      
+        
+        <a href="CHANGELOG/" class="md-footer__link md-footer__link--next" aria-label="Next: Changelog" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Changelog
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2020 <a href="https://github.com/nvuillam">Nicolas Vuillamy</a>
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/nvuillam/npm-groovy-lint/issues" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 448c-110.532 0-200-89.431-200-200 0-110.495 89.472-200 200-200 110.491 0 200 89.471 200 200 0 110.53-89.431 200-200 200zm107.244-255.2c0 67.052-72.421 68.084-72.421 92.863V300c0 6.627-5.373 12-12 12h-45.647c-6.627 0-12-5.373-12-12v-8.659c0-35.745 27.1-50.034 47.579-61.516 17.561-9.845 28.324-16.541 28.324-29.579 0-17.246-21.999-28.693-39.784-28.693-23.189 0-33.894 10.977-48.942 29.969-4.057 5.12-11.46 6.071-16.666 2.124l-27.824-21.098c-5.107-3.872-6.251-11.066-2.644-16.363C184.846 131.491 214.94 112 261.794 112c49.071 0 101.45 38.304 101.45 88.8zM298 368c0 23.159-18.841 42-42 42s-42-18.841-42-42 18.841-42 42-42 42 18.841 42 42z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/nvuillam/npm-groovy-lint" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://hub.docker.com/r/nvuillam/npm-groovy-lint" target="_blank" rel="noopener" title="hub.docker.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M349.9 236.3h-66.1v-59.4h66.1v59.4zm0-204.3h-66.1v60.7h66.1V32zm78.2 144.8H362v59.4h66.1v-59.4zm-156.3-72.1h-66.1v60.1h66.1v-60.1zm78.1 0h-66.1v60.1h66.1v-60.1zm276.8 100c-14.4-9.7-47.6-13.2-73.1-8.4-3.3-24-16.7-44.9-41.1-63.7l-14-9.3-9.3 14c-18.4 27.8-23.4 73.6-3.7 103.8-8.7 4.7-25.8 11.1-48.4 10.7H2.4c-8.7 50.8 5.8 116.8 44 162.1 37.1 43.9 92.7 66.2 165.4 66.2 157.4 0 273.9-72.5 328.4-204.2 21.4.4 67.6.1 91.3-45.2 1.5-2.5 6.6-13.2 8.5-17.1l-13.3-8.9zm-511.1-27.9h-66v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1v-59.4zm-78.1-72.1h-66.1v60.1h66.1v-60.1z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/nvuillam" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.instant", "navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.b0710199.min.js", "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.76f349be.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
+      
+        <script src="javascripts/tables.js"></script>
+      
+    
+  </body>
+</html>
