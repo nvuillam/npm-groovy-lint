@@ -15,10 +15,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 
-// Groovy Json Management
-import groovy.json.JsonSlurper
-import groovy.json.JsonOutput
-
 // Groovy Transform
 import groovy.transform.CompileDynamic
 
