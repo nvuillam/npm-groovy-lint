@@ -1,6 +1,10 @@
 # Changelog
 
-## [8.2.0] 2020-12-14
+## [9.0.0] 2020-12
+
+- Upgrade to [CodeNarc v2.1.0](https://github.com/CodeNarc/CodeNarc/releases/tag/v2.1.0)
+
+## [8.2.0] 2021-06-11
 
 - Upgrade dependencies advised by dependabot
 - Fix Mega-Linter errors found
