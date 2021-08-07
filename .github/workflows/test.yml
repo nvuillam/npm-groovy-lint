@@ -45,7 +45,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      - name: Install node 15
+      - name: Install node 16
         run: curl -sL https://deb.nodesource.com/setup_16.x | bash - && apt-get update && apt-get install -y nodejs
       - name: Install dependencies and link
         run: npm ci && npm link
