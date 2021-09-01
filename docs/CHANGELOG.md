@@ -1,6 +1,11 @@
 # Changelog
 
-## [8.2.0] 2020-12-14
+## UNRELEASED
+
+- Upgrade to [CodeNarc v2.2.0](https://github.com/CodeNarc/CodeNarc/releases/tag/v2.1.0)
+- Upgrade to [Groovy v3.0.8](https://groovy-lang.org/)
+
+## [8.2.0] 2021-06-11
 
 - Upgrade dependencies advised by dependabot
 - Fix Mega-Linter errors found
