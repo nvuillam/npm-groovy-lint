@@ -367,7 +367,7 @@ Example
 ```
 
 ```javascript
-    const NpmGroovyLint = require("npm-groovy-lint/groovy-lint.js");
+    const NpmGroovyLint = require("npm-groovy-lint/lib/groovy-lint.js");
     const fse = require("fs-extra");
 
     const npmGroovyLintConfig = {
