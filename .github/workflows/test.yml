@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: openjdk:8-jdk-stretch
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -23,6 +24,7 @@ jobs:
   test_java11_node_12:
     name: Test - Debian - Java 11 - Node 12
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     container:
       image: openjdk:11
     steps:
@@ -42,6 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: adoptopenjdk:latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -57,6 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: node:14-buster
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -74,6 +78,7 @@ jobs:
   test_windows:
     name: Test - Windows
     runs-on: windows-latest
+    timeout-minutes: 25
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -85,6 +90,7 @@ jobs:
   test_mac:
     name: Test - MacOs
     runs-on: macos-latest
+    timeout-minutes: 25
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
