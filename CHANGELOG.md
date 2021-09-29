@@ -2,9 +2,13 @@
 
 ## UNRELEASED
 
+## [9.0.0] 2021-09-30
+
 - Upgrade to [CodeNarc v2.2.0](https://github.com/CodeNarc/CodeNarc/releases/tag/v2.2.0)
 - Upgrade to [Groovy v3.0.9](https://groovy-lang.org/)
 - Reorganize sources test folder
+- Add timeouts in CI jobs
+- Add colors in error logs
 
 ## [8.2.0] 2021-06-11
 
