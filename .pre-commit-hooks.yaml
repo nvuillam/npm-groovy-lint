@@ -1,0 +1,19 @@
+---
+- id: npm-groovy-lint
+  name: Lint groovy files
+  description: Groovy & Jenkinsfile Linter
+  entry: npm-groovy-lint --output txt
+  language: node
+  types: [groovy]
+- id: format-npm-groovy-lint
+  name: Format Lint groovy findings
+  description: Groovy & Jenkinsfile Formatter
+  entry: npm-groovy-lint --format --output txt
+  language: node
+  types: [groovy]
+- id: fix-npm-groovy-lint
+  name: Fix Lint groovy findings
+  description: Groovy & Jenkinsfile Auto-fixer
+  entry: npm-groovy-lint --fix  --output txt
+  language: node
+  types: [groovy]
