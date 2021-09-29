@@ -76,6 +76,8 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 
 Node.js >= 12 is required to run this package. If you can't upgrade, you can use [nvm](https://github.com/nvm-sh/nvm) to have [different node versions on your computer](https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/)
 
+If you do not have java (from 8 to 14) installed on your computer npm-groovy-lint will install them for you, so the first run may be long.
+
 ## Configuration
 
 Default rules definition ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json), based on [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json) tracks a lot of errors, do not hesitate to ignore some of them (like NoDef ou RequiredVariableType) if they are too mean for your project.
