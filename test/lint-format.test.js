@@ -1,9 +1,9 @@
 #! /usr/bin/env node
 "use strict";
-const NpmGroovyLint = require("../groovy-lint.js");
+const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
 const fse = require("fs-extra");
-const { normalizeNewLines } = require("../utils.js");
+const { normalizeNewLines } = require("../lib/utils.js");
 const rimraf = require("rimraf");
 const {
     beforeEachTestCase,

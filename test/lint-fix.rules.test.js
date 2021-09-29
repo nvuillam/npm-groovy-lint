@@ -1,8 +1,8 @@
 #! /usr/bin/env node
 "use strict";
-const NpmGroovyLint = require("../groovy-lint.js");
-const { getNpmGroovyLintRules } = require("../groovy-lint-rules.js");
-const { normalizeNewLines } = require("../utils.js");
+const NpmGroovyLint = require("../lib/groovy-lint.js");
+const { getNpmGroovyLintRules } = require("../lib/groovy-lint-rules.js");
+const { normalizeNewLines } = require("../lib/utils.js");
 let assert = require("assert");
 
 const { beforeEachTestCase, checkCodeNarcCallsCounter, getDiff } = require("./helpers/common");

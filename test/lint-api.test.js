@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 "use strict";
-const NpmGroovyLint = require("../groovy-lint.js");
+const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
 const c = require("ansi-colors");
 const fse = require("fs-extra");
