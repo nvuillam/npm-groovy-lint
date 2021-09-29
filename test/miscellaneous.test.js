@@ -299,6 +299,7 @@ describe("Miscellaneous", function() {
             }
             if (javaPath.includes("hostedtoolcache")) {
                 console.log("Skip test because for some strange reason it provokes a timeout on CI Windows server");
+                return;
             }
             const javaExec = javaPath;
             const javaOptions = "-Xms512m,-Xmx2g";
@@ -322,8 +323,9 @@ describe("Miscellaneous", function() {
         } catch (e) {
             console.log("Java not found: ignore test method");
         }
-        if (javaPath.includes("hostedtoolcache")) {
+        if (javaPath && javaPath.includes("hostedtoolcache")) {
             console.log("Skip test because for some strange reason it provokes a timeout on CI Windows server");
+            return;
         }
         if (javaPath) {
             const linter = await new NpmGroovyLint([process.execPath, "", "--killserver", "--no-insight", "--verbose"], {
