@@ -170,7 +170,7 @@ describe("Miscellaneous", function() {
 
     it("(API:source) should cancel current request", async () => {
         const requestKey = "requestKeyCalculatedByExternal" + Math.random();
-        const delay = os.platform() === "win32" ? 500 : 300;
+        const delay = os.platform() === "win32" ? 100 : 200;
         const npmGroovyLintConfig = {
             path: "./lib/example/",
             files: "**/" + SAMPLE_FILE_BIG,
