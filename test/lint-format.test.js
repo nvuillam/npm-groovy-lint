@@ -44,7 +44,7 @@ describe("Format with API", function() {
     }).timeout(100000);
 
     it("(API:source) should format code with custom config", async () => {
-        const expectedFixedErrs = 34;
+        const expectedFixedErrs = 23;
         const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
