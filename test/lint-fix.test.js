@@ -41,7 +41,7 @@ describe("Lint & fix with API", function() {
 
     it("(API:source) should lint and fix (one shot)", async () => {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
-        const expectedFixedErrs = 995;
+        const expectedFixedErrs = 1076;
         const prevFileContent = fse.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -65,7 +65,7 @@ describe("Lint & fix with API", function() {
 
     it("(API:source) should lint and fix (no lintagainafterfix)", async () => {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
-        const expectedFixedErrs = 995;
+        const expectedFixedErrs = 1076;
         const prevFileContent = fse.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,

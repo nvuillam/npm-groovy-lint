@@ -1,12 +1,6 @@
 import groovy.io.FileType
 import groovy.json.*
 import groovy.time.TimeCategory
-import static groovyx2.gpars.GParsPool.withPool
-
-        def script = new GroovyScriptEngine( '.' ).with{
-                loadScriptByName( 'Utils.groovy' ) ;
-   }
-this.metaClass.mixin script
 
 def returnCode = 0
          Exception eThrow = null ;
