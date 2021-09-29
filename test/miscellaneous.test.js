@@ -2,10 +2,13 @@
 "use strict";
 const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
+const childProcess = require("child_process");
 const fse = require("fs-extra");
 const os = require("os");
 const path = require("path");
+const util = require("util")
 const which = require("which");
+const exec = util.promisify(childProcess.exec);
 const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH } = require("./helpers/common");
 
 describe("Miscellaneous", function() {
@@ -287,6 +290,9 @@ describe("Miscellaneous", function() {
         }
         if (javaPath) {
             console.log(`Java found: ${javaPath}`);
+            const { stdout, stderr } = await exec(`"${javaPath}" -version`);
+            console.log(stdout);
+            console.log(stderr);
             const javaExec = javaPath;
             const javaOptions = "-Xms512m,-Xmx2g";
             const npmGroovyLintConfig = {
