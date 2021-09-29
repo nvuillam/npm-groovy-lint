@@ -33,9 +33,9 @@ describe("Lint & format with EXE", function() {
 
         assert(fse.existsSync("npm-groovy-fix-log.json"), "Output json file has been produced");
 
-        const newFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL).toString();
+        const newFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL).toString().replace(/\r\n/g,'\n');
         assert(prevFileContent !== newFileContent, "Groovy file has been updated");
-        const expectedFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL_FORMAT).toString();
+        const expectedFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL_FORMAT).toString().replace(/\r\n/g,'\n');
         assert.strictEqual(newFileContent, expectedFileContent, "Formatted file is corresponding to expected result");
         fse.removeSync("npm-groovy-fix-log.json");
         rimraf.sync(tmpDir);
