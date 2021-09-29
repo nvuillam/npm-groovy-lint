@@ -3,19 +3,19 @@ import groovy.json.*
 import groovy.time.TimeCategory
 
 def returnCode = 0
-Exception eThrow = null
-try {
-    initialize(args)
-} catch (Exception e) {
-    eThrow = e
+         Exception eThrow = null ;
+   try {
+    initialize(args) ;
+} catch (Exception e){
+                 eThrow = e ;
     returnCode = 1
-}
-if (eThrow == null) {
-    return 0
+             }
+          if (eThrow == null){
+                      return 0 ;
 }
 else {
-    throw eThrow
-    return 1
+         throw eThrow ;
+    return 1 ;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ class TestExecutor {
 
     public testExternalGlobalProps() {
         Utils.printlnLog( '########## testExternalGlobalProps')
-        def globalKeyName = new Random().with { (1..9).collect { (('a'..'z')).join()[ nextInt((('a'..'z')).join().length())] }.join() }
+        def globalKeyName = new Random().with { (1..9).collect { (('a'..'z')).join()[ nextInt((('a'..'z')).join().length())]}.join()}
         Utils.printlnLog( "Generated random key: ${globalKeyName}")
         Utils.setExternalValue(globalKeyName , 'lelama' , 'nul')
         def storedValue = Utils.getExternalValue(globalKeyName , 'lelama')
