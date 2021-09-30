@@ -143,6 +143,7 @@
     "groovyx",
     "grooylintrc",
     "hasha",
+    "hostedtoolcache",
     "httpbuilder",
     "httpserver",
     "ignorepattern",

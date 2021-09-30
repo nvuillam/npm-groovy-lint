@@ -2,14 +2,6 @@
 ///////////////////////////////////////////////// COMMON LIBRARY /////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Grapes([
-  @Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.7.1'),
-  @Grab(group='com.google.guava', module='guava', version='19.0'),
-  @Grab(group='org.apache.commons', module='commons-lang3', version='3.7')
-])
-
-import com.google.common.collect.Lists
-
 import groovy.io.FileType
 import groovy.json.JsonSlurper
 import groovy.time.TimeCategory 

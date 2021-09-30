@@ -1,11 +1,6 @@
 import groovy.json.*
 import java.security.SecureRandom
 
-def script = new GroovyScriptEngine( '.' ).with {
-    loadScriptByName( 'Utils.groovy' )
-}
-this.metaClass.mixin script
-
 def returnCode = 0
 Exception eThrow = null
 try {
