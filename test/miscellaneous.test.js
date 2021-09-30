@@ -297,8 +297,8 @@ describe("Miscellaneous", function() {
                 console.log("Skip test because of spaces in java path");
                 return ;
             }
-            if (javaPath.includes("hostedtoolcache")) {
-                console.log("Skip test because for some strange reason it provokes a timeout on CI Windows server");
+            if (javaPath.includes("hostedtoolcache") || javaPath.includes("/opt/java/openjdk/bin/java")) {
+                console.log("Skip test because for some strange reason it provokes a timeout on CI Windows and openjdk servers");
                 return;
             }
             const javaExec = javaPath;
@@ -328,8 +328,8 @@ describe("Miscellaneous", function() {
                 console.log("Skip test because of spaces in java path");
                 return ;
             }
-            if (javaPath.includes("hostedtoolcache")) {
-                console.log("Skip test because for some strange reason it provokes a timeout on CI Windows server");
+            if (javaPath.includes("hostedtoolcache") || javaPath.includes("/opt/java/openjdk/bin/java")) {
+                console.log("Skip test because for some strange reason it provokes a timeout on CI Windows and openjdk servers");
                 return;
             }
             const linter = await new NpmGroovyLint([process.execPath, "", "--killserver", "--no-insight", "--verbose"], {
