@@ -323,11 +323,15 @@ describe("Miscellaneous", function() {
         } catch (e) {
             console.log("Java not found: ignore test method");
         }
-        if (javaPath && javaPath.includes("hostedtoolcache")) {
-            console.log("Skip test because for some strange reason it provokes a timeout on CI Windows server");
-            return;
-        }
         if (javaPath) {
+            if (javaPath.includes(" ")) {
+                console.log("Skip test because of spaces in java path");
+                return ;
+            }
+            if (javaPath.includes("hostedtoolcache")) {
+                console.log("Skip test because for some strange reason it provokes a timeout on CI Windows server");
+                return;
+            }
             const linter = await new NpmGroovyLint([process.execPath, "", "--killserver", "--no-insight", "--verbose"], {
                 verbose: true
             }).run();
