@@ -113,7 +113,7 @@ class CodeNarcServer {
                 def bodyObj = jsonSlurper.parseText(body)
 
                 requestKey = bodyObj.requestKey
-                manageRequestKey = (requestKey != null && requestKey != 'undefined' )
+                manageRequestKey = (requestKey != null && requestKey != 'undefined')
 
                 if (manageRequestKey) {
                     // Cancel already running request if necessary
