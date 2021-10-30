@@ -5,6 +5,7 @@ APPLY_FIXES: "all" # When true, APPLY_FIXES must also be defined as environment 
 FILTER_REGEX_EXCLUDE: (lib/example|\.github|\.vscode|pull_request_template|docs/javascripts)
 DISABLE:
   - COPYPASTE
+  - CSS
 DISABLE_LINTERS:
   - JAVASCRIPT_STANDARD
 JAVASCRIPT_ES_FILE_NAME: "LINTER_DEFAULT"
