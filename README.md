@@ -16,6 +16,8 @@
 
 ## Groovy & Jenkinsfile Linter, Formatter and Auto-fixer
 
+_**New: The [article about the story of npm-groovy-lint](https://nicolas.vuillamy.fr/a-groovy-journey-to-open-source-during-covid-19-npm-groovy-lint-8d88c7eecebc), and why you should dive in open-source community !**_
+
 Based on [CodeNarc](http://codenarc.github.io/CodeNarc/) , this out of the box package allows to **track groovy errors** and **correct a part of them**
 
 - Use option **--format** to format & prettify source code
