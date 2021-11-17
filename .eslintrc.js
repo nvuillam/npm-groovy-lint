@@ -16,12 +16,15 @@ module.exports = {
     "describe": true,
     "it": true,
     "globalThis": true,
-    "beforeEach": true
+    "beforeEach": true,
+    "app": true,
+    "Tablesort": true
   },
-  parser: "babel-eslint",
+  parser: "@babel/eslint-parser",
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: "module"
+    sourceType: "module",
+    requireConfigFile: false
   },
   rules: {
     "indent": "off" // Managed by prettier
