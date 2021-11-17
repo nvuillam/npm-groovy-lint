@@ -346,13 +346,13 @@ node {
 Run with default settings
 
 ```shell
-docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint
+docker run --rm -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint
 ```
 
 Run with additional flags by simply appending them at after docker image name:
 
 ```shell
-docker run -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint --failon warning --verbose
+docker run --rm -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint --failon warning --verbose
 ```
 
 ### Other
