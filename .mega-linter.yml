@@ -12,3 +12,7 @@ JAVASCRIPT_ES_FILE_NAME: "LINTER_DEFAULT"
 FILEIO_REPORTER: true
 PRINT_ALL_FILES: false
 GITHUB_STATUS_REPORTER: false
+PRE_COMMANDS:
+  - continue_if_failed: false
+    command: npm ci
+    cwd: workspace
