@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [9.1.0] 2021-12-14
+
+- Upgrade log4j dependencies because of [security issue](https://unit42.paloaltonetworks.com/apache-log4j-vulnerability-cve-2021-44228/) (#194)
+
 ## [9.0.0] 2021-09-30
 
 - Upgrade to [CodeNarc v2.2.0](https://github.com/CodeNarc/CodeNarc/releases/tag/v2.2.0)

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint:fix": "eslint **/*.js --fix && prettier --write \"./lib/**/*.{js,jsx,json}\" --tab-width 4 --print-width 150",
-    "groovy:run-server-from-source": "npm run dev:kill-server && groovy -cp \"lib/java/CodeNarc-2.2.0.jar;lib/java/groovy/lib/groovy-3.0.9.jar;lib/java/groovy/lib/groovy-templates-3.0.9.jar;lib/java/groovy/lib/groovy-xml-3.0.9.jar;lib/java/groovy/lib/groovy-json-3.0.9.jar;lib/java/groovy/lib/groovy-ant-3.0.9.jar;lib/java/groovy/lib/ant-1.10.11.jar;lib/java/groovy/lib/ant-launcher-1.10.11.jar;lib/java/slf4j-api-1.7.9.jar;lib/java/log4j-slf4j-impl-2.13.0.jar;lib/java/log4j-api-2.13.0.jar;lib/java/log4j-core-2.13.0.jar;lib/java/gmetrics-1.1.jar\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
+    "groovy:run-server-from-source": "npm run dev:kill-server && groovy -cp \"lib/java/CodeNarc-2.2.0.jar;lib/java/groovy/lib/groovy-3.0.9.jar;lib/java/groovy/lib/groovy-templates-3.0.9.jar;lib/java/groovy/lib/groovy-xml-3.0.9.jar;lib/java/groovy/lib/groovy-json-3.0.9.jar;lib/java/groovy/lib/groovy-ant-3.0.9.jar;lib/java/groovy/lib/ant-1.10.11.jar;lib/java/groovy/lib/ant-launcher-1.10.11.jar;lib/java/slf4j-api-1.7.9.jar;lib/java/log4j-slf4j-impl-2.16.0.jar;lib/java/log4j-api-2.16.0.jar;lib/java/log4j-core-2.16.0.jar;lib/java/gmetrics-1.1.jar\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
     "groovy:build": "npm run dev:kill-server && groovyc -cp \"./lib/java*\" --encoding utf-8 ./groovy/src/main/com/nvuillam/CodeNarcServer.groovy -d ./tmp && cd ./tmp && jar -cvfm ./../lib/java/CodeNarcServer.jar ./../MANIFEST.txt ./com/nvuillam/*.class && cd ..",
     "test": "npm run dev:kill-server && mocha \"test/**/*.test.js\"",
     "test:coverage": "nyc npm run test",
