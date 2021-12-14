@@ -2,7 +2,7 @@
 
 ## UNRELEASED
 
-## [9.1.0] 2021-09-30
+## [9.1.0] 2021-12-14
 
 - Upgrade log4j dependencies because of [security issue](https://unit42.paloaltonetworks.com/apache-log4j-vulnerability-cve-2021-44228/) (#194)
 
