@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [9.3.0] 2021-12-29
+
+- Upgrade log4j dependencies because of [security issue](https://nvd.nist.gov/vuln/detail/CVE-2021-44832).
+
 ## [9.2.0] 2021-12-23
 
 - Upgrade log4j dependencies because of (another) [security issue](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105) (#196)
