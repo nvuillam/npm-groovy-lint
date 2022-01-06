@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [9.3.1] 2022-01-06
+
+- Fix issue when used as module and with file containing spaces ([VsCodeGroovyLint #137](https://github.com/nvuillam/vscode-groovy-lint/issues/137))
+
 ## [9.3.0] 2021-12-29
 
 - Upgrade log4j dependencies because of [security issue](https://nvd.nist.gov/vuln/detail/CVE-2021-44832).
