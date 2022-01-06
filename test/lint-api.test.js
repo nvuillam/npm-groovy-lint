@@ -11,6 +11,7 @@ const {
     SAMPLE_FILE_PARSE_ERROR_PATH,
     SAMPLE_FILE_SMALL,
     SAMPLE_FILE_SMALL_PATH,
+    SAMPLE_FILE_WITH_SPACES_PATH,
     SAMPLE_RULESET_1_PATH,
     SAMPLE_RULESET_2_PATH
 } = require("./helpers/common");
@@ -128,7 +129,7 @@ describe("Lint with API", () => {
     });
 
     it("(API:files) should ignore fake_node_modules pattern", async () => {
-        const lintedFilesNb = 10;
+        const lintedFilesNb = 11;
         const npmGroovyLintConfig = {
             files: "**/*.groovy",
             ignorepattern: "**/fake_node_modules/**",
@@ -178,6 +179,21 @@ describe("Lint with API", () => {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
+            output: "txt",
+            insight: false,
+            parse: true,
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it("(API:source) should run with source only (file with spaces)", async () => {
+        const npmGroovyLintConfig = {
+            source: fse.readFileSync(SAMPLE_FILE_WITH_SPACES_PATH).toString(),
+            sourcefilepath: SAMPLE_FILE_WITH_SPACES_PATH,
             output: "txt",
             insight: false,
             parse: true,
