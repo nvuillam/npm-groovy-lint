@@ -128,7 +128,7 @@ describe("Lint with API", () => {
     });
 
     it("(API:files) should ignore fake_node_modules pattern", async () => {
-        const lintedFilesNb = 10;
+        const lintedFilesNb = 11;
         const npmGroovyLintConfig = {
             files: "**/*.groovy",
             ignorepattern: "**/fake_node_modules/**",
