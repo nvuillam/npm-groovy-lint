@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [9.3.2] 2022-01-09
+
+- Upgrade cli-progress to avoid [colors lib boring but harmless hack](https://github.com/Marak/colors.js/issues/285)
+
 ## [9.3.1] 2022-01-06
 
 - Fix issue when used as module and with file containing spaces ([VsCodeGroovyLint #137](https://github.com/nvuillam/vscode-groovy-lint/issues/137))
