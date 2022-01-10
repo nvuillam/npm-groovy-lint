@@ -67,6 +67,29 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
+    it("(API:file) should generate SARIF output", async () => {
+        const linter = await new NpmGroovyLint(
+            [
+                process.execPath,
+                "",
+                "--path",
+                '"lib/example"',
+                "--files",
+                "**/" + SAMPLE_FILE_SMALL,
+                "--output",
+                "sarif",
+                "--no-insight",
+                "--loglevel",
+                "warning"
+            ],
+            {}
+        ).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        const sarifLog = JSON.parse(linter.outputString);
+        assert(sarifLog.runs, "SARIF has runs");
+        checkCodeNarcCallsCounter(1);
+    });
+
     it("(API:file) should generate codenarc HTML file report", async () => {
         const reportFileName = path.resolve("./tmp/ReportTestCodenarc.html");
         const linter = await new NpmGroovyLint(

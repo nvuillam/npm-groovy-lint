@@ -2,6 +2,12 @@
 
 ## UNRELEASED
 
+- Add your updates here :)
+
+## [9.4.0] 2022-01-11
+
+- Add [SARIF](https://sarifweb.azurewebsites.net/) output format using [node-sarif-builder](https://github.com/nvuillam/node-sarif-builder)
+
 ## [9.3.2] 2022-01-09
 
 - Upgrade cli-progress to avoid [colors lib boring but harmless hack](https://github.com/Marak/colors.js/issues/285)
