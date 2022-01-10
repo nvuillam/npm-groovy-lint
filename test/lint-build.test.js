@@ -31,6 +31,17 @@ describe("Lint with executable", () => {
         assert(stdout.includes(`"totalFoundWarningNumber":`), "Property totalFoundWarningNumber is in result");
     });
 
+    it("(EXE:file) should generate SARIF console output", async () => {
+        const params = ["--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight", "--output", "sarif"];
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
+        if (stderr) {
+            console.error(stderr);
+        }
+        assert(stdout, "stdout is set");
+        const sarifLog = JSON.parse(stdout);
+        assert(sarifLog.runs, "SARIF has runs");
+    });
+
     it("(EXE:file) should ignore fake_node_modules pattern", async () => {
         const params = ["--ignorepattern", "**/fake_node_modules/**", "--no-insight", "--output", "txt"];
         const { stdout, stderr } = await exec("cd lib/example && " + NPM_GROOVY_LINT + params.join(" "));
