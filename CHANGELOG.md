@@ -4,6 +4,13 @@
 
 - Add your updates here :)
 
+## [9.4.1] 2022-01-22
+
+- Upgrade node-sarif-builder to 2.0.0 and send npm-groovy-lint version in SARIF logs
+- New range detection for rules:
+  - MethodReturnTypeRequired
+  - UnusedImport
+
 ## [9.4.0] 2022-01-11
 
 - Add [SARIF](https://sarifweb.azurewebsites.net/) output format using [node-sarif-builder](https://github.com/nvuillam/node-sarif-builder)
