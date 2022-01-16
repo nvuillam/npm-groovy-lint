@@ -4,7 +4,11 @@
 
 - Add your updates here :)
 
-## [9.4.1] 2022-01-22
+## [10.0.0] 2022-01-16
+
+- Accept list of directories / files as arguments
+
+## [9.4.1] 2022-01-12
 
 - Upgrade node-sarif-builder to 2.0.1 and send npm-groovy-lint version in SARIF logs
 - New range detection for rules:
