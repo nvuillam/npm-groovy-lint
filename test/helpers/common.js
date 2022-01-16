@@ -5,21 +5,21 @@ const fse = require("fs-extra");
 const jsdiff = require("diff");
 
 const NPM_GROOVY_LINT = "npm-groovy-lint ";
-const startPath = "./lib/example/";
+const EXAMPLE_DIRECTORY = "./lib/example/";
 const SAMPLE_FILE_BIG = "SampleFile.groovy";
-const SAMPLE_FILE_BIG_PATH = startPath + SAMPLE_FILE_BIG;
+const SAMPLE_FILE_BIG_PATH = EXAMPLE_DIRECTORY + SAMPLE_FILE_BIG;
 const SAMPLE_FILE_SMALL = "SampleFileSmall.groovy";
 const SAMPLE_FILE_SMALL_FORMAT = "SampleFileSmallFormatted.txt";
 const SAMPLE_FILE_SMALL_FIX = "SampleFileSmallFixed.txt";
-const SAMPLE_FILE_SMALL_PATH = startPath + SAMPLE_FILE_SMALL;
+const SAMPLE_FILE_SMALL_PATH = EXAMPLE_DIRECTORY + SAMPLE_FILE_SMALL;
 const SAMPLE_FILE_PARSE_ERROR = "WithParseError.groovy";
-const SAMPLE_FILE_PARSE_ERROR_PATH = startPath + SAMPLE_FILE_PARSE_ERROR;
+const SAMPLE_FILE_PARSE_ERROR_PATH = EXAMPLE_DIRECTORY + SAMPLE_FILE_PARSE_ERROR;
 const SAMPLE_FILE_WITH_SPACES = "file with spaces.groovy";
-const SAMPLE_FILE_WITH_SPACES_PATH = startPath + SAMPLE_FILE_WITH_SPACES;
+const SAMPLE_FILE_WITH_SPACES_PATH = EXAMPLE_DIRECTORY + SAMPLE_FILE_WITH_SPACES;
 const SAMPLE_RULESET_1 = "RuleSet-1.groovy";
-const SAMPLE_RULESET_1_PATH = startPath + SAMPLE_RULESET_1;
+const SAMPLE_RULESET_1_PATH = EXAMPLE_DIRECTORY + SAMPLE_RULESET_1;
 const SAMPLE_RULESET_2 = "RuleSet-2.groovy";
-const SAMPLE_RULESET_2_PATH = startPath + SAMPLE_RULESET_2;
+const SAMPLE_RULESET_2_PATH = EXAMPLE_DIRECTORY + SAMPLE_RULESET_2;
 
 // Reset codeNarcCallsCounter before each test
 const beforeEachTestCase = function() {
@@ -67,12 +67,14 @@ function getDiff(expected, afterUpdate, beforeUpdate) {
 
 module.exports = {
     NPM_GROOVY_LINT,
+    EXAMPLE_DIRECTORY,
     SAMPLE_FILE_BIG,
     SAMPLE_FILE_SMALL,
     SAMPLE_FILE_SMALL_FORMAT,
     SAMPLE_FILE_SMALL_FIX,
     SAMPLE_FILE_BIG_PATH,
     SAMPLE_FILE_SMALL_PATH,
+    SAMPLE_FILE_WITH_SPACES,
     SAMPLE_FILE_WITH_SPACES_PATH,
     SAMPLE_FILE_PARSE_ERROR,
     SAMPLE_FILE_PARSE_ERROR_PATH,
