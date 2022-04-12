@@ -153,6 +153,7 @@ describe("Miscellaneous", function() {
         const npmGroovyLintConfig = {
             path: "./lib/example/",
             returnrules: true,
+            insight: true,
             output: "txt"
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
