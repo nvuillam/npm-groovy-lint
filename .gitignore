@@ -115,6 +115,7 @@ lib/com/
 
 
 tmp/
+tmptest/
 
 local-storage.json
 
