@@ -2,9 +2,14 @@
 
 ## UNRELEASED
 
-- Add your updates here :)
+- Accept list of directories / files as arguments
+- Upgrade dependencies
 
-## [10.0.0] 2022-01-16
+## [9.5.0] 2022-04-12
+
+- Disable Amplitude anonymous stats by default (use `--insight` to enable them)
+
+## [9.4.1] 2022-01-22
 
 - Accept list of directories / files as arguments
 

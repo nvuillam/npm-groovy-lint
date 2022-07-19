@@ -4,6 +4,10 @@
 
 - Add your updates here :)
 
+## [9.5.0] 2022-04-12
+
+- Disable Amplitude anonymous stats by default (use `--insight` to enable them)
+
 ## [9.4.1] 2022-01-22
 
 - Upgrade node-sarif-builder to 2.0.1 and send npm-groovy-lint version in SARIF logs
