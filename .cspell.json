@@ -3,7 +3,8 @@
     "**/node_modules/**",
     "**/vscode-extension/**",
     "**/.git/**",
-    ".vscode"
+    ".vscode",
+    "**/*.jar"
   ],
   "language": "en",
   "version": "0.1",

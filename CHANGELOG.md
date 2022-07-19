@@ -4,6 +4,7 @@
 
 - Accept list of directories / files as arguments
 - Upgrade dependencies
+- Upgrade MegaLinter to v6
 
 ## [9.5.0] 2022-04-12
 
