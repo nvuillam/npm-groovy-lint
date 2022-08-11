@@ -26,6 +26,9 @@ import groovy.transform.CompileDynamic
 import org.codehaus.groovy.control.CompilationFailedException
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 
+// Ant
+import org.apache.tools.ant.types.Commandline
+
 // CodeNarc main class
 import org.codenarc.CodeNarc
 
@@ -129,7 +132,7 @@ class CodeNarcServer {
 
                 // Call CodeNarc
                 def codeNarcArgs = bodyObj.codeNarcArgs
-                def codenarcArgsArray = codeNarcArgs.split(' ')
+                def codenarcArgsArray = Commandline.translateCommandline(codeNarcArgs)
                 respObj.stdout = captureSystemOut {
                     this.runCodeNarc(codenarcArgsArray)
                 }
@@ -214,6 +217,12 @@ class CodeNarcServer {
             File f = new File(bodyObj.file)
             fileList << f.getAbsolutePath()
         }
+        else if (bodyObj.fileList) {
+            for (String file in bodyObj.fileList) {
+                File f = new File(file)
+                fileList << f.getAbsolutePath()
+            }
+        }
         else if (bodyObj.codeNarcBaseDir) {
             // Ant style pattern is used: list all files
             println 'Ant file scanner in ' + bodyObj.codeNarcBaseDir + ', includes ' + bodyObj.codeNarcIncludes + ', excludes ' + ((bodyObj.codeNarcExcludes) ? bodyObj.codeNarcExcludes : 'no')
@@ -270,7 +279,7 @@ class CodeNarcServer {
         }
         catch (Exception ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
-            parseErrors = ep.getErrorCollector().getErrors()
+            parseErrors = []
             println 'PARSE ERROR (Other): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
         }
         return parseErrors
