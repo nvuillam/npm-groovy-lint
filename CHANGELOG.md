@@ -2,9 +2,12 @@
 
 ## UNRELEASED
 
+## [10.0.0] 2022-08-11
+
+- Upgrade to [CodeNarc v3.1.0](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-310----jun-2022)
 - Accept list of directories / files as arguments (`--path` and `--files` become deprecated but are still usable)
-- Upgrade dependencies
-- Upgrade MegaLinter to v6
+- Upgrade npm dependencies
+- CI: Upgrade [MegaLinter](https://oxsecurity.github.io/megalinter/latest/) to v6
 
 ## [9.5.0] 2022-04-12
 
