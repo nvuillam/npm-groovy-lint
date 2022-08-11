@@ -2,7 +2,7 @@
 
 ## UNRELEASED
 
-- Accept list of directories / files as arguments
+- Accept list of directories / files as arguments (`--path` and `--files` become deprecated but are still usable)
 - Upgrade dependencies
 - Upgrade MegaLinter to v6
 
