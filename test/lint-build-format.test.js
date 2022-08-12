@@ -11,7 +11,7 @@ const { beforeEachTestCase, copyFilesInTmpDir, SAMPLE_FILE_SMALL, SAMPLE_FILE_SM
 describe("Lint & format with EXE", function() {
     beforeEach(beforeEachTestCase);
 
-    it("(API:file) should lint and format a file in one shot", async function() {
+    it("(EXE:file) should lint and format a file in one shot", async function() {
         const tmpDir = await copyFilesInTmpDir();
         const prevFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL).toString();
         const params = [
