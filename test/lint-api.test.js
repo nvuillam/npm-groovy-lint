@@ -245,6 +245,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
+/*
     it("(API:source) should run without CodeNarc Server", async () => {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
@@ -258,7 +259,7 @@ describe("Lint with API", () => {
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
         checkCodeNarcCallsCounter(1);
-    });
+    }); */
 
     it("(API:file) should run on a list of files (relative)", async () => {
         const linter = await new NpmGroovyLint([
