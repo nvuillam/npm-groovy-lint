@@ -5,7 +5,7 @@ const { getNpmGroovyLintRules } = require("../lib/groovy-lint-rules.js");
 const { normalizeNewLines } = require("../lib/utils.js");
 let assert = require("assert");
 
-const { beforeEachTestCase, checkCodeNarcCallsCounter, getDiff } = require("./helpers/common");
+const { beforeEachTestCase, checkCodeNarcCallsCounter } = require("./helpers/common");
 const npmGroovyLintRules = getNpmGroovyLintRules({ loadTests: true });
 
 // Read rules file and test all fixes
