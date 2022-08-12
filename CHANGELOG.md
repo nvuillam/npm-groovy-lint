@@ -8,7 +8,17 @@
 - Accept list of directories / files as arguments (`--path` and `--files` become deprecated but are still usable)
 - Upgrade npm dependencies
 - CI: Upgrade [MegaLinter](https://oxsecurity.github.io/megalinter/latest/) to v6
-
+- Test classes for collecting error ranges
+- New error ranges rules
+  - DuplicateStringLiteral
+  - MethodParameterTypeRequired
+  - NoDef
+  - SimpleDateFormatMissingLocale
+  - SpaceInsideParenthesis
+  - UnnecessaryPublicModifier
+  - VariableTypeRequired
+- Fixes
+  - Wrongly calculated ranges are no more returned
 ## [9.5.0] 2022-04-12
 
 - Disable Amplitude anonymous stats by default (use `--insight` to enable them)
