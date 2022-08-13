@@ -38,6 +38,7 @@
     "formatting.SpaceAroundOperator": {},
     "formatting.SpaceBeforeClosingBrace": {},
     "formatting.SpaceBeforeOpeningBrace": {},
+    "formatting.SpaceInsideParentheses": {},
     "formatting.TrailingWhitespace": {},
     "unnecessary.UnnecessaryGString": {},
     "unnecessary.UnnecessarySemicolon": {}

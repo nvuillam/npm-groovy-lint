@@ -4,11 +4,13 @@
 
 ## [10.0.0] 2022-08-11
 
-- Upgrade to [CodeNarc v3.1.0](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-310----jun-2022)
-- Accept list of directories / files as arguments (`--path` and `--files` become deprecated but are still usable)
-- Upgrade npm dependencies
-- CI: Upgrade [MegaLinter](https://oxsecurity.github.io/megalinter/latest/) to v6
-- Test classes for collecting error ranges
+- Core
+  - Upgrade to [CodeNarc v3.1.0](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-310----jun-2022)
+  - Accept list of directories / files as arguments (`--path` and `--files` become deprecated but are still usable)
+  - Upgrade npm dependencies
+  - CI: Upgrade [MegaLinter](https://oxsecurity.github.io/megalinter/latest/) to v6
+  - Test classes for collecting error ranges
+
 - New error ranges rules
   - DuplicateStringLiteral
   - MethodParameterTypeRequired
@@ -17,8 +19,13 @@
   - SpaceInsideParenthesis
   - UnnecessaryPublicModifier
   - VariableTypeRequired
-- Fixes
+
+- New fix rules
+  - SpaceInsideParentheses
+
+- Bug Fixes
   - Wrongly calculated ranges are no more returned
+
 ## [9.5.0] 2022-04-12
 
 - Disable Amplitude anonymous stats by default (use `--insight` to enable them)
