@@ -12,6 +12,7 @@
   - Test classes for collecting error ranges
 
 - New error ranges rules
+  - DuplicateNumberLiteral
   - DuplicateStringLiteral
   - MethodParameterTypeRequired
   - NoDef
@@ -21,6 +22,7 @@
   - VariableTypeRequired
 
 - New fix rules
+  - SpaceAfterMethodCallName
   - SpaceInsideParentheses
 
 - Bug Fixes

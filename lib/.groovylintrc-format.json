@@ -29,6 +29,7 @@
     "formatting.SpaceAfterComma": {},
     "formatting.SpaceAfterFor": {},
     "formatting.SpaceAfterIf": {},
+    "formatting.SpaceAfterMethodCallName": {},
     "formatting.SpaceAfterOpeningBrace": {},
     "formatting.SpaceAfterSemicolon": {},
     "formatting.SpaceAfterSwitch": {},
