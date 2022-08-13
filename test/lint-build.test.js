@@ -9,7 +9,7 @@ const childProcess = require("child_process");
 const exec = util.promisify(childProcess.exec);
 const spawn = childProcess.spawnSync;
 
-const { SAMPLE_FILE_SMALL, NPM_GROOVY_LINT } = require("./helpers/common");
+const { SAMPLE_FILE_SMALL, NPM_GROOVY_LINT, SAMPLE_FILE_BIG } = require("./helpers/common");
 
 describe("Lint with executable", () => {
     it("(EXE:file) should generate text console output", async () => {
@@ -40,6 +40,60 @@ describe("Lint with executable", () => {
         assert(stdout, "stdout is set");
         const sarifLog = JSON.parse(stdout);
         assert(sarifLog.runs, "SARIF has runs");
+    });
+
+    it("(EXE:file) should lint a single file", async () => {
+        const params = [
+            "--loglevel", "warning",
+            "--verbose",
+            'lib/example/' + SAMPLE_FILE_SMALL];
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
+        if (stderr) {
+            console.error(stderr);
+        }
+        assert(stdout, "stdout is set");
+        assert(stdout.includes("warning"), 'stdout should contain word "warning"');
+        assert(
+            stdout.includes(`npm-groovy-lint results in ${c.bold(1)} linted files`),
+            `Wrong Number of linted files is displayed in summary: (1 expected)`
+        );
+    });
+
+    it("(EXE:file) should lint 2 files", async () => {
+        const params = [
+            "--loglevel", "warning",
+            "--verbose",
+            'lib/example/' + SAMPLE_FILE_SMALL,
+            'lib/example/' + SAMPLE_FILE_BIG
+        ];
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
+        if (stderr) {
+            console.error(stderr);
+        }
+        assert(stdout, "stdout is set");
+        assert(stdout.includes("warning"), 'stdout should contain word "warning"');
+        assert(
+            stdout.includes(`npm-groovy-lint results in ${c.bold(2)} linted files`),
+            `Wrong Number of linted files is displayed in summary: (2 expected)`
+        );
+    });
+
+    it("(EXE:file) should lint a directory", async () => {
+        const params = [
+            "--loglevel", "warning",
+            "--verbose",
+            'lib/example'
+        ];
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
+        if (stderr) {
+            console.error(stderr);
+        }
+        assert(stdout, "stdout is set");
+        assert(stdout.includes("warning"), 'stdout should contain word "warning"');
+        assert(
+            stdout.includes(`npm-groovy-lint results in ${c.bold(12)} linted files`),
+            `Wrong Number of linted files is displayed in summary: (12 expected)`
+        );
     });
 
     it("(EXE:file) should ignore fake_node_modules pattern", async () => {
