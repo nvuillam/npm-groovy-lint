@@ -11,9 +11,11 @@ const {
     SAMPLE_FILE_PARSE_ERROR_PATH,
     SAMPLE_FILE_SMALL,
     SAMPLE_FILE_SMALL_PATH,
+    SAMPLE_FILE_WITH_SPACES,
     SAMPLE_FILE_WITH_SPACES_PATH,
     SAMPLE_RULESET_1_PATH,
-    SAMPLE_RULESET_2_PATH
+    SAMPLE_RULESET_2_PATH,
+    EXAMPLE_DIRECTORY
 } = require("./helpers/common");
 
 describe("Lint with API", () => {
@@ -243,6 +245,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
+/*
     it("(API:source) should run without CodeNarc Server", async () => {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
@@ -255,6 +258,58 @@ describe("Lint with API", () => {
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
+        checkCodeNarcCallsCounter(1);
+    }); */
+
+    it("(API:file) should run on a list of files (relative)", async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            "",
+            "--path",
+             "./lib/example",
+            "--verbose",
+            SAMPLE_FILE_SMALL,
+            SAMPLE_FILE_WITH_SPACES
+        ], {
+            verbose: true
+        }).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.outputString.includes("warning"), "Output string contains warning");
+        assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
+        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it("(API:file) should run on a list of files (absolute)", async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            "",
+            "--verbose",
+            path.resolve(path.join("./lib/example",SAMPLE_FILE_SMALL)),
+            path.resolve(path.join("./lib/example",SAMPLE_FILE_WITH_SPACES))
+        ], {
+            verbose: true
+        }).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.outputString.includes("warning"), "Output string contains warning");
+        assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
+        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it("(API:file) should run on a directory", async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            "",
+            "--verbose",
+            EXAMPLE_DIRECTORY
+        ], {
+            verbose: true
+        }).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.outputString.includes("warning"), "Output string contains warning");
+        assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
+        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
         checkCodeNarcCallsCounter(1);
     });
 });

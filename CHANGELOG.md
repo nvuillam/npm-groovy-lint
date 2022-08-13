@@ -2,13 +2,42 @@
 
 ## UNRELEASED
 
-- Add your updates here :)
+## [10.0.0] 2022-08-13
+
+- Core
+  - Upgrade to [CodeNarc v3.1.0](https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-310----jun-2022)
+  - Accept list of directories / files as arguments (`--path` and `--files` become deprecated but are still usable)
+    - Examples
+      - Multiple files: `npm-groovy-lint path/to/file1.groovy path/to/file2.groovy`
+      - Directory: `npm groovy-lint path/to`
+      - Single file: `npm-groovy-lint Jenkinsfile`
+      - Ant pattern(s): `npm-groovy-lint path/to/**/*.groovy`
+  - Upgrade npm dependencies
+  - CI: Upgrade [MegaLinter](https://oxsecurity.github.io/megalinter/latest/) to v6
+  - Test classes for collecting error ranges
+
+- New error ranges rules
+  - DuplicateNumberLiteral
+  - DuplicateStringLiteral
+  - MethodParameterTypeRequired
+  - NoDef
+  - SimpleDateFormatMissingLocale
+  - SpaceInsideParenthesis
+  - UnnecessaryPublicModifier
+  - VariableTypeRequired
+
+- New fix rules
+  - SpaceAfterMethodCallName
+  - SpaceInsideParentheses
+
+- Bug Fixes
+  - Wrongly calculated ranges are no more returned
 
 ## [9.5.0] 2022-04-12
 
 - Disable Amplitude anonymous stats by default (use `--insight` to enable them)
 
-## [9.4.1] 2022-01-22
+## [9.4.1] 2022-01-12
 
 - Upgrade node-sarif-builder to 2.0.1 and send npm-groovy-lint version in SARIF logs
 - New range detection for rules:

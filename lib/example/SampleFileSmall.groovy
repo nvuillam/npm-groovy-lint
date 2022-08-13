@@ -3,14 +3,14 @@ import groovy.json.*
 import groovy.time.TimeCategory
 
 def returnCode = 0
-         Exception eThrow = null ;
-   try {
+Exception eThrow = null ;
+try {
     initialize(args) ;
 } catch (Exception e){
                  eThrow = e ;
     returnCode = 1
              }
-          if (eThrow == null){
+if (eThrow == null){
                       return 0 ;
 }
 else {

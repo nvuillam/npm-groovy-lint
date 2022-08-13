@@ -380,7 +380,6 @@
     "unnecessary.UnnecessarySemicolon": {},
     "unnecessary.UnnecessarySetter": {},
     "unnecessary.UnnecessaryStringInstantiation": {},
-    "unnecessary.UnnecessarySubstring": {},
     "unnecessary.UnnecessaryTernaryExpression": {},
     "unnecessary.UnnecessaryToString": {},
     "unnecessary.UnnecessaryTransientModifier": {},
