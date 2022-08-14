@@ -265,11 +265,9 @@ describe("Lint with API", () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             "",
-            "--path",
-             "./lib/example",
             "--verbose",
-            SAMPLE_FILE_SMALL,
-            SAMPLE_FILE_WITH_SPACES
+            path.join("./lib/example",SAMPLE_FILE_SMALL),
+            path.join("./lib/example",SAMPLE_FILE_WITH_SPACES)
         ], {
             verbose: true
         }).run();

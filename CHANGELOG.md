@@ -5,6 +5,7 @@
 ## [10.0.2] 2022-08-15
 
 - Fix error when absolute files sent as positional arguments on a linux system ([#232](https://github.com/nvuillam/npm-groovy-lint/issues/232))
+- Improve performances by calculating the longest command directory to send as base path to CodeNarc
 
 ## [10.0.1] 2022-08-14
 
