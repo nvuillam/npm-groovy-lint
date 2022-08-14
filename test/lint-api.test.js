@@ -261,6 +261,38 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     }); */
 
+    it("(API:file) should run on a single file (relative)", async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            "",
+            "--verbose",
+            path.join("./lib/example",SAMPLE_FILE_SMALL)
+        ], {
+            verbose: true
+        }).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.outputString.includes("warning"), "Output string contains warning");
+        assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
+        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it("(API:file) should run on a single file (absolute)", async () => {
+        const linter = await new NpmGroovyLint([
+            process.execPath,
+            "",
+            "--verbose",
+            path.resolve(path.join("./lib/example",SAMPLE_FILE_SMALL))
+        ], {
+            verbose: true
+        }).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.outputString.includes("warning"), "Output string contains warning");
+        assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
+        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
+        checkCodeNarcCallsCounter(1);
+    });
+
     it("(API:file) should run on a list of files (relative)", async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
