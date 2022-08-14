@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [10.0.1] 2022-08-14
+
+- Fix error when files sent as positional arguments ([#232](https://github.com/nvuillam/npm-groovy-lint/issues/232))
+
 ## [10.0.0] 2022-08-13
 
 - Core
