@@ -2,6 +2,13 @@
 
 ## UNRELEASED
 
+## [10.1.0] 2022-08-15
+
+- Allow to send groovy sources as input from stdin
+- If `--format` or `--fix` option is used when source is sent as stdin, the result is output as stdout
+
+Example: `cat path/to/my/Jenkinsfile | npm-groovy-lint --format -`
+
 ## [10.0.3] 2022-08-15
 
 - Do not output results summary in console logs when output is json or sarif
