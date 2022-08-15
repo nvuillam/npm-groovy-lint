@@ -80,21 +80,26 @@ describe("Lint with executable", () => {
 
     it("(EXE:file) should generate sarif output", async () => {
         const params = [
-            "--loglevel", "warning",
             "--failon", "info",
             "--output", "sarif",
             "--verbose",
             'lib/example/' + SAMPLE_FILE_SMALL,
             'lib/example/' + SAMPLE_FILE_BIG
         ];
-        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
-        if (stderr) {
-            console.error(stderr);
+        let hasError = true ;
+        try {
+            await exec(NPM_GROOVY_LINT + params.join(" "));
+            hasError = false;
+        } catch (e) {
+            if (e.stderr) {
+                console.error(e.stderr);
+            }
+            assert(e.stdout, "stdout is set");
+            const sarif = JSON.parse(e.stdout);
+            assert(sarif.runs[0].results.length > 0, "There should be results in SARIF");
+            assert(sarif.runs[0].artifacts.length == 2, "There should be 2 files in SARIF results");
         }
-        assert(stdout, "stdout is set");
-        const sarif = JSON.parse(stdout);
-        assert(sarif.runs[0].results.length > 0,"There should be results in SARIF");
-        assert(sarif.runs[0].artifacts.length == 2,"There should be 2 files in SARIF results");
+        assert(hasError === true,"There should have been an error with failon = info");
     });
 
     it("(EXE:file) should lint a directory", async () => {
