@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## [10.0.3] 2022-08-15
+
+- Do not output results summary in console logs when output is json or sarif
+- Add test methods for SARIF called by CLI
+
 ## [10.0.2] 2022-08-15
 
 - Fix error when absolute files sent as positional arguments on a linux system ([#232](https://github.com/nvuillam/npm-groovy-lint/issues/232))

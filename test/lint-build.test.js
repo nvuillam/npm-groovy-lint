@@ -81,6 +81,7 @@ describe("Lint with executable", () => {
     it("(EXE:file) should generate sarif output", async () => {
         const params = [
             "--loglevel", "warning",
+            "--failon", "info",
             "--output", "sarif",
             "--verbose",
             'lib/example/' + SAMPLE_FILE_SMALL,
