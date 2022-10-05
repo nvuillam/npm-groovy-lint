@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## [11.0.0] 2022-10-06
+
+- `--failon` is now `ìnfo` by default
+- Display all files in console log only if `--verbose` is used
+
 ## [10.1.0] 2022-08-15
 
 - Allow to send groovy sources as input from stdin

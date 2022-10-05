@@ -86,7 +86,7 @@ describe("Lint with executable", () => {
             'lib/example/' + SAMPLE_FILE_SMALL,
             'lib/example/' + SAMPLE_FILE_BIG
         ];
-        let hasError = true ;
+        let hasError = true;
         try {
             await exec(NPM_GROOVY_LINT + params.join(" "));
             hasError = false;
@@ -99,7 +99,7 @@ describe("Lint with executable", () => {
             assert(sarif.runs[0].results.length > 0, "There should be results in SARIF");
             assert(sarif.runs[0].artifacts.length == 2, "There should be 2 files in SARIF results");
         }
-        assert(hasError === true,"There should have been an error with failon = info");
+        assert(hasError === true, "There should have been an error with failon = info");
     });
 
     it("(EXE:file) should lint a directory", async () => {
@@ -122,6 +122,20 @@ describe("Lint with executable", () => {
 
     it("(EXE:file) should ignore fake_node_modules pattern", async () => {
         const params = ["--ignorepattern", "**/fake_node_modules/**", "--no-insight", "--output", "txt"];
+        const { stdout, stderr } = await exec("cd lib/example && " + NPM_GROOVY_LINT + params.join(" "));
+        if (stderr) {
+            console.error(stderr);
+        }
+        assert(stdout, "stdout is set");
+        assert(!stdout.includes(`ToIgnore.groovy`), `ToIgnore.groovy has been ignored \n${stdout}`);
+        assert(
+            stdout.includes(`npm-groovy-lint results in ${c.bold(11)} linted files`),
+            `Number of linted files is displayed in summary \n${stdout}`
+        );
+    });
+
+    it("(EXE:file) should ignore fake_node_modules pattern with --noserver", async () => {
+        const params = ["--ignorepattern", "**/fake_node_modules/**", "--no-insight", "--output", "txt", "--noserver"];
         const { stdout, stderr } = await exec("cd lib/example && " + NPM_GROOVY_LINT + params.join(" "));
         if (stderr) {
             console.error(stderr);
