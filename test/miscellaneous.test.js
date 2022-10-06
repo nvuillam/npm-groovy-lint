@@ -339,7 +339,7 @@ describe("Miscellaneous", function() {
                 verbose: true
             }).run();
 
-            assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
+            assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
             assert(linter.outputString.includes("CodeNarcServer terminated"), "CodeNarcServer has been terminated");
             checkCodeNarcCallsCounter(1);
         }
