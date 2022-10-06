@@ -4,7 +4,7 @@
 
 ## [11.0.0] 2022-10-06
 
-- `--failon` is now `ìnfo` by default
+- **BREAKING CHANGE**:`--failon` is now `ìnfo` by default, meaning return code will be `1` if there is at least an info issue found. To have previous behaviour, use `--failon none`.
 - Display all files in console log only if `--verbose` is used
 
 ## [10.1.0] 2022-08-15
