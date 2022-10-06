@@ -24,7 +24,7 @@ describe("Miscellaneous", function() {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         const filePath = await linter.getConfigFilePath();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(path.resolve(filePath) === path.resolve("./lib/example/.groovylintrc.json"), ".groovylintrc.json has been returned");
     });
 
@@ -55,7 +55,7 @@ describe("Miscellaneous", function() {
         assert(rules["CouldBeElvis"] == "off", "CouldBeElvis is off");
         assert(rules["NoDef"] == "off", "NoDef is off");
         assert(rules["Indentation"]["spacesPerIndentLevel"] === 2, "Indentation rule override has been taken in account");
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
     it("(API:source) load standard config using string key", async () => {
@@ -76,7 +76,7 @@ describe("Miscellaneous", function() {
         assert(rules["NoDef"] == "off", "NoDef is off");
         assert(rules["VariableName"] == "off", "VariableName is off");
         assert(rules["CompileStatic"] == "off", "CompileStatic is off");
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
     it("(API:source) load custom config using string key", async () => {
@@ -99,7 +99,7 @@ describe("Miscellaneous", function() {
         assert(rules["CompileStatic"] == "off", "CompileStatic is off");
         assert(rules["CouldBeSwitchStatement"] == "off", "CouldBeSwitchStatement is off");
         assert(rules["CouldBeElvis"] == "off", "CouldBeElvis is off");
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
     it("(API:source) return indent length without linting", async () => {
@@ -132,7 +132,7 @@ describe("Miscellaneous", function() {
             output: "none"
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.rules != null, "Rules are returned ");
         assert(linter.lintResult.rules["AssertWithinFinallyBlock"].docUrl != null, "Rules doc urls are returned ");
     });
@@ -145,7 +145,7 @@ describe("Miscellaneous", function() {
             output: "none"
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.rules == null, "Rules are not returned");
     });
 
@@ -157,7 +157,7 @@ describe("Miscellaneous", function() {
             output: "txt"
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.startElapse != null, "Anonymous stats has not been sent");
     });
 
@@ -169,7 +169,7 @@ describe("Miscellaneous", function() {
             output: "txt"
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
     it("(API:source) should cancel current request", async () => {
@@ -179,6 +179,7 @@ describe("Miscellaneous", function() {
             path: "./lib/example/",
             files: "**/" + SAMPLE_FILE_BIG,
             insight: false,
+            failon: "none",
             output: "none"
         };
         const linterProms = [];
@@ -314,7 +315,7 @@ describe("Miscellaneous", function() {
                 output: "none"
             };
             const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-            assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+            assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         }
     }).timeout(120000);
 

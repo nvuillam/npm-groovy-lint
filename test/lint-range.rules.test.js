@@ -59,7 +59,7 @@ async function checkRuleRange(ruleName, testRule) {
     }
     // Check results
     assert(err == null, "No crash during NpmGroovyLint run");
-    assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+    assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     const identifiedRange = linter.lintResult.files[0].errors[0].range;
     assert(JSON.stringify(identifiedRange) === JSON.stringify(testRule.expectedRange), `Range result is not the one expected.\nExpected:\n${JSON.stringify(testRule.expectedRange)}\nResult:\n${identifiedRange}`);
     checkCodeNarcCallsCounter(testRule.codeNarcCallsNumber || 1);

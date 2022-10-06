@@ -13,7 +13,8 @@ const { SAMPLE_FILE_SMALL, NPM_GROOVY_LINT, SAMPLE_FILE_BIG } = require("./helpe
 
 describe("Lint with executable", () => {
     it("(EXE:file) should generate text console output", async () => {
-        const params = ["--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--loglevel", "warning", "--no-insight", "--verbose"];
+        const params = ["--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--loglevel", "warning", "--no-insight",
+            "--failon", "none", "--verbose"];
         const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
         if (stderr) {
             console.error(stderr);
@@ -22,7 +23,7 @@ describe("Lint with executable", () => {
         assert(stdout.includes("warning"), 'stdout should contain word "warning"');
     });
     it("(EXE:file) should generate json console output", async () => {
-        const params = ["--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight", "--output", "json"];
+        const params = ["--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight", "--failon", "none", "--output", "json"];
         const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
         if (stderr) {
             console.error(stderr);
@@ -32,7 +33,7 @@ describe("Lint with executable", () => {
     });
 
     it("(EXE:file) should generate SARIF console output", async () => {
-        const params = ["--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight", "--output", "sarif"];
+        const params = ["--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight", "--failon", "none", "--output", "sarif"];
         const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
         if (stderr) {
             console.error(stderr);
@@ -45,6 +46,7 @@ describe("Lint with executable", () => {
     it("(EXE:file) should lint a single file", async () => {
         const params = [
             "--loglevel", "warning",
+            "--failon", "none",
             "--verbose",
             'lib/example/' + SAMPLE_FILE_SMALL];
         const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
@@ -62,6 +64,7 @@ describe("Lint with executable", () => {
     it("(EXE:file) should lint 2 files", async () => {
         const params = [
             "--loglevel", "warning",
+            "--failon", "none",
             "--verbose",
             'lib/example/' + SAMPLE_FILE_SMALL,
             'lib/example/' + SAMPLE_FILE_BIG
@@ -86,7 +89,7 @@ describe("Lint with executable", () => {
             'lib/example/' + SAMPLE_FILE_SMALL,
             'lib/example/' + SAMPLE_FILE_BIG
         ];
-        let hasError = true ;
+        let hasError = true;
         try {
             await exec(NPM_GROOVY_LINT + params.join(" "));
             hasError = false;
@@ -99,12 +102,13 @@ describe("Lint with executable", () => {
             assert(sarif.runs[0].results.length > 0, "There should be results in SARIF");
             assert(sarif.runs[0].artifacts.length == 2, "There should be 2 files in SARIF results");
         }
-        assert(hasError === true,"There should have been an error with failon = info");
+        assert(hasError === true, "There should have been an error with failon = info");
     });
 
     it("(EXE:file) should lint a directory", async () => {
         const params = [
             "--loglevel", "warning",
+            "--failon", "none",
             "--verbose",
             'lib/example'
         ];
@@ -121,8 +125,8 @@ describe("Lint with executable", () => {
     });
 
     it("(EXE:file) should ignore fake_node_modules pattern", async () => {
-        const params = ["--ignorepattern", "**/fake_node_modules/**", "--no-insight", "--output", "txt"];
-        const { stdout, stderr } = await exec("cd lib/example && " + NPM_GROOVY_LINT + params.join(" "));
+        const params = ["--ignorepattern", "**/fake_node_modules/**", "--failon", "none", "--no-insight", "--output", "txt"];
+        const { stdout, stderr } = await exec("cd ./lib/example && " + NPM_GROOVY_LINT + params.join(" "));
         if (stderr) {
             console.error(stderr);
         }
@@ -133,6 +137,21 @@ describe("Lint with executable", () => {
             `Number of linted files is displayed in summary \n${stdout}`
         );
     });
+
+    // Tmp disable
+    /* it("(EXE:file) should ignore fake_node_modules pattern with --noserver", async () => {
+        const params = ["--ignorepattern", "**//*fake_node_modules/**", "--failon", "none", "--no-insight", "--output", "txt", "--noserver"];
+        const { stdout, stderr } = await exec("cd ./lib/example && " + NPM_GROOVY_LINT + params.join(" "));
+        if (stderr) {
+            console.error(stderr);
+        }
+        assert(stdout, "stdout is set");
+        assert(!stdout.includes(`ToIgnore.groovy`), `ToIgnore.groovy has been ignored \n${stdout}`);
+        assert(
+            stdout.includes(`npm-groovy-lint results in ${c.bold(11)} linted files`),
+            `Number of linted files is displayed in summary \n${stdout}`
+        );
+    }); */
 
     it("(EXE:file) should generate codenarc HTML file report", async () => {
         const reportFileName = path.resolve("ReportTestCodenarc.html");
@@ -163,7 +182,7 @@ describe("Lint with executable", () => {
     });
 
     it("(EXE:file) should run on a Jenkinsfile", async () => {
-        const params = ["--path", ' "lib/example"', "--files", "**/Jenkinsfile", "-c", "recommended-jenkinsfile", "--no-insight", "--verbose"];
+        const params = ["--path", ' "lib/example"', "--files", "**/Jenkinsfile", "-c", "recommended-jenkinsfile","--failon", "none", "--no-insight", "--verbose"];
         const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
         if (stderr) {
             console.error(stderr);
@@ -242,7 +261,7 @@ describe("Lint with executable", () => {
     });
 
     it("(EXE:file) Send anonymous usage stats", async () => {
-        const params = ["--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--output", "txt"];
+        const params = ["--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--output", "txt","--failon", "none"];
         const { stdout, stderr, status } = spawn(NPM_GROOVY_LINT + params.join(" "), [], { shell: true });
         if (stdout) {
             console.log("STDOUT:\n");

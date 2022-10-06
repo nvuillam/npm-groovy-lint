@@ -32,7 +32,7 @@ describe("Lint & fix with API", function() {
         errIdList = errIdList.slice(0, 500);
         await linter.fixErrors(errIdList);
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.summary.totalFixedNumber >= 100, "Errors have been fixed"); // can be more than the five sent errors, as there are other triggered fixes
         assert(linter.lintResult.files[0].updatedSource && linter.lintResult.files[0].updatedSource !== prevFileContent, "Source has been updated");
         assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
@@ -53,7 +53,7 @@ describe("Lint & fix with API", function() {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
             `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
@@ -78,7 +78,7 @@ describe("Lint & fix with API", function() {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
             `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
@@ -103,7 +103,7 @@ describe("Lint & fix with API", function() {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
             `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
@@ -134,7 +134,7 @@ describe("Lint & fix with API", function() {
             {}
         ).run();
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.summary.totalFixedNumber > 0, "Error have been fixed");
         assert(linter.lintResult.files[Object.keys(linter.lintResult.files)[0]].updatedSource !== prevFileContent, "File content has been updated");
         assert(fse.existsSync("npm-groovy-fix-log.json"), "Output json file has been produced");
@@ -178,6 +178,7 @@ describe("Lint & fix with API", function() {
                 "--nolintafter",
                 "--output",
                 '"npm-groovy-fix-log-should-fix-only-some-errors.txt"',
+                "--failon", "none",
                 "--no-insight",
                 "--verbose"
             ],
@@ -212,7 +213,7 @@ describe("Lint & fix with API", function() {
             {}
         ).run();
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.summary.totalFixedNumber > 0, "Errors have been fixed");
         assert(fse.existsSync("npm-groovy-fix-log-should-fix-groovy-files.txt"), "Output txt file produced");
         assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");

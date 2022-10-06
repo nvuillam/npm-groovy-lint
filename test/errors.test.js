@@ -73,7 +73,7 @@ describe("Errors", function() {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
     it("(API:source) should detect and display a parse error", async () => {
