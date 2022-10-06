@@ -31,7 +31,7 @@ describe("Format with API", function() {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
             `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
@@ -58,7 +58,7 @@ describe("Format with API", function() {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
             `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
@@ -87,7 +87,7 @@ describe("Format with API", function() {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
             `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
@@ -121,6 +121,7 @@ async function checkRule(key, check, checkType) {
             source: source,
             nolintafter: true,
             output: "none",
+            failon: "none",
             insight: false,
             verbose: true
         },

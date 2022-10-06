@@ -23,6 +23,8 @@ describe("Lint & fix with EXE", function() {
             "**/" + SAMPLE_FILE_SMALL,
             "--fix",
             "--no-insight",
+            "--failon",
+            "none",
             "--verbose"
         ];
         const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));

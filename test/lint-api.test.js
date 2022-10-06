@@ -25,7 +25,7 @@ describe("Lint with API", () => {
         const linter = await new NpmGroovyLint([process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--verbose"], {
             verbose: true
         }).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
@@ -34,12 +34,13 @@ describe("Lint with API", () => {
 
     it("(API:file) should generate text console output with loglevel=warning", async () => {
         const linter = await new NpmGroovyLint(
-            [process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--loglevel", "warning", "--verbose"],
+            [process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--loglevel", "warning",
+                "--failon", "warning", "--verbose"],
             {
                 verbose: true
             }
         ).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(!linter.outputString.includes("info"), "Output string should not contain info");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
@@ -57,13 +58,11 @@ describe("Lint with API", () => {
                 "**/" + SAMPLE_FILE_SMALL,
                 "--output",
                 "json",
-                "--no-insight",
-                "--loglevel",
-                "warning"
+                "--no-insight"
             ],
             {}
         ).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes(`"totalFoundWarningNumber":`), "Property totalFoundWarningNumber is in result");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
         checkCodeNarcCallsCounter(1);
@@ -80,13 +79,11 @@ describe("Lint with API", () => {
                 "**/" + SAMPLE_FILE_SMALL,
                 "--output",
                 "sarif",
-                "--no-insight",
-                "--loglevel",
-                "warning"
+                "--no-insight"
             ],
             {}
         ).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         const sarifLog = JSON.parse(linter.outputString);
         assert(sarifLog.runs, "SARIF has runs");
         checkCodeNarcCallsCounter(1);
@@ -146,7 +143,7 @@ describe("Lint with API", () => {
                 verbose: true
             }
         ).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
@@ -179,7 +176,7 @@ describe("Lint with API", () => {
             verbose: true
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
         checkCodeNarcCallsCounter(1);
     });
@@ -195,7 +192,7 @@ describe("Lint with API", () => {
             verbose: true
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
         checkCodeNarcCallsCounter(1);
     });
@@ -210,7 +207,7 @@ describe("Lint with API", () => {
             verbose: true
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
         checkCodeNarcCallsCounter(1);
     });
@@ -225,7 +222,7 @@ describe("Lint with API", () => {
             verbose: true
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
         checkCodeNarcCallsCounter(1);
     });
@@ -239,38 +236,38 @@ describe("Lint with API", () => {
             verbose: true
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
         assert(linter.outputString.includes("NglParseError"), "Parse error has been detected");
         checkCodeNarcCallsCounter(1);
     });
 
-/*
-    it("(API:source) should run without CodeNarc Server", async () => {
-        const npmGroovyLintConfig = {
-            source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
-            sourcefilepath: SAMPLE_FILE_SMALL_PATH,
-            noserver: true,
-            output: "none",
-            insight: false,
-            verbose: true
-        };
-        const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
-        assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
-        checkCodeNarcCallsCounter(1);
-    }); */
+    /*
+        it("(API:source) should run without CodeNarc Server", async () => {
+            const npmGroovyLintConfig = {
+                source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
+                sourcefilepath: SAMPLE_FILE_SMALL_PATH,
+                noserver: true,
+                output: "none",
+                insight: false,
+                verbose: true
+            };
+            const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
+            assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
+            assert(linter.lintResult.files[0].errors.length > 0, "Errors have been found");
+            checkCodeNarcCallsCounter(1);
+        }); */
 
     it("(API:file) should run on a single file (relative)", async () => {
         const linter = await new NpmGroovyLint([
             process.execPath,
             "",
             "--verbose",
-            path.join("./lib/example",SAMPLE_FILE_SMALL)
+            path.join("./lib/example", SAMPLE_FILE_SMALL)
         ], {
             verbose: true
         }).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
@@ -282,11 +279,11 @@ describe("Lint with API", () => {
             process.execPath,
             "",
             "--verbose",
-            path.resolve(path.join("./lib/example",SAMPLE_FILE_SMALL))
+            path.resolve(path.join("./lib/example", SAMPLE_FILE_SMALL))
         ], {
             verbose: true
         }).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
@@ -298,12 +295,12 @@ describe("Lint with API", () => {
             process.execPath,
             "",
             "--verbose",
-            path.join("./lib/example",SAMPLE_FILE_SMALL),
-            path.join("./lib/example",SAMPLE_FILE_WITH_SPACES)
+            path.join("./lib/example", SAMPLE_FILE_SMALL),
+            path.join("./lib/example", SAMPLE_FILE_WITH_SPACES)
         ], {
             verbose: true
         }).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
@@ -315,12 +312,12 @@ describe("Lint with API", () => {
             process.execPath,
             "",
             "--verbose",
-            path.resolve(path.join("./lib/example",SAMPLE_FILE_SMALL)),
-            path.resolve(path.join("./lib/example",SAMPLE_FILE_WITH_SPACES))
+            path.resolve(path.join("./lib/example", SAMPLE_FILE_SMALL)),
+            path.resolve(path.join("./lib/example", SAMPLE_FILE_WITH_SPACES))
         ], {
             verbose: true
         }).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
@@ -336,7 +333,7 @@ describe("Lint with API", () => {
         ], {
             verbose: true
         }).run();
-        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
         assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");

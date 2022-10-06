@@ -18,6 +18,7 @@ async function checkRule(key, check) {
     const npmGroovyLintConfig = {
         source: check.source,
         output: "txt",
+        failon: "none",
         insight: false,
         verbose: true
     };
