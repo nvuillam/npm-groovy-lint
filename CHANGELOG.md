@@ -2,10 +2,10 @@
 
 ## UNRELEASED
 
-## [11.0.0] 2022-10-06
+## [11.0.0] 2022-10-07
 
-- **BREAKING CHANGE**:`--failon` is now `ìnfo` by default, meaning return code will be `1` if there is at least an info issue found. To have previous behaviour, use `--failon none`.
-- Display all files in console log only if `--verbose` is used
+- **BREAKING CHANGE**:`--failon` is now `ìnfo` by default, meaning exit code will be `1` if there is at least an info issue found. To have previous behaviour, use `--failon none`.
+- Display all files in console log only if `--verbose` is used ([#243](https://github.com/nvuillam/npm-groovy-lint/issues/243))
 
 ## [10.1.0] 2022-08-15
 
