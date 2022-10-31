@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [11.1.1] 2022-10-31
+
+- Fix npm dependency minimatch
+
 ## [11.1.0] 2022-10-31
 
 - Provide default range when only information available is a line number ([#248](https://github.com/nvuillam/npm-groovy-lint/issues/248))
