@@ -2,6 +2,13 @@
 
 ## UNRELEASED
 
+## [11.1.0] 2022-10-31
+
+- Provide default range when only information available is a line number ([#248](https://github.com/nvuillam/npm-groovy-lint/issues/248))
+- New CodeNarc issues definition to calculate range in file
+  - GStringExpressionWithinString
+  - VariableName
+
 ## [11.0.0] 2022-10-07
 
 - **BREAKING CHANGE**:`--failon` is now `ìnfo` by default, meaning exit code will be `1` if there is at least an info issue found. To have previous behaviour, use `--failon none`.
