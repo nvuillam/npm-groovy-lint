@@ -46,31 +46,31 @@
   "dependencies": {
     "amplitude": "^5.1.6",
     "ansi-colors": "^4.1.1",
-    "axios": "^0.21.1",
+    "axios": "^1.1.3",
     "chalk": "^4.1.2",
-    "cli-progress": "^3.10.0",
+    "cli-progress": "^3.11.2",
     "commondir": "^1.0.1",
-    "debug": "^4.1.1",
+    "debug": "^4.3.4",
     "decode-html": "^2.0.0",
-    "find-java-home": "^1.1.0",
+    "find-java-home": "^1.2.2",
     "find-package-json": "^1.2.0",
     "fs-extra": "^10.1.0",
-    "glob": "^7.1.6",
-    "import-fresh": "^3.2.1",
-    "ip": "^1.1.5",
-    "java-caller": "^2.2.4",
+    "glob": "^8.0.3",
+    "import-fresh": "^3.3.0",
+    "ip": "^1.1.8",
+    "java-caller": "^2.6.0",
     "js-yaml": "^4.1.0",
-    "node-sarif-builder": "^2.0.1",
-    "optionator": "^0.8.3",
-    "semver": "^7.1.3",
-    "strip-json-comments": "^3.0.1",
-    "uuid": "^8.2.0"
+    "node-sarif-builder": "^2.0.3",
+    "optionator": "^0.9.1",
+    "semver": "^7.3.8",
+    "strip-json-comments": "^3.1.1",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/eslint-parser": "^7.16.3",
+    "@babel/core": "^7.20.2",
+    "@babel/eslint-parser": "^7.19.1",
     "diff": "^4.0.2",
-    "eslint": "^8.2.0",
+    "eslint": "^8.27.0",
     "mocha": "^10.1.0",
     "nyc": "^15.1.0",
     "prettier": "^1.19.1",
@@ -78,7 +78,7 @@
     "which": "^2.0.2"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "mocha": {
     "require": [
