@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [11.2.0] 2022-10-31
+
+- Remove maximum java version constraint ([#257](https://github.com/nvuillam/npm-groovy-lint/issues/257))
+
 ## [11.1.1] 2022-10-31
 
 - Fix npm dependency minimatch

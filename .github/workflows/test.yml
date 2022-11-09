@@ -39,7 +39,7 @@ jobs:
       - name: Run tests
         run: npm run test
 
-  test_java14_latest_node_16:
+  test_java_latest_node_16:
     name: Test - Debian - AdoptOpenJDK latest - Node 16
     runs-on: ubuntu-latest
     container:
