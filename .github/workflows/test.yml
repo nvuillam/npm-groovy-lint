@@ -40,10 +40,10 @@ jobs:
         run: npm run test
 
   test_java_latest_node_16:
-    name: Test - Debian - AdoptOpenJDK latest - Node 16
+    name: Test - Java 17 Temurin
     runs-on: ubuntu-latest
     container:
-      image: adoptopenjdk:latest
+      image: eclipse-temurin:17.0.4.1_1-jdk
     timeout-minutes: 15
     steps:
       - name: Checkout Code
