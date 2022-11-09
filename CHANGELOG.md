@@ -6,7 +6,9 @@
 
 - Remove maximum java version constraint ([#257](https://github.com/nvuillam/npm-groovy-lint/issues/257))
 - Make npm-groovy-lint compliant with Java 17
-- Upgrade fs-extra dependency
+- Upgrade dependencies
+  - fs-extra
+  - java-caller
 
 ## [11.1.1] 2022-10-31
 
