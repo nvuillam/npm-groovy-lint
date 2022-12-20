@@ -297,7 +297,7 @@ describe("Miscellaneous", function() {
             console.log(stdout);
             console.log(stderr);
             if (javaPath.includes(" ")) {
-                console.log("Skip test because of spaces in java path");
+                console.log(`Skip test because of spaces in java path ${javaPath}`);
                 return ;
             }
             if (javaPath.includes("hostedtoolcache") || javaPath.includes("/opt/java/openjdk/bin/java")) {
