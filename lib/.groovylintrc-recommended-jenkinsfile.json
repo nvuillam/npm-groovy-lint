@@ -13,6 +13,9 @@
     "size.NestedBlockDepth": {
       "maxNestedBlockDepth": 10
     },
+    "VariableName": {
+      "ignoreVariableNames": "_"
+    },
     "unused.UnusedVariable": {
       "ignoreVariableNames": "_"
     }
