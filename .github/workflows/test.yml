@@ -1,28 +1,30 @@
+---
 name: Test
+permissions: read-all
 
 on: [push, pull_request]
 
 jobs:
-  test_java8_node_12:
-    name: Test - Debian - Java 8 - Node 12
+  test_java8_node_16:
+    name: Test - Debian - Java 8 - Node 16
     runs-on: ubuntu-latest
     container:
-      image: openjdk:8-jdk-stretch
+      image: eclipse-temurin:8
     timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
       - name: Install apt packages
         run: "apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed linux dependencies'"
-      - name: Install node 12
-        run: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
+      - name: Install node 16
+        run: curl -sL https://deb.nodesource.com/setup_16.x | bash - && apt-get update && apt-get install -y nodejs
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
         run: npm run test
 
-  test_java11_node_12:
-    name: Test - Debian - Java 11 - Node 12
+  test_java11_node_16:
+    name: Test - Debian - Java 11 - Node 16
     runs-on: ubuntu-latest
     timeout-minutes: 15
     container:
@@ -32,22 +34,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Install apt packages
         run: "apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed linux dependencies'"
-      - name: Install node 13
-        run: curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get update && apt-get install -y nodejs
-      - name: Install dependencies and link
-        run: npm ci && npm link
-      - name: Run tests
-        run: npm run test
-
-  test_java14_latest_node_16:
-    name: Test - Debian - AdoptOpenJDK latest - Node 16
-    runs-on: ubuntu-latest
-    container:
-      image: adoptopenjdk:latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
       - name: Install node 16
         run: curl -sL https://deb.nodesource.com/setup_16.x | bash - && apt-get update && apt-get install -y nodejs
       - name: Install dependencies and link
@@ -55,17 +41,35 @@ jobs:
       - name: Run tests
         run: npm run test
 
-  test_no_java_node_14_codecov:
-    name: Test - Debian - No Java - Node 14 - CodeCov
+  test_java_latest_node_16:
+    name: Test - Debian - OpenJDK latest - Node 16
     runs-on: ubuntu-latest
     container:
-      image: node:14-buster
+      image: eclipse-temurin:latest
     timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Install node 14
-        run: curl -sL https://deb.nodesource.com/setup_14.x | bash - && apt-get update && apt-get install -y nodejs
+      - name: Inspect Java version
+        run: java --version
+      - name: Install node 16
+        run: curl -sL https://deb.nodesource.com/setup_16.x | bash - && apt-get update && apt-get install -y nodejs
+      - name: Install dependencies and link
+        run: npm ci && npm link
+      - name: Run tests
+        run: npm run test
+
+  test_no_java_node_16_codecov:
+    name: Test - Debian - No Java - Node 16 - CodeCov
+    runs-on: ubuntu-latest
+    container:
+      image: node:16-buster
+    timeout-minutes: 15
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Install node 16
+        run: curl -sL https://deb.nodesource.com/setup_16.x | bash - && apt-get update && apt-get install -y nodejs
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
@@ -82,6 +86,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      - name: Inspect Node version
+        run: node --version
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
@@ -94,6 +105,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      - name: Inspect Node version
+        run: node --version
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests

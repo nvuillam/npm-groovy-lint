@@ -1,4 +1,6 @@
+---
 name: "Publish to NPM"
+permissions: read-all
 on:
   push:
     branches:
@@ -9,9 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
-          node-version: "12.x"
+          node-version: "18.x"
           registry-url: "https://registry.npmjs.org"
       - run: npm install
       - run: npm publish || echo "No new version published"

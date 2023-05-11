@@ -5,6 +5,7 @@
 ###############################
 ###############################
 name: "Stale[bot]"
+permissions: read-all
 on:
   schedule:
     # every day at 0:00 UTC

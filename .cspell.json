@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
   "ignorePaths": [
     "**/node_modules/**",
     "**/vscode-extension/**",
@@ -7,7 +8,7 @@
     "**/*.jar"
   ],
   "language": "en",
-  "version": "0.1",
+  "version": "0.2",
   "words": [
     "Affero",
     "Autofixable",
@@ -196,6 +197,7 @@
     "microservice",
     "minipass",
     "minizlib",
+    "mkdocs",
     "modelcatalogue",
     "mygroovyfile",
     "nextflow",
