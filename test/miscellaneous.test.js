@@ -172,7 +172,7 @@ describe("Miscellaneous", function () {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
-    it("(API:source) should cancel current request", async (done) => {
+    it("(API:source) should cancel current request", async () => {
         const requestKey = "requestKeyCalculatedByExternal" + Math.random();
         const delay = os.platform() === "win32" ? 100 : 20;
         const npmGroovyLintConfig = {
@@ -231,7 +231,7 @@ describe("Miscellaneous", function () {
             [linter1.status, linter2.status, linter3.status, linter4.status, linter5.status, linter6.status].includes(9),
             `at least one response code is 9`
         ); */
-        Promise.all(linterProms).then(done);
+        return await Promise.all(linterProms);
     }).timeout(50000);
 
     it("(API:help) should show npm-groovy-lint help", async () => {
