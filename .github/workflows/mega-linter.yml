@@ -1,6 +1,6 @@
 ---
 # Mega-Linter GitHub Action configuration file
-# More info at https://oxsecurity.github.io/megalinter
+# More info at https://megalinter.io
 name: Mega-Linter
 
 on:
@@ -34,10 +34,10 @@ jobs:
       # Mega-Linter
       - name: Mega-Linter
         id: ml
-        uses: oxsecurity/megalinter/flavors/javascript@v6
+        uses: oxsecurity/megalinter/flavors/javascript@v7
         env:
           # All available variables are described in documentation
-          # https://oxsecurity.github.io/megalinter/#configuration
+          # https://megalinter.io/#configuration
           VALIDATE_ALL_CODEBASE: true # ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }} # Validates all source when push on master, else just the git diff with master. Override with true if you always want to lint all sources
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # ADD YOUR CUSTOM ENV VARIABLES HERE OR DEFINE THEM IN A FILE .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
