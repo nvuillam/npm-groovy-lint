@@ -2,6 +2,9 @@
 
 ## UNRELEASED
 
+- Use java 20 by default if Java not found
+- Upgrade dependencies
+
 ## [11.1.1] 2022-10-31
 
 - Fix npm dependency minimatch
