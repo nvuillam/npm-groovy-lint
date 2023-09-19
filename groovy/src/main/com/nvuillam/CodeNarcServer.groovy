@@ -37,7 +37,7 @@ class CodeNarcServer {
 
     static Map<String,String> currentThreads = new ConcurrentHashMap<String,String>()
 
-    int PORT = 7484
+    int PORT = System.env['NPM_GROOVY_LINT_SERVER_PORT'] ? Integer(System.env['NPM_GROOVY_LINT_SERVER_PORT']) : 17484
     int maxIdleTime = 3600000 // 1h
 
     ExecutorService ex = Executors.newCachedThreadPool()

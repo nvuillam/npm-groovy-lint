@@ -2,6 +2,7 @@
 
 ## UNRELEASED
 
+- Change default port to 17484. Can be overridden using env var **NPM_GROOVY_LINT_SERVER_PORT**
 - Use java 20 by default if Java not found
 - Upgrade dependencies
 
