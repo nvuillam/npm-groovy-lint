@@ -11,7 +11,7 @@ const which = require("which");
 const exec = util.promisify(childProcess.exec);
 const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH } = require("./helpers/common");
 
-describe("Miscellaneous", function() {
+describe("Miscellaneous", function () {
     beforeEach(beforeEachTestCase);
 
     it("(API:source) returns config file using path", async () => {
@@ -231,9 +231,8 @@ describe("Miscellaneous", function() {
             [linter1.status, linter2.status, linter3.status, linter4.status, linter5.status, linter6.status].includes(9),
             `at least one response code is 9`
         ); */
-        await Promise.all(linterProms);
-        done().timeout(50000);
-    });
+        Promise.all(linterProms).then(done);
+    }).timeout(50000);
 
     it("(API:help) should show npm-groovy-lint help", async () => {
         const linter = await new NpmGroovyLint([process.execPath, "", "-h"], {}).run();
@@ -299,7 +298,7 @@ describe("Miscellaneous", function() {
             console.log(stderr);
             if (javaPath.includes(" ")) {
                 console.log("Skip test because of spaces in java path");
-                return ;
+                return;
             }
             if (javaPath.includes("hostedtoolcache") || javaPath.includes("/opt/java/openjdk/bin/java")) {
                 console.log("Skip test because for some strange reason it provokes a timeout on CI Windows and openjdk servers");
@@ -330,7 +329,7 @@ describe("Miscellaneous", function() {
         if (javaPath) {
             if (javaPath.includes(" ")) {
                 console.log("Skip test because of spaces in java path");
-                return ;
+                return;
             }
             if (javaPath.includes("hostedtoolcache") || javaPath.includes("/opt/java/openjdk/bin/java")) {
                 console.log("Skip test because for some strange reason it provokes a timeout on CI Windows and openjdk servers");
