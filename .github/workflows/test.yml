@@ -57,11 +57,11 @@ jobs:
       - name: Run tests
         run: npm run test
 
-  test_openjdk_20_node_18:
+  test_temurin_jre_20_node_18:
     name: Test - OpenJDK 20 - Node 18
     runs-on: ubuntu-latest
     container:
-      image: openjdk:20
+      image: eclipse-temurin:20-jre
     timeout-minutes: 15
     steps:
       - name: Checkout Code
