@@ -58,7 +58,7 @@ jobs:
         run: npm run test
 
   test_openjdk_20_node_18:
-    name: Test - AdoptOpenJDK latest - Node 18
+    name: Test - OpenJDK 20 - Node 18
     runs-on: ubuntu-latest
     container:
       image: openjdk:20
@@ -66,8 +66,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Install node 18
-        run: apk add --update nodejs npm
+      - name: Install apt packages
+        run: "apt-get update && apt-get upgrade -y && apt-get -y install wget zip unzip sudo && apt-get clean && echo 'Installed linux dependencies'"
+      - name: Install node 16
+        run: curl -sL https://deb.nodesource.com/setup_18.x | bash - && apt-get update && apt-get install -y nodejs
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
