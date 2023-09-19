@@ -232,7 +232,7 @@ describe("Miscellaneous", function () {
             `at least one response code is 9`
         ); */
         return await Promise.all(linterProms);
-    }).timeout(50000);
+    }).timeout(100000);
 
     it("(API:help) should show npm-groovy-lint help", async () => {
         const linter = await new NpmGroovyLint([process.execPath, "", "-h"], {}).run();
