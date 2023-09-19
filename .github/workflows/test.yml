@@ -58,7 +58,7 @@ jobs:
         run: npm run test
 
   test_temurin_jre_20_node_18:
-    name: Test - OpenJDK 20 - Node 18
+    name: Test - Temurin 20 jre - Node 18
     runs-on: ubuntu-latest
     container:
       image: eclipse-temurin:20-jre
