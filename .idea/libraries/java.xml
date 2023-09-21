@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="java">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/java/log4j-slf4j-impl-2.18.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/CodeNarcServer.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/GMetrics-2.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/slf4j-api-1.7.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/log4j-api-2.18.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/CodeNarc-3.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/log4j-core-2.18.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

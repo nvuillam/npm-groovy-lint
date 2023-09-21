@@ -13,7 +13,6 @@ import com.sun.net.httpserver.HttpServer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.TimeUnit
 
 // Groovy Json Management
 import groovy.json.JsonSlurper
@@ -59,7 +58,6 @@ class CodeNarcServer {
         else  {
             codeNarcServer.runCodeNarc((String[])argsList)
         }
-        return
     }
 
     // Launch HttpServer to receive CodeNarc linting request via Http
@@ -76,7 +74,7 @@ class CodeNarcServer {
 
         // Ping
         server.createContext('/ping') { http ->
-            println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
+            println "INIT: Hit from Host: ${http.remoteAddress.getHostString()} on port: ${http.remoteAddress.getPort()}"
             println 'PING'
             http.sendResponseHeaders(200, 0)
             http.responseHeaders.add('Content-type', 'application/json')
@@ -87,7 +85,7 @@ class CodeNarcServer {
 
         // Kill server
         server.createContext('/kill') { http ->
-            println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
+            println "INIT: Hit from Host: ${http.remoteAddress.getHostString()} on port: ${http.remoteAddress.getPort()}"
             println 'REQUEST KILL CodeNarc Server'
             stopServer(ex, server)
             http.sendResponseHeaders(200, 0)
@@ -101,8 +99,8 @@ class CodeNarcServer {
         // Request CodeNarc linting
         server.createContext('/request') { http ->
             def respObj = [:]
-            println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
-            // Restart idle timer
+            println "INIT: Hit from Host: ${http.remoteAddress.getHostString()} on port: ${http.remoteAddress.getPort()}"
+           // Restart idle timer
             currentTimerTask.cancel()
             timer = new Timer()
             currentTimerTask = timer.runAfter(this.maxIdleTime, { timerData -> stopServer(ex, server) })
@@ -150,7 +148,8 @@ class CodeNarcServer {
                 respObj.statusCode = 500
                 println 'UNEXPECTED ERROR ' + respObj
             }
-            // Build response
+            
+             // Build response
             def respJson = JsonOutput.toJson(respObj)
             http.responseHeaders.add('Content-type', 'application/json')
             http.sendResponseHeaders(respObj.statusCode, 0)

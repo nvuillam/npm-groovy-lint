@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/java/groovy/lib/groovy-ant-3.0.19.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/groovy/lib/groovy-templates-3.0.19.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/groovy/lib/ant-1.10.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/groovy/lib/groovy-json-3.0.19.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/groovy/lib/groovy-xml-3.0.19.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/groovy/lib/ant-launcher-1.10.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/groovy/lib/groovy-3.0.19.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/CodeNarc-3.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/GMetrics-2.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/log4j-api-2.18.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/log4j-core-2.18.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/log4j-slf4j-impl-2.18.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java/slf4j-api-1.7.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
