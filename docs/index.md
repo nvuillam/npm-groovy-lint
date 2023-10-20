@@ -40,13 +40,11 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 ## Usage
 
 ```shell
-    npm-groovy-lint OPTIONS
+    npm-groovy-lint [OPTIONS] [FILES|PATH|PATTERN]
 ```
 
 | Parameter               | Type    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 |-------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| -p<br/> --path          | String  | Directory containing the files to lint<br/> Example: `./path/to/my/groovy/files`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| -f<br/> --files         | String  | Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: `"**/*.groovy,**/Jenkinsfile,**/*.gradle"`<br/>Examples:<br/> - `"**/Jenkinsfile"`<br/> - `"**/*.groovy"`<br/> - `"**/*.gradle"`<br/> - `"**/mySingleFile.groovy"`                                                                                                                                                                                                                                                                                                      |
 | -o<br/> --output        | String  | Output format (txt,json,sarif,html,xml), or path to a file with one of these extensions<br/> Default: `txt`<br/> Examples:<br/> - `"txt"`<br/> - `"json"`<br/> - `"./logs/myLintResults.txt"`<br/> - `"./logs/myLintResults.sarif"`<br/> - `"./logs/myLintResults.html"`<br/> - `"./logs/myLintResults.xml"`                                                                                                                                                                                                                                                                  |
 | -l<br/> --loglevel      | String  | Log level (error,warning or info)<br/>Default: info                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | --failon                | String  | Defines the error level where CLI will fail (return code = 1). error,warning,info or none. Each failure level includes the more critical ones.                                                                                                                                                                                                                                                                                                                                                                                                                                |
@@ -69,6 +67,70 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 | --codenarcargs          | String  | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: <http://codenarc.github.io/CodeNarc/codenarc-command-line.html><br/> Example: `npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                                                              |
 | -h<br/> --help          | Boolean | Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | -v<br/> --version       | Boolean | Show npm-groovy-lint version (with CodeNarc version)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -p<br/> --path          | String  | (DEPRECATED) Directory containing the files to lint<br/> Example: `./path/to/my/groovy/files`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| -f<br/> --files         | String  | (DEPRECATED) Comma-separated list of Ant-style file patterns specifying files that must be included.<br/> Default: `"**/*.groovy,**/Jenkinsfile,**/*.gradle"`<br/>Examples:<br/> - `"**/Jenkinsfile"`<br/> - `"**/*.groovy"`<br/> - `"**/*.gradle"`<br/> - `"**/mySingleFile.groovy"`                                                                                                                                                                                                                                                                                         |
+
+### Example calls
+
+- Lint a file
+
+```shell
+    npm-groovy-lint path/to/my/groovy/file.groovy
+```
+
+- Lint multiple files
+
+```shell
+    npm-groovy-lint path/to/my/groovy/file.groovy path/to/my/groovy/file2.groovy path/to/my/groovy/file3.groovy
+```
+
+- Lint directory
+
+```shell
+    npm-groovy-lint path/to/my/groovy
+```
+
+- Lint pattern
+
+```shell
+    npm-groovy-lint path/to/my/groovy/*.groovy
+```
+
+- Lint groovy with JSON output
+
+```shell
+    npm-groovy-lint --output json
+```
+
+- Format files
+
+```shell
+    npm-groovy-lint --format my/path/to/file.groovy my/path/to/file2.groovy
+```
+
+- Format and fix files
+
+```shell
+    npm-groovy-lint --fix my/path/to/file.groovy my/path/to/file2.groovy
+```
+
+- Get formatted sources in stdout from stdin
+
+```shell
+    cat path/to/my/Jenkinsfile | npm-groovy-lint --format -
+```
+
+- Advanced config
+
+```shell
+    npm-groovy-lint --path "./path/to/my/groovy/files" --files "**/*.groovy" --config "./config/codenarc/.groovylintrcCustom.js" --loglevel warning --output txt
+```
+
+- Lint using core CodeNarc parameters and generate HTML report file
+
+```shell
+    npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -title="TestTitleCodenarc" -maxPriority1Violations=0' -report="html:ReportTestCodenarc.html"
+```
 
 ## Installation
 
@@ -141,26 +203,6 @@ OR
 {
     "codenarcRulesets": "RuleSet-1.groovy,RuleSet-2.groovy"
 }
-```
-
-## Example calls
-
-- Lint groovy with JSON output
-
-```shell
-    npm-groovy-lint --output json
-```
-
-- Advanced config
-
-```shell
-    npm-groovy-lint --path "./path/to/my/groovy/files" --files "**/*.groovy" --config "./config/codenarc/.groovylintrcCustom.js" --loglevel warning --output txt
-```
-
-- Lint using core CodeNarc parameters and generate HTML report file
-
-```shell
-    npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -title="TestTitleCodenarc" -maxPriority1Violations=0' -report="html:ReportTestCodenarc.html"
 ```
 
 ## Disabling rules in source
