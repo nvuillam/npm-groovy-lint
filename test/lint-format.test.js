@@ -44,7 +44,7 @@ describe("Format with API", function() {
     }).timeout(100000);
 
     it("(API:source) should format code with custom config", async function() {
-        const expectedFixedErrs = 23;
+        const expectedFixedErrs = 37;
         const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -58,7 +58,7 @@ describe("Format with API", function() {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
             `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
