@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+permissions: read-all
 jobs:
   build:
     runs-on: ubuntu-latest

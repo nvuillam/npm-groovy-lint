@@ -2,6 +2,8 @@ name: Test
 
 on: [push, pull_request]
 
+permissions: read-all
+
 jobs:
   test_java8_node_12:
     name: Test - Debian - Java 8 - Node 12

@@ -19,10 +19,20 @@ concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 
+permissions: read-all
+
 jobs:
   build:
     name: Mega-Linter
     runs-on: ubuntu-latest
+
+    # Give the default GITHUB_TOKEN write permission to commit and push, comment
+    # issues, and post new Pull Requests; remove the ones you do not need
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
     steps:
       # Git Checkout
       - name: Checkout Code

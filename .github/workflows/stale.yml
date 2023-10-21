@@ -12,6 +12,8 @@ on:
   issue_comment:
     types: [created, deleted, edited]
 
+permissions: read-all
+
 ###############
 # Run the job #
 ###############
@@ -21,6 +23,9 @@ jobs:
   #######################
   markstale:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     # only run on schedule
     if: "github.event_name == 'schedule'"
     steps:
