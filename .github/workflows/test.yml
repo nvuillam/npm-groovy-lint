@@ -14,18 +14,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Install apt packages
-        run: |
-          apt-get update
-          apt-get upgrade -y
-          apt-get -y install wget zip unzip sudo
-          apt-get clean
-          echo 'Installed linux dependencies'
       - name: Install node 12
-        run: |
-          curl -sL https://deb.nodesource.com/setup_12.x | bash -
-          apt-get update
-          apt-get install -y nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 12
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
@@ -40,18 +32,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Install apt packages
-        run: |
-          apt-get update
-          apt-get upgrade -y
-          apt-get -y install wget zip unzip sudo
-          apt-get clean
-          echo 'Installed linux dependencies'
-      - name: Install node 13
-        run: |
-          curl -sL https://deb.nodesource.com/setup_12.x | bash -
-          apt-get update
-          apt-get install -y nodejs
+      - name: Install node 12
+        uses: actions/setup-node@v3
+        with:
+          node-version: 12
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
@@ -67,10 +51,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
       - name: Install node 16
-        run: |
-          curl -sL https://deb.nodesource.com/setup_16.x | bash -
-          apt-get update
-          apt-get install -y nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
@@ -86,10 +69,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
       - name: Install node 14
-        run: |
-          curl -sL https://deb.nodesource.com/setup_14.x | bash -
-          apt-get update
-          apt-get install -y nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
