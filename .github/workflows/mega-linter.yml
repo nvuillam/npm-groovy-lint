@@ -36,7 +36,7 @@ jobs:
     steps:
       # Git Checkout
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
@@ -44,7 +44,7 @@ jobs:
       # Mega-Linter
       - name: Mega-Linter
         id: ml
-        uses: oxsecurity/megalinter/flavors/javascript@v6
+        uses: oxsecurity/megalinter/flavors/javascript@v7
         env:
           # All available variables are described in documentation
           # https://oxsecurity.github.io/megalinter/#configuration
@@ -56,7 +56,7 @@ jobs:
       # Upload Mega-Linter artifacts
       - name: Archive production artifacts
         if: ${{ success() }} || ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Mega-Linter reports
           path: |
@@ -85,6 +85,6 @@ jobs:
         run: sudo chown -Rc $UID .git/
       - name: Commit and push applied linter fixes
         if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/master' && github.repository == github.event.pull_request.head.repo.full_name
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "[Mega-Linter] Apply linters fixes"
