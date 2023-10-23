@@ -448,7 +448,7 @@ Fixes:
 
 ## [4.1.0] 2020-04-12
 
-- Upgrade to [Groovy 3.0.3](https://dl.bintray.com/groovy/maven/apache-groovy-binary-3.0.3.zip)
+- Upgrade to [Groovy 3.0.3](https://groovy.jfrog.io/ui/native/dist-release-local/groovy-zips/apache-groovy-binary-3.0.3.zip)
 - Automatic generation of fixable rules list for README
 - Refactor CodeNarcServer.groovy
 
