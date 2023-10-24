@@ -21,7 +21,7 @@ const {
 describe("Lint with API", () => {
     beforeEach(beforeEachTestCase);
 
-    it("(API:file) should generate text console output ans stats", async () => {
+    it("(API:file) should generate text console output and stats", async () => {
         const linter = await new NpmGroovyLint([process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--verbose"], {
             verbose: true
         }).run();

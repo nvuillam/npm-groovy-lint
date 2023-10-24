@@ -89,12 +89,12 @@ class CodeNarcServer {
         server.createContext('/kill') { http ->
             println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
             println 'REQUEST KILL CodeNarc Server'
-            stopServer(ex, server)
             http.sendResponseHeaders(200, 0)
             http.responseHeaders.add('Content-type', 'application/json')
             http.responseBody.withWriter { out ->
                 out << '{"status":"killed"}'
             }
+            stopServer(ex, server)
             println 'SHUT DOWN CodeNarcServer'
         }
 

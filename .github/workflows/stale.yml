@@ -12,6 +12,8 @@ on:
   issue_comment:
     types: [created, deleted, edited]
 
+permissions: read-all
+
 ###############
 # Run the job #
 ###############
@@ -21,11 +23,14 @@ jobs:
   #######################
   markstale:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     # only run on schedule
-    if: "github.event_name == 'schedule'"
+    if: github.event_name == 'schedule'
     steps:
       - name: Mark issue stale
-        uses: actions/stale@v4
+        uses: actions/stale@v8
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           stale-issue-message: "This issue has been automatically marked as stale because it has not had recent activity.\nIt will be closed in 14 days if no further activity occurs.\nThank you for your contributions.\n\nIf you think this issue should stay open, please remove the `O: stale 🤖` label or comment on the issue."
