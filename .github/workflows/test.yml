@@ -21,6 +21,8 @@ jobs:
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
+        env:
+          DEBUG: "npm-groovy-lint"
         run: npm run test
 
   test_java11_node_18:
@@ -59,6 +61,8 @@ jobs:
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
+        env:
+          DEBUG: "npm-groovy-lint"
         run: npm run test
 
   test_no_java_node_14_codecov:
