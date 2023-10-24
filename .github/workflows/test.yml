@@ -5,8 +5,8 @@ on: [push, pull_request]
 permissions: read-all
 
 jobs:
-  test_java8_node_12:
-    name: Test - Debian - Java 8 - Node 12
+  test_java8_node_18:
+    name: Test - Debian - Java 8 - Node 18
     runs-on: ubuntu-latest
     container:
       image: openjdk:8-jdk-buster
@@ -14,17 +14,17 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Install node 12
+      - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 18
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
         run: npm run test
 
-  test_java11_node_12:
-    name: Test - Debian - Java 11 - Node 12
+  test_java11_node_18:
+    name: Test - Debian - Java 11 - Node 18
     runs-on: ubuntu-latest
     timeout-minutes: 15
     container:
@@ -32,10 +32,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Install node 12
+      - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 18
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
@@ -43,8 +43,8 @@ jobs:
           DEBUG: "npm-groovy-lint"
         run: npm run test
 
-  test_java14_latest_node_16:
-    name: Test - Debian - AdoptOpenJDK latest - Node 16
+  test_java14_latest_node_18:
+    name: Test - Debian - AdoptOpenJDK latest - Node 18
     runs-on: ubuntu-latest
     container:
       image: adoptopenjdk:latest
@@ -52,17 +52,17 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Install node 16
+      - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
         run: npm run test
 
   test_no_java_node_14_codecov:
-    name: Test - Debian - No Java - Node 14 - CodeCov
+    name: Test - Debian - No Java - Node 18 - CodeCov
     runs-on: ubuntu-latest
     container:
       image: node:14-buster
@@ -70,10 +70,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Install node 14
+      - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 18
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
