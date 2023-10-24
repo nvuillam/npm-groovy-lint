@@ -86,7 +86,7 @@ Usage: java org.codenarc.CodeNarc [OPTIONS]
 
 ## Logging
 
-The defaults for logging are detailed in [simplelooger.properties](/simplelogger.properties).
+The defaults for logging are detailed in [simplelogger.properties](/simplelogger.properties).
 
 You can also override the defaults using system properties, for example to enable
 debug add the following to the command line:
