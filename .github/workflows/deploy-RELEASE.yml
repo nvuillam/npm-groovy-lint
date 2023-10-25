@@ -38,6 +38,9 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: nvuillam
       - run: npm ci
+      - run: |
+          git config --global user.name nvuillam
+          git config --global user.email nicolas.vuillamy@gmail.com
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

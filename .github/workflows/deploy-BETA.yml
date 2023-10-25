@@ -40,6 +40,9 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: nvuillam
       - run: npm ci
+      - run: |
+          git config --global user.name nvuillam
+          git config --global user.email nicolas.vuillamy@gmail.com
       - run: BETAID=$(date '+%Y%m%d%H%M') && npm version prerelease --preid="beta$BETAID"
         shell: bash
       - run: npm publish --tag beta
