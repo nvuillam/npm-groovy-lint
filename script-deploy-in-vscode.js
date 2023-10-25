@@ -11,7 +11,7 @@ console.log('---- START DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----'
 
 const vsCodeGroovyLintPath = process.env.VSCODE_GROOVY_LINT_PATH || './../vscode-groovy-lint';
 
-const targetPath = `${vsCodeGroovyLintPath}/server/node_modules/npm-groovy-lint/lib`;
+const targetPath = `${vsCodeGroovyLintPath}/server/node_modules/npm-groovy-lint`;
 
 console.info(`GroovyLint: Starting copying package in vscode for testing`);
 
@@ -23,9 +23,12 @@ else {
     mkdirSync(targetPath);
 }
 
-// Copy files into dist folder (copied from lib folder)
-copySync('./lib', targetPath);
-console.info(`GroovyLint: Copied ./lib files into ${targetPath}`);
+// Copy files into dest folder
+for (const path of ['package.json', 'README.md', 'CHANGELOG.md', 'LICENSE', 'lib']) {
+    copySync(path, `${targetPath}/${path}`);
+}
+
+console.info(`GroovyLint: Copied files into ${targetPath}`);
 
 console.log('---- END DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----\n');
 
