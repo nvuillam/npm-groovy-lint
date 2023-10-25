@@ -2,6 +2,9 @@
 
 ## UNRELEASED
 
+- Automate release of beta version
+- Securize workflows with github environments
+
 ## [11.1.1] 2022-10-31
 
 - Fix npm dependency minimatch

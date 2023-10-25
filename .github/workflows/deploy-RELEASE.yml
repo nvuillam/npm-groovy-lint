@@ -1,0 +1,38 @@
+---
+#
+# Documentation:
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions
+#
+
+#######################################
+# Start the job on all push to master #
+#######################################
+name: 'Build & Deploy - RELEASE'
+on:
+  release:
+    # Want to run the automation when a release is created
+    types: ['created']
+
+permissions: read-all
+
+###############
+# Set the Job #
+###############
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions: read-all
+    environment:
+      name: release
+    steps:
+      - uses: actions/checkout@v3
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v3.8.1
+        with:
+          node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
+          scope: nvuillam
+      - run: npm ci
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
