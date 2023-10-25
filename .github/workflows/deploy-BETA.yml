@@ -16,6 +16,10 @@ on:
 
 permissions: read-all
 
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
 ###############
 # Set the Job #
 ###############
