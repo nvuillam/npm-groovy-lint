@@ -30,7 +30,7 @@ jobs:
     environment:
       name: release
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v3.8.1
         with:
@@ -52,7 +52,7 @@ jobs:
       name: release
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
