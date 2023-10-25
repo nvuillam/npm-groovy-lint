@@ -32,13 +32,21 @@ import org.apache.tools.ant.types.Commandline
 // CodeNarc main class
 import org.codenarc.CodeNarc
 
+// Logging
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+// Command line
+import groovy.cli.commons.CliBuilder
+
 @CompileDynamic
 class CodeNarcServer {
 
     static Map<String,String> currentThreads = new ConcurrentHashMap<String,String>()
+    static final Logger logger = LoggerFactory.getLogger(CodeNarcServer.name)
 
-    int PORT = 7484
-    int maxIdleTime = 3600000 // 1h
+    static final int PORT = 7484
+    static final int maxIdleTime = 3600000 // 1h
 
     ExecutorService ex = Executors.newCachedThreadPool()
 
@@ -47,28 +55,47 @@ class CodeNarcServer {
      * @param args - the String[] of command-line arguments
      */
     static void main(String[] args) {
-        println 'CodeNarcServer: ' + args
-        final List<String> argsList =  []
-        Collections.addAll(argsList, args)
+        logger.debug('Starting args: {}', (Object)args)
+
+        CliBuilder cli = new CliBuilder(usage: 'groovy CodeNarcServer.groovy [--help] [--server] [--port <port>]').tap {
+            h(longOpt: 'help', 'Show usage information')
+            s(longOpt: 'server', type: boolean, 'Runs CodeNarc as a server (default: run CodeNarc directly)')
+            v(longOpt: 'version', type: boolean, 'Outputs the version of CodeNarc')
+            b(longOpt: 'verbose', type: boolean, 'Enables verbose output')
+            p(longOpt: 'port', type: int, defaultValue: "$PORT", "Sets the server port (default: $PORT)")
+        }
+
+        def options = cli.parse(args)
+
+        if (options.help) {
+            cli.usage()
+            println ''
+            CodeNarc.main('-help')
+            return
+        }
+
+        if (options.version) {
+            CodeNarc.main('-version')
+            return
+        }
+
         CodeNarcServer codeNarcServer = new CodeNarcServer()
-        // Initialize CodeNarc Server for later calls
-        if (argsList.contains('--server')) {
-            codeNarcServer.initialize()
+        if (options.server) {
+            // Initialize CodeNarc Server for later calls
+            codeNarcServer.server(options.port)
+            return
         }
+
         // Do not use server, just call CodeNarc (worse performances as Java classes must be reloaded each time)
-        else  {
-            codeNarcServer.runCodeNarc((String[])argsList)
-        }
-        return
+        codeNarcServer.runCodeNarc(options.arguments() as String[])
     }
 
     // Launch HttpServer to receive CodeNarc linting request via Http
     /* groovylint-disable-next-line UnusedPrivateMethod */
-    private void initialize() {
+    private void server(int port) {
         // Create a server who accepts only calls from localhost ( https://stackoverflow.com/questions/50770747/how-to-configure-com-sun-net-httpserver-to-accept-only-requests-from-localhost )
-
         InetAddress localHost = InetAddress.getLoopbackAddress()
-        InetSocketAddress sockAddr = new InetSocketAddress(localHost, PORT)
+        InetSocketAddress sockAddr = new InetSocketAddress(localHost, port)
         HttpServer server = HttpServer.create(sockAddr, 0)
 
         Timer timer = new Timer()
@@ -76,8 +103,8 @@ class CodeNarcServer {
 
         // Ping
         server.createContext('/ping') { http ->
-            println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
-            println 'PING'
+            logger.trace('INIT: Hit from Host: {} on port: {}', http.remoteAddress.hostName, http.remoteAddress.holder.port)
+            logger.debug('PING')
             http.sendResponseHeaders(200, 0)
             http.responseHeaders.add('Content-type', 'application/json')
             http.responseBody.withWriter { out ->
@@ -87,21 +114,21 @@ class CodeNarcServer {
 
         // Kill server
         server.createContext('/kill') { http ->
-            println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
-            println 'REQUEST KILL CodeNarc Server'
+            logger.trace('INIT: Hit from Host: {} on port: {}', http.remoteAddress.hostName, http.remoteAddress.holder.port)
+            logger.debug('shutdown started')
             http.sendResponseHeaders(200, 0)
             http.responseHeaders.add('Content-type', 'application/json')
             http.responseBody.withWriter { out ->
                 out << '{"status":"killed"}'
             }
             stopServer(ex, server)
-            println 'SHUT DOWN CodeNarcServer'
+            logger.info('shutdown complete')
         }
 
         // Request CodeNarc linting
         server.createContext('/request') { http ->
             def respObj = [:]
-            println "INIT: Hit from Host: ${http.remoteAddress.hostName} on port: ${http.remoteAddress.holder.port}"
+            logger.trace('INIT: Hit from Host: {} on port: {}', http.remoteAddress.hostName, http.remoteAddress.holder.port)
             // Restart idle timer
             currentTimerTask.cancel()
             timer = new Timer()
@@ -111,7 +138,7 @@ class CodeNarcServer {
             // Parse input and call CodeNarc
             try {
                 def body = streamToString(http.getRequestBody())
-                println "REQUEST BODY: ${body}"
+                logger.trace('REQUEST BODY: {}', body)
                 def jsonSlurper = new JsonSlurper()
                 def bodyObj = jsonSlurper.parseText(body)
 
@@ -141,14 +168,14 @@ class CodeNarcServer {
             } catch (InterruptedException ie) {
                 respObj.status = 'cancelledByDuplicateRequest'
                 respObj.statusCode = 444
-                println 'INTERRUPTED by duplicate'
+                logger.debug('INTERRUPTED by duplicate')
             } catch (Throwable t) {
                 respObj.status = 'error'
                 respObj.errorMessage = t.getMessage()
                 respObj.errorDtl = t.getStackTrace().join('\n')
                 respObj.exceptionType =  t.getClass().getName()
                 respObj.statusCode = 500
-                println 'UNEXPECTED ERROR ' + respObj
+                logger.error('UNEXPECTED ERROR {}', respObj)
             }
             // Build response
             def respJson = JsonOutput.toJson(respObj)
@@ -168,25 +195,17 @@ class CodeNarcServer {
         // Create executor & start server with a timeOut if inactive
         server.setExecutor(ex)      // set up a custom executor for the server
         server.start()              // start the server
-        println "LISTENING on ${this.getHostString(sockAddr)}:${PORT}, hit Ctrl+C to exit."
+        logger.info('Listening on {}:{} hit Ctrl+C to exit', this.getHostString(sockAddr), port)
         currentTimerTask = timer.runAfter(this.maxIdleTime,  { timerData -> stopServer(ex, server) })
     }
 
     private void runCodeNarc(String[] args) {
-        if (args == ['-help'] as String[]) {
-            CodeNarc.main(args)
-            return
-        }
-        else if (args == ['-version'] as String[]) {
-            CodeNarc.main(args)
-            return
-        }
         CodeNarc codeNarc = new CodeNarc()
         try {
             codeNarc.execute(args)
         }
         catch (Throwable t) {
-            println "ERROR in CodeNarc.execute: ${t}"
+            logger.error('CodeNarc.execute: {}', t)
             throw t
         }
     }
@@ -203,7 +222,7 @@ class CodeNarcServer {
                     t.interrupt()
                     t.stop()
                     currentThreads.remove(requestKey)
-                    println 'CANCELLED duplicate thread ' + tName + '(requestKey: ' + requestKey + ')'
+                    logger.debug('CANCELLED duplicate thread {} requestKey: {}', tName, requestKey)
                 }
             }
         }
@@ -225,7 +244,7 @@ class CodeNarcServer {
         }
         else if (bodyObj.codeNarcBaseDir) {
             // Ant style pattern is used: list all files
-            println 'Ant file scanner in ' + bodyObj.codeNarcBaseDir + ', includes ' + bodyObj.codeNarcIncludes + ', excludes ' + ((bodyObj.codeNarcExcludes) ? bodyObj.codeNarcExcludes : 'no')
+            logger.debug('Ant file scanner in {}, includes {}, excludes {}', bodyObj.codeNarcBaseDir, bodyObj.codeNarcIncludes, bodyObj.codeNarcExcludes ?: 'none')
             def ant = new groovy.ant.AntBuilder()
             def scanner = ant.fileScanner {
                 fileset(dir: bodyObj.codeNarcBaseDir) {
@@ -265,22 +284,22 @@ class CodeNarcServer {
         List<Error> parseErrors = []
         try {
             new GroovyShell().parse(file)
-            println 'PARSE SUCCESS: ' + file.getAbsolutePath()
+            logger.debug('PARSE SUCCESS: {}', file.getAbsolutePath())
         }
         catch (MultipleCompilationErrorsException ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = ep.getErrorCollector().getErrors()
-            println 'PARSE ERROR (MultipleCompilationErrorsException): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
+            logger.debug('PARSE ERROR (MultipleCompilationErrorsException): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
         }
         catch (CompilationFailedException ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = ep.getErrorCollector().getErrors()
-            println 'PARSE ERROR (CompilationFailedException): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
+            logger.debug('PARSE ERROR (CompilationFailedException): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
         }
         catch (Exception ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = []
-            println 'PARSE ERROR (Other): ' + file.getAbsolutePath() + '\n' + excptnJsonTxt
+            logger.debug('PARSE ERROR (Other): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
         }
         return parseErrors
     }
@@ -288,7 +307,7 @@ class CodeNarcServer {
     private void storeThread(String requestKey, def thread, ExecutorService ex) {
         def threadName = thread.getName()
         currentThreads.put(requestKey, threadName)
-        println 'THREADS: (var ' + currentThreads.size() + ', threadPool ' + ex.getActiveCount() + ')\n' + currentThreads.toString()
+        logger.debug('THREADS: (var {}, threadPool {})\n{}', currentThreads.size(), ex.getActiveCount(), currentThreads)
     }
 
     private void removeThread(String requestKey) {
@@ -310,7 +329,7 @@ class CodeNarcServer {
         ex.shutdown()
         // ex.awaitTermination(10, TimeUnit.MINUTES); //Seems some ghost request prevents to kill server
         server.stop(0)
-        println('CodeNarcServer stopped')
+        logger.info('CodeNarcServer stopped')
         System.exit(0)
     }
 
