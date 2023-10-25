@@ -43,7 +43,7 @@ nav:
   - "Examples": "./#example-calls"
   - "Disabling rules in source": "./#disabling-rules-in-source"
   - "Auto-fixable rules": "./#auto-fixable-rules"
-  - "CD/CI": "./#cdci"
+  - "CI/CD": "./#cdci"
   - "Use as module": "./#use-as-module"
   - "Contribute": "./#contribute"
   - "Thanks": "./#thanks"
