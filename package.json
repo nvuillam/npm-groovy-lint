@@ -5,15 +5,17 @@
   "main": "index.js",
   "scripts": {
     "lint:fix": "eslint **/*.js --fix && prettier --write \"./lib/**/*.{js,jsx}\" --tab-width 4 --print-width 150",
-    "groovy:run-server-from-source": "npm run dev:kill-server && groovy -cp \"lib/java/*\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
-    "groovy:build": "npm run dev:kill-server && groovyc -cp \"lib/java/*\" --encoding utf-8 ./groovy/src/main/com/nvuillam/CodeNarcServer.groovy -d ./tmp && cd ./tmp && jar -cvfm ./../lib/java/CodeNarcServer.jar ./../MANIFEST.txt ./com/nvuillam/*.class && cd ..",
+    "server:run-from-source": "npm run dev:kill-server && groovy -cp \"lib/java/*\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
+    "server:run": "npm run dev:kill-server && java -Xms256m -Xmx2048m -jar lib/java/CodeNarcServer.jar --server",
+    "server:build": "node scripts/build-server.js",
     "test": "npm run dev:kill-server && mocha \"test/**/*.test.js\"",
     "test:coverage": "nyc npm run test",
     "test:debug": "npm run dev:kill-server && mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
-    "build": "node script-build-config-all.js && cp -f README.md docs/index.md && cp -f CHANGELOG.md docs/CHANGELOG.md",
+    "build": "node scripts/build-config-all.js && cp -f README.md docs/index.md && cp -f CHANGELOG.md docs/CHANGELOG.md",
     "dev:kill-server": "npm-groovy-lint --killserver",
     "dev:lint-install-local": "npm run dev:kill-server && npm run lint:fix && npm link --force",
-    "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node script-deploy-in-vscode.js"
+    "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node scripts/deploy-in-vscode.js",
+    "dev:pre-commit": "npm-run-all lint:fix build server:build"
   },
   "repository": {
     "type": "git",
@@ -69,9 +71,12 @@
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@babel/eslint-parser": "^7.22.15",
+    "adm-zip": "^0.5.10",
     "diff": "^4.0.2",
     "eslint": "^8.52.0",
+    "handlebars": "^4.7.8",
     "mocha": "^10.2.0",
+    "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.2",

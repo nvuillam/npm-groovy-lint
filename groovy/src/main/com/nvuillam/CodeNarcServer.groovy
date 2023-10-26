@@ -36,16 +36,13 @@ import org.codenarc.CodeNarc
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-// Command line
-import groovy.cli.commons.CliBuilder
-
 @CompileDynamic
 class CodeNarcServer {
 
     static Map<String,String> currentThreads = new ConcurrentHashMap<String,String>()
     static final Logger logger = LoggerFactory.getLogger(CodeNarcServer.name)
 
-    static final int PORT = 7484
+    static final int SERVER_PORT = System.getenv('SERVER_PORT') ? System.getenv('SERVER_PORT') as int : 7484
     static final int maxIdleTime = 3600000 // 1h
 
     ExecutorService ex = Executors.newCachedThreadPool()
@@ -62,7 +59,7 @@ class CodeNarcServer {
             s(longOpt: 'server', type: boolean, 'Runs CodeNarc as a server (default: run CodeNarc directly)')
             v(longOpt: 'version', type: boolean, 'Outputs the version of CodeNarc')
             b(longOpt: 'verbose', type: boolean, 'Enables verbose output')
-            p(longOpt: 'port', type: int, defaultValue: "$PORT", "Sets the server port (default: $PORT)")
+            p(longOpt: 'port', type: int, defaultValue: "$SERVER_PORT", "Sets the server port (default: $SERVER_PORT)")
         }
 
         def options = cli.parse(args)
@@ -168,15 +165,16 @@ class CodeNarcServer {
             } catch (InterruptedException ie) {
                 respObj.status = 'cancelledByDuplicateRequest'
                 respObj.statusCode = 444
-                logger.debug('INTERRUPTED by duplicate')
+                logger.debug('Interrupted by duplicate')
             } catch (Throwable t) {
                 respObj.status = 'error'
                 respObj.errorMessage = t.getMessage()
                 respObj.errorDtl = t.getStackTrace().join('\n')
                 respObj.exceptionType =  t.getClass().getName()
                 respObj.statusCode = 500
-                logger.error('UNEXPECTED ERROR {}', respObj)
+                logger.debug('Request failed {}', respObj.errorMessage)
             }
+
             // Build response
             def respJson = JsonOutput.toJson(respObj)
             http.responseHeaders.add('Content-type', 'application/json')
@@ -184,11 +182,10 @@ class CodeNarcServer {
             http.responseBody.withWriter { out ->
                 out << respJson
             }
+
             // Remove thread info
             if (manageRequestKey && requestKey) {
                 removeThread(requestKey)
-                requestKey = null
-                manageRequestKey = false
             }
         }
 
@@ -201,13 +198,7 @@ class CodeNarcServer {
 
     private void runCodeNarc(String[] args) {
         CodeNarc codeNarc = new CodeNarc()
-        try {
-            codeNarc.execute(args)
-        }
-        catch (Throwable t) {
-            logger.error('CodeNarc.execute: {}', t)
-            throw t
-        }
+        codeNarc.execute(args)
     }
 
     // Cancel concurrent thread if existing
