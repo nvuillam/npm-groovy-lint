@@ -4,7 +4,7 @@
 
 // Imports
 const fse = require('fs-extra');
-const { getNpmGroovyLintRules } = require("./lib/groovy-lint-rules.js");
+const { getNpmGroovyLintRules } = require("../lib/groovy-lint-rules.js");
 
 const ruleSetAll = fse.readFileSync('lib/example/RuleSet-All.groovy', 'utf8');
 

@@ -17,8 +17,14 @@ usage: groovy CodeNarcServer.groovy [--help] [--server] [--port <port>]
 To see this in action from the root of this repository:
 
 ```shell
-groovy -cp "lib/java/*" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server
+groovy -jar lib/java/CodeNarcServer.jar --server
 ```
+
+### Environment
+
+You can also set the server port by setting SERVER_PORT environment variable.
+This is useful for development as all commands pay attention to this so work as
+expected.
 
 Any arguments not defined above are passed through to CodeNarc, which currently
 supports the following syntax:
@@ -83,7 +89,6 @@ Usage: java org.codenarc.CodeNarc [OPTIONS]
     java org.codenarc.CodeNarc -help'
 ```
 
-
 ## Logging
 
 The defaults for logging are detailed in [simplelogger.properties](/simplelogger.properties).
@@ -93,4 +98,12 @@ debug add the following to the command line:
 
 ```shell
 -Dorg.slf4j.simpleLogger.defaultLogLevel=DEBUG
+```
+
+## Building
+
+The server can be rebuilt with:
+
+```shell
+npm run server:build
 ```
