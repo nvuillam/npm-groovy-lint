@@ -8,8 +8,13 @@ package com.nvuillam
 
 // Java Http Server
 import com.sun.net.httpserver.HttpServer
+import com.sun.net.httpserver.HttpExchange
+import com.sun.net.httpserver.Filter
+import com.sun.net.httpserver.HttpHandler
+import java.util.function.Supplier
 
 // Concurrency & Timer management
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
@@ -39,20 +44,27 @@ import org.slf4j.LoggerFactory
 @CompileDynamic
 class CodeNarcServer {
 
-    static Map<String,String> currentThreads = new ConcurrentHashMap<String,String>()
-    static final Logger logger = LoggerFactory.getLogger(CodeNarcServer.name)
+    private static final Logger LOGGER = LoggerFactory.getLogger(CodeNarcServer.name)
+    private static final String REQUEST_ID_KEY = 'requestId'
+    private static final int SERVER_PORT = System.getenv('SERVER_PORT') ? System.getenv('SERVER_PORT') as int : 7484
+    private static final int MAX_IDLE_TIME = 3600000 // 1h
+    private static final String[] HELP_ARGS = ['-help']
+    private static final String[] VERSION_ARGS = ['-version']
 
-    static final int SERVER_PORT = System.getenv('SERVER_PORT') ? System.getenv('SERVER_PORT') as int : 7484
-    static final int maxIdleTime = 3600000 // 1h
-
-    ExecutorService ex = Executors.newCachedThreadPool()
+    private final CountDownLatch latch
+    private final Object lock
+    private final Map<String,String> currentThreads
+    private final Timer timer
+    private final HttpServer server
+    private final ExecutorService ex
+    private TimerTask currentTimerTask
 
     /**
      * Main command-line entry-point. Run the CodeNarcServer application.
      * @param args - the String[] of command-line arguments
      */
     static void main(String[] args) {
-        logger.debug('Starting args: {}', (Object)args)
+        LOGGER.debug('Starting args: {}', (Object)args)
 
         CliBuilder cli = new CliBuilder(usage: 'groovy CodeNarcServer.groovy [--help] [--server] [--port <port>]').tap {
             h(longOpt: 'help', 'Show usage information')
@@ -76,60 +88,177 @@ class CodeNarcServer {
             return
         }
 
-        CodeNarcServer codeNarcServer = new CodeNarcServer()
         if (options.server) {
             // Initialize CodeNarc Server for later calls
-            codeNarcServer.server(options.port)
+            try {
+                new CodeNarcServer(options.port).run()
+            } catch (java.net.BindException e) {
+                LOGGER.error('Error starting server on port {}. Is another instance already running?', options.port)
+            }
             return
         }
 
         // Do not use server, just call CodeNarc (worse performances as Java classes must be reloaded each time)
-        codeNarcServer.runCodeNarc(options.arguments() as String[])
+        runCodeNarc(options.arguments() as String[])
     }
 
-    // Launch HttpServer to receive CodeNarc linting request via Http
-    /* groovylint-disable-next-line UnusedPrivateMethod */
-    private void server(int port) {
+    // Call CodeNarc directly.
+    private static void runCodeNarc(String[] args) {
+        if (args == VERSION_ARGS || args == HELP_ARGS) {
+            // execute doesn't support help/version so redirect to main.
+            CodeNarc.main(args)
+            return
+        }
+
+        new CodeNarc().execute(args)
+    }
+
+    CodeNarcServer(int port) {
         // Create a server who accepts only calls from localhost ( https://stackoverflow.com/questions/50770747/how-to-configure-com-sun-net-httpserver-to-accept-only-requests-from-localhost )
         InetAddress localHost = InetAddress.getLoopbackAddress()
         InetSocketAddress sockAddr = new InetSocketAddress(localHost, port)
-        HttpServer server = HttpServer.create(sockAddr, 0)
 
-        Timer timer = new Timer()
-        TimerTask currentTimerTask
+        this.server = HttpServer.create(sockAddr, 0)
+        this.latch = new CountDownLatch(1)
+        this.lock = new Object()
+        this.currentThreads = new ConcurrentHashMap<String,String>()
+        this.timer = new Timer()
+        this.currentTimerTask = timer.runAfter(MAX_IDLE_TIME, { timerData ->
+            this.stopServer()
+        })
+        this.ex = Executors.newCachedThreadPool()
+    }
 
-        // Ping
-        server.createContext('/ping') { http ->
-            logger.trace('INIT: Hit from Host: {} on port: {}', http.remoteAddress.hostName, http.remoteAddress.holder.port)
-            logger.debug('PING')
+    // Request logging
+    private Filter logging(Logger logger) {
+        return new Filter() {
+
+            class LogOutputStream extends OutputStream implements Closeable {
+
+                private long written = 0
+                private final OutputStream inner
+
+                LogOutputStream(OutputStream inner) {
+                    this.inner = inner
+                }
+
+                void close() {
+                    inner.close()
+                }
+
+                void flush() {
+                    inner.flush()
+                }
+
+                void write(byte[] b) {
+                    write(b, 0, b.length)
+                }
+
+                void write(byte[] b, int off, int len) {
+                    inner.write(b, off, len)
+                    written += len
+                }
+
+                @Override
+                void write(int b) {
+                    written++
+                    inner.write(b)
+                }
+
+            }
+
+            private LogOutputStream output = null
+
+            @Override
+            void doFilter(HttpExchange http, Chain chain) throws IOException {
+                try {
+                    output = new LogOutputStream(http.responseBody)
+                    http.setStreams(http.requestBody, output)
+                    chain.doFilter(http)
+                } finally {
+                    // Apache Common Log Format
+                    // %h %l %u [%t] "%r" %>s %b
+                    String date = new Date().format('dd/MMM/yyyy:HH:mm:ss Z')
+                    logger.info('{} {} {} [{}] "{} {} {}" {} {}',
+                        http.remoteAddress.address.hostAddress,
+                        '-',
+                        '-',
+                        date,
+                        http.requestMethod,
+                        http.requestURI.path,
+                        http.protocol,
+                        http.responseCode,
+                        output.written,
+                    )
+                }
+            }
+
+            @Override
+            String description() {
+                return 'logging'
+            }
+
+        }
+    }
+
+    // Request tracing
+    private Filter tracing(Supplier<String> nextRequestId) {
+        return new Filter() {
+
+            @Override
+            void doFilter(HttpExchange http, Chain chain) throws IOException {
+                String requestId = http.requestHeaders.getFirst('X-Request-Id')
+                requestId ?= nextRequestId.get()
+                http.setAttribute(REQUEST_ID_KEY, requestId)
+                http.responseHeaders.add('X-Request-Id', requestId)
+                chain.doFilter(http)
+            }
+
+            @Override
+            String description() {
+                return 'tracing'
+            }
+
+        }
+    }
+
+    // Ping
+    private HttpHandler ping() {
+        return { http ->
             http.sendResponseHeaders(200, 0)
             http.responseHeaders.add('Content-type', 'application/json')
             http.responseBody.withWriter { out ->
                 out << '{"status":"running"}'
             }
         }
+    }
 
-        // Kill server
-        server.createContext('/kill') { http ->
-            logger.trace('INIT: Hit from Host: {} on port: {}', http.remoteAddress.hostName, http.remoteAddress.holder.port)
-            logger.debug('shutdown started')
+    // Kill server
+    private HttpHandler kill(Logger logger) {
+        return { http ->
             http.sendResponseHeaders(200, 0)
             http.responseHeaders.add('Content-type', 'application/json')
             http.responseBody.withWriter { out ->
                 out << '{"status":"killed"}'
             }
-            stopServer(ex, server)
-            logger.info('shutdown complete')
+            stopServer()
         }
+    }
 
-        // Request CodeNarc linting
-        server.createContext('/request') { http ->
+    // Request CodeNarc linting
+    private HttpHandler request(Logger logger) {
+        return { http ->
             def respObj = [:]
-            logger.trace('INIT: Hit from Host: {} on port: {}', http.remoteAddress.hostName, http.remoteAddress.holder.port)
+
             // Restart idle timer
-            currentTimerTask.cancel()
-            timer = new Timer()
-            currentTimerTask = timer.runAfter(this.maxIdleTime, { timerData -> stopServer(ex, server) })
+            synchronized (lock) {
+                currentTimerTask.cancel()
+                timer.purge()
+                currentTimerTask = timer.runAfter(this.MAX_IDLE_TIME, { timerData ->
+                    stopServer()
+                })
+            }
+
             String requestKey
             Boolean manageRequestKey
             // Parse input and call CodeNarc
@@ -158,7 +287,7 @@ class CodeNarcServer {
                 def codeNarcArgs = bodyObj.codeNarcArgs
                 def codenarcArgsArray = Commandline.translateCommandline(codeNarcArgs)
                 respObj.stdout = captureSystemOut {
-                    this.runCodeNarc(codenarcArgsArray)
+                    runCodeNarc(codenarcArgsArray)
                 }
                 respObj.statusCode = 200
                 respObj.status = 'success'
@@ -188,17 +317,30 @@ class CodeNarcServer {
                 removeThread(requestKey)
             }
         }
+    }
+
+    // Launch HttpServer to receive CodeNarc linting request via Http
+    /* groovylint-disable-next-line UnusedPrivateMethod */
+    private void run() {
+        Supplier<String> nextRequestId = () -> Long.toString(System.nanoTime())
+        List<Filter> filters = Arrays.asList(tracing(nextRequestId), logging(LOGGER))
+
+        // Assign handlers.
+        server.createContext('/ping', ping()).filters.addAll(filters)
+        server.createContext('/kill', kill(LOGGER)).filters.addAll(filters)
+        server.createContext('/request', request(LOGGER)).filters.addAll(filters)
+
+        Runtime.runtime.addShutdownHook(new Thread(() -> {
+            stopServer()
+        }))
 
         // Create executor & start server with a timeOut if inactive
         server.setExecutor(ex)      // set up a custom executor for the server
         server.start()              // start the server
-        logger.info('Listening on {}:{} hit Ctrl+C to exit', this.getHostString(sockAddr), port)
-        currentTimerTask = timer.runAfter(this.maxIdleTime,  { timerData -> stopServer(ex, server) })
-    }
+        LOGGER.info('Listening on {}:{} hit Ctrl+C to exit', server.address.address.hostAddress, server.address.port)
 
-    private void runCodeNarc(String[] args) {
-        CodeNarc codeNarc = new CodeNarc()
-        codeNarc.execute(args)
+        // Wait for server to be stopped.
+        latch.await()
     }
 
     // Cancel concurrent thread if existing
@@ -213,7 +355,7 @@ class CodeNarcServer {
                     t.interrupt()
                     t.stop()
                     currentThreads.remove(requestKey)
-                    logger.debug('CANCELLED duplicate thread {} requestKey: {}', tName, requestKey)
+                    LOGGER.debug('CANCELLED duplicate thread {} requestKey: {}', tName, requestKey)
                 }
             }
         }
@@ -235,7 +377,7 @@ class CodeNarcServer {
         }
         else if (bodyObj.codeNarcBaseDir) {
             // Ant style pattern is used: list all files
-            logger.debug('Ant file scanner in {}, includes {}, excludes {}', bodyObj.codeNarcBaseDir, bodyObj.codeNarcIncludes, bodyObj.codeNarcExcludes ?: 'none')
+            LOGGER.debug('Ant file scanner in {}, includes {}, excludes {}', bodyObj.codeNarcBaseDir, bodyObj.codeNarcIncludes, bodyObj.codeNarcExcludes ?: 'none')
             def ant = new groovy.ant.AntBuilder()
             def scanner = ant.fileScanner {
                 fileset(dir: bodyObj.codeNarcBaseDir) {
@@ -275,22 +417,22 @@ class CodeNarcServer {
         List<Error> parseErrors = []
         try {
             new GroovyShell().parse(file)
-            logger.debug('PARSE SUCCESS: {}', file.getAbsolutePath())
+            LOGGER.debug('PARSE SUCCESS: {}', file.getAbsolutePath())
         }
         catch (MultipleCompilationErrorsException ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = ep.getErrorCollector().getErrors()
-            logger.debug('PARSE ERROR (MultipleCompilationErrorsException): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
+            LOGGER.debug('PARSE ERROR (MultipleCompilationErrorsException): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
         }
         catch (CompilationFailedException ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = ep.getErrorCollector().getErrors()
-            logger.debug('PARSE ERROR (CompilationFailedException): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
+            LOGGER.debug('PARSE ERROR (CompilationFailedException): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
         }
         catch (Exception ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = []
-            logger.debug('PARSE ERROR (Other): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
+            LOGGER.debug('PARSE ERROR (Other): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
         }
         return parseErrors
     }
@@ -298,7 +440,7 @@ class CodeNarcServer {
     private void storeThread(String requestKey, def thread, ExecutorService ex) {
         def threadName = thread.getName()
         currentThreads.put(requestKey, threadName)
-        logger.debug('THREADS: (var {}, threadPool {})\n{}', currentThreads.size(), ex.getActiveCount(), currentThreads)
+        LOGGER.debug('THREADS: (var {}, threadPool {})\n{}', currentThreads.size(), ex.getActiveCount(), currentThreads)
     }
 
     private void removeThread(String requestKey) {
@@ -316,26 +458,16 @@ class CodeNarcServer {
         return result.toString('UTF-8')
     }
 
-    private void stopServer(ex, server) {
+    private void stopServer() {
+        LOGGER.info('Shutting down...')
+        timer.cancel()
         ex.shutdown()
-        // ex.awaitTermination(10, TimeUnit.MINUTES); //Seems some ghost request prevents to kill server
-        server.stop(0)
-        logger.info('CodeNarcServer stopped')
-        System.exit(0)
-    }
-
-    private String getHostString(InetSocketAddress socketAddress) {
-        InetAddress address = socketAddress.getAddress()
-        if (address == null) {
-            // The InetSocketAddress was specified with a string (either a numeric IP or a host name). If
-            // it is a name, all IPs for that name should be tried. If it is an IP address, only that IP
-            // address should be tried.
-            return socketAddress.getHostName()
-        }
-        // The InetSocketAddress has a specific address: we should only try that address. Therefore we
-        // return the address and ignore any host name that may be available.
-        return address.getHostAddress()
-    }
+        ex.awaitTermination(1, TimeUnit.SECONDS)
+        LOGGER.debug('Threads stopped')
+        server.stop(1)
+        LOGGER.info('Stopped')
+        latch.countDown()
+   }
 
     private String captureSystemOut(Closure closure) {
         def originalSystemOut = System.out

@@ -13,6 +13,7 @@ const metaDir = 'META-INF';
 const manifestFile = 'MANIFEST.MF';
 const jarFile = 'CodeNarcServer.jar';
 const libDir = 'lib/java/';
+const logConfig = 'logback.xml';
 const manifestTemplate = `Manifest-Version: 1.0
 Class-Path: {{classPath}}
 Created-By: 1.8.0_144 (Oracle Corporation)
@@ -115,7 +116,10 @@ function buildJar(jarFileTimes) {
     console.info('Building jar...');
 
     // Build the list of files to add to the jar.
-    let files = [`${metaDir}/${manifestFile}`];
+    let files = [
+        `${metaDir}/${manifestFile}`,
+        logConfig,
+    ];
     let dirent;
     let fsDir = fs.opendirSync(classDir)
     while ((dirent = fsDir.readSync()) !== null) {
@@ -129,6 +133,9 @@ function buildJar(jarFileTimes) {
     // Sort the files so that the jar file is deterministic.
     files.sort();
 
+    // Copy log config in.
+    fs.copyFileSync(`${libDir}${logConfig}`, `${tmpDir}/${logConfig}`);
+
     // Create the jar file.
     var jar = new admZip();
     files.forEach((file) => {
@@ -138,7 +145,12 @@ function buildJar(jarFileTimes) {
             // Set the original timestamp so that the jar file is deterministic.
             fs.utimesSync(tmpFile, origTime, origTime);
         }
-        jar.addLocalFile(tmpFile, path.dirname(file));
+
+        let zipPath = path.dirname(file)
+        if (zipPath == '.') {
+            zipPath = '';
+        }
+        jar.addLocalFile(tmpFile, zipPath);
     });
 
     jar.writeZip(`${libDir}${jarFile}`);
@@ -151,5 +163,5 @@ try {
     buildJar(fileTimes);
 } finally {
     console.info('Cleaning up...');
-    //fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpDir, { recursive: true, force: true });
 }

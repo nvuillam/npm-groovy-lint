@@ -91,13 +91,14 @@ Usage: java org.codenarc.CodeNarc [OPTIONS]
 
 ## Logging
 
-The defaults for logging are detailed in [simplelogger.properties](/simplelogger.properties).
+The defaults for logging are detailed in [logback.xml](/lib/java/logback.xml).
 
 You can also override the defaults using system properties, for example to enable
 debug add the following to the command line:
 
 ```shell
--Dorg.slf4j.simpleLogger.defaultLogLevel=DEBUG
+-Dlogging.appender.console.level=DEBUG
+-Dlogging.appender.file.level=DEBUG
 ```
 
 ## Building
