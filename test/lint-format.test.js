@@ -75,32 +75,33 @@ describe("Format with API", function() {
     it("(API:file) should format code", async function() {
         const expectedFixedErrs = 1096;
         const tmpDir = await copyFilesInTmpDir();
-        const prevFileContent = fse.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
-        const npmGroovyLintConfig = {
-            path: tmpDir,
-            files: `**/${SAMPLE_FILE_BIG}`,
-            format: true,
-            nolintafter: true,
-            output: "txt",
-            insight: false,
-            verbose: true
-        };
-        const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
+        try {
+            const prevFileContent = fse.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
+            const npmGroovyLintConfig = {
+                path: tmpDir,
+                files: `**/${SAMPLE_FILE_BIG}`,
+                format: true,
+                nolintafter: true,
+                output: "txt",
+                insight: false,
+                verbose: true
+            };
+            const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
-        assert(
-            linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
-        );
-        const newFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_BIG).toString();
-        assert(newFileContent !== prevFileContent, "File has been updated");
-        rimraf.sync(tmpDir);
-        const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
-        assert(fixedNbInLogs >= expectedFixedErrs, `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`);
-        assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
-        checkCodeNarcCallsCounter(2);
-
-        rimraf.sync(tmpDir);
+            assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
+            assert(
+                linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
+                `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+            );
+            const newFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_BIG).toString();
+            assert(newFileContent !== prevFileContent, "File has been updated");
+            const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
+            assert(fixedNbInLogs >= expectedFixedErrs, `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`);
+            assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
+            checkCodeNarcCallsCounter(2);
+        } finally {
+            rimraf.sync(tmpDir);
+        }
     }).timeout(100000);
 
     for (const [key, val] of getSamplesMap()) {

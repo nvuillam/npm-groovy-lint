@@ -102,7 +102,7 @@ private void doSomething(){
         [
             "GroovyDisableLineAll",
             {
-                totalFound: 4,
+                totalFound: 3,
                 source: `
 private void doSomething(){
             if (a == 2)
