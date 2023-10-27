@@ -21,7 +21,7 @@ const {
 describe("Lint with API", () => {
     beforeEach(beforeEachTestCase);
 
-    it("(API:file) should generate text console output and stats", async () => {
+    it("(API:file) should generate text console output and stats", async function() {
         const linter = await new NpmGroovyLint([process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--verbose"], {
             verbose: true
         }).run();
@@ -32,7 +32,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate text console output with loglevel=warning", async () => {
+    it("(API:file) should generate text console output with loglevel=warning", async function() {
         const linter = await new NpmGroovyLint(
             [process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--loglevel", "warning",
                 "--failon", "warning", "--verbose"],
@@ -47,7 +47,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate json output with rules", async () => {
+    it("(API:file) should generate json output with rules", async function() {
         const linter = await new NpmGroovyLint(
             [
                 process.execPath,
@@ -68,7 +68,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate SARIF output", async () => {
+    it("(API:file) should generate SARIF output", async function() {
         const linter = await new NpmGroovyLint(
             [
                 process.execPath,
@@ -89,7 +89,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate codenarc HTML file report", async () => {
+    it("(API:file) should generate codenarc HTML file report", async function() {
         const reportFileName = path.resolve("./tmp/ReportTestCodenarc.html");
         const linter = await new NpmGroovyLint(
             [process.execPath, "", "--path", "./lib/example", "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight", "--output", reportFileName],
@@ -102,7 +102,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate codenarc XML file report", async () => {
+    it("(API:file) should generate codenarc XML file report", async function() {
         const reportFileName = path.resolve("./tmp/ReportTestCodenarc.xml");
         const linter = await new NpmGroovyLint(
             [process.execPath, "", "--path", "lib/example", "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight", "--output", reportFileName],
@@ -115,7 +115,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should use --codenarcargs to generate XML report", async () => {
+    it("(API:file) should use --codenarcargs to generate XML report", async function() {
         const reportFileName = path.resolve("./tmp/ReportTestCodenarc.xml");
         const linter = await new NpmGroovyLint(
             [
@@ -136,7 +136,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a Jenkinsfile", async () => {
+    it("(API:file) should run on a Jenkinsfile", async function() {
         const linter = await new NpmGroovyLint(
             [process.execPath, "", "--path", '"lib/example"', "-f", "**/Jenkinsfile", "-c", "recommended-jenkinsfile", "--no-insight", "--verbose"],
             {
@@ -150,7 +150,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:files) should ignore fake_node_modules pattern", async () => {
+    it("(API:files) should ignore fake_node_modules pattern", async function() {
         const lintedFilesNb = 11;
         const npmGroovyLintConfig = {
             files: "**/*.groovy",
@@ -167,7 +167,7 @@ describe("Lint with API", () => {
         );
     });
 
-    it("(API:source) should run with source only (no parsing)", async () => {
+    it("(API:source) should run with source only (no parsing)", async function() {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
@@ -181,7 +181,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:source) should run with CodeNarc ruleset file", async () => {
+    it("(API:source) should run with CodeNarc ruleset file", async function() {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
@@ -197,7 +197,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:source) should run with source only (parse success)", async () => {
+    it("(API:source) should run with source only (parse success)", async function() {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
@@ -212,7 +212,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:source) should run with source only (file with spaces)", async () => {
+    it("(API:source) should run with source only (file with spaces)", async function() {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_WITH_SPACES_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_WITH_SPACES_PATH,
@@ -227,7 +227,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:source) should run with source only (parse error)", async () => {
+    it("(API:source) should run with source only (parse error)", async function() {
         const npmGroovyLintConfig = {
             source: fse.readFileSync(SAMPLE_FILE_PARSE_ERROR_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_PARSE_ERROR_PATH,
@@ -243,7 +243,7 @@ describe("Lint with API", () => {
     });
 
     /*
-        it("(API:source) should run without CodeNarc Server", async () => {
+        it("(API:source) should run without CodeNarc Server", async function() {
             const npmGroovyLintConfig = {
                 source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
                 sourcefilepath: SAMPLE_FILE_SMALL_PATH,
@@ -258,7 +258,7 @@ describe("Lint with API", () => {
             checkCodeNarcCallsCounter(1);
         }); */
 
-    it("(API:file) should run on a single file (relative)", async () => {
+    it("(API:file) should run on a single file (relative)", async function() {
         const linter = await new NpmGroovyLint([
             process.execPath,
             "",
@@ -274,7 +274,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a single file (absolute)", async () => {
+    it("(API:file) should run on a single file (absolute)", async function() {
         const linter = await new NpmGroovyLint([
             process.execPath,
             "",
@@ -290,7 +290,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a list of files (relative)", async () => {
+    it("(API:file) should run on a list of files (relative)", async function() {
         const linter = await new NpmGroovyLint([
             process.execPath,
             "",
@@ -307,7 +307,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a list of files (absolute)", async () => {
+    it("(API:file) should run on a list of files (absolute)", async function() {
         const linter = await new NpmGroovyLint([
             process.execPath,
             "",
@@ -324,7 +324,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a directory", async () => {
+    it("(API:file) should run on a directory", async function() {
         const linter = await new NpmGroovyLint([
             process.execPath,
             "",

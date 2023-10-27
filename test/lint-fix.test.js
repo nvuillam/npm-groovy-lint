@@ -15,7 +15,7 @@ const {
 describe("Lint & fix with API", function() {
     beforeEach(beforeEachTestCase);
 
-    it("(API:source) should lint then fix only a list of errors", async () => {
+    it("(API:source) should lint then fix only a list of errors", async function() {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
         const prevFileContent = fse.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
@@ -39,7 +39,7 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(2);
     });
 
-    it("(API:source) should lint and fix (one shot)", async () => {
+    it("(API:source) should lint and fix (one shot)", async function() {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
         const expectedFixedErrs = 1076;
         const prevFileContent = fse.readFileSync(sampleFilePath).toString();
@@ -63,7 +63,7 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(3);
     }).timeout(200000);
 
-    it("(API:source) should lint and fix (no lintagainafterfix)", async () => {
+    it("(API:source) should lint and fix (no lintagainafterfix)", async function() {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
         const expectedFixedErrs = 1076;
         const prevFileContent = fse.readFileSync(sampleFilePath).toString();
@@ -88,7 +88,7 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(2);
     }).timeout(200000);
 
-    it("(API:source) should lint and fix (no lintagainafterfix) 2", async () => {
+    it("(API:source) should lint and fix (no lintagainafterfix) 2", async function() {
         const sampleFilePath = SAMPLE_FILE_SMALL_PATH;
         const expectedFixedErrs = 3;
         const prevFileContent = fse.readFileSync(sampleFilePath).toString();

@@ -18,7 +18,7 @@ const {
 describe("Format with API", function() {
     beforeEach(beforeEachTestCase);
 
-    it("(API:source) should format code", async () => {
+    it("(API:source) should format code", async function() {
         const expectedFixedErrs = 1096;
         const prevFileContent = fse.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
         const npmGroovyLintConfig = {
@@ -43,7 +43,7 @@ describe("Format with API", function() {
         checkCodeNarcCallsCounter(2);
     }).timeout(100000);
 
-    it("(API:source) should format code with custom config", async () => {
+    it("(API:source) should format code with custom config", async function() {
         const expectedFixedErrs = 23;
         const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
@@ -72,7 +72,7 @@ describe("Format with API", function() {
         checkCodeNarcCallsCounter(1);
     }).timeout(100000);
 
-    it("(API:file) should format code", async () => {
+    it("(API:file) should format code", async function() {
         const expectedFixedErrs = 1096;
         const tmpDir = await copyFilesInTmpDir();
         const prevFileContent = fse.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
@@ -104,10 +104,10 @@ describe("Format with API", function() {
     }).timeout(100000);
 
     for (const [key, val] of getSamplesMap()) {
-        it("(API:source) " + key + " --format", async () => {
+        it("(API:source) " + key + " --format", async function() {
             await checkRule(key, val, "format");
         }).timeout(30000);
-        it("(API:source) " + key + " --fix", async () => {
+        it("(API:source) " + key + " --fix", async function() {
             await checkRule(key, val, "fix");
         }).timeout(30000);
     }

@@ -7,7 +7,7 @@ const fse = require("fs-extra");
 const { SAMPLE_FILE_SMALL_PATH } = require("./helpers/common");
 
 describe("Errors", function() {
-    it("(API:source) should trigger a parse options error", async () => {
+    it("(API:source) should trigger a parse options error", async function() {
         const prevFileContent = fse.readFileSync("./lib/example/SampleFile.groovy").toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -19,7 +19,7 @@ describe("Errors", function() {
         assert(linter.error.msg.includes("Invalid option"), "Invalid option detected");
     });
 
-    it("(API:source) should trigger a loglevel failon consistency error", async () => {
+    it("(API:source) should trigger a loglevel failon consistency error", async function() {
         const prevFileContent = fse.readFileSync("./lib/example/SampleFile.groovy").toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -32,7 +32,7 @@ describe("Errors", function() {
         assert(linter.error.msg.includes("failon option"), "failon + loglevel options consistency error detected");
     });
 
-    it("(API:source) should trigger a codenarc error", async () => {
+    it("(API:source) should trigger a codenarc error", async function() {
         const npmGroovyLintConfig = {
             path: "/not/existing/path",
             output: "txt",
@@ -47,7 +47,7 @@ describe("Errors", function() {
         );
     });
 
-    it("(API:source) should trigger a codenarc error (--noserver)", async () => {
+    it("(API:source) should trigger a codenarc error (--noserver)", async function() {
         const npmGroovyLintConfig = {
             path: "/not/existing/path",
             noserver: true
@@ -61,7 +61,7 @@ describe("Errors", function() {
         );
     });
 
-    it("(API:source) should trigger a fix function error", async () => {
+    it("(API:source) should trigger a fix function error", async function() {
         const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -76,7 +76,7 @@ describe("Errors", function() {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
-    it("(API:source) should detect and display a parse error", async () => {
+    it("(API:source) should detect and display a parse error", async function() {
         const npmGroovyLintConfig = {
             failon: "error",
             path: "./lib/example/test",

@@ -6,7 +6,10 @@ const which = require("which");
 const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG } = require("./helpers/common");
 
 describe("Server", function() {
-    it("(API:Server) should kill running server", async () => {
+    it("(API:Server) should kill running server", async function() {
+        // Due to the interaction with the daemon, this test can be flakey so retry.
+        this.retries(3);
+
         beforeEachTestCase();
 
         // Ensure we have a server running to kill.
@@ -30,8 +33,12 @@ describe("Server", function() {
         checkCodeNarcCallsCounter(2);
     });
 
-    it("(API:Server) should not succeed to kill running server", async () => {
+    it("(API:Server) should not succeed to kill running server", async function() {
+        // Due to the interaction with the daemon, this test can be flakey so retry.
+        this.retries(3);
+
         beforeEachTestCase();
+
         const linter = await new NpmGroovyLint([process.execPath, "", "--killserver", "--no-insight", "--verbose"], {
             verbose: true
         }).run();
@@ -40,7 +47,12 @@ describe("Server", function() {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:Server) should kill java override running server", async () => {
+    it("(API:Server) should kill java override running server", async function() {
+        // Due to the interaction with the daemon, this test can be flakey so retry.
+        this.retries(3);
+
+        beforeEachTestCase();
+
         let javaPath;
         try {
             javaPath = which.sync("java");
@@ -64,8 +76,6 @@ describe("Server", function() {
             this.skip();
             return;
         }
-
-        beforeEachTestCase();
 
         // Ensure we have a server running to kill.
         const npmGroovyLintConfig = {

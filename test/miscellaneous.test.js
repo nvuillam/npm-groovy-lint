@@ -12,7 +12,7 @@ const exec = util.promisify(childProcess.exec);
 const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH } = require("./helpers/common");
 
 describe("Miscellaneous", function() {
-    it("(API:source) returns config file using path", async () => {
+    it("(API:source) returns config file using path", async function() {
         const npmGroovyLintConfig = {
             path: "./lib/example/",
             files: "**/" + SAMPLE_FILE_SMALL,
@@ -26,7 +26,7 @@ describe("Miscellaneous", function() {
         assert(path.resolve(filePath) === path.resolve("./lib/example/.groovylintrc.json"), ".groovylintrc.json has been returned");
     });
 
-    it("(API:source) returns config file path using parameter", async () => {
+    it("(API:source) returns config file path using parameter", async function() {
         const npmGroovyLintConfig = {};
         const linter = new NpmGroovyLint(npmGroovyLintConfig, {});
         const filePath = await linter.getConfigFilePath("./lib/example");
@@ -34,7 +34,7 @@ describe("Miscellaneous", function() {
         assert(path.resolve(filePath) === path.resolve("./lib/example/.groovylintrc.json"), ".groovylintrc.json has been returned");
     });
 
-    it("(API:source) load config using specific file name", async () => {
+    it("(API:source) load config using specific file name", async function() {
         const customConfigFilePath = process.platform.includes("linux") ? "~/.groovylintrc-custom.json" : os.tmpdir() + "\\.groovylintrc-custom.json";
         await fse.ensureDir("~/", { mode: "0777" });
         await fse.copy("./lib/example/.groovylintrc-custom.json", customConfigFilePath);
@@ -56,7 +56,7 @@ describe("Miscellaneous", function() {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
-    it("(API:source) load standard config using string key", async () => {
+    it("(API:source) load standard config using string key", async function() {
         const npmGroovyLintConfig = {
             config: "recommended-jenkinsfile",
             path: "./lib/example/",
@@ -77,7 +77,7 @@ describe("Miscellaneous", function() {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
-    it("(API:source) load custom config using string key", async () => {
+    it("(API:source) load custom config using string key", async function() {
         const npmGroovyLintConfig = {
             config: "custom-jenkinsfile",
             path: "./lib/example/",
@@ -100,7 +100,7 @@ describe("Miscellaneous", function() {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
-    it("(API:source) return indent length without linting", async () => {
+    it("(API:source) return indent length without linting", async function() {
         let indentLength = null;
         const linter = new NpmGroovyLint(
             {
@@ -121,7 +121,7 @@ describe("Miscellaneous", function() {
         assert(indentLength != null && indentLength > 0, "Indent length has been returned");
     });
 
-    it("(API:source) return rules", async () => {
+    it("(API:source) return rules", async function() {
         const npmGroovyLintConfig = {
             path: "./lib/example/",
             files: "**/" + SAMPLE_FILE_SMALL,
@@ -135,7 +135,7 @@ describe("Miscellaneous", function() {
         assert(linter.lintResult.rules["AssertWithinFinallyBlock"].docUrl != null, "Rules doc urls are returned ");
     });
 
-    it("(API:source) do not return rules", async () => {
+    it("(API:source) do not return rules", async function() {
         const npmGroovyLintConfig = {
             path: "./lib/example/",
             files: "**/" + SAMPLE_FILE_SMALL,
@@ -147,7 +147,7 @@ describe("Miscellaneous", function() {
         assert(linter.lintResult.rules == null, "Rules are not returned");
     });
 
-    it("(API:source) send anonymous usage statistics", async () => {
+    it("(API:source) send anonymous usage statistics", async function() {
         const npmGroovyLintConfig = {
             path: "./lib/example/",
             returnrules: true,
@@ -159,7 +159,7 @@ describe("Miscellaneous", function() {
         assert(linter.startElapse != null, "Anonymous stats has not been sent");
     });
 
-    it("(API:source) should use a CodeNarc ruleset defined in groovylintrc.json", async () => {
+    it("(API:source) should use a CodeNarc ruleset defined in groovylintrc.json", async function() {
         const npmGroovyLintConfig = {
             config: "./lib/example/.groovylintrc-codenarc-rulesets.json",
             path: "./lib/example/",
@@ -170,7 +170,7 @@ describe("Miscellaneous", function() {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
-    it("(API:source) should cancel current request", async () => {
+    it("(API:source) should cancel current request", async function() {
         const requestKey = "requestKeyCalculatedByExternal" + Math.random();
         const delay = os.platform() === "win32" ? 100 : 50;
         const npmGroovyLintConfig = {
@@ -233,7 +233,7 @@ describe("Miscellaneous", function() {
     }).timeout(120000);
 
 
-    it("(API:source) override java executable", async () => {
+    it("(API:source) override java executable", async function() {
         let javaPath;
         try {
             javaPath = which.sync("java");
@@ -268,19 +268,19 @@ describe("Miscellaneous", function() {
         }
     }).timeout(120000);
 
-    it("(API:help) should show npm-groovy-lint help", async () => {
+    it("(API:help) should show npm-groovy-lint help", async function() {
         const linter = await new NpmGroovyLint([process.execPath, "", "-h"], {}).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes("--verbose"), "--verbose is found in output text");
     });
 
-    it("(API:help) should show npm-groovy-lint help option", async () => {
+    it("(API:help) should show npm-groovy-lint help option", async function() {
         const linter = await new NpmGroovyLint([process.execPath, "", "-h", "source"], {}).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes("-s, --source"), "npm-groovy-lint Help is displayed");
     });
 
-    it("(API:help) should show npm-groovy-lint version", async () => {
+    it("(API:help) should show npm-groovy-lint version", async function() {
         process.env.npm_package_version = ""; // NV: Do not use npm_package_version to have more code coverage :)
         const linter = await new NpmGroovyLint([process.execPath, "", "-v"], {}).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
@@ -292,7 +292,7 @@ describe("Miscellaneous", function() {
         assert(linter.outputString.includes(`Groovy version`), `Provides CodeNarc version\nReturned outputString:\n${linter.outputString}`);
     });
 
-    it("(API:help) should show codenarc help", async () => {
+    it("(API:help) should show codenarc help", async function() {
         beforeEachTestCase(); // Call manually as beforeEach only works from the CLI.
         const linter = await new NpmGroovyLint([process.execPath, "", "--codenarcargs", "-help"], {}).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
