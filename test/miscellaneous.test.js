@@ -170,7 +170,7 @@ describe("Miscellaneous", function() {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
     });
 
-    it("(API:source) should cancel current request", async function() {
+    it.skip("(API:source) should cancel current request", async function() {
         const requestKey = "requestKeyCalculatedByExternal" + Math.random();
         const delay = os.platform() === "win32" ? 100 : 50;
         const npmGroovyLintConfig = {

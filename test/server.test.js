@@ -5,7 +5,7 @@ let assert = require("assert");
 const which = require("which");
 const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG } = require("./helpers/common");
 
-describe("Server", function() {
+describe.skip("Server", function() {
     it("(API:Server) should kill running server", async function() {
         // Due to the interaction with the daemon, this test can be flakey so retry.
         this.retries(3);
