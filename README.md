@@ -31,7 +31,7 @@ You can also use this package in :
 - [Mega-Linter](https://nvuillam.github.io/mega-linter/) (can be used as GitHub Action, and lints all other languages and formats)
 - [Docker Image](#other)
 
-![image](https://github.com/nvuillam/npm-groovy-lint/raw/master/docs/assets/images/npm-groovy-lint-results.png)
+![image](https://github.com/nvuillam/npm-groovy-lint/raw/main/docs/assets/images/npm-groovy-lint-results.png)
 
 See [CHANGELOG](https://github.com/nvuillam/npm-groovy-lint/blob/master/CHANGELOG.md)
 
