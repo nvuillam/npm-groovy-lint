@@ -9,11 +9,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test_java8_node_18:
-    name: Test - Debian - Java 8 - Node 18
-    runs-on: ubuntu-latest
-    container:
-      image: openjdk:8-jdk-buster
+  test:
+    strategy:
+      matrix:
+        node_version: ['18']
+        java_version: ['17']
+        java_distrib: [temurin]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - node_version: '18'
+            java_version: '17'
+            java_distrib: adopt
+            os: ubuntu-latest
+    name: Test
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
       - name: Checkout Code
@@ -21,7 +30,12 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: ${{ matrix.node_version }}
+      - name: Install Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: ${{ matrix.java_distrib }}
+          java-version: ${{ matrix.java_version }}
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
@@ -29,59 +43,20 @@ jobs:
           DEBUG: "npm-groovy-lint"
         run: npm run test
 
-  test_java11_node_18:
-    name: Test - Debian - Java 11 - Node 18
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+  coverage:
+    name: Test - No Java - CodeCov
+    strategy:
+      matrix:
+        debian_version: [bookworm]
+        node_version: ['18']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     container:
-      image: openjdk:11
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Install node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependencies and link
-        run: npm ci && npm link
-      - name: Run tests
-        env:
-          DEBUG: "npm-groovy-lint"
-        run: npm run test
-
-  test_java14_latest_node_18:
-    name: Test - Debian - AdoptOpenJDK latest - Node 18
-    runs-on: ubuntu-latest
-    container:
-      image: adoptopenjdk:latest
+      image: "node:${{ matrix.node_version }}-${{ matrix.debian_version }}"
     timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Install node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependencies and link
-        run: npm ci && npm link
-      - name: Run tests
-        env:
-          DEBUG: "npm-groovy-lint"
-        run: npm run test
-
-  test_no_java_node_14_codecov:
-    name: Test - Debian - No Java - Node 18 - CodeCov
-    runs-on: ubuntu-latest
-    container:
-      image: node:14-buster
-    timeout-minutes: 15
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Install node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
@@ -98,31 +73,3 @@ jobs:
           flags: unittests
           verbose: true
           dry_run: true
-
-  test_windows:
-    name: Test - Windows
-    runs-on: windows-latest
-    timeout-minutes: 25
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Install dependencies and link
-        run: npm ci && npm link
-      - name: Run tests
-        env:
-          DEBUG: "npm-groovy-lint"
-        run: npm run test
-
-  test_mac:
-    name: Test - MacOs
-    runs-on: macos-latest
-    timeout-minutes: 25
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Install dependencies and link
-        run: npm ci && npm link
-      - name: Run tests
-        env:
-          DEBUG: "npm-groovy-lint"
-        run: npm run test

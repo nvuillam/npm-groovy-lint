@@ -8,7 +8,7 @@ describe("Check disabled rules", function() {
     beforeEach(beforeEachTestCase);
 
     for (const [key, val] of getSamplesMap()) {
-        it("(API:source)" + key, async () => {
+        it("(API:source)" + key, async function() {
             await checkRule(key, val);
         }).timeout(30000);
     }
@@ -102,10 +102,10 @@ private void doSomething(){
         [
             "GroovyDisableLineAll",
             {
-                totalFound: 4,
+                totalFound: 3,
                 source: `
 private void doSomething(){
-            if (a == 2) 
+            if (a == 2)
                 doSomething(); // groovylint-disable-line
    }
 `
@@ -158,7 +158,7 @@ private void doSomething(){
     // groovylint-disable
             if (a == 2)
                 doSomething();
-    // groovylint-enable 
+    // groovylint-enable
     def a = 1;
 }
 `

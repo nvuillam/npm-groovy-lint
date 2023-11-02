@@ -22,14 +22,14 @@ describe("Check range detection", () => {
                 for (const testRule of npmGroovyLintRules[ruleName].rangeTests) {
                     // Do not test non-codenarc rules, as they can't be returned by CodeNarc Linter
                     if (npmGroovyLintRules[ruleName].isCodeNarcRule == null || npmGroovyLintRules[ruleName].isCodeNarcRule === true)
-                        it(`${ruleName} (${pos})`, async () => {
+                        it(`${ruleName} (${pos})`, async function() {
                             await checkRuleRange(ruleName, testRule);
                         }).timeout(60000);
                     pos = pos + 1;
                 }
             } else {
                 // At least one rule should be defined
-                it(`${ruleName} range tests has not been defined: please do it !`, async () => {
+                it(`${ruleName} range tests has not been defined: please do it !`, async function() {
                     assert(0 === 1, `${ruleName} range tests has not been defined: please do it !`);
                 });
             }
