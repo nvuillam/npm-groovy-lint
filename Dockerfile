@@ -4,7 +4,7 @@ WORKDIR /
 ARG NPM_GROOVY_LINT_VERSION='latest'
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache bash nodejs npm openjdk11 \
+RUN apk add --no-cache bash nodejs npm openjdk17 \
     && npm install npm-groovy-lint@${NPM_GROOVY_LINT_VERSION} -g
 
 LABEL maintainer="Nicolas Vuillamy <nicolas.vuillamy@gmail.com>" \
