@@ -2,6 +2,12 @@
 
 ## UNRELEASED
 
+## [12.0.1] 2023-11-06
+
+- Fix: bump openjdk version from 11 to 17 in Docker image by @SerhiiKorolik in https://github.com/nvuillam/npm-groovy-lint/pull/317
+
+## [12.0.0] 2023-11-04
+
 Many fixes, including an issue with IPV6 that made npm-groovy-lint crash on many machines, has been fixed by @stevenh ! Many thanks to him !
 
 Breaking change: **Minimum java version to Java 17**
