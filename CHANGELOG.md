@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+- Fix files specified on the command line not linting as expected
+- Fix incompatible arguments passed to CodeNarc
+- Fix command line -ext extensions not being processed
+- Fix use of includes instead of exclude parameters
+
 ## [12.2.0] 2023-11-26
 
 - Upgrade java-caller dependency to 3.2.0 (Now handles Mac M1)

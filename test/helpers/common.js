@@ -65,6 +65,17 @@ function getDiff(expected, afterUpdate, beforeUpdate) {
     return effectiveDiffs;
 }
 
+// assert output includes expectedCount linted files result.
+function assertLintedFiles(output, expectedCount) {
+    const lintedResult = output.matchAll(/npm-groovy-lint results in .\[1m(\S+).\[22m linted files/g);
+    assert(lintedResult, "Missing linted files result");
+    const gotCount = Array.from(lintedResult, m => m[1]);
+    assert(
+        gotCount == expectedCount,
+        `Expected ${expectedCount} linted files got ${gotCount}`
+    );
+}
+
 module.exports = {
     NPM_GROOVY_LINT,
     EXAMPLE_DIRECTORY,
@@ -85,5 +96,6 @@ module.exports = {
     beforeEachTestCase,
     checkCodeNarcCallsCounter,
     copyFilesInTmpDir,
-    getDiff
+    getDiff,
+    assertLintedFiles
 };

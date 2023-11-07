@@ -17,7 +17,7 @@ usage: groovy CodeNarcServer.groovy [--help] [--server] [--port <port>]
 To see this in action from the root of this repository:
 
 ```shell
-groovy -jar lib/java/CodeNarcServer.jar --server
+java -jar lib/java/CodeNarcServer.jar --server
 ```
 
 ### Environment
