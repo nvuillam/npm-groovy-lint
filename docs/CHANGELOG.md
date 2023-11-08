@@ -6,6 +6,7 @@
 - Secure workflows with github environments
 - Add label in dockerfile
 - Refactor docker build & push github actions workflows
+- Fix: Print a warning for unbalanced enable/disable code sections
 
 ## [11.1.1] 2022-10-31
 
