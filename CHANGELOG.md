@@ -2,8 +2,6 @@
 
 ## UNRELEASED
 
-- Fix: Print a warning for unbalanced enable/disable code sections by @realdadfish in https://github.com/nvuillam/npm-groovy-lint/pull/322
-
 ## [12.0.1] 2023-11-06
 
 - Fix: bump openjdk version from 11 to 17 in Docker image by @SerhiiKorolik in https://github.com/nvuillam/npm-groovy-lint/pull/317
