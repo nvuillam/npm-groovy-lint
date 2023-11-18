@@ -2,10 +2,31 @@
 
 ## UNRELEASED
 
-- Automate release of beta version
-- Secure workflows with github environments
-- Add label in dockerfile
-- Refactor docker build & push github actions workflows
+## [12.1.0] 2023-11-18
+
+- Upgrade node-java-caller to v3.1.0
+
+## [12.0.1] 2023-11-06
+
+- Fix: bump openjdk version from 11 to 17 in Docker image by @SerhiiKorolik in https://github.com/nvuillam/npm-groovy-lint/pull/317
+
+## [12.0.0] 2023-11-04
+
+Many fixes, including an issue with IPV6 that made npm-groovy-lint crash on many machines, has been fixed by @stevenh ! Many thanks to him !
+
+Breaking change: **Minimum java version to Java 17**
+
+* Use MegaLinter v7 by @nvuillam in https://github.com/nvuillam/npm-groovy-lint/pull/254
+* Bump json5 from 2.2.1 to 2.2.3 by @dependabot in https://github.com/nvuillam/npm-groovy-lint/pull/260
+* ci: fix action failures by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/309
+* chore: update node to 18 lts by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/310
+* feat: improve the vscode deployment by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/307
+* Improve publish via CI + beta when in main by @nvuillam in https://github.com/nvuillam/npm-groovy-lint/pull/311
+* chore: improve flow debugging by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/303
+* ci: predictable server builds and port option by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/312
+* fix: status bar message by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/302
+* fix: server and test stability by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/313
+* fix: UnnecessaryGString for strings with slashes by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/304
 
 ## [11.1.1] 2022-10-31
 
