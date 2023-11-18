@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [12.1.0] 2023-11-18
+
+- Upgrade node-java-caller to v3.1.0
+
 ## [12.0.1] 2023-11-06
 
 - Fix: bump openjdk version from 11 to 17 in Docker image by @SerhiiKorolik in https://github.com/nvuillam/npm-groovy-lint/pull/317
