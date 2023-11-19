@@ -60,7 +60,7 @@
     "glob": "^7.1.6",
     "import-fresh": "^3.2.1",
     "ip": "^1.1.5",
-    "java-caller": "^3.1.0",
+    "java-caller": "^3.1.1",
     "js-yaml": "^4.1.0",
     "node-sarif-builder": "^2.0.3",
     "optionator": "^0.8.3",
