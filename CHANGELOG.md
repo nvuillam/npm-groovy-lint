@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [12.1.1] 2023-11-19
+
+- Upgrade node-java-caller to v3.1.1
+
 ## [12.1.0] 2023-11-18
 
 - Upgrade node-java-caller to v3.1.0
