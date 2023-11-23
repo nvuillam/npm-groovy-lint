@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [12.1.2] 2023-11-23
+
+- Revert update that output json when not requested
+
 ## [12.1.1] 2023-11-19
 
 - Upgrade node-java-caller to v3.1.1
