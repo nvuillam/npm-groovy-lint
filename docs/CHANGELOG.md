@@ -2,10 +2,38 @@
 
 ## UNRELEASED
 
-- Fix files specified on the command line not linting as expected
-- Fix incompatible arguments passed to CodeNarc
-- Fix command line -ext extensions not being processed
-- Fix use of includes instead of exclude parameters
+## [13.0.0] 2023-11-26
+
+- **BREAKING CHANGE: Upgrade CodeNarc to v3.4.0-alpha+3346775f**
+
+- Major core architecture refactoring by the great [**Steven Hartland**](https://github.com/stevenh)
+  
+  - Fix files specified on the command line not linting as expected due to the generated patterns not working as intended if relative path that contains a file and not a directory due to an issue with CodeNarc pattern processing.
+
+  - Fix incompatible arguments passed to CodeNarc by:
+    - Using arrays internally to avoid issues with spaces in arguments being interpreted incorrectly.
+    - Stripping all quotes from string arguments as CodeNarc doesn't handle them correctly.
+    - Enable automatic argument quoting on Windows.
+
+  - Fix command line -ext extensions not being processed correctly and matching too many files as it was missing the prefix.
+
+  - Ensure readFile and writeFile calls produce a stack trace on failure due to: https://github.com/nodejs/node/issues/30944.
+
+  - Fix file delete race condition and variable clean up due to missing await.
+
+  - Fix use of includes instead of exclude parameters.
+
+- Also:
+  - Fixed Request failed logging
+  - Fix README.md typo
+  - Add additional useful debug logging
+  - Run dev:pre-commit to update CHANGELOG.md
+  - Add more cspell entries
+  - Add missing items to CodeNarcServer.groovy usage
+  - Re-enable tests which are now fixed
+  - Override axios for security patch
+
+[Steven Hartland](https://www.linkedin.com/in/steven-hartland-a7435b4/) now becomes an official maintainer of npm-groovy-lint and vscode-groovy-lint !
 
 ## [12.2.0] 2023-11-26
 
