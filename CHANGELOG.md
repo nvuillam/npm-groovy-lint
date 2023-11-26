@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [12.2.0] 2023-11-26
+
+- Upgrade java-caller dependency to 3.2.0 (Now handles Mac M1)
+
 ## [12.1.2] 2023-11-23
 
 - Revert update that output json when not requested
