@@ -1,7 +1,6 @@
 #! /usr/bin/env node
 "use strict";
 const util = require("util");
-const c = require("ansi-colors");
 let assert = require("assert");
 const fse = require("fs-extra");
 const path = require("path");
@@ -9,7 +8,7 @@ const childProcess = require("child_process");
 const exec = util.promisify(childProcess.exec);
 const spawn = childProcess.spawnSync;
 
-const { SAMPLE_FILE_SMALL, NPM_GROOVY_LINT, SAMPLE_FILE_BIG } = require("./helpers/common");
+const { assertLintedFiles, SAMPLE_FILE_SMALL, NPM_GROOVY_LINT, SAMPLE_FILE_BIG } = require("./helpers/common");
 
 describe("Lint with executable", () => {
     it("(EXE:file) should generate text console output", async function() {
@@ -55,10 +54,7 @@ describe("Lint with executable", () => {
         }
         assert(stdout, "stdout is set");
         assert(stdout.includes("warning"), 'stdout should contain word "warning"');
-        assert(
-            stdout.includes(`npm-groovy-lint results in ${c.bold(1)} linted files`),
-            `Wrong Number of linted files is displayed in summary: (1 expected)`
-        );
+        assertLintedFiles(stdout, 1);
     });
 
     it("(EXE:file) should lint 2 files", async function() {
@@ -75,10 +71,7 @@ describe("Lint with executable", () => {
         }
         assert(stdout, "stdout is set");
         assert(stdout.includes("warning"), 'stdout should contain word "warning"');
-        assert(
-            stdout.includes(`npm-groovy-lint results in ${c.bold(2)} linted files`),
-            `Wrong Number of linted files is displayed in summary: (2 expected)`
-        );
+        assertLintedFiles(stdout, 2);
     });
 
     it("(EXE:file) should generate sarif output", async function() {
@@ -118,10 +111,7 @@ describe("Lint with executable", () => {
         }
         assert(stdout, "stdout is set");
         assert(stdout.includes("warning"), 'stdout should contain word "warning"');
-        assert(
-            stdout.includes(`npm-groovy-lint results in ${c.bold(12)} linted files`),
-            `Wrong Number of linted files is displayed in summary: (12 expected)`
-        );
+        assertLintedFiles(stdout, 12);
     });
 
     it("(EXE:file) should ignore fake_node_modules pattern", async function() {
@@ -132,26 +122,19 @@ describe("Lint with executable", () => {
         }
         assert(stdout, "stdout is set");
         assert(!stdout.includes(`ToIgnore.groovy`), `ToIgnore.groovy has been ignored \n${stdout}`);
-        assert(
-            stdout.includes(`npm-groovy-lint results in ${c.bold(11)} linted files`),
-            `Number of linted files is displayed in summary \n${stdout}`
-        );
+        assertLintedFiles(stdout, 11);
     });
 
-    // Tmp disable
-    /* it("(EXE:file) should ignore fake_node_modules pattern with --noserver", async function() {
-        const params = ["--ignorepattern", "**//*fake_node_modules/**", "--failon", "none", "--no-insight", "--output", "txt", "--noserver"];
+    it("(EXE:file) should ignore fake_node_modules pattern with --noserver", async function() {
+        const params = ["--ignorepattern", "**/fake_node_modules/**", "--failon", "none", "--no-insight", "--output", "txt", "--noserver"];
         const { stdout, stderr } = await exec("cd ./lib/example && " + NPM_GROOVY_LINT + params.join(" "));
         if (stderr) {
             console.error(stderr);
         }
         assert(stdout, "stdout is set");
         assert(!stdout.includes(`ToIgnore.groovy`), `ToIgnore.groovy has been ignored \n${stdout}`);
-        assert(
-            stdout.includes(`npm-groovy-lint results in ${c.bold(11)} linted files`),
-            `Number of linted files is displayed in summary \n${stdout}`
-        );
-    }); */
+        assertLintedFiles(stdout, 11);
+    });
 
     it("(EXE:file) should generate codenarc HTML file report", async function() {
         const reportFileName = path.resolve("ReportTestCodenarc.html");

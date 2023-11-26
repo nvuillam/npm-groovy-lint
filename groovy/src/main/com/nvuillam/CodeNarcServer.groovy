@@ -31,9 +31,6 @@ import groovy.transform.CompileDynamic
 import org.codehaus.groovy.control.CompilationFailedException
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 
-// Ant
-import org.apache.tools.ant.types.Commandline
-
 // CodeNarc main class
 import org.codenarc.CodeNarc
 
@@ -66,7 +63,7 @@ class CodeNarcServer {
     static void main(String[] args) {
         LOGGER.debug('Starting args: {}', (Object)args)
 
-        CliBuilder cli = new CliBuilder(usage: 'groovy CodeNarcServer.groovy [--help] [--server] [--port <port>]').tap {
+        CliBuilder cli = new CliBuilder(usage: 'groovy CodeNarcServer.groovy [--help] [--server] [--version] [--port <port>]').tap {
             h(longOpt: 'help', 'Show usage information')
             s(longOpt: 'server', type: boolean, 'Runs CodeNarc as a server (default: run CodeNarc directly)')
             v(longOpt: 'version', type: boolean, 'Outputs the version of CodeNarc')
@@ -284,10 +281,10 @@ class CodeNarcServer {
                 respObj.parseErrors = parseFiles(bodyObj, respObj.fileList)
 
                 // Call CodeNarc
-                def codeNarcArgs = bodyObj.codeNarcArgs
-                def codenarcArgsArray = Commandline.translateCommandline(codeNarcArgs)
+                String[] args = bodyObj.codeNarcArgs as String[]
+                LOGGER.debug('Calling CodeNarc with args: {}', args)
                 respObj.stdout = captureSystemOut {
-                    runCodeNarc(codenarcArgsArray)
+                    runCodeNarc(args)
                 }
                 respObj.statusCode = 200
                 respObj.status = 'success'
@@ -297,11 +294,11 @@ class CodeNarcServer {
                 logger.debug('Interrupted by duplicate')
             } catch (Throwable t) {
                 respObj.status = 'error'
-                respObj.errorMessage = t.getMessage()
-                respObj.errorDtl = t.getStackTrace().join('\n')
-                respObj.exceptionType =  t.getClass().getName()
+                respObj.errorMessage = t.message
+                respObj.errorDtl = t.stackTrace.join('\n')
+                respObj.exceptionType =  t.class.name
                 respObj.statusCode = 500
-                logger.debug('Request failed {}', respObj.errorMessage)
+                logger.debug('Request failed', t)
             }
 
             // Build response
@@ -366,10 +363,12 @@ class CodeNarcServer {
         def fileList = []
         // Unique file (usually from GroovyLint Language Server)
         if (bodyObj.file) {
+            LOGGER.debug('listFiles file: {}', bodyObj.file)
             File f = new File(bodyObj.file)
             fileList << f.getAbsolutePath()
         }
         else if (bodyObj.fileList) {
+            LOGGER.debug('listFiles fileList: {}', bodyObj.fileList)
             for (String file in bodyObj.fileList) {
                 File f = new File(file)
                 fileList << f.getAbsolutePath()
@@ -377,17 +376,20 @@ class CodeNarcServer {
         }
         else if (bodyObj.codeNarcBaseDir) {
             // Ant style pattern is used: list all files
-            LOGGER.debug('Ant file scanner in {}, includes {}, excludes {}', bodyObj.codeNarcBaseDir, bodyObj.codeNarcIncludes, bodyObj.codeNarcExcludes ?: 'none')
+            bodyObj.codeNarcExcludes = bodyObj.codeNarcExcludes ?= [] // TODO(steve): is there a simpler way to do this?
+            LOGGER.debug('listFiles ant file scanner in {}, includes {}, excludes {}',
+                bodyObj.codeNarcBaseDir,
+                bodyObj.codeNarcIncludes,
+                bodyObj.codeNarcExcludes
+            )
             def ant = new groovy.ant.AntBuilder()
             def scanner = ant.fileScanner {
                 fileset(dir: bodyObj.codeNarcBaseDir) {
-                    bodyObj.codeNarcIncludes.split(',').each { includeExpr ->
+                    bodyObj.codeNarcIncludes.each { includeExpr ->
                         include(name: includeExpr)
                     }
-                    if (bodyObj.codeNarcExcludes) {
-                        bodyObj.codeNarcIncludes.split(',').each { excludeExpr ->
-                            exclude(name: excludeExpr)
-                        }
+                    bodyObj.codeNarcExcludes.each { excludeExpr ->
+                        exclude(name: excludeExpr)
                     }
                 }
             }
@@ -412,10 +414,11 @@ class CodeNarcServer {
         return parseErrors
     }
 
-    // Try to parse file  to get compilation errors
+    // Try to parse file to get compilation errors
     private List<Error> parseFile(File file) {
         List<Error> parseErrors = []
         try {
+            LOGGER.debug('Parsing file: {}', file)
             new GroovyShell().parse(file)
             LOGGER.debug('PARSE SUCCESS: {}', file.getAbsolutePath())
         }
@@ -432,7 +435,7 @@ class CodeNarcServer {
         catch (Exception ep) {
             def excptnJsonTxt = JsonOutput.toJson(ep)
             parseErrors = []
-            LOGGER.debug('PARSE ERROR (Other): {}\n{}', file.getAbsolutePath(), excptnJsonTxt)
+            LOGGER.debug('PARSE ERROR (Other): {}\n{}', ep.message, file.getAbsolutePath(), excptnJsonTxt)
         }
         return parseErrors
     }
