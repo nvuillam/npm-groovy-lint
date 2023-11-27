@@ -94,11 +94,12 @@ Usage: java org.codenarc.CodeNarc [OPTIONS]
 The defaults for logging are detailed in [logback.xml](/lib/java/logback.xml).
 
 You can also override the defaults using system properties, for example to enable
-debug add the following to the command line:
+debug and change the file location add the following to the command line:
 
 ```shell
 -Dlogging.appender.console.level=DEBUG
 -Dlogging.appender.file.level=DEBUG
+-Dlogging.appender.file.fileName=/tmp/logback.log
 ```
 
 ## Building
