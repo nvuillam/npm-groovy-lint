@@ -16,7 +16,7 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>logback.log</file>
+    <file>${logging.appender.file.fileName:-logback.log}</file>
     <append>true</append>
     <immediateFlush>true</immediateFlush>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
