@@ -16,11 +16,11 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>logback.log</file>
+    <file>${logging.appender.file.fileName:-logback.log}</file>
     <append>true</append>
     <immediateFlush>true</immediateFlush>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-      <level>${logging.appender.log.level:-OFF}</level>
+      <level>${logging.appender.file.level:-OFF}</level>
     </filter>
     <encoder>
         <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
