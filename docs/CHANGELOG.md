@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+## [13.0.1] 2023-12-06
+
 - Update logback to 1.4.14 to address [cve-2023-6378](https://avd.aquasec.com/nvd/2023/cve-2023-6378/)
 
 ## [13.0.0] 2023-11-26
