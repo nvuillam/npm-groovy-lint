@@ -2,12 +2,14 @@
 
 ## UNRELEASED
 
+- Update logback to 1.4.14 to address [cve-2023-6378](https://avd.aquasec.com/nvd/2023/cve-2023-6378/)
+
 ## [13.0.0] 2023-11-26
 
 - **BREAKING CHANGE: Upgrade CodeNarc to v3.4.0-alpha+3346775f**
 
 - Major core architecture refactoring by the great [**Steven Hartland**](https://github.com/stevenh)
-  
+
   - Fix files specified on the command line not linting as expected due to the generated patterns not working as intended if relative path that contains a file and not a directory due to an issue with CodeNarc pattern processing.
 
   - Fix incompatible arguments passed to CodeNarc by:
