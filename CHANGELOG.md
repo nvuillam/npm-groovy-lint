@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [13.0.2] 2023-12-07
+
+- Remove useless console.log in sources.
+
 ## [13.0.1] 2023-12-06
 
 - Update logback to 1.4.14 to address [cve-2023-6378](https://avd.aquasec.com/nvd/2023/cve-2023-6378/)
