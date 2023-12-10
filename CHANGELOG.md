@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+- CI: Enhance MegaLinter config
+
 ## [13.0.2] 2023-12-07
 
 - Remove useless console.log in sources.
