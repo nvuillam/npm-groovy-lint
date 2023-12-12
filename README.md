@@ -140,7 +140,7 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 
 - If you have issues with v9, install previous version with `npm install -g npm-groovy-lint@8.2.0`
 - Node.js >= 12 is required to run this package. If you can't upgrade, you can use [nvm](https://github.com/nvm-sh/nvm) to have [different node versions on your computer](https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/)
-- If you do not have java (from 8 to 14) installed on your computer npm-groovy-lint will install them for you, so the first run may be long.
+- If you do not have java 17 installed on your computer, npm-groovy-lint will install them for you, so the first run may be long.
 
 ## Configuration
 
