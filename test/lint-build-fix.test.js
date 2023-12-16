@@ -14,16 +14,12 @@ describe("Lint & fix with EXE", function() {
         try {
             const prevFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL).toString();
             const params = [
-                "--output",
-                '"npm-groovy-fix-log.json"',
-                "--path",
-                '"' + tmpDir + '"',
-                "--files",
-                "**/" + SAMPLE_FILE_SMALL,
+                "--output", '"npm-groovy-fix-log.json"',
+                "--path", '"' + tmpDir + '"',
+                "--files", '"**/' + SAMPLE_FILE_SMALL +'"',
                 "--fix",
                 "--no-insight",
-                "--failon",
-                "none",
+                "--failon", "none",
                 "--verbose"
             ];
             const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
