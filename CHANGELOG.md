@@ -16,6 +16,7 @@
 - Fix parse failures for files which contain classes that only non-zero argument constructors.
 - Add gzip compression to reduce size of network traffic to improve performance
 - CI: Enhance MegaLinter config
+- CI: Upload expected sources as artifact if Check for changes job fails
 
 ## [13.0.2] 2023-12-07
 
