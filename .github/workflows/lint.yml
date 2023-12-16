@@ -40,3 +40,14 @@ jobs:
           npm run dev:pre-commit
           git --no-pager diff
           [[ 0 -eq $(git status --porcelain | wc -l) ]]
+
+      # Upload Mega-Linter artifacts
+      - name: Archive production artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Expected sources
+          path: |
+            docs/
+            groovy/
+            lib/
