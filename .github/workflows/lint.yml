@@ -48,5 +48,6 @@ jobs:
         with:
           name: Expected sources
           path: |
+            docs/
             groovy/
             lib/
