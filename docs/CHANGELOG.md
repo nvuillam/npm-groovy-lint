@@ -2,6 +2,22 @@
 
 ## UNRELEASED
 
+- Add your updates here :)
+
+## [14.0.0] 2023-12-16
+
+- Fix data race on stdout capture which was corrupting the responses for overlapping requests by using a capturing plugin.
+- Fix data race on threads read and write which could result in missed cancellations and re-enable cancellation processing.
+- Ensure that threads are always removed in the case of write response exception.
+- Switch to jackson to enable efficient JSON encoding and decoding including raw embedding of CodeNarc result to avoid unnecessary processing.
+- Split out HTTP filters to their own files.
+- Use typed variables instead of def per linter recommendation.
+- Add early test for missing base directory to avoid running linter unnecessarily.
+- Fix parse failures for files which contain classes that only non-zero argument constructors.
+- Add gzip compression to reduce size of network traffic to improve performance
+- CI: Enhance MegaLinter config
+- CI: Upload expected sources as artifact if Check for changes job fails
+
 ## [13.0.2] 2023-12-07
 
 - Remove useless console.log in sources.
