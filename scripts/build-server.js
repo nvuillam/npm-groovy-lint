@@ -6,7 +6,8 @@ const fs = require('fs-extra');
 const childProcess = require("child_process");
 const handlebars = require('handlebars');
 const admZip = require('adm-zip');
-var path = require('path');
+const path = require('path');
+const glob = require('glob');
 
 const srcDir = 'groovy/src/main';
 const metaDir = 'META-INF';
@@ -22,7 +23,6 @@ Main-Class: com.nvuillam.CodeNarcServer
 const tmpDir = 'tmp';
 const classPath = 'com/nvuillam';
 const classDir = `${tmpDir}/${classPath}`;
-const groovyFile = `${srcDir}/${classPath}/CodeNarcServer.groovy`;
 
 // Returns a map of file names times of the current jar file.
 function jarFileTimes() {
@@ -41,7 +41,8 @@ function jarFileTimes() {
 // Compile the server groovy.
 function compileGroovy() {
     console.info('Compiling groovy...');
-    childProcess.execSync(`groovyc -cp "lib/java/*" --encoding utf-8 ${groovyFile} -d ${tmpDir}`, (err, stdout, stderr) => {
+    const groovyFiles = glob.sync(`${srcDir}/${classPath}/*.groovy`).join(' ');
+    childProcess.execSync(`groovyc -cp "lib/java/*" --encoding utf-8 ${groovyFiles} -d ${tmpDir}`, (err, stdout, stderr) => {
         if (err) {
             console.error(err);
             console.error(stdout);
