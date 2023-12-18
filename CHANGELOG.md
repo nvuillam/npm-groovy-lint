@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+- fix: missing parse errors with --noserver
+
 ## [14.0.1] 2023-12-18
 
 - fix: analytics send failure error

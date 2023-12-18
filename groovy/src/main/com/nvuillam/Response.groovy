@@ -76,7 +76,20 @@ class Response {
         this.status = 'error'
         this.errorMessage = t.message
         this.errorDtl = t.stackTrace.join('\n')
-        this.exceptionType =  t.class.name
+        this.exceptionType = t.class.name
+    }
+
+    /**
+     * Sets the response status to indicate a not found failure.
+     *
+     * @param e the error that provides the details to report.
+     */
+    void setNotFound(FileNotFoundException e) {
+        this.statusCode = HttpURLConnection.HTTP_NOT_FOUND
+        this.status = 'notFound'
+        this.errorMessage = e.message
+        this.errorDtl = e.stackTrace.join('\n')
+        this.exceptionType = e.class.name
     }
 
 }
