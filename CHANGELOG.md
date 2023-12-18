@@ -4,6 +4,10 @@
 
 - Add your updates here :)
 
+## [14.0.1] 2023-12-18
+
+- Do not make npm-groovy-lint crash when telemetry is failing
+
 ## [14.0.0] 2023-12-16
 
 - Fix data race on stdout capture which was corrupting the responses for overlapping requests by using a capturing plugin.
