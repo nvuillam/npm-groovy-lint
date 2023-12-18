@@ -2,7 +2,7 @@
 
 ## UNRELEASED
 
-- Add your updates here :)
+- fix: analytics send failure error
 
 ## [14.0.0] 2023-12-16
 
