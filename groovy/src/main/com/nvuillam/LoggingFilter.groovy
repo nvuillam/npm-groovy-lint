@@ -2,7 +2,13 @@ package com.nvuillam
 
 import com.sun.net.httpserver.Filter
 import com.sun.net.httpserver.HttpExchange
+import groovy.time.TimeCategory
+import groovy.time.TimeDuration
 import groovy.transform.CompileStatic
+import java.time.Duration
+import java.time.format.DateTimeFormatter
+import java.time.ZonedDateTime
+import java.time.ZoneOffset
 import org.slf4j.Logger
 
 /**
@@ -19,15 +25,18 @@ final class LoggingFilter extends Filter {
 
     @Override
     void doFilter(HttpExchange http, Chain chain) throws IOException {
+        ZonedDateTime start = ZonedDateTime.now(ZoneOffset.UTC)
         LogOutputStream output = new LogOutputStream(http.responseBody)
         try {
             http.setStreams(http.requestBody, output)
             chain.doFilter(http)
         } finally {
-            // Apache Common Log Format
+            // Apache Common Log Format + processing time in milliseconds
             // %h %l %u [%t] "%r" %>s %b
-            String date = new Date().format('dd/MMM/yyyy:HH:mm:ss Z')
-            logger.info('{} {} {} [{}] "{} {} {}" {} {}',
+            ZonedDateTime stop = ZonedDateTime.now(ZoneOffset.UTC)
+            String date = stop.format(DateTimeFormatter.ofPattern('dd/MMM/yyyy:HH:mm:ss Z'))
+            Duration duration = Duration.between(start, stop);
+            logger.info('{} {} {} [{}] "{} {} {}" {} {} {}ms',
                 http.remoteAddress.address.hostAddress,
                 '-',
                 '-',
@@ -37,6 +46,7 @@ final class LoggingFilter extends Filter {
                 http.protocol,
                 http.responseCode,
                 output.written,
+                duration.toMillis(),
             )
         }
     }

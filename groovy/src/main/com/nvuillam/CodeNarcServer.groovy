@@ -29,15 +29,6 @@ import com.fasterxml.jackson.databind.ObjectWriter
 // Groovy Transform
 import groovy.transform.CompileDynamic
 
-// Groovy compilation
-import org.codehaus.groovy.control.CompilationFailedException
-import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.MultipleCompilationErrorsException
-
-// CodeNarc
-import org.codenarc.CodeNarc
-import org.codenarc.util.CodeNarcVersion
-
 // Logging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -48,8 +39,6 @@ class CodeNarcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeNarcServer.name)
     private static final int SERVER_PORT = System.getenv('SERVER_PORT') ? System.getenv('SERVER_PORT') as int : 7484
     private static final int MAX_IDLE_TIME = 3600000 // 1h
-    private static final List<String> HELP_ARGS = ['-help']
-    private static final List<String> VERSION_ARGS = ['-version']
     private static final ObjectMapper MAPPER = new ObjectMapper()
     private static final ObjectReader READER = MAPPER.reader()
     private static final ObjectWriter WRITER = MAPPER.writer((PrettyPrinter)null)
@@ -71,25 +60,27 @@ class CodeNarcServer {
     static void main(String[] args) {
         LOGGER.debug('Starting args: {}', (Object)args)
 
-        CliBuilder cli = new CliBuilder(usage: 'groovy CodeNarcServer.groovy [--help] [--server] [--version] [--port <port>]').tap {
+        CliBuilder cli = new CliBuilder(usage: 'groovy CodeNarcServer.groovy [OPTION...] [CODENARCARGS...]').tap {
             h(longOpt: 'help', 'Show usage information')
             s(longOpt: 'server', type: boolean, 'Runs CodeNarc as a server (default: run CodeNarc directly)')
             v(longOpt: 'version', type: boolean, 'Outputs the version of CodeNarc')
             b(longOpt: 'verbose', type: boolean, 'Enables verbose output')
             p(longOpt: 'port', type: int, defaultValue: "$SERVER_PORT", "Sets the server port (default: $SERVER_PORT)")
+            a(longOpt: 'parse', type: boolean, 'Enables parsing of the source files for errors (CodeNarc direct only)')
+            f(longOpt: 'file', type: String, 'File overrides to parse instead of using CodeNarc args (CodeNarc direct only)')
         }
 
         def options = cli.parse(args)
 
-        if (options.help || options.arguments() == HELP_ARGS) {
+        if (options.help || options.arguments() == Request.HELP_ARGS) {
             cli.usage()
             println ''
-            println codeNarcHelp()
+            println Request.codeNarcHelp()
             return
         }
 
-        if (options.version || options.arguments() == VERSION_ARGS) {
-            println codeNarcVersion()
+        if (options.version || options.arguments() == Request.VERSION_ARGS) {
+            println Request.codeNarcVersion()
             return
         }
 
@@ -104,21 +95,18 @@ class CodeNarcServer {
         }
 
         // Do not use server, just call CodeNarc (worse performances as Java classes must be reloaded each time)
-        new CodeNarc().execute(options.arguments() as String[])
-    }
+        Request request = new Request(options.parse, options.files ?: [], options.arguments())
+        Response response = new Response()
 
-    /**
-     * Returns the CodeNarc version.
-     */
-    private static String codeNarcVersion() {
-        return "CodeNarc version ${CodeNarcVersion.getVersion()}"
-    }
+        // Prevent CodeNarc from writing directly to System.out
+        // as that will corrupt our JSON response.
+        PrintStream originalSystemOut = System.out
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
+        System.out = new PrintStream(outputStream)
+        request.process(response)
+        response.stdout = outputStream.toString()
 
-    /**
-     * Returns CodeNarc help information.
-     */
-    private static String codeNarcHelp() {
-        return CodeNarc.HELP
+        WRITER.writeValue(originalSystemOut, response)
     }
 
     CodeNarcServer(int port) {
@@ -177,9 +165,9 @@ class CodeNarcServer {
             // Parse input and call CodeNarc
             try {
                 http.responseHeaders.add('Content-type', 'application/json')
-                Map bodyObj = READER.readValue(http.getRequestBody(), Map)
-                if (bodyObj.requestKey != null && bodyObj.requestKey != 'undefined') {
-                    requestKey = bodyObj.requestKey
+                Request request = READER.readValue(http.getRequestBody(), Request)
+                if (request.requestKey != null && request.requestKey != 'undefined') {
+                    requestKey = request.requestKey
                     LOGGER.debug("requestKey: $requestKey")
                     Thread thread = threads.put(requestKey, Thread.currentThread())
                     if (thread != null) {
@@ -188,37 +176,13 @@ class CodeNarcServer {
                     }
                 }
 
-                // Parse files to detect parse errors
-                response.fileList = listFiles(bodyObj)
-                response.parseErrors = parseFiles(bodyObj, response.fileList)
-
-                if (bodyObj.codeNarcArgs == VERSION_ARGS) {
-                    response.setStdout(codeNarcVersion())
-                } else if (bodyObj.codeNarcArgs == HELP_ARGS) {
-                    response.setStdout(codeNarcHelp())
-                } else {
-                    // Run CodeNarc capturing the output if needed.
-                    bodyObj.codeNarcArgs.add('-plugins=com.nvuillam.CapturePlugin')
-                    LOGGER.debug('Calling CodeNarc with args: {}', bodyObj.codeNarcArgs)
-                    def codeNarc = new CodeNarc()
-                    codeNarc.execute(bodyObj.codeNarcArgs as String[])
-                    codeNarc.reports.each { reportWriter ->
-                        if (!(reportWriter instanceof CapturedReportWriter)) { // groovylint-disable-line Instanceof
-                            return
-                        }
-
-                        CapturedReportWriter captured = (CapturedReportWriter)reportWriter
-                        if (captured.capturedClassName().toLowerCase().contains('json')) {
-                            response.setJsonResult(captured.report())
-                        } else {
-                            LOGGER.debug('reportWriter: other')
-                            response.setStdout(captured.report())
-                        }
-                    }
-                }
+                request.process(response)
             } catch (InterruptedException ie) {
                 LOGGER.debug('Interrupted by duplicate')
                 response.setInterrupted()
+            } catch (FileNotFoundException e) {
+                LOGGER.debug('File not found', e.message)
+                response.setNotFound(e)
             } catch (Throwable t) {
                 LOGGER.error('Request failed', t)
                 response.setError(t)
@@ -265,98 +229,6 @@ class CodeNarcServer {
 
         // Wait for server to be stopped.
         latch.await()
-    }
-
-    // List files to be parsed / linted
-    private List<String> listFiles(def bodyObj) throws FileNotFoundException {
-        List<String> fileList = []
-        // Unique file (usually from GroovyLint Language Server)
-        if (bodyObj.file) {
-            LOGGER.debug('listFiles file: {}', bodyObj.file)
-            File f = new File(bodyObj.file)
-            fileList << f.getAbsolutePath()
-        }
-        else if (bodyObj.fileList) {
-            LOGGER.debug('listFiles fileList: {}', bodyObj.fileList)
-            for (String file in bodyObj.fileList) {
-                File f = new File(file)
-                fileList << f.getAbsolutePath()
-            }
-        }
-        else if (bodyObj.codeNarcBaseDir) {
-            // Ant style pattern is used: list all files
-            bodyObj.codeNarcExcludes ?= []
-            LOGGER.debug('listFiles ant file scanner in {}, includes {}, excludes {}',
-                bodyObj.codeNarcBaseDir,
-                bodyObj.codeNarcIncludes,
-                bodyObj.codeNarcExcludes
-            )
-
-            File dir = new File(bodyObj.codeNarcBaseDir)
-            if (!dir.exists()) {
-                // Base directory doesn't exist, throw to avoid overhead of running CodeNarc.
-                throw new FileNotFoundException(bodyObj.codeNarcBaseDir)
-            }
-
-            def ant = new groovy.ant.AntBuilder()
-            def scanner = ant.fileScanner {
-                fileset(dir: bodyObj.codeNarcBaseDir) {
-                    bodyObj.codeNarcIncludes.each { includeExpr ->
-                        include(name: includeExpr)
-                    }
-                    bodyObj.codeNarcExcludes.each { excludeExpr ->
-                        exclude(name: excludeExpr)
-                    }
-                }
-            }
-
-            // Parse collected files
-            for (f in scanner) {
-                fileList << f.getAbsolutePath()
-            }
-        }
-
-        return fileList
-    }
-
-    // Parse groovy files to detect errors
-    private Map<String, List<Error>> parseFiles(def bodyObj, List<String> fileList) {
-        Map<String, List<Error>> parseErrors = [:]
-        if (bodyObj.parse) {
-            // Parse collected files.
-            fileList.each { file ->
-                parseErrors.put(file, parseFile(new File(file)))
-            }
-        }
-
-        return parseErrors
-    }
-
-    // Try to parse file to get compilation errors
-    private List<Error> parseFile(File file) {
-        try {
-            // We don't use GroovyShell.parse as it calls InvokerHelper.createScript
-            // which fails for files which contain a class which only have non-zero
-            // argument constructors.
-            GroovyShell shell = new GroovyShell()
-            GroovyClassLoader loader = shell.getClassLoader()
-            GroovyCodeSource codeSource = new GroovyCodeSource(file, CompilerConfiguration.DEFAULT.sourceEncoding)
-            loader.parseClass(codeSource, false)
-            LOGGER.debug('Parse "{}" success', file.getAbsolutePath())
-        }
-        catch (MultipleCompilationErrorsException ep) {
-            LOGGER.debug('Parse "{}" multiple compilation errors', file.getAbsolutePath())
-            return ep.getErrorCollector().getErrors()
-        }
-        catch (CompilationFailedException ep) {
-            LOGGER.debug('Parse "{}" compilation failed', file.getAbsolutePath())
-            return ep.getErrorCollector().getErrors()
-        }
-        catch (Exception ep) {
-            LOGGER.error('Parse "{}" unexpected exception:', file.getAbsolutePath(), ep)
-        }
-
-        return []
     }
 
     private void stopServer() {

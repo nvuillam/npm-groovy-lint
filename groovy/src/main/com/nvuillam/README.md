@@ -6,11 +6,16 @@ which provides both direct access and server (web requests).
 ## Usage
 
 ```text
-usage: groovy CodeNarcServer.groovy [--help] [--server] [--port <port>]
+usage: groovy CodeNarcServer.groovy [OPTION...] [CODENARCARGS...]
+ -a,--parse        Enables parsing of the source files for errors
+                   (CodeNarc direct only)
  -b,--verbose      Enables verbose output
+ -f,--file <arg>   File overrides to parse instead of using CodeNarc args
+                   (CodeNarc direct only)
  -h,--help         Show usage information
- -p,--port <port>  Sets the server port (default: 7484)
- -s,--server       Runs CodeNarc as a server (default: run CodeNarc directly)
+ -p,--port <arg>   Sets the server port (default: 7484)
+ -s,--server       Runs CodeNarc as a server (default: run CodeNarc
+                   directly)
  -v,--version      Outputs the version of CodeNarc
  ```
 
