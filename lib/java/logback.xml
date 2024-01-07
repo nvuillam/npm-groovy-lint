@@ -15,15 +15,22 @@
     </encoder>
   </appender>
 
-  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>${logging.appender.file.fileName:-logback.log}</file>
-    <append>true</append>
-    <immediateFlush>true</immediateFlush>
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logging.appender.file.fileName:-/tmp/logback-groovy.log}</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+    <fileNamePattern>/tmp/logback-groovy.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <timeBasedFileNamingAndTriggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+            <maxFileSize>10MB</maxFileSize>
+        </timeBasedFileNamingAndTriggeringPolicy>
+        <maxHistory>7</maxHistory>
+    </rollingPolicy>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>${logging.appender.file.level:-OFF}</level>
     </filter>
     <encoder>
         <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        <outputPatternAsHeader>true</outputPatternAsHeader>
     </encoder>
   </appender>
 

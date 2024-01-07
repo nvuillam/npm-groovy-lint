@@ -3,6 +3,7 @@
 ## UNRELEASED
 
 - fix: missing parse errors with --noserver
+- fix: Change logback default config file to avoid logback.log at the root
 
 ## [14.0.1] 2023-12-18
 
