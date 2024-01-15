@@ -299,6 +299,42 @@ describe("Miscellaneous", function() {
         assert(linter.codeNarcStdOut.includes("where OPTIONS are zero or more command-line options"), "CodeNarc help is displayed");
         checkCodeNarcCallsCounter(1);
     });
+
+    it("(API:logging) log file creation", async function() {
+        beforeEachTestCase(); // Call manually as beforeEach only works from the CLI.
+
+        const logFile = "npm-groovy-lint.log";
+        let logFileExist = fse.existsSync(logFile);
+        if (logFileExist) {
+            // Remove old log file.
+            await fse.remove(logFile);
+        }
+
+        const npmGroovyLintConfig = {
+            path: "./lib/example/",
+            files: "**/" + SAMPLE_FILE_SMALL,
+            insight: false,
+            output: "none",
+            noserver: true
+        };
+
+        let linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
+        assert(linter.status === 1, `Linter status is 0 (${linter.status} returned)`);
+        checkCodeNarcCallsCounter(1);
+
+        logFileExist = fse.existsSync(logFile)
+        assert(!logFileExist, "npm-groovy-lint.log has been created");
+
+        // Enable log file.
+        npmGroovyLintConfig.javaoptions = "-Dlogging.appender.file.level=INFO";
+
+        linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
+        checkCodeNarcCallsCounter(2);
+
+        logFileExist = fse.existsSync(logFile);
+        assert(logFileExist, "npm-groovy-lint.log has not been created");
+    });
 });
 
 function sleepPromise(ms) {
