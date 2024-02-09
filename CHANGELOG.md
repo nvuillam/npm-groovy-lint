@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [14.2.1] 2024-02-09
+
+- fix: class not found request failure
+
 ## [14.1.0] 2024-01-15
 
 - fix: missing parse errors with --noserver
