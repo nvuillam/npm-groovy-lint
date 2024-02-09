@@ -230,7 +230,9 @@ class Request {
             LOGGER.debug('Parse "{}" compilation failed', file.getAbsolutePath())
             return ep.getErrorCollector().getErrors()
         }
-        catch (Exception ep) {
+        catch (Throwable ep) {
+            // Catch all exceptions to avoid failing the whole request as it's not critical
+            // and we could get Errors such as java.lang.NoClassDefFoundError.
             LOGGER.error('Parse "{}" unexpected exception:', file.getAbsolutePath(), ep)
         }
 
