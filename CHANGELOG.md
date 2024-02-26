@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [14.2.3] 2024-02-26
+
+- Fix [#351](https://github.com/nvuillam/npm-groovy-lint/issues/351): temp directories aren't cleaned up 
+
 ## [14.2.2] 2024-02-18
 
 - Fix `console.warning is not a function`
