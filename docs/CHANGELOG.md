@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [14.2.4] 2024-03-13
+
+- Fix issue with anonymous telemetry
+
 ## [14.2.3] 2024-02-26
 
 - Fix [#351](https://github.com/nvuillam/npm-groovy-lint/issues/351): temp directories aren't cleaned up 
