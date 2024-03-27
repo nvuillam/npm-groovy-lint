@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## [14.3.0] 2024-03-27
+
+- Upgrade amplitude dependency
+- Remove markdown links checks in internal CI (requirement covered by lychee)
+
 ## [14.2.4] 2024-03-13
 
 - Fix issue with anonymous telemetry
