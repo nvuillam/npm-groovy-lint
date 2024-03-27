@@ -1,4 +1,8 @@
 {
   "retryOn429": true,
-  "ignorePatterns": ["(codecov)"]
+  "ignorePatterns": [
+    {
+      "pattern": "(codecov)"
+    }
+  ]
 }
