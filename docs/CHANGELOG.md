@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [14.4.0] 2024-03-27
+
+- Remove amplitude dependency and anonymous telemetry
+
 ## [14.3.0] 2024-03-27
 
 - Upgrade amplitude dependency
