@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [14.4.1] 2024-04-16
+
+- Upgrade tar to avoid CVE
+
 ## [14.4.0] 2024-03-27
 
 - Remove amplitude dependency and anonymous telemetry
