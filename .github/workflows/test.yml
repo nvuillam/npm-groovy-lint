@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         node_version: ['18']
-        java_version: ['17']
+        java_version: ['17','21']
         java_distrib: [temurin]
         os: [ubuntu-latest, macos-latest, windows-latest]
         include:
