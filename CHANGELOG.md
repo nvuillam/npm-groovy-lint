@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+- Change license to MIT
+
 ## [14.4.1] 2024-04-16
 
 - Upgrade tar to avoid CVE
