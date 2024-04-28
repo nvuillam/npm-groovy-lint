@@ -1,6 +1,6 @@
 {
   "name": "npm-groovy-lint",
-  "version": "14.4.1",
+  "version": "14.5.0",
   "description": "Lint, format and auto-fix your Groovy / Jenkinsfile / Gradle files",
   "main": "index.js",
   "scripts": {
