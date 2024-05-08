@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## [14.6.0] 2024-05-08
+
+- Upgrade node-java-caller to v4 to solve issues with Mac
+
 ## [14.5.0] 2024-04-28
 
 - Change license to MIT
