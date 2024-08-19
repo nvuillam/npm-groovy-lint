@@ -44,7 +44,7 @@ jobs:
       # Mega-Linter
       - name: Mega-Linter
         id: ml
-        uses: oxsecurity/megalinter/flavors/javascript@beta
+        uses: oxsecurity/megalinter/flavors/javascript@v7
         env:
           # All available variables are described in documentation
           # https://oxsecurity.github.io/megalinter/#configuration
