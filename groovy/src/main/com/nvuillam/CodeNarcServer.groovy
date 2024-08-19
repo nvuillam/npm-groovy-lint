@@ -113,7 +113,7 @@ class CodeNarcServer {
         // Create a server who accepts only calls from localhost ( https://stackoverflow.com/questions/50770747/how-to-configure-com-sun-net-httpserver-to-accept-only-requests-from-localhost )
         InetAddress localHost = InetAddress.getLoopbackAddress()
         InetSocketAddress sockAddr = new InetSocketAddress(localHost, port)
-        def unusedVariable = 'This variable is unused'
+
         this.server = HttpServer.create(sockAddr, 0)
         this.latch = new CountDownLatch(1)
         this.timerLock = new Object()

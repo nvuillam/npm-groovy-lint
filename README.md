@@ -20,8 +20,6 @@
 
 Based on [CodeNarc](http://codenarc.github.io/CodeNarc/) , this out of the box package allows to **track groovy errors** and **correct a part of them**
 
-I aded a typo herre
-
 - Use option **--format** to format & prettify source code
 - Use option **--fix** to activate autofixing of fixable rules
 
