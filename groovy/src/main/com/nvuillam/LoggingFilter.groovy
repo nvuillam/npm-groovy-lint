@@ -2,13 +2,10 @@ package com.nvuillam
 
 import com.sun.net.httpserver.Filter
 import com.sun.net.httpserver.HttpExchange
-import groovy.time.TimeCategory
-import groovy.time.TimeDuration
 import java.time.ZoneOffset
 import groovy.transform.CompileStatic
 import java.time.Duration
 import java.time.format.DateTimeFormatter
-import java.time.ZonedDateTime
 
 import org.slf4j.Logger
 
@@ -26,6 +23,7 @@ final class LoggingFilter extends Filter {
 
     @Override
     void doFilter(HttpExchange http, Chain chain) throws IOException {
+        def random = Math.random()
         ZonedDateTime start = ZonedDateTime.now(ZoneOffset.UTC)
         LogOutputStream output = new LogOutputStream(http.responseBody)
         try {
