@@ -4,11 +4,12 @@ import com.sun.net.httpserver.Filter
 import com.sun.net.httpserver.HttpExchange
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
+import java.time.ZoneOffset
 import groovy.transform.CompileStatic
 import java.time.Duration
 import java.time.format.DateTimeFormatter
 import java.time.ZonedDateTime
-import java.time.ZoneOffset
+
 import org.slf4j.Logger
 
 /**
@@ -35,7 +36,7 @@ final class LoggingFilter extends Filter {
             // %h %l %u [%t] "%r" %>s %b
             ZonedDateTime stop = ZonedDateTime.now(ZoneOffset.UTC)
             String date = stop.format(DateTimeFormatter.ofPattern('dd/MMM/yyyy:HH:mm:ss Z'))
-            Duration duration = Duration.between(start, stop);
+            Duration duration = Duration.between(start, stop)
             logger.info('{} {} {} [{}] "{} {} {}" {} {} {}ms',
                 http.remoteAddress.address.hostAddress,
                 '-',
