@@ -1,6 +1,10 @@
 # Changelog
 
-## UNRELEASED
+## Beta
+
+ - Setup renovate
+ - Upgrade dependencies, including base package node-java-caller
+ - Upgrade MegaLinter to v8
 
 ## [14.6.0] 2024-05-08
 
