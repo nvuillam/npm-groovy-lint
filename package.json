@@ -55,7 +55,7 @@
     "decode-html": "^2.0.0",
     "find-java-home": "^1.1.0",
     "find-package-json": "^1.2.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^11.0.0",
     "glob": "^7.1.6",
     "import-fresh": "^3.2.1",
     "java-caller": "^4.0.0",
