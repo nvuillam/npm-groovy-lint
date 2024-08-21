@@ -44,7 +44,7 @@ jobs:
       # Upload Mega-Linter artifacts
       - name: Archive production artifacts
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Expected sources
           path: |
