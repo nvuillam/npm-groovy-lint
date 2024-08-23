@@ -56,7 +56,7 @@
     "find-java-home": "^2.0.0",
     "find-package-json": "^1.2.0",
     "fs-extra": "^11.0.0",
-    "glob": "^7.1.6",
+    "glob": "^11.0.0",
     "import-fresh": "^3.2.1",
     "java-caller": "^4.0.0",
     "js-yaml": "^4.1.0",
