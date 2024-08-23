@@ -238,7 +238,7 @@ describe("Miscellaneous", function() {
         try {
             javaPath = which.sync("java");
         } catch (e) {
-            console.log("Java not found: ignore test method");
+            console.log("Java not found: ignore test method: "+e.message);
         }
         if (javaPath) {
             console.log(`Java found: ${javaPath}`);
