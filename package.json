@@ -63,7 +63,7 @@
     "node-sarif-builder": "^2.0.3",
     "optionator": "^0.9.0",
     "strip-json-comments": "^3.0.1",
-    "uuid": "^8.2.0"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
