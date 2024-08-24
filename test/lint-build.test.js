@@ -1,5 +1,4 @@
 #! /usr/bin/env node
-"use strict";
 const util = require("util");
 let assert = require("assert");
 const fse = require("fs-extra");

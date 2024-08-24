@@ -2,7 +2,6 @@
 // Copy source files into vscode npm installation (avoid generate betas to test updates)
 // npm-groovy-lint & vscode-groovy-lint must be in the same folder, else you have to override  VSCODE_GROOVY_LINT_PATH env variable
 
-"use strict";
 
 // Imports
 const { existsSync, emptyDirSync, mkdirSync, copySync } = require('fs-extra');

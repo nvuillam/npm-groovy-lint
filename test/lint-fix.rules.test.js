@@ -1,5 +1,4 @@
 #! /usr/bin/env node
-"use strict";
 const NpmGroovyLint = require("../lib/groovy-lint.js");
 const { getNpmGroovyLintRules } = require("../lib/groovy-lint-rules.js");
 const { normalizeNewLines } = require("../lib/utils.js");

@@ -1,6 +1,5 @@
 
 // Build Json containing all CodeNarc rules
-"use strict";
 
 // Imports
 const fse = require('fs-extra');

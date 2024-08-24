@@ -2,7 +2,8 @@
   "name": "npm-groovy-lint",
   "version": "14.6.0",
   "description": "Lint, format and auto-fix your Groovy / Jenkinsfile / Gradle files",
-  "main": "index.js",
+  "exports": "./index.js",
+  "type": "module",
   "scripts": {
     "lint:fix": "eslint **/*.js --fix && prettier --write \"./lib/**/*.{js,jsx}\" --tab-width 4 --print-width 150",
     "server:run-from-source": "npm run server:kill && groovy -cp \"lib/java/*\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",

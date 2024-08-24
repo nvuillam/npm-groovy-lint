@@ -1,5 +1,4 @@
 #! /usr/bin/env node
-"use strict";
 const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
 const childProcess = require("child_process");

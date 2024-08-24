@@ -1,5 +1,4 @@
 // Build Server creating a deterministic jar file.
-"use strict";
 
 // Imports
 const fs = require('fs-extra');

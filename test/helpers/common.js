@@ -76,7 +76,7 @@ function assertLintedFiles(output, expectedCount) {
     );
 }
 
-module.exports = {
+export default  {
     NPM_GROOVY_LINT,
     EXAMPLE_DIRECTORY,
     SAMPLE_FILE_BIG,
