@@ -2,7 +2,7 @@
 const util = require("util");
 let assert = require("assert");
 const fse = require("fs-extra");
-const path = require("path");
+import * as path from "path";
 const childProcess = require("child_process");
 const exec = util.promisify(childProcess.exec);
 const spawn = childProcess.spawnSync;

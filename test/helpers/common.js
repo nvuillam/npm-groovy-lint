@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 let assert = require("assert");
-const os = require("os");
+import * as os from "os";
 const fse = require("fs-extra");
 const jsdiff = require("diff");
 

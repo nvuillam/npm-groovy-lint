@@ -2,7 +2,7 @@
 const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
 const fse = require("fs-extra");
-const path = require("path");
+import * as path from "path";
 const {
     beforeEachTestCase,
     checkCodeNarcCallsCounter,

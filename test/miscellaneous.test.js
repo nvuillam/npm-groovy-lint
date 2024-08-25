@@ -3,8 +3,8 @@ const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
 const childProcess = require("child_process");
 const fse = require("fs-extra");
-const os = require("os");
-const path = require("path");
+import * as os from "os";
+import * as path from "path";
 const util = require("util")
 const which = require("which");
 const exec = util.promisify(childProcess.exec);
