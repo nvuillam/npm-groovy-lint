@@ -3,6 +3,7 @@
 ## Beta
 
 - Convert to ES6 Module
+- Upgrade to CodeNarc 3.5.0
 - Setup renovate
 - Upgrade dependencies, including base package node-java-caller
 - Upgrade NodeJs to minimum version 20
