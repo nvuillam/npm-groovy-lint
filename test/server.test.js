@@ -1,9 +1,8 @@
 #! /usr/bin/env node
-"use strict";
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
-const which = require("which");
-const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG } = require("./helpers/common");
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import  assert from 'assert';
+import * as which from 'which'
+import { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG } from "./helpers/common.js";
 
 describe.skip("Server", function() {
     it("(API:Server) should kill running server", async function() {

@@ -34,7 +34,7 @@ jobs:
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4.0.3
         with:
-          node-version: "18.x"
+          node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
           scope: nvuillam
       - run: npm ci
@@ -80,7 +80,7 @@ jobs:
         run: echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> ${GITHUB_ENV}
 
       - name: Build & Push Docker Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile

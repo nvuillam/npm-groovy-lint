@@ -1,10 +1,9 @@
 #! /usr/bin/env node
-"use strict";
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
-const fse = require("fs-extra");
-const path = require("path");
-const {
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import  assert from 'assert';
+import fs from 'fs-extra'
+import * as path from "path";
+import {
     beforeEachTestCase,
     checkCodeNarcCallsCounter,
     assertLintedFiles,
@@ -16,7 +15,7 @@ const {
     SAMPLE_RULESET_1_PATH,
     SAMPLE_RULESET_2_PATH,
     EXAMPLE_DIRECTORY
-} = require("./helpers/common");
+} from "./helpers/common.js";
 
 describe("Lint with API", () => {
     beforeEach(beforeEachTestCase);
@@ -97,8 +96,8 @@ describe("Lint with API", () => {
         ).run();
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
-        assert(fse.existsSync(reportFileName), `CodeNarc HTML report generated at ${reportFileName}`);
-        fse.removeSync(reportFileName);
+        assert(fs.existsSync(reportFileName), `CodeNarc HTML report generated at ${reportFileName}`);
+        fs.removeSync(reportFileName);
         checkCodeNarcCallsCounter(1);
     });
 
@@ -110,8 +109,8 @@ describe("Lint with API", () => {
         ).run();
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
-        assert(fse.existsSync(reportFileName), `CodeNarc XML report generated at ${path.resolve(reportFileName)}`);
-        fse.removeSync(reportFileName);
+        assert(fs.existsSync(reportFileName), `CodeNarc XML report generated at ${path.resolve(reportFileName)}`);
+        fs.removeSync(reportFileName);
         checkCodeNarcCallsCounter(1);
     });
 
@@ -131,8 +130,8 @@ describe("Lint with API", () => {
         ).run();
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
-        assert(fse.existsSync(reportFileName), `XML HTML report generated at ${path.resolve(reportFileName)}`);
-        fse.removeSync(reportFileName);
+        assert(fs.existsSync(reportFileName), `XML HTML report generated at ${path.resolve(reportFileName)}`);
+        fs.removeSync(reportFileName);
         checkCodeNarcCallsCounter(1);
     });
 
@@ -165,7 +164,7 @@ describe("Lint with API", () => {
 
     it("(API:source) should run with source only (no parsing)", async function() {
         const npmGroovyLintConfig = {
-            source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
+            source: fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             insight: false,
             output: "txt",
@@ -179,7 +178,7 @@ describe("Lint with API", () => {
 
     it("(API:source) should run with CodeNarc ruleset file", async function() {
         const npmGroovyLintConfig = {
-            source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
+            source: fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             rulesets: `${SAMPLE_RULESET_1_PATH},${SAMPLE_RULESET_2_PATH}`,
             output: "txt",
@@ -195,7 +194,7 @@ describe("Lint with API", () => {
 
     it("(API:source) should run with source only (parse success)", async function() {
         const npmGroovyLintConfig = {
-            source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
+            source: fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             output: "txt",
             insight: false,
@@ -210,7 +209,7 @@ describe("Lint with API", () => {
 
     it("(API:source) should run with source only (file with spaces)", async function() {
         const npmGroovyLintConfig = {
-            source: fse.readFileSync(SAMPLE_FILE_WITH_SPACES_PATH).toString(),
+            source: fs.readFileSync(SAMPLE_FILE_WITH_SPACES_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_WITH_SPACES_PATH,
             output: "txt",
             insight: false,
@@ -225,7 +224,7 @@ describe("Lint with API", () => {
 
     it("(API:source) should run with source only (parse error)", async function() {
         const npmGroovyLintConfig = {
-            source: fse.readFileSync(SAMPLE_FILE_PARSE_ERROR_PATH).toString(),
+            source: fs.readFileSync(SAMPLE_FILE_PARSE_ERROR_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_PARSE_ERROR_PATH,
             output: "txt",
             insight: false,
@@ -242,7 +241,7 @@ describe("Lint with API", () => {
 
     it("(API:source) should run without CodeNarc Server", async function() {
         const npmGroovyLintConfig = {
-            source: fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
+            source: fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             noserver: true,
             output: "none",

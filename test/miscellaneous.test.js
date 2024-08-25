@@ -1,15 +1,17 @@
 #! /usr/bin/env node
-"use strict";
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
-const childProcess = require("child_process");
-const fse = require("fs-extra");
-const os = require("os");
-const path = require("path");
-const util = require("util")
-const which = require("which");
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import  assert from 'assert';
+import * as childProcess from "child_process";
+import fs from 'fs-extra'
+import * as os from "os";
+import * as path from "path";
+import find from "find-package-json";
+import * as util from 'util'
+import * as which from 'which'
 const exec = util.promisify(childProcess.exec);
-const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH } = require("./helpers/common");
+import { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe("Miscellaneous", function() {
     it("(API:source) returns config file using path", async function() {
@@ -36,8 +38,8 @@ describe("Miscellaneous", function() {
 
     it("(API:source) load config using specific file name", async function() {
         const customConfigFilePath = process.platform.includes("linux") ? "~/.groovylintrc-custom.json" : os.tmpdir() + "\\.groovylintrc-custom.json";
-        await fse.ensureDir("~/", { mode: "0777" });
-        await fse.copy("./lib/example/.groovylintrc-custom.json", customConfigFilePath);
+        await fs.ensureDir("~/", { mode: "0777" });
+        await fs.copy("./lib/example/.groovylintrc-custom.json", customConfigFilePath);
         const npmGroovyLintConfig = {
             config: customConfigFilePath,
             path: "./lib/example/",
@@ -47,7 +49,7 @@ describe("Miscellaneous", function() {
             verbose: true
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        await fse.remove(customConfigFilePath);
+        await fs.remove(customConfigFilePath);
         const rules = linter.options.rules || {};
         assert(rules["CompileStatic"] == "off", "CompileStatic is off");
         assert(rules["CouldBeElvis"] == "off", "CouldBeElvis is off");
@@ -284,8 +286,7 @@ describe("Miscellaneous", function() {
         process.env.npm_package_version = ""; // NV: Do not use npm_package_version to have more code coverage :)
         const linter = await new NpmGroovyLint([process.execPath, "", "-v"], {}).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
-        const FindPackageJson = require("find-package-json");
-        const finder = FindPackageJson(__dirname);
+        const finder = find(__dirname);
         const v = finder.next().value.version;
         assert(linter.outputString.includes(`npm-groovy-lint version ${v}`), `Provides version ${v}\nReturned outputString:\n${linter.outputString}`);
         assert(linter.outputString.includes(`CodeNarc version`), `Provides CodeNarc version\nReturned outputString:\n${linter.outputString}`);
@@ -304,10 +305,10 @@ describe("Miscellaneous", function() {
         beforeEachTestCase(); // Call manually as beforeEach only works from the CLI.
 
         const logFile = "npm-groovy-lint.log";
-        let logFileExist = fse.existsSync(logFile);
+        let logFileExist = fs.existsSync(logFile);
         if (logFileExist) {
             // Remove old log file.
-            await fse.remove(logFile);
+            await fs.remove(logFile);
         }
 
         const npmGroovyLintConfig = {
@@ -322,7 +323,7 @@ describe("Miscellaneous", function() {
         assert(linter.status === 1, `Linter status is 0 (${linter.status} returned)`);
         checkCodeNarcCallsCounter(1);
 
-        logFileExist = fse.existsSync(logFile)
+        logFileExist = fs.existsSync(logFile)
         assert(!logFileExist, "npm-groovy-lint.log has been created");
 
         // Enable log file.
@@ -332,7 +333,7 @@ describe("Miscellaneous", function() {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         checkCodeNarcCallsCounter(2);
 
-        logFileExist = fse.existsSync(logFile);
+        logFileExist = fs.existsSync(logFile);
         assert(logFileExist, "npm-groovy-lint.log has not been created");
     });
 });

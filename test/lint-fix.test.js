@@ -1,23 +1,22 @@
 #! /usr/bin/env node
-"use strict";
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
-const fse = require("fs-extra");
-const rimraf = require("rimraf");
-const {
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import  assert from 'assert';
+import fs from 'fs-extra'
+import * as rimraf from "rimraf";
+import {
     beforeEachTestCase,
     copyFilesInTmpDir,
     checkCodeNarcCallsCounter,
     SAMPLE_FILE_BIG_PATH,
     SAMPLE_FILE_SMALL_PATH
-} = require("./helpers/common");
+} from "./helpers/common.js";
 
-describe("Lint & fix with API", function() {
+describe("Lint & fix with API", function () {
     beforeEach(beforeEachTestCase);
 
-    it("(API:source) should lint then fix only a list of errors", async function() {
+    it("(API:source) should lint then fix only a list of errors", async function () {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
-        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
+        const prevFileContent = fs.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             sourcefilepath: sampleFilePath,
@@ -39,10 +38,10 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(2);
     });
 
-    it("(API:source) should lint and fix (one shot)", async function() {
+    it("(API:source) should lint and fix (one shot)", async function () {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
         const expectedFixedErrs = 1076;
-        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
+        const prevFileContent = fs.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             sourcefilepath: sampleFilePath,
@@ -63,10 +62,10 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(3);
     }).timeout(200000);
 
-    it("(API:source) should lint and fix (no lintagainafterfix)", async function() {
+    it("(API:source) should lint and fix (no lintagainafterfix)", async function () {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
         const expectedFixedErrs = 1076;
-        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
+        const prevFileContent = fs.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             sourcefilepath: sampleFilePath,
@@ -88,10 +87,10 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(2);
     }).timeout(200000);
 
-    it("(API:source) should lint and fix (no lintagainafterfix) 2", async function() {
+    it("(API:source) should lint and fix (no lintagainafterfix) 2", async function () {
         const sampleFilePath = SAMPLE_FILE_SMALL_PATH;
         const expectedFixedErrs = 3;
-        const prevFileContent = fse.readFileSync(sampleFilePath).toString();
+        const prevFileContent = fs.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             sourcefilepath: sampleFilePath,
@@ -113,10 +112,10 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(1);
     }).timeout(200000);
 
-    it("(API:file) should lint and fix a Jenkinsfile in one shot", async function() {
+    it("(API:file) should lint and fix a Jenkinsfile in one shot", async function () {
         const tmpDir = await copyFilesInTmpDir();
         try {
-            const prevFileContent = fse.readFileSync(tmpDir + "/Jenkinsfile").toString();
+            const prevFileContent = fs.readFileSync(tmpDir + "/Jenkinsfile").toString();
             const linter = await new NpmGroovyLint(
                 [
                     process.execPath,
@@ -138,16 +137,16 @@ describe("Lint & fix with API", function() {
             assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
             assert(linter.lintResult.summary.totalFixedNumber > 0, "Error have been fixed");
             assert(linter.lintResult.files[Object.keys(linter.lintResult.files)[0]].updatedSource !== prevFileContent, "File content has been updated");
-            assert(fse.existsSync("npm-groovy-fix-log.json"), "Output json file has been produced");
+            assert(fs.existsSync("npm-groovy-fix-log.json"), "Output json file has been produced");
             assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
             checkCodeNarcCallsCounter(2);
         } finally {
-            fse.removeSync("npm-groovy-fix-log.json");
+            fs.removeSync("npm-groovy-fix-log.json");
             rimraf.sync(tmpDir);
         }
     }).timeout(120000);
 
-    it("(API:file) should fix only some errors", async function() {
+    it("(API:file) should fix only some errors", async function () {
         const fixRules = [
             // Line rules or not changing line rules
 
@@ -190,16 +189,16 @@ describe("Lint & fix with API", function() {
 
             assert(linter.status === 0);
             assert(linter.lintResult.summary.totalFixedNumber > 0, "Errors have been fixed");
-            assert(fse.existsSync("npm-groovy-fix-log-should-fix-only-some-errors.txt"), "Output txt file produced");
+            assert(fs.existsSync("npm-groovy-fix-log-should-fix-only-some-errors.txt"), "Output txt file produced");
             assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
             checkCodeNarcCallsCounter(1);
         } finally {
-            fse.removeSync("npm-groovy-fix-log-should-fix-only-some-errors.txt");
+            fs.removeSync("npm-groovy-fix-log-should-fix-only-some-errors.txt");
             rimraf.sync(tmpDir);
         }
     }).timeout(120000);
 
-    it("(API:file) should fix groovy files", async function() {
+    it("(API:file) should fix groovy files", async function () {
         const tmpDir = await copyFilesInTmpDir();
         try {
             const linter = await new NpmGroovyLint(
@@ -220,11 +219,11 @@ describe("Lint & fix with API", function() {
 
             assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
             assert(linter.lintResult.summary.totalFixedNumber > 0, "Errors have been fixed");
-            assert(fse.existsSync("npm-groovy-fix-log-should-fix-groovy-files.txt"), "Output txt file produced");
+            assert(fs.existsSync("npm-groovy-fix-log-should-fix-groovy-files.txt"), "Output txt file produced");
             assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
             checkCodeNarcCallsCounter(2);
         } finally {
-            fse.removeSync("npm-groovy-fix-log-should-fix-groovy-files.txt");
+            fs.removeSync("npm-groovy-fix-log-should-fix-groovy-files.txt");
             rimraf.sync(tmpDir);
         }
     }).timeout(120000);

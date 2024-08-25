@@ -1,17 +1,15 @@
 #! /usr/bin/env node
-"use strict";
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-const { getNpmGroovyLintRules } = require("../lib/groovy-lint-rules.js");
-const { normalizeNewLines } = require("../lib/utils.js");
-let assert = require("assert");
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import { getNpmGroovyLintRules } from "../lib/groovy-lint-rules.js";
+import { normalizeNewLines } from "../lib/utils.js";
+import  assert from 'assert';
 
-const { beforeEachTestCase, checkCodeNarcCallsCounter } = require("./helpers/common");
-const npmGroovyLintRules = getNpmGroovyLintRules({ loadTests: true });
+import { beforeEachTestCase, checkCodeNarcCallsCounter } from "./helpers/common.js";
 
 // Read rules file and test all fixes
-describe("Check range detection", () => {
+describe("Check range detection", async () => {
     beforeEach(beforeEachTestCase);
-
+    const npmGroovyLintRules = await getNpmGroovyLintRules({ loadTests: true });
     // Iterate all rules
     for (const ruleName of Object.keys(npmGroovyLintRules)) {
         let pos = 1;

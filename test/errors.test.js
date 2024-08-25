@@ -1,14 +1,12 @@
 #! /usr/bin/env node
-"use strict";
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
-const fse = require("fs-extra");
-
-const { SAMPLE_FILE_SMALL_PATH } = require("./helpers/common");
+import NpmGroovyLint from "../lib/groovy-lint.js";
+import  assert from 'assert';
+import fs from 'fs-extra'
+import { SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
 
 describe("Errors", function() {
     it("(API:source) should trigger a parse options error", async function() {
-        const prevFileContent = fse.readFileSync("./lib/example/SampleFile.groovy").toString();
+        const prevFileContent = fs.readFileSync("./lib/example/SampleFile.groovy").toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             someUnknownParam: "lelamanul"
@@ -20,7 +18,7 @@ describe("Errors", function() {
     });
 
     it("(API:source) should trigger a loglevel failon consistency error", async function() {
-        const prevFileContent = fse.readFileSync("./lib/example/SampleFile.groovy").toString();
+        const prevFileContent = fs.readFileSync("./lib/example/SampleFile.groovy").toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             failon: "warning",
@@ -62,7 +60,7 @@ describe("Errors", function() {
     });
 
     it("(API:source) should trigger a fix function error", async function() {
-        const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
+        const prevFileContent = fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             fix: true,
