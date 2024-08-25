@@ -1,14 +1,13 @@
 #! /usr/bin/env node
-"use strict";
-const util = require("util");
-let assert = require("assert");
-const fse = require("fs-extra");
-const path = require("path");
-const childProcess = require("child_process");
+import * as util from 'util';
+import  assert from 'assert';
+import fs from 'fs-extra'
+import * as path from "path";
+import * as childProcess from "child_process";
 const exec = util.promisify(childProcess.exec);
 const spawn = childProcess.spawnSync;
 
-const { assertLintedFiles, SAMPLE_FILE_SMALL, NPM_GROOVY_LINT, SAMPLE_FILE_BIG } = require("./helpers/common");
+import { assertLintedFiles, SAMPLE_FILE_SMALL, NPM_GROOVY_LINT, SAMPLE_FILE_BIG }from "./helpers/common.js";
 
 describe("Lint with executable", () => {
     it("(EXE:file) should generate text console output", async function() {
@@ -146,8 +145,8 @@ describe("Lint with executable", () => {
             `-report="html:${reportFileName}"`
         ];
         await exec(NPM_GROOVY_LINT + params.join(" "));
-        assert(fse.existsSync(reportFileName), "html CodeNarc report has been generated at " + reportFileName);
-        fse.removeSync(reportFileName);
+        assert(fs.existsSync(reportFileName), "html CodeNarc report has been generated at " + reportFileName);
+        fs.removeSync(reportFileName);
     });
 
     it("(EXE:file) should generate codenarc XML file report", async function() {
@@ -160,8 +159,8 @@ describe("Lint with executable", () => {
             `-report="xml:${reportFileName}"`
         ];
         await exec(NPM_GROOVY_LINT + params.join(" "));
-        assert(fse.existsSync(reportFileName), "xml CodeNarc report has been generated at " + reportFileName);
-        fse.removeSync(reportFileName);
+        assert(fs.existsSync(reportFileName), "xml CodeNarc report has been generated at " + reportFileName);
+        fs.removeSync(reportFileName);
     });
 
     it("(EXE:file) should run on a Jenkinsfile", async function() {

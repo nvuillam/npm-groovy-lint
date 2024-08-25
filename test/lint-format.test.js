@@ -1,11 +1,10 @@
 #! /usr/bin/env node
-"use strict";
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
-const fse = require("fs-extra");
-const { normalizeNewLines } = require("../lib/utils.js");
-const rimraf = require("rimraf");
-const {
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import  assert from 'assert';
+import fs from 'fs-extra'
+import { normalizeNewLines } from "../lib/utils.js";
+import * as rimraf from "rimraf";
+import {
     beforeEachTestCase,
     checkCodeNarcCallsCounter,
     getDiff,
@@ -13,14 +12,14 @@ const {
     SAMPLE_FILE_BIG,
     SAMPLE_FILE_BIG_PATH,
     SAMPLE_FILE_SMALL_PATH
-} = require("./helpers/common");
+} from "./helpers/common.js";
 
-describe("Format with API", function() {
+describe("Format with API", function () {
     beforeEach(beforeEachTestCase);
 
-    it("(API:source) should format code", async function() {
+    it("(API:source) should format code", async function () {
         const expectedFixedErrs = 1096;
-        const prevFileContent = fse.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
+        const prevFileContent = fs.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             format: true,
@@ -43,9 +42,9 @@ describe("Format with API", function() {
         checkCodeNarcCallsCounter(2);
     }).timeout(100000);
 
-    it("(API:source) should format code with custom config", async function() {
+    it("(API:source) should format code with custom config", async function () {
         const expectedFixedErrs = 37;
-        const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
+        const prevFileContent = fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
@@ -72,11 +71,11 @@ describe("Format with API", function() {
         checkCodeNarcCallsCounter(1);
     }).timeout(100000);
 
-    it("(API:file) should format code", async function() {
+    it("(API:file) should format code", async function () {
         const expectedFixedErrs = 1096;
         const tmpDir = await copyFilesInTmpDir();
         try {
-            const prevFileContent = fse.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
+            const prevFileContent = fs.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
             const npmGroovyLintConfig = {
                 path: tmpDir,
                 files: `**/${SAMPLE_FILE_BIG}`,
@@ -93,7 +92,7 @@ describe("Format with API", function() {
                 linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
                 `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
             );
-            const newFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_BIG).toString();
+            const newFileContent = fs.readFileSync(tmpDir + "/" + SAMPLE_FILE_BIG).toString();
             assert(newFileContent !== prevFileContent, "File has been updated");
             const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
             assert(fixedNbInLogs >= expectedFixedErrs, `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`);
@@ -105,10 +104,10 @@ describe("Format with API", function() {
     }).timeout(100000);
 
     for (const [key, val] of getSamplesMap()) {
-        it("(API:source) " + key + " --format", async function() {
+        it("(API:source) " + key + " --format", async function () {
             await checkRule(key, val, "format");
         }).timeout(30000);
-        it("(API:source) " + key + " --fix", async function() {
+        it("(API:source) " + key + " --fix", async function () {
             await checkRule(key, val, "fix");
         }).timeout(30000);
     }

@@ -1,8 +1,8 @@
 #! /usr/bin/env node
-let assert = require("assert");
-const os = require("os");
-const fse = require("fs-extra");
-const jsdiff = require("diff");
+import  assert from 'assert';
+import * as os from "os";
+import fs from 'fs-extra'
+import * as jsdiff from "diff";
 
 const NPM_GROOVY_LINT = "npm-groovy-lint ";
 const EXAMPLE_DIRECTORY = "./lib/example/";
@@ -44,8 +44,8 @@ async function copyFilesInTmpDir() {
             ? "./tmptest"
             : os.tmpdir(); // Windows / other
     const tmpDir = rootTmpDir + "/" + ("tmpGroovyLintTest_" + Math.random()).replace(".", "");
-    await fse.ensureDir(tmpDir, { mode: "0777" });
-    await fse.copy("./lib/example", tmpDir);
+    await fs.ensureDir(tmpDir, { mode: "0777" });
+    await fs.copy("./lib/example", tmpDir);
     console.info("GroovyLint: Copied ./lib/example into " + tmpDir);
     return tmpDir;
 }
@@ -76,7 +76,7 @@ function assertLintedFiles(output, expectedCount) {
     );
 }
 
-module.exports = {
+export {
     NPM_GROOVY_LINT,
     EXAMPLE_DIRECTORY,
     SAMPLE_FILE_BIG,

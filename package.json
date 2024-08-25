@@ -2,7 +2,8 @@
   "name": "npm-groovy-lint",
   "version": "14.6.0",
   "description": "Lint, format and auto-fix your Groovy / Jenkinsfile / Gradle files",
-  "main": "index.js",
+  "exports": "./index.js",
+  "type": "module",
   "scripts": {
     "lint:fix": "eslint **/*.js --fix && prettier --write \"./lib/**/*.{js,jsx}\" --tab-width 4 --print-width 150",
     "server:run-from-source": "npm run server:kill && groovy -cp \"lib/java/*\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
@@ -48,11 +49,10 @@
   "dependencies": {
     "ansi-colors": "^4.1.1",
     "axios": "^1.6.2",
-    "chalk": "^4.1.2",
+    "chalk": "^5.3.0",
     "cli-progress": "^3.12.0",
     "commondir": "^1.0.1",
     "debug": "^4.1.1",
-    "decode-html": "^2.0.0",
     "find-java-home": "^2.0.0",
     "find-package-json": "^1.2.0",
     "fs-extra": "^11.0.0",
@@ -62,7 +62,7 @@
     "js-yaml": "^4.1.0",
     "node-sarif-builder": "^3.0.0",
     "optionator": "^0.9.0",
-    "strip-json-comments": "^3.0.1",
+    "strip-json-comments": "^5.0.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
@@ -80,7 +80,7 @@
     "nyc": "^17.0.0",
     "prettier": "^3.0.0",
     "rimraf": "^6.0.0",
-    "which": "^2.0.2"
+    "which": "^4.0.0"
   },
   "engines": {
     "node": ">=20.0.0"
