@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 const util = require("util");
 let assert = require("assert");
-const fse = require("fs-extra");
+import * as fse from "fs-extra";
 import * as path from "path";
 const childProcess = require("child_process");
 const exec = util.promisify(childProcess.exec);

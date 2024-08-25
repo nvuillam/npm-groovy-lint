@@ -5,12 +5,11 @@ const { normalizeNewLines } = require("../lib/utils.js");
 let assert = require("assert");
 
 const { beforeEachTestCase, checkCodeNarcCallsCounter, getDiff } = require("./helpers/common");
-const npmGroovyLintRules = getNpmGroovyLintRules({ loadTests: true });
 
 // Read rules file and test all fixes
-describe("Check rules auto-fixes", () => {
+describe("Check rules auto-fixes", async () => {
     beforeEach(beforeEachTestCase);
-
+    const npmGroovyLintRules = await getNpmGroovyLintRules({ loadTests: true });
     // Iterate all rules
     for (const ruleName of Object.keys(npmGroovyLintRules)) {
         let pos = 1;

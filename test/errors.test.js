@@ -1,13 +1,12 @@
 #! /usr/bin/env node
 const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
-const fse = require("fs-extra");
-
+import * as fs from "fs-extra";
 const { SAMPLE_FILE_SMALL_PATH } = require("./helpers/common");
 
 describe("Errors", function() {
     it("(API:source) should trigger a parse options error", async function() {
-        const prevFileContent = fse.readFileSync("./lib/example/SampleFile.groovy").toString();
+        const prevFileContent = fs.readFileSync("./lib/example/SampleFile.groovy").toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             someUnknownParam: "lelamanul"
@@ -19,7 +18,7 @@ describe("Errors", function() {
     });
 
     it("(API:source) should trigger a loglevel failon consistency error", async function() {
-        const prevFileContent = fse.readFileSync("./lib/example/SampleFile.groovy").toString();
+        const prevFileContent = fs.readFileSync("./lib/example/SampleFile.groovy").toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             failon: "warning",
@@ -61,7 +60,7 @@ describe("Errors", function() {
     });
 
     it("(API:source) should trigger a fix function error", async function() {
-        const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
+        const prevFileContent = fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             fix: true,

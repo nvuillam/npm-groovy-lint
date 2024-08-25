@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 let assert = require("assert");
 const util = require("util");
-const fse = require("fs-extra");
+import * as fs from "fs-extra";
 const rimraf = require("rimraf");
 const childProcess = require("child_process");
 const exec = util.promisify(childProcess.exec);
@@ -11,7 +11,7 @@ describe("Lint & fix with EXE", function() {
     it("(EXE:file) should lint and fix a file in one shot", async function() {
         const tmpDir = await copyFilesInTmpDir();
         try {
-            const prevFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL).toString();
+            const prevFileContent = fs.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL).toString();
             const params = [
                 "--output", '"npm-groovy-fix-log.json"',
                 "--path", '"' + tmpDir + '"',
@@ -27,14 +27,14 @@ describe("Lint & fix with EXE", function() {
             }
             assert(stdout, "stdout is set");
 
-            assert(fse.existsSync("npm-groovy-fix-log.json"), "Output json file has been produced");
+            assert(fs.existsSync("npm-groovy-fix-log.json"), "Output json file has been produced");
 
-            const newFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL).toString().replace(/\r\n/g,'\n');
+            const newFileContent = fs.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL).toString().replace(/\r\n/g,'\n');
             assert(prevFileContent !== newFileContent, "Groovy file has been updated");
-            const expectedFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL_FIX).toString().replace(/\r\n/g,'\n');
+            const expectedFileContent = fs.readFileSync(tmpDir + "/" + SAMPLE_FILE_SMALL_FIX).toString().replace(/\r\n/g,'\n');
             assert.strictEqual(newFileContent, expectedFileContent, "Formatted file is corresponding to expected result");
         }  finally {
-            fse.removeSync("npm-groovy-fix-log.json");
+            fs.removeSync("npm-groovy-fix-log.json");
             rimraf.sync(tmpDir);
         }
     }).timeout(120000);

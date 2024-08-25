@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 let assert = require("assert");
 import * as os from "os";
-const fse = require("fs-extra");
+import * as fse from "fs-extra";
 const jsdiff = require("diff");
 
 const NPM_GROOVY_LINT = "npm-groovy-lint ";

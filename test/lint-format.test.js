@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
-const fse = require("fs-extra");
+import * as fs from "fs-extra";
 const { normalizeNewLines } = require("../lib/utils.js");
 const rimraf = require("rimraf");
 const {
@@ -19,7 +19,7 @@ describe("Format with API", function() {
 
     it("(API:source) should format code", async function() {
         const expectedFixedErrs = 1096;
-        const prevFileContent = fse.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
+        const prevFileContent = fs.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             format: true,
@@ -44,7 +44,7 @@ describe("Format with API", function() {
 
     it("(API:source) should format code with custom config", async function() {
         const expectedFixedErrs = 37;
-        const prevFileContent = fse.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
+        const prevFileContent = fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
@@ -75,7 +75,7 @@ describe("Format with API", function() {
         const expectedFixedErrs = 1096;
         const tmpDir = await copyFilesInTmpDir();
         try {
-            const prevFileContent = fse.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
+            const prevFileContent = fs.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
             const npmGroovyLintConfig = {
                 path: tmpDir,
                 files: `**/${SAMPLE_FILE_BIG}`,
@@ -92,7 +92,7 @@ describe("Format with API", function() {
                 linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
                 `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
             );
-            const newFileContent = fse.readFileSync(tmpDir + "/" + SAMPLE_FILE_BIG).toString();
+            const newFileContent = fs.readFileSync(tmpDir + "/" + SAMPLE_FILE_BIG).toString();
             assert(newFileContent !== prevFileContent, "File has been updated");
             const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
             assert(fixedNbInLogs >= expectedFixedErrs, `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`);

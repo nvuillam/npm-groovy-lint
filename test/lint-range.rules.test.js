@@ -5,12 +5,11 @@ const { normalizeNewLines } = require("../lib/utils.js");
 let assert = require("assert");
 
 const { beforeEachTestCase, checkCodeNarcCallsCounter } = require("./helpers/common");
-const npmGroovyLintRules = getNpmGroovyLintRules({ loadTests: true });
 
 // Read rules file and test all fixes
-describe("Check range detection", () => {
+describe("Check range detection", async () => {
     beforeEach(beforeEachTestCase);
-
+    const npmGroovyLintRules = await getNpmGroovyLintRules({ loadTests: true });
     // Iterate all rules
     for (const ruleName of Object.keys(npmGroovyLintRules)) {
         let pos = 1;

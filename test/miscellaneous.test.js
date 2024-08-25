@@ -2,13 +2,15 @@
 const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
 const childProcess = require("child_process");
-const fse = require("fs-extra");
+import * as fse from "fs-extra";
 import * as os from "os";
 import * as path from "path";
 const util = require("util")
 const which = require("which");
 const exec = util.promisify(childProcess.exec);
 const { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH } = require("./helpers/common");
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe("Miscellaneous", function() {
     it("(API:source) returns config file using path", async function() {
