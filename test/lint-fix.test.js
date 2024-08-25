@@ -1,20 +1,20 @@
 #! /usr/bin/env node
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import * as assert from 'assert';
 import fs from 'fs-extra'
-const rimraf = require("rimraf");
-const {
+import * as rimraf from "rimraf";
+import {
     beforeEachTestCase,
     copyFilesInTmpDir,
     checkCodeNarcCallsCounter,
     SAMPLE_FILE_BIG_PATH,
     SAMPLE_FILE_SMALL_PATH
-} = require("./helpers/common");
+} from "./helpers/common.js";
 
-describe("Lint & fix with API", function() {
+describe("Lint & fix with API", function () {
     beforeEach(beforeEachTestCase);
 
-    it("(API:source) should lint then fix only a list of errors", async function() {
+    it("(API:source) should lint then fix only a list of errors", async function () {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
         const prevFileContent = fs.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
@@ -38,7 +38,7 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(2);
     });
 
-    it("(API:source) should lint and fix (one shot)", async function() {
+    it("(API:source) should lint and fix (one shot)", async function () {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
         const expectedFixedErrs = 1076;
         const prevFileContent = fs.readFileSync(sampleFilePath).toString();
@@ -62,7 +62,7 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(3);
     }).timeout(200000);
 
-    it("(API:source) should lint and fix (no lintagainafterfix)", async function() {
+    it("(API:source) should lint and fix (no lintagainafterfix)", async function () {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
         const expectedFixedErrs = 1076;
         const prevFileContent = fs.readFileSync(sampleFilePath).toString();
@@ -87,7 +87,7 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(2);
     }).timeout(200000);
 
-    it("(API:source) should lint and fix (no lintagainafterfix) 2", async function() {
+    it("(API:source) should lint and fix (no lintagainafterfix) 2", async function () {
         const sampleFilePath = SAMPLE_FILE_SMALL_PATH;
         const expectedFixedErrs = 3;
         const prevFileContent = fs.readFileSync(sampleFilePath).toString();
@@ -112,7 +112,7 @@ describe("Lint & fix with API", function() {
         checkCodeNarcCallsCounter(1);
     }).timeout(200000);
 
-    it("(API:file) should lint and fix a Jenkinsfile in one shot", async function() {
+    it("(API:file) should lint and fix a Jenkinsfile in one shot", async function () {
         const tmpDir = await copyFilesInTmpDir();
         try {
             const prevFileContent = fs.readFileSync(tmpDir + "/Jenkinsfile").toString();
@@ -146,7 +146,7 @@ describe("Lint & fix with API", function() {
         }
     }).timeout(120000);
 
-    it("(API:file) should fix only some errors", async function() {
+    it("(API:file) should fix only some errors", async function () {
         const fixRules = [
             // Line rules or not changing line rules
 
@@ -198,7 +198,7 @@ describe("Lint & fix with API", function() {
         }
     }).timeout(120000);
 
-    it("(API:file) should fix groovy files", async function() {
+    it("(API:file) should fix groovy files", async function () {
         const tmpDir = await copyFilesInTmpDir();
         try {
             const linter = await new NpmGroovyLint(

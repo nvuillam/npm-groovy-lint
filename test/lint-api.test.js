@@ -1,9 +1,9 @@
 #! /usr/bin/env node
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import * as assert from 'assert';
 import fs from 'fs-extra'
 import * as path from "path";
-const {
+import {
     beforeEachTestCase,
     checkCodeNarcCallsCounter,
     assertLintedFiles,
@@ -15,7 +15,7 @@ const {
     SAMPLE_RULESET_1_PATH,
     SAMPLE_RULESET_2_PATH,
     EXAMPLE_DIRECTORY
-} = require("./helpers/common");
+} from "./helpers/common.js";
 
 describe("Lint with API", () => {
     beforeEach(beforeEachTestCase);

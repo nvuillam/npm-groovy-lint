@@ -1,8 +1,8 @@
 #! /usr/bin/env node
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
+import NpmGroovyLint from "../lib/groovy-lint.js";
+import * as assert from 'assert';
 import fs from 'fs-extra'
-const { SAMPLE_FILE_SMALL_PATH } = require("./helpers/common");
+import { SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
 
 describe("Errors", function() {
     it("(API:source) should trigger a parse options error", async function() {

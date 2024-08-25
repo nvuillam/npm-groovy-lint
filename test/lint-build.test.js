@@ -1,13 +1,13 @@
 #! /usr/bin/env node
-const util = require("util");
-let assert = require("assert");
+import * as util from 'util';
+import * as assert from 'assert';
 import fs from 'fs-extra'
 import * as path from "path";
-const childProcess = require("child_process");
+import * as childProcess from "child_process";
 const exec = util.promisify(childProcess.exec);
 const spawn = childProcess.spawnSync;
 
-const { assertLintedFiles, SAMPLE_FILE_SMALL, NPM_GROOVY_LINT, SAMPLE_FILE_BIG } = require("./helpers/common");
+import { assertLintedFiles, SAMPLE_FILE_SMALL, NPM_GROOVY_LINT, SAMPLE_FILE_BIG }from "./helpers/common.js";
 
 describe("Lint with executable", () => {
     it("(EXE:file) should generate text console output", async function() {

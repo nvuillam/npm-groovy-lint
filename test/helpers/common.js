@@ -1,8 +1,8 @@
 #! /usr/bin/env node
-let assert = require("assert");
+import * as assert from 'assert';
 import * as os from "os";
 import fs from 'fs-extra'
-const jsdiff = require("diff");
+import * as jsdiff from "diff";
 
 const NPM_GROOVY_LINT = "npm-groovy-lint ";
 const EXAMPLE_DIRECTORY = "./lib/example/";
@@ -76,7 +76,7 @@ function assertLintedFiles(output, expectedCount) {
     );
 }
 
-export default  {
+export {
     NPM_GROOVY_LINT,
     EXAMPLE_DIRECTORY,
     SAMPLE_FILE_BIG,

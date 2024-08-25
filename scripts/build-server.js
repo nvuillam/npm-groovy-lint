@@ -2,7 +2,7 @@
 
 // Imports
 const fs = require('fs-extra');
-const childProcess = require("child_process");
+import * as childProcess from "child_process";
 const handlebars = require('handlebars');
 const admZip = require('adm-zip');
 const path = require('path');

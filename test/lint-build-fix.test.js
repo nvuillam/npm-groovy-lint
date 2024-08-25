@@ -1,11 +1,11 @@
 #! /usr/bin/env node
-let assert = require("assert");
-const util = require("util");
+import * as assert from 'assert';
+import * as util from 'util';
 import fs from 'fs-extra'
-const rimraf = require("rimraf");
-const childProcess = require("child_process");
+import * as rimraf from "rimraf";
+import * as childProcess from "child_process";
 const exec = util.promisify(childProcess.exec);
-const { copyFilesInTmpDir, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_FIX, NPM_GROOVY_LINT } = require("./helpers/common");
+import { copyFilesInTmpDir, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_FIX, NPM_GROOVY_LINT } from "./helpers/common.js";
 
 describe("Lint & fix with EXE", function() {
     it("(EXE:file) should lint and fix a file in one shot", async function() {

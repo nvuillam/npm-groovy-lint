@@ -4,7 +4,7 @@
 
 
 // Imports
-const { existsSync, emptyDirSync, mkdirSync, copySync } = require('fs-extra');
+import { existsSync, emptyDirSync, mkdirSync, copySync } from 'fs-extra';
 
 console.log('---- START DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----');
 

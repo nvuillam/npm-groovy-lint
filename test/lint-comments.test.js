@@ -1,7 +1,7 @@
 #! /usr/bin / env node
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
-const { beforeEachTestCase, checkCodeNarcCallsCounter } = require("./helpers/common");
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import * as assert from 'assert';
+import { beforeEachTestCase, checkCodeNarcCallsCounter } from "./helpers/common.js";
 
 describe("Check disabled rules", function() {
     beforeEach(beforeEachTestCase);

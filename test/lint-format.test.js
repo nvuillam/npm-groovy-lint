@@ -1,10 +1,10 @@
 #! /usr/bin/env node
-const NpmGroovyLint = require("../lib/groovy-lint.js");
-let assert = require("assert");
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import * as assert from 'assert';
 import fs from 'fs-extra'
-const { normalizeNewLines } = require("../lib/utils.js");
-const rimraf = require("rimraf");
-const {
+import { normalizeNewLines } from "../lib/utils.js";
+import * as rimraf from "rimraf";
+import {
     beforeEachTestCase,
     checkCodeNarcCallsCounter,
     getDiff,
@@ -12,12 +12,12 @@ const {
     SAMPLE_FILE_BIG,
     SAMPLE_FILE_BIG_PATH,
     SAMPLE_FILE_SMALL_PATH
-} = require("./helpers/common");
+} from "./helpers/common.js";
 
-describe("Format with API", function() {
+describe("Format with API", function () {
     beforeEach(beforeEachTestCase);
 
-    it("(API:source) should format code", async function() {
+    it("(API:source) should format code", async function () {
         const expectedFixedErrs = 1096;
         const prevFileContent = fs.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
         const npmGroovyLintConfig = {
@@ -42,7 +42,7 @@ describe("Format with API", function() {
         checkCodeNarcCallsCounter(2);
     }).timeout(100000);
 
-    it("(API:source) should format code with custom config", async function() {
+    it("(API:source) should format code with custom config", async function () {
         const expectedFixedErrs = 37;
         const prevFileContent = fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
         const npmGroovyLintConfig = {
@@ -71,7 +71,7 @@ describe("Format with API", function() {
         checkCodeNarcCallsCounter(1);
     }).timeout(100000);
 
-    it("(API:file) should format code", async function() {
+    it("(API:file) should format code", async function () {
         const expectedFixedErrs = 1096;
         const tmpDir = await copyFilesInTmpDir();
         try {
@@ -104,10 +104,10 @@ describe("Format with API", function() {
     }).timeout(100000);
 
     for (const [key, val] of getSamplesMap()) {
-        it("(API:source) " + key + " --format", async function() {
+        it("(API:source) " + key + " --format", async function () {
             await checkRule(key, val, "format");
         }).timeout(30000);
-        it("(API:source) " + key + " --fix", async function() {
+        it("(API:source) " + key + " --fix", async function () {
             await checkRule(key, val, "fix");
         }).timeout(30000);
     }
