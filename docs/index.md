@@ -438,6 +438,8 @@ Examples:
 - `DEBUG=npm-groovy-lint npm-groovy-lint ....`
 - `DEBUG=npm-groovy-lint,npm-groovy-lint-trace npm-groovy-lint ....`
 
+If you want to see what happens in CodeNarc Server, you can clone the repo and run locally `npm server:run` before running npm-groovy-lint: you'll see the live logs of the to CodeNarc Server for npm-groovy-lint.
+
 ## Contribute
 
 Contributions are very welcome !
