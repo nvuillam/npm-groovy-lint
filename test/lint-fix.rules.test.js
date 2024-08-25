@@ -2,7 +2,7 @@
 import NpmGroovyLint from "../lib/groovy-lint.js"
 import { getNpmGroovyLintRules } from "../lib/groovy-lint-rules.js";
 import { normalizeNewLines } from "../lib/utils.js";
-import * as assert from 'assert';
+import  assert from 'assert';
 
 import { beforeEachTestCase, checkCodeNarcCallsCounter, getDiff } from "./helpers/common.js";
 

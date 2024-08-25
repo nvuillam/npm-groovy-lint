@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 import * as util from 'util';
-import * as assert from 'assert';
+import  assert from 'assert';
 import fs from 'fs-extra'
 import * as path from "path";
 import * as childProcess from "child_process";

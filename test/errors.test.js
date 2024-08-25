@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 import NpmGroovyLint from "../lib/groovy-lint.js";
-import * as assert from 'assert';
+import  assert from 'assert';
 import fs from 'fs-extra'
 import { SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
 

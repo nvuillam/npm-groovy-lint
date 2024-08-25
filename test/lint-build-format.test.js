@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-import * as assert from 'assert';
+import  assert from 'assert';
 import * as util from 'util';
 import fs from 'fs-extra'
 import * as rimraf from "rimraf";

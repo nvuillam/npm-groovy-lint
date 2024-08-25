@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-import * as assert from 'assert';
+import  assert from 'assert';
 import * as os from "os";
 import fs from 'fs-extra'
 import * as jsdiff from "diff";

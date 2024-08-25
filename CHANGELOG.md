@@ -7,6 +7,7 @@
 - Upgrade dependencies, including base package node-java-caller
 - Upgrade NodeJs to minimum version 20
 - Upgrade MegaLinter to v8
+- Remove decode-html-entities dependency
 
 ## [14.6.0] 2024-05-08
 

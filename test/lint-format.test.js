@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 import NpmGroovyLint from "../lib/groovy-lint.js"
-import * as assert from 'assert';
+import  assert from 'assert';
 import fs from 'fs-extra'
 import { normalizeNewLines } from "../lib/utils.js";
 import * as rimraf from "rimraf";
