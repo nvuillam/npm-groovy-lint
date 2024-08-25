@@ -1,12 +1,4 @@
 Manifest-Version: 1.0
-Class-Path: CodeNarc-3.4.0-alpha+3346775f.jar GMetrics-2.1.0.jar commo
- ns-compiler-3.1.11.jar groovy/lib/ant-1.10.11.jar groovy/lib/ant-laun
- cher-1.10.11.jar groovy/lib/commons-cli-1.4.jar groovy/lib/groovy-3.0
- .9.jar groovy/lib/groovy-ant-3.0.9.jar groovy/lib/groovy-cli-commons-
- 3.0.9.jar groovy/lib/groovy-dateutil-3.0.9.jar groovy/lib/groovy-json
- -3.0.9.jar groovy/lib/groovy-templates-3.0.9.jar groovy/lib/groovy-xm
- l-3.0.9.jar jackson-annotations-2.16.0.jar jackson-core-2.16.0.jar ja
- ckson-databind-2.16.0.jar janino-3.1.11.jar logback-classic-1.4.14.ja
- r logback-core-1.4.14.jar slf4j-api-2.0.9.jar
+Class-Path: CodeNarc-3.5.0 GMetrics-2.1.0.jar commons-compiler-3.1.11.jar groovy/lib/ant-1.10.11.jar groovy/lib/ant-launcher-1.10.11.jar groovy/lib/commons-cli-1.4.jar groovy/lib/groovy-3.0.9.jar groovy/lib/groovy-ant-3.0.9.jar groovy/lib/groovy-cli-commons-3.0.9.jar groovy/lib/groovy-dateutil-3.0.9.jar groovy/lib/groovy-json-3.0.9.jar groovy/lib/groovy-templates-3.0.9.jar groovy/lib/groovy-xml-3.0.9.jar jackson-annotations-2.16.0.jar jackson-core-2.16.0.jar jackson-databind-2.16.0.jar janino-3.1.11.jar logback-classic-1.4.14.jar logback-core-1.4.14.jar slf4j-api-2.0.9.jar
 Created-By: 1.8.0_144 (Oracle Corporation)
 Main-Class: com.nvuillam.CodeNarcServer
