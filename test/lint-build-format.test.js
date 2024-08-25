@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 let assert = require("assert");
 const util = require("util");
-import * as fs from "fs-extra";
+import fs from 'fs-extra'
 const rimraf = require("rimraf");
 const childProcess = require("child_process");
 const exec = util.promisify(childProcess.exec);

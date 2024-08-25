@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 const NpmGroovyLint = require("../lib/groovy-lint.js");
 let assert = require("assert");
-import * as fs from "fs-extra";
+import fs from 'fs-extra'
 import * as path from "path";
 const {
     beforeEachTestCase,

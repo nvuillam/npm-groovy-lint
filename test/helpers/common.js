@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 let assert = require("assert");
 import * as os from "os";
-import * as fse from "fs-extra";
+import fs from 'fs-extra'
 const jsdiff = require("diff");
 
 const NPM_GROOVY_LINT = "npm-groovy-lint ";
@@ -44,8 +44,8 @@ async function copyFilesInTmpDir() {
             ? "./tmptest"
             : os.tmpdir(); // Windows / other
     const tmpDir = rootTmpDir + "/" + ("tmpGroovyLintTest_" + Math.random()).replace(".", "");
-    await fse.ensureDir(tmpDir, { mode: "0777" });
-    await fse.copy("./lib/example", tmpDir);
+    await fs.ensureDir(tmpDir, { mode: "0777" });
+    await fs.copy("./lib/example", tmpDir);
     console.info("GroovyLint: Copied ./lib/example into " + tmpDir);
     return tmpDir;
 }

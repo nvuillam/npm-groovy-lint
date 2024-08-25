@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 const util = require("util");
 let assert = require("assert");
-import * as fse from "fs-extra";
+import fs from 'fs-extra'
 import * as path from "path";
 const childProcess = require("child_process");
 const exec = util.promisify(childProcess.exec);
@@ -145,8 +145,8 @@ describe("Lint with executable", () => {
             `-report="html:${reportFileName}"`
         ];
         await exec(NPM_GROOVY_LINT + params.join(" "));
-        assert(fse.existsSync(reportFileName), "html CodeNarc report has been generated at " + reportFileName);
-        fse.removeSync(reportFileName);
+        assert(fs.existsSync(reportFileName), "html CodeNarc report has been generated at " + reportFileName);
+        fs.removeSync(reportFileName);
     });
 
     it("(EXE:file) should generate codenarc XML file report", async function() {
@@ -159,8 +159,8 @@ describe("Lint with executable", () => {
             `-report="xml:${reportFileName}"`
         ];
         await exec(NPM_GROOVY_LINT + params.join(" "));
-        assert(fse.existsSync(reportFileName), "xml CodeNarc report has been generated at " + reportFileName);
-        fse.removeSync(reportFileName);
+        assert(fs.existsSync(reportFileName), "xml CodeNarc report has been generated at " + reportFileName);
+        fs.removeSync(reportFileName);
     });
 
     it("(EXE:file) should run on a Jenkinsfile", async function() {

@@ -1,4 +1,4 @@
-import * as fs from "fs-extra";
+import fs from 'fs-extra'
 const { getNpmGroovyLintRules } = require("../lib/groovy-lint-rules.js");
 // Build Json containing all CodeNarc rules
 (async () => {
