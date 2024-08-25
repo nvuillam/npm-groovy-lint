@@ -1,12 +1,12 @@
 // Build Server creating a deterministic jar file.
 
 // Imports
-const fs = require('fs-extra');
+import fs from 'fs-extra';
 import * as childProcess from "child_process";
-const handlebars = require('handlebars');
-const admZip = require('adm-zip');
-const path = require('path');
-const glob = require('glob');
+import Handlebars from 'handlebars';
+import AdmZip from 'adm-zip';
+import * as path  from 'path';
+import * as glob from 'glob';
 
 const srcDir = 'groovy/src/main';
 const metaDir = 'META-INF';
@@ -27,7 +27,7 @@ const classDir = `${tmpDir}/${classPath}`;
 function jarFileTimes() {
     console.info('Getting jar file times...');
     let file = `${libDir}${jarFile}`;
-    let zip = new admZip(file);
+    let zip = new AdmZip(file);
     let zipEntries = zip.getEntries();
 
     let details = new Map();
@@ -89,7 +89,7 @@ function buildManifest() {
     }
 
     // Update the manifest file if it has changed.
-    const template = handlebars.compile(manifestTemplate);
+    const template = Handlebars.compile(manifestTemplate);
     const contents = template({classPath: wrapped});
 
     const srcManifestFile = `${srcDir}/${manifestFile}`;
@@ -137,7 +137,7 @@ function buildJar(jarFileTimes) {
     fs.copyFileSync(`${libDir}${logConfig}`, `${tmpDir}/${logConfig}`);
 
     // Create the jar file.
-    var jar = new admZip();
+    var jar = new AdmZip();
     files.forEach((file) => {
         let origTime = jarFileTimes.get(file);
         let tmpFile = `${tmpDir}/${file}`;
