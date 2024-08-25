@@ -427,6 +427,17 @@ Example
     console.log(JSON.stringify(linter.lintResult));
 ```
 
+## Troubleshooting
+
+If you have issues with MegaLinter, you can [report it on the repository](https://github.com/nvuillam/npm-groovy-lint/issues)
+
+To help reproducing, you can access advanced logs using DEBUG env variables
+
+Examples:
+
+- `DEBUG=npm-groovy-lint npm-groovy-lint ....`
+- `DEBUG=npm-groovy-lint,npm-groovy-lint-trace npm-groovy-lint ....`
+
 ## Contribute
 
 Contributions are very welcome !

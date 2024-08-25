@@ -45,6 +45,7 @@ nav:
   - "Auto-fixable rules": "./#auto-fixable-rules"
   - "CI/CD": "./#cdci"
   - "Use as module": "./#use-as-module"
+  - "Troubleshooting": "./#troubleshooting"
   - "Contribute": "./#contribute"
   - "Thanks": "./#thanks"
   - "Changelog": "CHANGELOG.md"
