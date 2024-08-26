@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-import NpmGroovyLint from "../lib/groovy-lint.js"
+import NpmGroovyLint from "../lib/groovy-lint.mjs"
 import { getNpmGroovyLintRules } from "../lib/groovy-lint-rules.js";
 import { normalizeNewLines } from "../lib/utils.js";
 import  assert from 'assert';

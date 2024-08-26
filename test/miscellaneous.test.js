@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-import NpmGroovyLint from "../lib/groovy-lint.js"
+import NpmGroovyLint from "../lib/groovy-lint.mjs"
 import  assert from 'assert';
 import * as childProcess from "child_process";
 import fs from 'fs-extra'

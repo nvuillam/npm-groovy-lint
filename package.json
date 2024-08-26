@@ -2,7 +2,7 @@
   "name": "npm-groovy-lint",
   "version": "15.0.0",
   "description": "Lint, format and auto-fix your Groovy / Jenkinsfile / Gradle files",
-  "exports": "./index.js",
+  "exports": "./lib/groovy-lint.mjs",
   "type": "module",
   "scripts": {
     "lint:fix": "eslint **/*.js --fix && prettier --write \"./lib/**/*.{js,jsx}\" --tab-width 4 --print-width 150",
