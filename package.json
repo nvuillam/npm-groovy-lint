@@ -5,7 +5,7 @@
   "exports": "./lib/groovy-lint.mjs",
   "type": "module",
   "scripts": {
-    "lint:fix": "eslint **/*.js --fix && prettier --write \"./lib/**/*.{js,jsx}\" --tab-width 4 --print-width 150",
+    "lint:fix": "eslint **/*.{js,mjs} --fix && prettier --write \"./lib/**/*.{js,jsx,mjs}\" --tab-width 4 --print-width 150",
     "server:run-from-source": "npm run server:kill && groovy -cp \"lib/java/*\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
     "server:run": "npm run server:kill && java -Xms256m -Xmx2048m -jar lib/java/CodeNarcServer.jar --server",
     "server:build": "node scripts/build-server.js",
