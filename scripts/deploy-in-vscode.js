@@ -2,9 +2,8 @@
 // Copy source files into vscode npm installation (avoid generate betas to test updates)
 // npm-groovy-lint & vscode-groovy-lint must be in the same folder, else you have to override  VSCODE_GROOVY_LINT_PATH env variable
 
-
 // Imports
-import { existsSync, emptyDirSync, mkdirSync, copySync } from 'fs-extra';
+import fs from 'fs-extra';
 
 console.log('---- START DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----');
 
@@ -15,16 +14,16 @@ const targetPath = `${vsCodeGroovyLintPath}/server/node_modules/npm-groovy-lint`
 console.info(`GroovyLint: Starting copying package in vscode for testing`);
 
 // Reset target folder
-if (existsSync(targetPath)) {
-    emptyDirSync(targetPath);
+if (fs.existsSync(targetPath)) {
+    fs.emptyDirSync(targetPath);
 }
 else {
-    mkdirSync(targetPath);
+    fs.mkdirSync(targetPath);
 }
 
 // Copy files into dest folder
 for (const path of ['package.json', 'README.md', 'CHANGELOG.md', 'LICENSE', 'lib']) {
-    copySync(path, `${targetPath}/${path}`);
+    fs.copySync(path, `${targetPath}/${path}`);
 }
 
 console.info(`GroovyLint: Copied files into ${targetPath}`);
@@ -32,4 +31,3 @@ console.info(`GroovyLint: Copied files into ${targetPath}`);
 console.log('---- END DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----\n');
 
 process.exit(0);
-
