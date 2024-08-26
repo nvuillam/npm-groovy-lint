@@ -2,11 +2,13 @@
 
 ## Beta
 
-- Convert to ES6 Module
+## [15.0.0] 2024-26-08
+
+- Convert to [ES Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 - Upgrade to CodeNarc 3.5.0
+- Upgrade NodeJs to minimum version 20
 - Setup renovate
 - Upgrade dependencies, including base package node-java-caller
-- Upgrade NodeJs to minimum version 20
 - Upgrade MegaLinter to v8
 - Remove decode-html-entities dependency
 
