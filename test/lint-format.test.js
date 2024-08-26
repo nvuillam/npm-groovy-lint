@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-import NpmGroovyLint from "../lib/groovy-lint.mjs"
+import NpmGroovyLint from "../lib/groovy-lint.js"
 import  assert from 'assert';
 import fs from 'fs-extra'
 import { normalizeNewLines } from "../lib/utils.js";

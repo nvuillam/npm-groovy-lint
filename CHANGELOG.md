@@ -4,6 +4,7 @@
 
 - Add module declaration
 - Rename some files from .js to .mjs
+- Disable codecov
 
 ## [15.0.0] 2024-26-08
 

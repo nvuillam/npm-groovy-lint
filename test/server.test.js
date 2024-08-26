@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-import NpmGroovyLint from "../lib/groovy-lint.mjs"
+import NpmGroovyLint from "../lib/groovy-lint.js"
 import  assert from 'assert';
 import * as which from 'which'
 import { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG } from "./helpers/common.js";
