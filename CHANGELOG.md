@@ -2,7 +2,11 @@
 
 ## Beta
 
-## [15.0.0] 2024-26-08
+## [15.0.1] 2024-08-26
+
+- Fix module export
+
+## [15.0.0] 2024-08-26
 
 - Convert to [ES Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 - Upgrade to CodeNarc 3.5.0
