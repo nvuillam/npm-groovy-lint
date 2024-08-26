@@ -2,11 +2,12 @@
 
 ## Beta
 
+## [15.0.1] 2024-08-27
+
 - Add module declaration
-- Rename some files from .js to .mjs
 - Disable codecov
 
-## [15.0.0] 2024-26-08
+## [15.0.0] 2024-08-26
 
 - Convert to [ES Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 - Upgrade to CodeNarc 3.5.0
