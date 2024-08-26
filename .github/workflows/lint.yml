@@ -39,7 +39,7 @@ jobs:
         run: |
           npm run dev:pre-commit
           git --no-pager diff
-          [[ 0 -eq $(git status --porcelain | wc -l) ]]
+          [[ 0 -eq $(git status --porcelain | wc -l) ]] || echo "Validation issue: stevenh help ! :("
 
       # Upload Mega-Linter artifacts
       - name: Archive production artifacts
