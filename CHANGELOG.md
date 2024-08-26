@@ -2,6 +2,9 @@
 
 ## Beta
 
+- Add module declaration
+- Rename some files from .js to .mjs
+
 ## [15.0.0] 2024-26-08
 
 - Convert to [ES Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)

@@ -41,6 +41,7 @@
   },
   "homepage": "https://github.com/nvuillam/npm-groovy-lint#readme",
   "files": [
+    "index.d.ts",
     "lib"
   ],
   "bin": {

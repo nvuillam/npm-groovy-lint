@@ -22,7 +22,7 @@ else {
 }
 
 // Copy files into dest folder
-for (const path of ['package.json', 'README.md', 'CHANGELOG.md', 'LICENSE', 'lib']) {
+for (const path of ['package.json', 'README.md', 'CHANGELOG.md', 'LICENSE', 'index.d.ts', 'lib']) {
     fs.copySync(path, `${targetPath}/${path}`);
 }
 
