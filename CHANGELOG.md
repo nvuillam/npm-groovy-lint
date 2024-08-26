@@ -5,6 +5,7 @@
 ## [15.0.1] 2024-08-26
 
 - Fix module export
+- Fix deploy in vscode script
 
 ## [15.0.0] 2024-08-26
 
