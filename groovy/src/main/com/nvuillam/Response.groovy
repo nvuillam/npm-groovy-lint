@@ -23,7 +23,7 @@ class Response {
     String errorMessage
     String errorDtl
     String exceptionType
-    Map<String, List<Error>> parseErrors
+    Map<String, List<String>> parseErrors
 
     // Lint result.
     @JsonRawValue
