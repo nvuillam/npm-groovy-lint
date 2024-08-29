@@ -2,11 +2,13 @@
 
 ## Beta
 
+## [15.0.1] 2024-08-29
+
 - Add module declaration
-- Rename some files from .js to .mjs
+- Fix crash in case of parsing error (https://github.com/nvuillam/npm-groovy-lint/issues/406)
 - Disable codecov
 
-## [15.0.0] 2024-26-08
+## [15.0.0] 2024-08-26
 
 - Convert to [ES Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 - Upgrade to CodeNarc 3.5.0
