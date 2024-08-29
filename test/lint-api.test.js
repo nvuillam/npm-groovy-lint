@@ -316,7 +316,7 @@ describe("Lint with API", () => {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
-        assert(linter.lintResult.summary.totalFoundErrorNumber === 4, "Error found");
+        assert(linter.lintResult.summary.totalFoundErrorNumber === 5, "Error found");
         assert(linter.lintResult.summary.totalFoundWarningNumber === 6, "Warnings found");
         assert(linter.lintResult.summary.totalFoundInfoNumber === 65, "Infos found");
         checkCodeNarcCallsCounter(1);
@@ -354,7 +354,7 @@ describe("Lint with API", () => {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
-        assert(linter.lintResult.summary.totalFoundErrorNumber === 4, "Error found");
+        assert(linter.lintResult.summary.totalFoundErrorNumber === 5, "Error found");
         assert(linter.lintResult.summary.totalFoundWarningNumber === 6, "Warnings found");
         assert(linter.lintResult.summary.totalFoundInfoNumber === 65, "Infos found");
         checkCodeNarcCallsCounter(1);
@@ -372,7 +372,7 @@ describe("Lint with API", () => {
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 12, `Expected 2 files got ${Object.keys(linter.lintResult.files).length}`);
-        assert(linter.lintResult.summary.totalFoundErrorNumber === 12, `Expected 12 errors to ${linter.lintResult.summary.totalFoundErrorNumber}`);
+        assert(linter.lintResult.summary.totalFoundErrorNumber === 19, `Expected 19 errors to ${linter.lintResult.summary.totalFoundErrorNumber}`);
         assert(linter.lintResult.summary.totalFoundWarningNumber === 333, `Expected 333 warnings to ${linter.lintResult.summary.totalFoundWarningNumber}`);
         assert(linter.lintResult.summary.totalFoundInfoNumber === 1649, `Expected 1649 infos to ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);

@@ -145,8 +145,8 @@ class Request {
      * @param fileList the list of files to parse
      * @return the map of files to errors
      */
-    private Map<String, List<Error>> parseFiles(List<String> fileList) {
-        Map<String, List<Error>> parseErrors = [:]
+    private Map<String, List<String>> parseFiles(List<String> fileList) {
+        Map<String, List<String>> parseErrors = [:]
         LOGGER.debug('parseFiles: parse={}, fileList={}', parse, fileList)
         if (parse) {
             fileList.each { file ->
@@ -210,8 +210,21 @@ class Request {
         return files
     }
 
-    // Try to parse file to get compilation errors
-    private List<Error> parseFile(File file) {
+    // Try to parse file to get compilation errors as strings.
+    private List<String> parseFile(File file) {
+        List<String> errors = []
+        for (err in parseFileErrors(file)) {
+            StringWriter out = new StringWriter();
+            PrintWriter writer = new PrintWriter(out);
+            err.write(writer)
+            errors << out.toString()
+        }
+
+        return errors
+    }
+
+    // Try to parse file to get compilation errors.
+    private List<Error> parseFileErrors(File file) {
         try {
             // We don't use GroovyShell.parse as it calls InvokerHelper.createScript
             // which fails for files which contain a class which only have non-zero

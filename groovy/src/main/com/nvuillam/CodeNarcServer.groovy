@@ -194,7 +194,7 @@ class CodeNarcServer {
                     WRITER.writeValue(out, response)
                 }
             } catch (Exception e) {
-                LOGGER.error('Write response {}', e)
+                LOGGER.error('Write response', e)
             } finally {
                 if (requestKey) {
                     threads.remove(requestKey)
