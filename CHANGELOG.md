@@ -2,6 +2,10 @@
 
 ## Beta
 
+## [15.0.2] 2024-08-30
+
+- Upgrade node-java-caller to fix bug with `npm-groovy-lint --version` on linux
+
 ## [15.0.1] 2024-08-29
 
 - Add module declaration
