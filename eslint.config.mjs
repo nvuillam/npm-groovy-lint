@@ -32,7 +32,7 @@ export default [...compat.extends("eslint:recommended"), {
         },
 
         parser: babelParser,
-        ecmaVersion: 2018,
+        ecmaVersion: 2020,
         sourceType: "module",
 
         parserOptions: {
