@@ -2,9 +2,10 @@
 
 ## Beta
 
-## [15.0.1] 2024-08-27
+## [15.0.1] 2024-08-29
 
 - Add module declaration
+- Fix crash in case of parsing error (https://github.com/nvuillam/npm-groovy-lint/issues/406)
 - Disable codecov
 
 ## [15.0.0] 2024-08-26
