@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
-Class-Path: CodeNarc-3.5.0.jar GMetrics-2.1.0.jar commons-compiler-3.1
- .11.jar groovy/lib/ant-1.10.11.jar groovy/lib/ant-launcher-1.10.11.ja
- r groovy/lib/commons-cli-1.4.jar groovy/lib/groovy-3.0.9.jar groovy/l
- ib/groovy-ant-3.0.9.jar groovy/lib/groovy-cli-commons-3.0.9.jar groov
- y/lib/groovy-dateutil-3.0.9.jar groovy/lib/groovy-json-3.0.9.jar groo
- vy/lib/groovy-templates-3.0.9.jar groovy/lib/groovy-xml-3.0.9.jar jac
- kson-annotations-2.16.0.jar jackson-core-2.16.0.jar jackson-databind-
- 2.16.0.jar janino-3.1.11.jar logback-classic-1.4.14.jar logback-core-
- 1.4.14.jar slf4j-api-2.0.9.jar
+Class-Path: CodeNarc-3.5.0-groovy-4.0.jar GMetrics-Groovy4-2.1.0.jar c
+ ommons-compiler-3.1.12.jar groovy/lib/ant-1.10.15.jar groovy/lib/ant-
+ launcher-1.10.15.jar groovy/lib/commons-cli-1.9.0.jar groovy/lib/groo
+ vy-4.0.24.jar groovy/lib/groovy-ant-4.0.24.jar groovy/lib/groovy-cli-
+ commons-4.0.24.jar groovy/lib/groovy-dateutil-4.0.24.jar groovy/lib/g
+ roovy-json-4.0.24.jar groovy/lib/groovy-templates-4.0.24.jar groovy/l
+ ib/groovy-xml-4.0.24.jar jackson-annotations-2.18.2.jar jackson-core-
+ 2.18.2.jar jackson-databind-2.18.2.jar janino-3.1.12.jar logback-clas
+ sic-1.5.12.jar logback-core-1.5.12.jar slf4j-api-2.0.16.jar
 Created-By: 1.8.0_144 (Oracle Corporation)
 Main-Class: com.nvuillam.CodeNarcServer
