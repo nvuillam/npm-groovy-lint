@@ -243,6 +243,6 @@ class CodeNarcServer {
         server.stop(1)
         LOGGER.info('Stopped')
         latch.countDown()
-    }
+   }
 
 }
