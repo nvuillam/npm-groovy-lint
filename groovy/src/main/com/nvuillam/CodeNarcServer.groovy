@@ -29,6 +29,9 @@ import com.fasterxml.jackson.databind.ObjectWriter
 // Groovy Transform
 import groovy.transform.CompileDynamic
 
+// Groovy CliBuilder change for Groovy 4
+import groovy.cli.commons.CliBuilder
+
 // Logging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
