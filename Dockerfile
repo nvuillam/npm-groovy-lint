@@ -1,4 +1,4 @@
-FROM alpine:3.20.2
+FROM alpine:3.21.0
 WORKDIR /
 
 ARG NPM_GROOVY_LINT_VERSION='latest'
