@@ -59,7 +59,7 @@
     "fs-extra": "^11.0.0",
     "glob": "^11.0.0",
     "import-fresh": "^3.2.1",
-    "java-caller": "^4.1.1",
+    "java-caller": "^4.2.0",
     "js-yaml": "^4.1.0",
     "node-sarif-builder": "^3.0.0",
     "optionator": "^0.9.0",
