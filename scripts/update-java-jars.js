@@ -51,12 +51,14 @@ async function getLatestVersion(groupId, artifactId) {
         .filter(Boolean);
     // Filter out pre-releases
     const stable = versions.filter(v => !/[-.](alpha|beta|rc|m|SNAPSHOT)/i.test(v));
-    if (stable.length === 0) {
-        throw new Error(`No stable version found for ${groupId}:${artifactId} in ${versions.join(', ')}`);
+    // Only keep versions that look like semver (x.y.z or x.y.z-...)
+    const semver = stable.filter(v => /^\d+\.\d+\.\d+([-.].*)?$/.test(v));
+    if (semver.length === 0) {
+        throw new Error(`No stable semver version found for ${groupId}:${artifactId} in ${versions.join(', ')}`);
     }
     // Sort by semver descending (naive, but works for most)
-    stable.sort((a, b) => b.localeCompare(a, undefined, { numeric: true, sensitivity: 'base' }));
-    return stable[0];
+    semver.sort((a, b) => b.localeCompare(a, undefined, { numeric: true, sensitivity: 'base' }));
+    return semver[0];
 }
 
 async function downloadJar(groupId, artifactId, version, dir) {
