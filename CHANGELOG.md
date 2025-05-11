@@ -2,6 +2,8 @@
 
 ## Beta
 
+- New script to automate the upgrade of JAR dependencies
+
 ## [15.1.0] 2025-02-23
 
 - Upgrade to CodeNarc 3.6.0 and Groovy 4.0.25

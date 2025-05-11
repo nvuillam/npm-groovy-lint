@@ -7,6 +7,7 @@
 - Upgrade to CodeNarc 3.6.0 and Groovy 4.0.25
 - Updates to support groovy 4 by @AngMits in https://github.com/nvuillam/npm-groovy-lint/pull/439
 - fix(cli): account for parse errors being of string type by @joshzcold in https://github.com/nvuillam/npm-groovy-lint/pull/444
+- Upgrade npm dependencies
 
 ## [15.0.2] 2024-08-30
 
