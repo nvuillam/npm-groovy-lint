@@ -3,6 +3,7 @@
 ## Beta
 
 - New script to automate the upgrade of JAR dependencies
+- Upgrade node-java-caller to 4.2.1
 
 ## [15.1.0] 2025-02-23
 
