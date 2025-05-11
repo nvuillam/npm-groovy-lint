@@ -2,7 +2,10 @@
 
 ## Beta
 
+## [15.2.0] 2025-05-11
+
 - New script to automate the upgrade of JAR dependencies
+- Upgrade Groovy to 4.0.26
 - Upgrade node-java-caller to 4.2.1
 
 ## [15.1.0] 2025-02-23
