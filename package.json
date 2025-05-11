@@ -17,7 +17,7 @@
     "dev:lint-install-local": "npm run server:kill && npm run lint:fix && npm link --force",
     "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node scripts/deploy-in-vscode.js",
     "dev:pre-commit": "npm-run-all lint:fix build server:build",
-    "dev:upgrade-jars": "node scripts/upgrade-jars.js",
+    "dev:upgrade-jars": "node scripts/upgrade-jars.js"
   },
   "repository": {
     "type": "git",
