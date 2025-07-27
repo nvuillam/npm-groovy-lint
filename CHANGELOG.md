@@ -2,6 +2,11 @@
 
 ## Beta
 
+## [15.2.1] 2025-07-27
+
+- Upgrade npm dependencies
+- Use MegaLiter custom flavor
+
 ## [15.2.0] 2025-05-11
 
 - New script to automate the upgrade of JAR dependencies
