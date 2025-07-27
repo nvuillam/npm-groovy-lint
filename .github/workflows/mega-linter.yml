@@ -44,7 +44,7 @@ jobs:
       # Mega-Linter
       - name: Mega-Linter
         id: ml
-        uses: ghcr.io/nvuillam/megalinter-custom-flavor-npm-groovy-lint/megalinter-custom-flavor:beta
+        uses: nvuillam/megalinter-custom-flavor-npm-groovy-lint@main
         env:
           # All available variables are described in documentation
           # https://megalinter.io/#configuration
