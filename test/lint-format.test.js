@@ -289,6 +289,25 @@ pipeline {
                 }
                 ` */
             }
+        ],
+        [
+          "CurlyBracketShouldNotGetCommentedOutByMethodCommentsBetweenParenthesisAndCurlyBrackets",
+          {
+            totalFixed: 1,
+            codeNarcCallsCounter: 1,
+            before: `
+void foo() // comment
+{
+    doSomething()
+}
+`,
+            after: `
+// comment
+void foo() {
+    doSomething()
+}
+`,
+            }
         ]
     ]);
 }
