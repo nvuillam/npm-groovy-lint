@@ -141,8 +141,8 @@ async function checkRule(key, check, checkType) {
     const result = linter.lintResult.files[0].updatedSource;
     const expectedResult = normalizeNewLines(check.after);
     const effectiveDiff = getDiff(expectedResult, result, source);
-    assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
-    assert(effectiveDiff.length === 0, "Code has been formatted correctly");
+    assert(linter.status === 0, `Expected linter status to be 0, but status was ${linter.status}`);
+    assert(effectiveDiff.length === 0, "Code was not formatted correctly");
     checkCodeNarcCallsCounter(check.codeNarcCallsCounter);
 }
 
