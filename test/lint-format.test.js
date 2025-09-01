@@ -302,8 +302,7 @@ void foo() // comment
 }
 `,
             after: `
-// comment
-void foo() {
+void foo() { // comment
     doSomething()
 }
 `,
