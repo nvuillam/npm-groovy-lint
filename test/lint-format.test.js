@@ -291,7 +291,7 @@ pipeline {
             }
         ],
         [
-          "CurlyBracketShouldNotGetCommentedOutByMethodCommentsBetweenParenthesisAndCurlyBrackets",
+          "MoveOpeningCurlyBracketShouldNotCommentOutBracket",
           {
             totalFixed: 1,
             codeNarcCallsCounter: 1,
