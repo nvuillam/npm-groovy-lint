@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install node
         uses: actions/setup-node@v5
         with:
@@ -56,7 +56,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests

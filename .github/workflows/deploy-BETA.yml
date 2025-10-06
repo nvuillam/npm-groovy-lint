@@ -33,7 +33,7 @@ jobs:
     environment:
       name: beta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v5.0.0
         with:
           node-version: "20.x"
@@ -59,7 +59,7 @@ jobs:
       name: beta
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
