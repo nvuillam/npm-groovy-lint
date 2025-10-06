@@ -2,10 +2,17 @@
 
 ## Beta
 
+## [15.2.2] 2025-10-07
+
+- Fix curly bracket should not get commented out by method comments between parenthesis and curly brackets, by @damien-rembert in <https://github.com/nvuillam/npm-groovy-lint/pull/470>
+- Fix Autofix of unnecessary GString leaves invalid code in data provider of spock tests, by @damien-rembert in <https://github.com/nvuillam/npm-groovy-lint/pull/471>
+- Upgrade npm dependencies
+- Upgrade GitHub Actions dependencies
+
 ## [15.2.1] 2025-07-27
 
 - Upgrade npm dependencies
-- Use MegaLiter custom flavor
+- Use MegaLinter custom flavor
 
 ## [15.2.0] 2025-05-11
 
