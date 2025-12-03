@@ -2,6 +2,7 @@
 
 ## Beta
 
+- Build JSON Schema for .groovylintrc.json
 - Upgrade dependencies
 
 ## [15.2.2] 2025-10-07
