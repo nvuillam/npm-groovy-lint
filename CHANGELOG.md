@@ -2,6 +2,7 @@
 
 ## Beta
 
+- Test with Node 24 & Java 25
 - Upgrade dependencies
 
 ## [15.2.2] 2025-10-07
