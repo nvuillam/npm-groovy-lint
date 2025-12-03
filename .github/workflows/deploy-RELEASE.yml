@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v5.0.0
+      - uses: actions/setup-node@v6.1.0
         with:
           node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
