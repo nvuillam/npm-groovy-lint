@@ -2,6 +2,8 @@
 
 ## Beta
 
+- Upgrade dependencies
+
 ## [15.2.2] 2025-10-07
 
 - Fix curly bracket should not get commented out by method comments between parenthesis and curly brackets, by @damien-rembert in <https://github.com/nvuillam/npm-groovy-lint/pull/470>
