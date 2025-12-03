@@ -5,11 +5,13 @@ on: [push, pull_request]
 permissions: read-all
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.ref_name }}-${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:
   test:
+    # Skip push runs for feature branches; pull_request will cover them
+    if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     strategy:
       fail-fast: false
       matrix:
@@ -45,6 +47,7 @@ jobs:
         run: npm run test
 
   coverage:
+    if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     name: Test - No Java - CodeCov
     strategy:
       matrix:
