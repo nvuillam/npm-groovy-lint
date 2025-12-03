@@ -41,7 +41,7 @@ jobs:
         run: sudo chown -Rc $UID .git/
       - name: Commit and push applied linter fixes
         if: steps.changes.outputs.changed == 1
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
           commit_message: "[automation] Update documentation"
