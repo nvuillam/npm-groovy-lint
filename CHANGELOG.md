@@ -2,6 +2,8 @@
 
 ## Beta
 
+## [16.0.0] 2025-12-04
+
 - Upgrade to CodeNarc 3.7.0
 - Build JSON Schema for .groovylintrc.json
 - Update code so it is compliant with both Node 20 and 24
