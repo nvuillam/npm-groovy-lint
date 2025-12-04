@@ -1,6 +1,6 @@
 {
   "name": "npm-groovy-lint",
-  "version": "15.2.2",
+  "version": "16.0.0",
   "description": "Lint, format and auto-fix your Groovy / Jenkinsfile / Gradle files",
   "exports": "./lib/groovy-lint.js",
   "type": "module",
