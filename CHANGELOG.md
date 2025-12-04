@@ -3,6 +3,8 @@
 ## Beta
 
 - Build JSON Schema for .groovylintrc.json
+- Update code so it is compliant with both Node 20 and 24
+- CI: add tests with Node 24 & Java 25
 - Upgrade dependencies
 
 ## [15.2.2] 2025-10-07

@@ -1,15 +1,15 @@
 #! /usr/bin/env node
 import NpmGroovyLint from "../lib/groovy-lint.js"
-import { getNpmGroovyLintRules } from "../lib/groovy-lint-rules.js";
+import { getNpmGroovyLintRulesSync } from "../lib/groovy-lint-rules.js";
 import { normalizeNewLines } from "../lib/utils.js";
 import  assert from 'assert';
 
 import { beforeEachTestCase, checkCodeNarcCallsCounter, getDiff } from "./helpers/common.js";
 
 // Read rules file and test all fixes
-describe("Check rules auto-fixes", async () => {
+describe("Check rules auto-fixes", function () {
     beforeEach(beforeEachTestCase);
-    const npmGroovyLintRules = await getNpmGroovyLintRules({ loadTests: true });
+    const npmGroovyLintRules = getNpmGroovyLintRulesSync({ loadTests: true });
     // Iterate all rules
     for (const ruleName of Object.keys(npmGroovyLintRules)) {
         let pos = 1;
