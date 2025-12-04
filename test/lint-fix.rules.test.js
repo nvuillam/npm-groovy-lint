@@ -31,7 +31,7 @@ function loadRuleDefinitions() {
 const npmGroovyLintRules = loadRuleDefinitions();
 
 // Read rules file and test all fixes
-describe("Check rules auto-fixes", function () {
+describe("Check rules auto-fixes",  () =>{
     beforeEach(beforeEachTestCase);
     // Iterate all rules
     for (const ruleName of Object.keys(npmGroovyLintRules)) {

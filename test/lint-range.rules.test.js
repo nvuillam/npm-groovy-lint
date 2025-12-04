@@ -31,7 +31,7 @@ function loadRuleDefinitions() {
 const npmGroovyLintRules = loadRuleDefinitions();
 
 // Read rules file and test all fixes
-describe("Check range detection", function () {
+describe("Check range detection", () => {
     beforeEach(beforeEachTestCase);
     // Iterate all rules
     for (const ruleName of Object.keys(npmGroovyLintRules)) {
