@@ -2,6 +2,7 @@
 
 ## Beta
 
+- Upgrade to CodeNarc 3.7.0
 - Build JSON Schema for .groovylintrc.json
 - Update code so it is compliant with both Node 20 and 24
 - CI: add tests with Node 24 & Java 25

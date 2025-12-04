@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Class-Path: CodeNarc-3.6.0-groovy-4.0.jar GMetrics-Groovy4-2.1.0.jar c
+Class-Path: CodeNarc-3.7.0-groovy-4.0.jar GMetrics-Groovy4-2.1.0.jar c
  ommons-compiler-3.1.12.jar groovy/lib/ant-1.10.15.jar groovy/lib/ant-
  launcher-1.10.15.jar groovy/lib/commons-cli-1.9.0.jar groovy/lib/groo
  vy-4.0.26.jar groovy/lib/groovy-ant-4.0.26.jar groovy/lib/groovy-cli-
