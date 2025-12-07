@@ -2,6 +2,10 @@
 
 ## Beta
 
+## [16.0.1] 2025-12-07
+
+- fix disabling rules from CLI arguments
+
 ## [16.0.0] 2025-12-04
 
 - Upgrade to CodeNarc 3.7.0
