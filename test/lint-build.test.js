@@ -113,6 +113,22 @@ describe("Lint with executable", () => {
         assertLintedFiles(stdout, 12);
     });
 
+    it("(EXE:file) should not enable rule disabled via cli", async function() {
+        const params = [
+            "--failon", "none",
+            "--rulesets", `"NoDef{\\"enabled\\":false}"`,
+            'lib/example/' + SAMPLE_FILE_SMALL];
+        const { stdout, stderr } = await exec(NPM_GROOVY_LINT + params.join(" "));
+        if (stderr) {
+            console.error(stderr);
+        }
+        assert(stdout, "stdout is set");
+        if (stderr) {
+            console.error(stderr.toString());
+        }
+        assert(!stdout.includes("NoDef"), 'stdout should not contain word "NoDef"');
+    });
+
     it("(EXE:file) should ignore fake_node_modules pattern", async function() {
         const params = ["--ignorepattern", "**/fake_node_modules/**", "--failon", "none", "--no-insight", "--output", "txt"];
         const { stdout, stderr } = await exec("cd ./lib/example && " + NPM_GROOVY_LINT + params.join(" "));
