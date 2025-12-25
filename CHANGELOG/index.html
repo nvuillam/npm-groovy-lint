@@ -1,0 +1,4320 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Linter, formatter and auto-fixer for Groovy, Jenkinsfile and Gradle files">
+      
+      
+        <meta name="author" content="Nicolas Vuillamy">
+      
+      
+        <link rel="canonical" href="https://nvuillam.github.io/npm-groovy-lint/CHANGELOG/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Changelog - NPM Groovy Lint</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="NPM Groovy Lint" class="md-header__button md-logo" aria-label="NPM Groovy Lint" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NPM Groovy Lint
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/nvuillam/npm-groovy-lint" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="NPM Groovy Lint" class="md-nav__button md-logo" aria-label="NPM Groovy Lint" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    NPM Groovy Lint
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/nvuillam/npm-groovy-lint" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#usage" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#installation" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#configuration" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#example-calls" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#disabling-rules-in-source" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disabling rules in source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#auto-fixable-rules" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-fixable rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#cdci" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#use-as-module" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use as module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#troubleshooting" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#contribute" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../#thanks" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thanks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#beta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beta
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1601-2025-12-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [16.0.1] 2025-12-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1600-2025-12-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [16.0.0] 2025-12-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1522-2025-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.2.2] 2025-10-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1521-2025-07-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.2.1] 2025-07-27
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1520-2025-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.2.0] 2025-05-11
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1510-2025-02-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.1.0] 2025-02-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1502-2024-08-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.0.2] 2024-08-30
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1501-2024-08-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.0.1] 2024-08-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1500-2024-08-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.0.0] 2024-08-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1460-2024-05-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.6.0] 2024-05-08
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1450-2024-04-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.5.0] 2024-04-28
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1441-2024-04-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.4.1] 2024-04-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1440-2024-03-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.4.0] 2024-03-27
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1430-2024-03-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.3.0] 2024-03-27
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1424-2024-03-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.2.4] 2024-03-13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1423-2024-02-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.2.3] 2024-02-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1422-2024-02-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.2.2] 2024-02-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1421-2024-02-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.2.1] 2024-02-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1410-2024-01-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.1.0] 2024-01-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1401-2023-12-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.0.1] 2023-12-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1400-2023-12-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.0.0] 2023-12-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1302-2023-12-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [13.0.2] 2023-12-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1301-2023-12-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [13.0.1] 2023-12-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1300-2023-11-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [13.0.0] 2023-11-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1220-2023-11-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.2.0] 2023-11-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1212-2023-11-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.1.2] 2023-11-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1211-2023-11-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.1.1] 2023-11-19
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1210-2023-11-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.1.0] 2023-11-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1201-2023-11-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.0.1] 2023-11-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1200-2023-11-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.0.0] 2023-11-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1111-2022-10-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [11.1.1] 2022-10-31
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1110-2022-10-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [11.1.0] 2022-10-31
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1100-2022-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [11.0.0] 2022-10-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1010-2022-08-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.1.0] 2022-08-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1003-2022-08-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.0.3] 2022-08-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1002-2022-08-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.0.2] 2022-08-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1001-2022-08-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.0.1] 2022-08-14
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1000-2022-08-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.0.0] 2022-08-13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#950-2022-04-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.5.0] 2022-04-12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#941-2022-01-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.4.1] 2022-01-12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#940-2022-01-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.4.0] 2022-01-11
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#932-2022-01-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.3.2] 2022-01-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#931-2022-01-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.3.1] 2022-01-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#930-2021-12-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.3.0] 2021-12-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#920-2021-12-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.2.0] 2021-12-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#910-2021-12-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.1.0] 2021-12-14
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#900-2021-09-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.0.0] 2021-09-30
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#820-2021-06-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.2.0] 2021-06-11
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#810-2020-12-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.1.0] 2020-12-14
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#802-2020-11-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.0.2] 2020-11-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#801-2020-11-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.0.1] 2020-11-19
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#800-2020-11-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.0.0] 2020-11-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#762-2020-09-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.6.2] 2020-09-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#760-2020-09-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.6.0] 2020-09-08
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#755-2020-09-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.5.5] 2020-09-05
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#754-2020-09-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.5.4] 2020-09-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#751-2020-09-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.5.1] 2020-09-02
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#750-2020-09-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.5.0] 2020-09-02
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#743-2020-08-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.4.3] 2020-08-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#742-2020-08-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.4.2] 2020-08-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#741-2020-08-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.4.1] 2020-08-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#740-2020-08-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.4.0] 2020-08-17
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#731-2020-08-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.3.1] 2020-08-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#730-2020-08-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.3.0] 2020-08-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#711-2020-08-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.1.1] 2020-08-11
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#710-2020-08-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.1.0] 2020-08-10
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#700-2020-08-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.0.0] 2020-08-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#611-2020-08-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [6.1.1] 2020-08-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#610-2020-08-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [6.1.0] 2020-08-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#600-2020-08-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [6.0.0] 2020-08-03
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#580-2020-08-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.8.0] 2020-08-01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#570-2020-07-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.7.0] 2020-07-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#561-2020-07-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.6.1] 2020-07-20
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#560-2020-07-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.6.0] 2020-07-20
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#551-2020-07-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.5.1] 2020-07-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#550-2020-07-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.5.0] 2020-07-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#542-2020-07-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.4.2] 2020-07-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#541-2020-07-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.4.1] 2020-07-01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#530-2020-06-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.3.0] 2020-06-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#510-2020-06-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.1.0] 2020-06-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#503-2020-05-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.0.3] 2020-05-30
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#502-2020-05-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.0.2] 2020-05-27
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#500-2020-05-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.0.0] 2020-05-25
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4140-2020-05-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.14.0] 2020-05-22
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4130-2020-05-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.13.0] 2020-05-20
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4120-2020-05-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.12.0] 2020-05-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4111-2020-05-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.11.1] 2020-05-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4110-2020-05-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.11.0] 2020-05-13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4100-2020-05-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.10.0] 2020-05-12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#490-2020-05-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.9.0] 2020-05-10
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#480-2020-05-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.8.0] 2020-05-08
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#470-2020-05-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.7.0] 2020-05-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#460-2020-05-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.6.0] 2020-05-01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#455-2020-04-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.5.5] 2020-04-30
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#452-2020-04-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.5.2] 2020-04-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#451-2020-04-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.5.1] 2020-04-28
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#450-2020-04-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.5.0] 2020-04-24
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#441-2020-04-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.4.1] 2020-04-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#440-2020-04-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.4.0] 2020-04-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#430-2020-04-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.3.0] 2020-04-14
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#420-2020-04-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.2.0] 2020-04-13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#410-2020-04-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.1.0] 2020-04-12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#400-2020-04-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.0.0] 2020-04-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#330-2020-04-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.3.0] 2020-04-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#324-2020-04-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.4] 2020-04-03
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#323-2020-04-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.3] 2020-04-02
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#322-2020-03-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.2] 2020-03-31
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#321-2020-03-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.1] 2020-03-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#320-2020-03-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.0] 2020-03-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#313-2020-03-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.1.3] 2020-03-22
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#312-2020-03-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.1.2] 2020-03-22
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#311-2020-03-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.1.1] 2020-03-20
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#310-2020-03-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.1.0] 2020-03-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#301-2020-03-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.0.1] 2020-03-17
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#300-2020-03-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.0.0] 2020-03-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#220-2020-02-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.2.0] 2020-02-28
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#201-2020-02-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.0.1] - 2020-02-21
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#beta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beta
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1601-2025-12-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [16.0.1] 2025-12-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1600-2025-12-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [16.0.0] 2025-12-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1522-2025-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.2.2] 2025-10-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1521-2025-07-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.2.1] 2025-07-27
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1520-2025-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.2.0] 2025-05-11
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1510-2025-02-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.1.0] 2025-02-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1502-2024-08-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.0.2] 2024-08-30
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1501-2024-08-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.0.1] 2024-08-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1500-2024-08-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [15.0.0] 2024-08-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1460-2024-05-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.6.0] 2024-05-08
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1450-2024-04-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.5.0] 2024-04-28
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1441-2024-04-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.4.1] 2024-04-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1440-2024-03-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.4.0] 2024-03-27
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1430-2024-03-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.3.0] 2024-03-27
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1424-2024-03-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.2.4] 2024-03-13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1423-2024-02-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.2.3] 2024-02-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1422-2024-02-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.2.2] 2024-02-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1421-2024-02-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.2.1] 2024-02-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1410-2024-01-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.1.0] 2024-01-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1401-2023-12-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.0.1] 2023-12-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1400-2023-12-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [14.0.0] 2023-12-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1302-2023-12-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [13.0.2] 2023-12-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1301-2023-12-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [13.0.1] 2023-12-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1300-2023-11-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [13.0.0] 2023-11-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1220-2023-11-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.2.0] 2023-11-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1212-2023-11-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.1.2] 2023-11-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1211-2023-11-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.1.1] 2023-11-19
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1210-2023-11-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.1.0] 2023-11-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1201-2023-11-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.0.1] 2023-11-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1200-2023-11-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [12.0.0] 2023-11-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1111-2022-10-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [11.1.1] 2022-10-31
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1110-2022-10-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [11.1.0] 2022-10-31
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1100-2022-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [11.0.0] 2022-10-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1010-2022-08-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.1.0] 2022-08-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1003-2022-08-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.0.3] 2022-08-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1002-2022-08-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.0.2] 2022-08-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1001-2022-08-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.0.1] 2022-08-14
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1000-2022-08-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [10.0.0] 2022-08-13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#950-2022-04-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.5.0] 2022-04-12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#941-2022-01-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.4.1] 2022-01-12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#940-2022-01-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.4.0] 2022-01-11
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#932-2022-01-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.3.2] 2022-01-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#931-2022-01-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.3.1] 2022-01-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#930-2021-12-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.3.0] 2021-12-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#920-2021-12-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.2.0] 2021-12-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#910-2021-12-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.1.0] 2021-12-14
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#900-2021-09-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.0.0] 2021-09-30
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#820-2021-06-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.2.0] 2021-06-11
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#810-2020-12-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.1.0] 2020-12-14
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#802-2020-11-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.0.2] 2020-11-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#801-2020-11-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.0.1] 2020-11-19
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#800-2020-11-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [8.0.0] 2020-11-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#762-2020-09-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.6.2] 2020-09-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#760-2020-09-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.6.0] 2020-09-08
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#755-2020-09-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.5.5] 2020-09-05
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#754-2020-09-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.5.4] 2020-09-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#751-2020-09-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.5.1] 2020-09-02
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#750-2020-09-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.5.0] 2020-09-02
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#743-2020-08-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.4.3] 2020-08-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#742-2020-08-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.4.2] 2020-08-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#741-2020-08-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.4.1] 2020-08-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#740-2020-08-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.4.0] 2020-08-17
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#731-2020-08-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.3.1] 2020-08-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#730-2020-08-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.3.0] 2020-08-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#711-2020-08-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.1.1] 2020-08-11
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#710-2020-08-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.1.0] 2020-08-10
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#700-2020-08-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [7.0.0] 2020-08-07
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#611-2020-08-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [6.1.1] 2020-08-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#610-2020-08-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [6.1.0] 2020-08-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#600-2020-08-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [6.0.0] 2020-08-03
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#580-2020-08-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.8.0] 2020-08-01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#570-2020-07-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.7.0] 2020-07-23
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#561-2020-07-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.6.1] 2020-07-20
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#560-2020-07-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.6.0] 2020-07-20
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#551-2020-07-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.5.1] 2020-07-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#550-2020-07-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.5.0] 2020-07-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#542-2020-07-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.4.2] 2020-07-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#541-2020-07-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.4.1] 2020-07-01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#530-2020-06-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.3.0] 2020-06-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#510-2020-06-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.1.0] 2020-06-04
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#503-2020-05-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.0.3] 2020-05-30
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#502-2020-05-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.0.2] 2020-05-27
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#500-2020-05-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [5.0.0] 2020-05-25
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4140-2020-05-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.14.0] 2020-05-22
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4130-2020-05-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.13.0] 2020-05-20
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4120-2020-05-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.12.0] 2020-05-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4111-2020-05-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.11.1] 2020-05-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4110-2020-05-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.11.0] 2020-05-13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4100-2020-05-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.10.0] 2020-05-12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#490-2020-05-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.9.0] 2020-05-10
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#480-2020-05-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.8.0] 2020-05-08
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#470-2020-05-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.7.0] 2020-05-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#460-2020-05-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.6.0] 2020-05-01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#455-2020-04-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.5.5] 2020-04-30
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#452-2020-04-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.5.2] 2020-04-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#451-2020-04-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.5.1] 2020-04-28
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#450-2020-04-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.5.0] 2020-04-24
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#441-2020-04-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.4.1] 2020-04-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#440-2020-04-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.4.0] 2020-04-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#430-2020-04-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.3.0] 2020-04-14
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#420-2020-04-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.2.0] 2020-04-13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#410-2020-04-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.1.0] 2020-04-12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#400-2020-04-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [4.0.0] 2020-04-09
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#330-2020-04-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.3.0] 2020-04-06
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#324-2020-04-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.4] 2020-04-03
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#323-2020-04-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.3] 2020-04-02
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#322-2020-03-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.2] 2020-03-31
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#321-2020-03-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.1] 2020-03-29
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#320-2020-03-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.2.0] 2020-03-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#313-2020-03-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.1.3] 2020-03-22
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#312-2020-03-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.1.2] 2020-03-22
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#311-2020-03-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.1.1] 2020-03-20
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#310-2020-03-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.1.0] 2020-03-18
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#301-2020-03-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.0.1] 2020-03-17
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#300-2020-03-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [3.0.0] 2020-03-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#220-2020-02-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.2.0] 2020-02-28
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#201-2020-02-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.0.1] - 2020-02-21
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="changelog">Changelog</h1>
+<h2 id="beta">Beta</h2>
+<h2 id="1601-2025-12-07">[16.0.1] 2025-12-07</h2>
+<ul>
+<li>fix disabling rules from CLI arguments</li>
+</ul>
+<h2 id="1600-2025-12-04">[16.0.0] 2025-12-04</h2>
+<ul>
+<li>Upgrade to CodeNarc 3.7.0</li>
+<li>Build JSON Schema for .groovylintrc.json</li>
+<li>Update code so it is compliant with both Node 20 and 24</li>
+<li>CI: add tests with Node 24 &amp; Java 25</li>
+<li>Upgrade dependencies</li>
+</ul>
+<h2 id="1522-2025-10-07">[15.2.2] 2025-10-07</h2>
+<ul>
+<li>Fix curly bracket should not get commented out by method comments between parenthesis and curly brackets, by @damien-rembert in <a href="https://github.com/nvuillam/npm-groovy-lint/pull/470">https://github.com/nvuillam/npm-groovy-lint/pull/470</a></li>
+<li>Fix Autofix of unnecessary GString leaves invalid code in data provider of spock tests, by @damien-rembert in <a href="https://github.com/nvuillam/npm-groovy-lint/pull/471">https://github.com/nvuillam/npm-groovy-lint/pull/471</a></li>
+<li>Upgrade npm dependencies</li>
+<li>Upgrade GitHub Actions dependencies</li>
+</ul>
+<h2 id="1521-2025-07-27">[15.2.1] 2025-07-27</h2>
+<ul>
+<li>Upgrade npm dependencies</li>
+<li>Use MegaLinter custom flavor</li>
+</ul>
+<h2 id="1520-2025-05-11">[15.2.0] 2025-05-11</h2>
+<ul>
+<li>New script to automate the upgrade of JAR dependencies</li>
+<li>Upgrade Groovy to 4.0.26</li>
+<li>Upgrade node-java-caller to 4.2.1</li>
+</ul>
+<h2 id="1510-2025-02-23">[15.1.0] 2025-02-23</h2>
+<ul>
+<li>Upgrade to CodeNarc 3.6.0 and Groovy 4.0.25</li>
+<li>Updates to support groovy 4 by @AngMits in https://github.com/nvuillam/npm-groovy-lint/pull/439</li>
+<li>fix(cli): account for parse errors being of string type by @joshzcold in https://github.com/nvuillam/npm-groovy-lint/pull/444</li>
+<li>Upgrade npm dependencies</li>
+</ul>
+<h2 id="1502-2024-08-30">[15.0.2] 2024-08-30</h2>
+<ul>
+<li>Upgrade node-java-caller to fix bug with <code>npm-groovy-lint --version</code> on linux</li>
+</ul>
+<h2 id="1501-2024-08-29">[15.0.1] 2024-08-29</h2>
+<ul>
+<li>Add module declaration</li>
+<li>Fix crash in case of parsing error (https://github.com/nvuillam/npm-groovy-lint/issues/406)</li>
+<li>Disable codecov</li>
+</ul>
+<h2 id="1500-2024-08-26">[15.0.0] 2024-08-26</h2>
+<ul>
+<li>Convert to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules">ES Module</a></li>
+<li>Upgrade to CodeNarc 3.5.0</li>
+<li>Upgrade NodeJs to minimum version 20</li>
+<li>Setup renovate</li>
+<li>Upgrade dependencies, including base package node-java-caller</li>
+<li>Upgrade MegaLinter to v8</li>
+<li>Remove decode-html-entities dependency</li>
+</ul>
+<h2 id="1460-2024-05-08">[14.6.0] 2024-05-08</h2>
+<ul>
+<li>Upgrade node-java-caller to v4 to solve issues with Mac</li>
+</ul>
+<h2 id="1450-2024-04-28">[14.5.0] 2024-04-28</h2>
+<ul>
+<li>Change license to MIT</li>
+</ul>
+<h2 id="1441-2024-04-16">[14.4.1] 2024-04-16</h2>
+<ul>
+<li>Upgrade tar to avoid CVE</li>
+</ul>
+<h2 id="1440-2024-03-27">[14.4.0] 2024-03-27</h2>
+<ul>
+<li>Remove amplitude dependency and anonymous telemetry</li>
+</ul>
+<h2 id="1430-2024-03-27">[14.3.0] 2024-03-27</h2>
+<ul>
+<li>Upgrade amplitude dependency</li>
+<li>Remove markdown links checks in internal CI (requirement covered by lychee)</li>
+</ul>
+<h2 id="1424-2024-03-13">[14.2.4] 2024-03-13</h2>
+<ul>
+<li>Fix issue with anonymous telemetry</li>
+</ul>
+<h2 id="1423-2024-02-26">[14.2.3] 2024-02-26</h2>
+<ul>
+<li>Fix <a href="https://github.com/nvuillam/npm-groovy-lint/issues/351">#351</a>: temp directories aren't cleaned up </li>
+</ul>
+<h2 id="1422-2024-02-18">[14.2.2] 2024-02-18</h2>
+<ul>
+<li>Fix <code>console.warning is not a function</code></li>
+</ul>
+<h2 id="1421-2024-02-09">[14.2.1] 2024-02-09</h2>
+<ul>
+<li>fix: class not found request failure</li>
+</ul>
+<h2 id="1410-2024-01-15">[14.1.0] 2024-01-15</h2>
+<ul>
+<li>fix: missing parse errors with --noserver</li>
+<li>Deactivate log file by default</li>
+</ul>
+<h2 id="1401-2023-12-18">[14.0.1] 2023-12-18</h2>
+<ul>
+<li>fix: analytics send failure error</li>
+</ul>
+<h2 id="1400-2023-12-16">[14.0.0] 2023-12-16</h2>
+<ul>
+<li>Fix data race on stdout capture which was corrupting the responses for overlapping requests by using a capturing plugin.</li>
+<li>Fix data race on threads read and write which could result in missed cancellations and re-enable cancellation processing.</li>
+<li>Ensure that threads are always removed in the case of write response exception.</li>
+<li>Switch to jackson to enable efficient JSON encoding and decoding including raw embedding of CodeNarc result to avoid unnecessary processing.</li>
+<li>Split out HTTP filters to their own files.</li>
+<li>Use typed variables instead of def per linter recommendation.</li>
+<li>Add early test for missing base directory to avoid running linter unnecessarily.</li>
+<li>Fix parse failures for files which contain classes that only non-zero argument constructors.</li>
+<li>Add gzip compression to reduce size of network traffic to improve performance</li>
+<li>CI: Enhance MegaLinter config</li>
+<li>CI: Upload expected sources as artifact if Check for changes job fails</li>
+</ul>
+<h2 id="1302-2023-12-07">[13.0.2] 2023-12-07</h2>
+<ul>
+<li>Remove useless console.log in sources.</li>
+</ul>
+<h2 id="1301-2023-12-06">[13.0.1] 2023-12-06</h2>
+<ul>
+<li>Update logback to 1.4.14 to address <a href="https://avd.aquasec.com/nvd/2023/cve-2023-6378/">cve-2023-6378</a></li>
+</ul>
+<h2 id="1300-2023-11-26">[13.0.0] 2023-11-26</h2>
+<ul>
+<li><strong>BREAKING CHANGE: Upgrade CodeNarc to v3.4.0-alpha+3346775f</strong></li>
+</ul>
+<ul>
+<li>
+<p>Major core architecture refactoring by the great <a href="https://github.com/stevenh"><strong>Steven Hartland</strong></a></p>
+<ul>
+<li>Fix files specified on the command line not linting as expected due to the generated patterns not working as intended if relative path that contains a file and not a directory due to an issue with CodeNarc pattern processing.</li>
+</ul>
+<ul>
+<li>Fix incompatible arguments passed to CodeNarc by:<ul>
+<li>Using arrays internally to avoid issues with spaces in arguments being interpreted incorrectly.</li>
+<li>Stripping all quotes from string arguments as CodeNarc doesn't handle them correctly.</li>
+<li>Enable automatic argument quoting on Windows.</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Fix command line -ext extensions not being processed correctly and matching too many files as it was missing the prefix.</li>
+</ul>
+<ul>
+<li>Ensure readFile and writeFile calls produce a stack trace on failure due to: https://github.com/nodejs/node/issues/30944.</li>
+</ul>
+<ul>
+<li>Fix file delete race condition and variable clean up due to missing await.</li>
+</ul>
+<ul>
+<li>Fix use of includes instead of exclude parameters.</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Also:<ul>
+<li>Fixed Request failed logging</li>
+<li>Fix README.md typo</li>
+<li>Add additional useful debug logging</li>
+<li>Run dev:pre-commit to update CHANGELOG.md</li>
+<li>Add more cspell entries</li>
+<li>Add missing items to CodeNarcServer.groovy usage</li>
+<li>Re-enable tests which are now fixed</li>
+<li>Override axios for security patch</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://www.linkedin.com/in/steven-hartland-a7435b4/">Steven Hartland</a> now becomes an official maintainer of npm-groovy-lint and vscode-groovy-lint !</p>
+<h2 id="1220-2023-11-26">[12.2.0] 2023-11-26</h2>
+<ul>
+<li>Upgrade java-caller dependency to 3.2.0 (Now handles Mac M1)</li>
+<li>Output issue when error collecting CodeNarc version</li>
+</ul>
+<h2 id="1212-2023-11-23">[12.1.2] 2023-11-23</h2>
+<ul>
+<li>Revert update that output json when not requested</li>
+</ul>
+<h2 id="1211-2023-11-19">[12.1.1] 2023-11-19</h2>
+<ul>
+<li>Upgrade node-java-caller to v3.1.1</li>
+</ul>
+<h2 id="1210-2023-11-18">[12.1.0] 2023-11-18</h2>
+<ul>
+<li>Upgrade node-java-caller to v3.1.0</li>
+</ul>
+<h2 id="1201-2023-11-06">[12.0.1] 2023-11-06</h2>
+<ul>
+<li>Fix: bump openjdk version from 11 to 17 in Docker image by @SerhiiKorolik in https://github.com/nvuillam/npm-groovy-lint/pull/317</li>
+</ul>
+<h2 id="1200-2023-11-04">[12.0.0] 2023-11-04</h2>
+<p>Many fixes, including an issue with IPV6 that made npm-groovy-lint crash on many machines, has been fixed by @stevenh ! Many thanks to him !</p>
+<p>Breaking change: <strong>Minimum java version to Java 17</strong></p>
+<ul>
+<li>Use MegaLinter v7 by @nvuillam in https://github.com/nvuillam/npm-groovy-lint/pull/254</li>
+<li>Bump json5 from 2.2.1 to 2.2.3 by @dependabot in https://github.com/nvuillam/npm-groovy-lint/pull/260</li>
+<li>ci: fix action failures by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/309</li>
+<li>chore: update node to 18 lts by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/310</li>
+<li>feat: improve the vscode deployment by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/307</li>
+<li>Improve publish via CI + beta when in main by @nvuillam in https://github.com/nvuillam/npm-groovy-lint/pull/311</li>
+<li>chore: improve flow debugging by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/303</li>
+<li>ci: predictable server builds and port option by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/312</li>
+<li>fix: status bar message by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/302</li>
+<li>fix: server and test stability by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/313</li>
+<li>fix: UnnecessaryGString for strings with slashes by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/304</li>
+</ul>
+<h2 id="1111-2022-10-31">[11.1.1] 2022-10-31</h2>
+<ul>
+<li>Fix npm dependency minimatch</li>
+</ul>
+<h2 id="1110-2022-10-31">[11.1.0] 2022-10-31</h2>
+<ul>
+<li>Provide default range when only information available is a line number (<a href="https://github.com/nvuillam/npm-groovy-lint/issues/248">#248</a>)</li>
+<li>New CodeNarc issues definition to calculate range in file<ul>
+<li>GStringExpressionWithinString</li>
+<li>VariableName</li>
+</ul>
+</li>
+</ul>
+<h2 id="1100-2022-10-07">[11.0.0] 2022-10-07</h2>
+<ul>
+<li><strong>BREAKING CHANGE</strong>:<code>--failon</code> is now <code>ìnfo</code> by default, meaning exit code will be <code>1</code> if there is at least an info issue found. To have previous behaviour, use <code>--failon none</code>.</li>
+<li>Display all files in console log only if <code>--verbose</code> is used (<a href="https://github.com/nvuillam/npm-groovy-lint/issues/243">#243</a>)</li>
+</ul>
+<h2 id="1010-2022-08-15">[10.1.0] 2022-08-15</h2>
+<ul>
+<li>Allow to send groovy sources as input from stdin</li>
+<li>If <code>--format</code> or <code>--fix</code> option is used when source is sent as stdin, the result is output as stdout</li>
+</ul>
+<p>Example: <code>cat path/to/my/Jenkinsfile | npm-groovy-lint --format -</code></p>
+<h2 id="1003-2022-08-15">[10.0.3] 2022-08-15</h2>
+<ul>
+<li>Do not output results summary in console logs when output is json or sarif</li>
+<li>Add test methods for SARIF called by CLI</li>
+</ul>
+<h2 id="1002-2022-08-15">[10.0.2] 2022-08-15</h2>
+<ul>
+<li>Fix error when absolute files sent as positional arguments on a linux system (<a href="https://github.com/nvuillam/npm-groovy-lint/issues/232">#232</a>)</li>
+<li>Improve performances by calculating the longest command directory to send as base path to CodeNarc</li>
+</ul>
+<h2 id="1001-2022-08-14">[10.0.1] 2022-08-14</h2>
+<ul>
+<li>Fix error when files sent as positional arguments (<a href="https://github.com/nvuillam/npm-groovy-lint/issues/232">#232</a>)</li>
+</ul>
+<h2 id="1000-2022-08-13">[10.0.0] 2022-08-13</h2>
+<ul>
+<li>Core<ul>
+<li>Upgrade to <a href="https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-310----jun-2022">CodeNarc v3.1.0</a></li>
+<li>Accept list of directories / files as arguments (<code>--path</code> and <code>--files</code> become deprecated but are still usable)<ul>
+<li>Examples<ul>
+<li>Multiple files: <code>npm-groovy-lint path/to/file1.groovy path/to/file2.groovy</code></li>
+<li>Directory: <code>npm groovy-lint path/to</code></li>
+<li>Single file: <code>npm-groovy-lint Jenkinsfile</code></li>
+<li>Ant pattern(s): <code>npm-groovy-lint path/to/**/*.groovy</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Upgrade npm dependencies</li>
+<li>CI: Upgrade <a href="https://oxsecurity.github.io/megalinter/latest/">MegaLinter</a> to v6</li>
+<li>Test classes for collecting error ranges</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>New error ranges rules<ul>
+<li>DuplicateNumberLiteral</li>
+<li>DuplicateStringLiteral</li>
+<li>MethodParameterTypeRequired</li>
+<li>NoDef</li>
+<li>SimpleDateFormatMissingLocale</li>
+<li>SpaceInsideParenthesis</li>
+<li>UnnecessaryPublicModifier</li>
+<li>VariableTypeRequired</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>New fix rules<ul>
+<li>SpaceAfterMethodCallName</li>
+<li>SpaceInsideParentheses</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Bug Fixes<ul>
+<li>Wrongly calculated ranges are no more returned</li>
+</ul>
+</li>
+</ul>
+<h2 id="950-2022-04-12">[9.5.0] 2022-04-12</h2>
+<ul>
+<li>Disable Amplitude anonymous stats by default (use <code>--insight</code> to enable them)</li>
+</ul>
+<h2 id="941-2022-01-12">[9.4.1] 2022-01-12</h2>
+<ul>
+<li>Upgrade node-sarif-builder to 2.0.1 and send npm-groovy-lint version in SARIF logs</li>
+<li>New range detection for rules:<ul>
+<li>MethodReturnTypeRequired</li>
+<li>UnusedImport</li>
+</ul>
+</li>
+</ul>
+<h2 id="940-2022-01-11">[9.4.0] 2022-01-11</h2>
+<ul>
+<li>Add <a href="https://sarifweb.azurewebsites.net/">SARIF</a> output format using <a href="https://github.com/nvuillam/node-sarif-builder">node-sarif-builder</a></li>
+</ul>
+<h2 id="932-2022-01-09">[9.3.2] 2022-01-09</h2>
+<ul>
+<li>Upgrade cli-progress to avoid <a href="https://github.com/Marak/colors.js/issues/285">colors lib boring but harmless hack</a></li>
+</ul>
+<h2 id="931-2022-01-06">[9.3.1] 2022-01-06</h2>
+<ul>
+<li>Fix issue when used as module and with file containing spaces (<a href="https://github.com/nvuillam/vscode-groovy-lint/issues/137">VsCodeGroovyLint #137</a>)</li>
+</ul>
+<h2 id="930-2021-12-29">[9.3.0] 2021-12-29</h2>
+<ul>
+<li>Upgrade log4j dependencies because of <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-44832">security issue</a>.</li>
+</ul>
+<h2 id="920-2021-12-23">[9.2.0] 2021-12-23</h2>
+<ul>
+<li>Upgrade log4j dependencies because of (another) <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105">security issue</a> (#196)</li>
+</ul>
+<h2 id="910-2021-12-14">[9.1.0] 2021-12-14</h2>
+<ul>
+<li>Upgrade log4j dependencies because of <a href="https://unit42.paloaltonetworks.com/apache-log4j-vulnerability-cve-2021-44228/">security issue</a> (#194)</li>
+</ul>
+<h2 id="900-2021-09-30">[9.0.0] 2021-09-30</h2>
+<ul>
+<li>Upgrade to <a href="https://github.com/CodeNarc/CodeNarc/releases/tag/v2.2.0">CodeNarc v2.2.0</a></li>
+<li>Upgrade to <a href="https://groovy-lang.org/">Groovy v3.0.9</a></li>
+<li>Reorganize sources test folder</li>
+<li>Use java from 8 to 14 (install it if a later version is found)</li>
+<li>Add timeouts in CI jobs</li>
+<li>Add colors in error logs</li>
+</ul>
+<h2 id="820-2021-06-11">[8.2.0] 2021-06-11</h2>
+<ul>
+<li>Upgrade dependencies advised by dependabot</li>
+<li>Fix Mega-Linter errors found</li>
+</ul>
+<h2 id="810-2020-12-14">[8.1.0] 2020-12-14</h2>
+<ul>
+<li>Exclude <code>UnnecessaryGetter</code>, <code>FactoryMethodName</code>, <code>MethodReturnTypeRequired</code>, and <code>GStringExpressionWithinString</code> in <code>recommended-jenkinsfile</code> (<a href="https://github.com/nvuillam/npm-groovy-lint/pull/140">#140</a>) (<a href="https://github.com/felipecrs">Felipe Santos</a>)</li>
+</ul>
+<h2 id="802-2020-11-26">[8.0.2] 2020-11-26</h2>
+<ul>
+<li>Fix documentation about --verbose and --version options</li>
+<li>Use GitHub action to deploy to NPM</li>
+</ul>
+<h2 id="801-2020-11-19">[8.0.1] 2020-11-19</h2>
+<ul>
+<li>Add a test case where variable includes if in its name for fix of rule SpaceAfterIf (<a href="https://github.com/ucarbehlul">Behlül Uçar</a>)</li>
+</ul>
+<h2 id="800-2020-11-15">[8.0.0] 2020-11-15</h2>
+<ul>
+<li>Upgrade to CodeNarc 2.0.0<ul>
+<li>Upgrade jars</li>
+<li>Adapt Indentation rule to new behaviour</li>
+<li>Use codenarc --ruleset argument instead of temp ruleset file</li>
+</ul>
+</li>
+<li>Replace super-linter by <a href="https://nvuillam.github.io/mega-linter/">Mega-Linter</a></li>
+<li>Fixes<ul>
+<li><a href="https://github.com/nvuillam/npm-groovy-lint/issues/127">(#127)</a> Formatting breaks code, converting <code>else if</code> into <code>elseif</code> in some cases</li>
+<li>Apply formatting rules also for --fix mode</li>
+<li>Fix Markdown dead links</li>
+</ul>
+</li>
+<li>CI<ul>
+<li>Migrate from CircleCI to GitHub Actions: now tests are on Linux, Windows &amp; MacOs</li>
+<li>Activate spelling linter of Mega-Linter (+ <code>.cspell.json</code> file)</li>
+<li>Add test cases for format and fix using CLI</li>
+</ul>
+</li>
+</ul>
+<h2 id="762-2020-09-09">[7.6.2] 2020-09-09</h2>
+<ul>
+<li>Disable TrailingComma rule by default until crash is solved in <a href="https://codenarc.github.io/CodeNarc">CodeNarc</a> (<a href="https://github.com/nvuillam/vscode-groovy-lint/issues/75">#75@vscode-groovy-lint</a>)</li>
+</ul>
+<h2 id="760-2020-09-08">[7.6.0] 2020-09-08</h2>
+<ul>
+<li>Add GitHub Action <a href="https://github.com/marketplace/actions/super-linter">GitHub Super-Linter</a> to the repository</li>
+<li>Update Dockerfile to pass Docker lint rules</li>
+</ul>
+<h2 id="755-2020-09-05">[7.5.5] 2020-09-05</h2>
+<ul>
+<li>Upgrade <a href="https://github.com/nvuillam/node-java-caller">java-caller</a> to v2.2.3<ul>
+<li>Fix Java 8 detection (<a href="https://github.com/nvuillam/npm-groovy-lint/issues/101">#101</a>)</li>
+</ul>
+</li>
+</ul>
+<h2 id="754-2020-09-04">[7.5.4] 2020-09-04</h2>
+<ul>
+<li>Update frameworks detection</li>
+</ul>
+<h2 id="751-2020-09-02">[7.5.1] 2020-09-02</h2>
+<ul>
+<li>Fix <a href="https://github.com/nvuillam/npm-groovy-lint/issues/96">(#96)</a> --fix adds redundant space into <code>${VARIABLE}</code> (SpaceBeforeOpeningBrace fix rule error)</li>
+<li>Fix grails framework detection</li>
+<li>Fix Groovy parsing parsing when multiple files</li>
+<li>Add <code>.gvy</code> and <code>.nf</code> in default browsed files extensions</li>
+</ul>
+<h2 id="750-2020-09-02">[7.5.0] 2020-09-02</h2>
+<ul>
+<li>Add anonymous framework usage stats for Groovy core Team</li>
+</ul>
+<h2 id="743-2020-08-29">[7.4.3] 2020-08-29</h2>
+<ul>
+<li>Upgrade <a href="https://github.com/nvuillam/node-java-caller">java-caller</a> to v2.2.0<ul>
+<li>Fix CLASSPATH on windows in case there are spaces in paths</li>
+</ul>
+</li>
+</ul>
+<h2 id="742-2020-08-26">[7.4.2] 2020-08-26</h2>
+<ul>
+<li>Fix <a href="https://github.com/nvuillam/npm-groovy-lint/issues/90">(#90)</a> When log level is specified number of linted files appear to be off</li>
+</ul>
+<h2 id="741-2020-08-23">[7.4.1] 2020-08-23</h2>
+<ul>
+<li><a href="https://github.com/nvuillam/npm-groovy-lint/pull/88">(#88)</a> Fix Docker image to allow to use extra parameters (by <a href="https://github.com/warhod">Howard Lo</a>)</li>
+</ul>
+<h2 id="740-2020-08-17">[7.4.0] 2020-08-17</h2>
+<ul>
+<li><a href="https://github.com/nvuillam/npm-groovy-lint/pull/87">(#87)</a> update to openjdk 11 in <a href="https://hub.docker.com/r/nvuillam/npm-groovy-lint">official Docker image</a> (by <a href="https://github.com/pawelkopka">Pawel Kopka</a>)</li>
+</ul>
+<h2 id="731-2020-08-16">[7.3.1] 2020-08-16</h2>
+<ul>
+<li>Add number of lines &amp; reorganize anonymous statistics</li>
+<li>Fix error type counters in anonymous statistics</li>
+</ul>
+<h2 id="730-2020-08-15">[7.3.0] 2020-08-15</h2>
+<ul>
+<li>Allow to link to <a href="https://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html">CodeNarc RuleSet files</a> from <code>.groovylintrc.json</code>, using property <code>"codenarcRulesets"</code>. Warning: doing so means that all other properties of config file will be ignored.</li>
+</ul>
+<h2 id="711-2020-08-11">[7.1.1] 2020-08-11</h2>
+<ul>
+<li>Upgrade <a href="https://www.npmjs.com/package/java-caller">java-caller</a> to v2.0.0</li>
+</ul>
+<h2 id="710-2020-08-10">[7.1.0] 2020-08-10</h2>
+<ul>
+<li>Externalize JavaCaller class into a separate package <a href="https://www.npmjs.com/package/java-caller">java-caller</a> and use it</li>
+</ul>
+<h2 id="700-2020-08-07">[7.0.0] 2020-08-07</h2>
+<ul>
+<li>New default recommended rules (activate/deactivate/change severity)</li>
+<li>Allow to call <code>--config recommended-jenkinsfile</code> to use delivered .groovylintrc-recommended-jenkinsfile.json</li>
+</ul>
+<h2 id="611-2020-08-04">[6.1.1] 2020-08-04</h2>
+<ul>
+<li>Fix SpaceAfterComma auto-fixing rule</li>
+</ul>
+<h2 id="610-2020-08-04">[6.1.0] 2020-08-04</h2>
+<ul>
+<li>Java 14 compatibility (Closes <a href="https://github.com/nvuillam/npm-groovy-lint/issues/7">#77</a>)</li>
+</ul>
+<h2 id="600-2020-08-03">[6.0.0] 2020-08-03</h2>
+<ul>
+<li>Upgrade to <a href="https://github.com/CodeNarc/CodeNarc/blob/v1.6-patch-releases/CHANGELOG.md#version-161----aug-2020">CodeNarc v1.6.1</a><ul>
+<li>Update list of rules</li>
+<li>Use new CodeNarc JSON console Output instead of temporary XML files</li>
+<li>Call CodeNarc to get its version instead of using npm-groovy-lint hardcoded value</li>
+</ul>
+</li>
+<li>Upgrade to <a href="https://github.com/dx42/gmetrics/blob/master/CHANGELOG.md#version-11-may-2020">GMetrics v1.1</a></li>
+<li>Upgrade to <a href="https://groovy-lang.org/">Groovy v3.0.5</a></li>
+<li>Add anonymous usage stats on types of errors found and fixed</li>
+</ul>
+<h2 id="580-2020-08-01">[5.8.0] 2020-08-01</h2>
+<ul>
+<li>Fix &amp; enhance anonymous statistics</li>
+</ul>
+<h2 id="570-2020-07-23">[5.7.0] 2020-07-23</h2>
+<ul>
+<li><a href="https://github.com/nvuillam/npm-groovy-lint/pull/74">(#62)</a> Check parse error in all files when called via CLI . Closes <a href="https://github.com/nvuillam/npm-groovy-lint/issues/69">#69</a></li>
+</ul>
+<h2 id="561-2020-07-20">[5.6.1] 2020-07-20</h2>
+<p>Fixes:</p>
+<ul>
+<li><a href="https://github.com/nvuillam/npm-groovy-lint/issues/62">(#62)</a> using a codenarc ruleset file seems to fail / groovylintrc is not codenarc compatible</li>
+</ul>
+<h2 id="560-2020-07-20">[5.6.0] 2020-07-20</h2>
+<ul>
+<li><a href="https://github.com/nvuillam/npm-groovy-lint/pull/68">(#68)</a> Generate a <a href="https://hub.docker.com/r/nvuillam/npm-groovy-lint">ready-to-use docker image</a> when publishing new npm-groovy-lint version (by <a href="https://github.com/davegallant">Dave Gallant</a>)</li>
+</ul>
+<h2 id="551-2020-07-15">[5.5.1] 2020-07-15</h2>
+<ul>
+<li>Fixes<ul>
+<li><a href="https://github.com/nvuillam/vscode-groovy-lint/issues/64">(#64)</a> The contents of a string gets formatted unexpectedly</li>
+</ul>
+</li>
+</ul>
+<h2 id="550-2020-07-09">[5.5.0] 2020-07-09</h2>
+<ul>
+<li>Allow to override java executable and options <a href="https://github.com/nvuillam/vscode-groovy-lint/issues/54">(#54)</a></li>
+</ul>
+<h2 id="542-2020-07-09">[5.4.2] 2020-07-09</h2>
+<ul>
+<li>Use os.EOL <a href="https://github.com/nvuillam/npm-groovy-lint/pull/65">(#65)</a> solving  <a href="https://github.com/nvuillam/npm-groovy-lint/issues/63">(#63)</a> --fix for indentation adds CRLF line-endings to all files it touches</li>
+</ul>
+<h2 id="541-2020-07-01">[5.4.1] 2020-07-01</h2>
+<ul>
+<li>CodeNarcServer listens to localhost only <a href="https://github.com/nvuillam/npm-groovy-lint/pull/59">(#59)</a> solving <a href="https://github.com/nvuillam/npm-groovy-lint/issues/56">(#56)</a></li>
+<li>Replace @analytics/segment with @amplitude/node for anonymous stats</li>
+</ul>
+<h2 id="530-2020-06-29">[5.3.0] 2020-06-29</h2>
+<ul>
+<li>New option <strong>--failon</strong> , replacing <code>--failonerror</code>,<code>--failonwarning</code> and <code>--failoninfo</code>. It can take error, warning or info values (default: none). Previous options remain working but are deprecated and will be removed in a future major version</li>
+<li>Update help for <code>--fixrules</code> option</li>
+</ul>
+<h2 id="510-2020-06-04">[5.1.0] 2020-06-04</h2>
+<ul>
+<li>Install Java 8 using node-jre in case java version found is higher than Java 11 (CodeNarc compatibility is Java 8 to 11)</li>
+</ul>
+<h2 id="503-2020-05-30">[5.0.3] 2020-05-30</h2>
+<ul>
+<li>Updated fix rules<ul>
+<li>Indentation</li>
+<li>IndentationClosingBrace</li>
+</ul>
+</li>
+</ul>
+<h2 id="502-2020-05-27">[5.0.2] 2020-05-27</h2>
+<ul>
+<li>Avoid to apply wrong fix in case of CodeNarc false positive</li>
+<li>New fix rules<ul>
+<li>BlankLineBeforePackage</li>
+</ul>
+</li>
+<li>Updated fix rules<ul>
+<li>BracesForIfElse</li>
+<li>BracesForMethod</li>
+<li>BracesForTryCatchFinally</li>
+<li>ClassEndsWithBlankLine</li>
+<li>ClassStartsWithBlankLine</li>
+<li>MissingBlankLineAfterImports</li>
+<li>MissingBlankLineAfterPackage</li>
+<li>UnnecessaryGroovyImport</li>
+<li>UnusedImport</li>
+</ul>
+</li>
+</ul>
+<h2 id="500-2020-05-25">[5.0.0] 2020-05-25</h2>
+<ul>
+<li><strong>BIG BANG</strong>: Improve performances, compatibility, architecture and delivery<ul>
+<li>Get rid of <a href="https://github.com/shannah/jdeploy">jDeploy</a> dependency<ul>
+<li>Use own <strong>java-caller.js</strong> for java commands</li>
+<li>Update CircleCI config to use <code>npm link</code>instead of <code>jdeploy install</code></li>
+</ul>
+</li>
+<li>Get rid of <a href="https://github.com/request/request">request</a> dependency<ul>
+<li>Use <a href="https://github.com/axios/axios">axios</a> for promisified http calls</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="4140-2020-05-22">[4.14.0] 2020-05-22</h2>
+<ul>
+<li>Send rule configuration to fix functions</li>
+<li>Add <code>.gradle</code> files in default linted files</li>
+<li>Fixes:<ul>
+<li>Missing number of linted files returned in summary</li>
+<li>Try to call CodeNarcJava in case there is an error with CodeNarcServer call</li>
+</ul>
+</li>
+</ul>
+<h2 id="4130-2020-05-20">[4.13.0] 2020-05-20</h2>
+<ul>
+<li>Manage to send options for rules sent in <code>rulesets</code>: Ex: <code>Indentation{"spacesPerIndentLevel":2,"severity":"warning"},UnnecessarySemicolon</code></li>
+<li>New parameter <code>--rulesetsoverridetype</code> : If list of rules sent in rulesets option, defines if they replace rules defined in .groovylintrc.json, or if they are appended</li>
+</ul>
+<h2 id="4120-2020-05-18">[4.12.0] 2020-05-18</h2>
+<ul>
+<li>Improve performances and avoid <code>Unknown command: node</code> error by using childProcess.fork to call CodeNarcServer</li>
+</ul>
+<h2 id="4111-2020-05-16">[4.11.1] 2020-05-16</h2>
+<ul>
+<li>Detect when crash is related to "node" or "java" command not found and return a human readable error message</li>
+</ul>
+<h2 id="4110-2020-05-13">[4.11.0] 2020-05-13</h2>
+<ul>
+<li>Add CI , rule overrides and crashes in anonymous insights for debugging investigation</li>
+<li>When used as a module, <strong>never crash intentionally with throw</strong>, so when called by module, check linter.status and linter.error instead of try/catch<ul>
+<li>0: ok</li>
+<li>1: expected error</li>
+<li>2: unexpected error</li>
+<li>9: if cancelled request</li>
+</ul>
+</li>
+</ul>
+<h2 id="4100-2020-05-12">[4.10.0] 2020-05-12</h2>
+<ul>
+<li>Update analytics to use <a href="https://www.npmjs.com/package/analytics">analytics</a> &amp; <a href="https://github.com/DavidWells/analytics/tree/master/packages/analytics-plugin-segment">@analytics-segment</a> instead of <a href="https://www.npmjs.com/package/insight">insight</a>. If you want to disable anonymous usage stats, you can still use <code>--no-insight</code> option.</li>
+</ul>
+<h2 id="490-2020-05-10">[4.9.0] 2020-05-10</h2>
+<ul>
+<li>Add anonymous usage statistics using <a href="https://www.npmjs.com/package/insight">insight</a>, in order to make new improvements based on how users use this package.<ul>
+<li>Note: Analytics obviously does not receive sensitive information like your code, as you can see in analytics.js. If you want to disable anonymous usage stats, use <code>--no-insight</code> option.</li>
+</ul>
+</li>
+</ul>
+<h2 id="480-2020-05-08">[4.8.0] 2020-05-08</h2>
+<ul>
+<li>New fix rules<ul>
+<li>AssignmentInConditional</li>
+<li>DuplicateImport</li>
+<li>ExplicitLinkedListInstantiation</li>
+<li>InsecureRandom</li>
+<li>UnnecessaryDefInVariableDeclaration</li>
+<li>UnnecessaryDotClass</li>
+<li>UnnecessaryFinalOnPrivateMethod</li>
+<li>UnnecessaryInstantiationToGetClass</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Updated fix rules<ul>
+<li>BracesForForLoop: False positive triggering messy code after fixing</li>
+<li>UnnecessaryGString: Fix multiline replacements ( <code>"""</code> by <code>'''</code> )</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Fixes :<ul>
+<li>Launch JVM with high memory (<code>-Xms256m -Xmx2048m</code>) to improve performances on big files</li>
+<li>Increase CodeNarcServ call timeout (+ Manage ETIMEOUT as result, not only ECONNREFUSED )</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Utils<ul>
+<li>Allow regex in range functions</li>
+</ul>
+</li>
+</ul>
+<h2 id="470-2020-05-06">[4.7.0] 2020-05-06</h2>
+<ul>
+<li>New fix rules<ul>
+<li>BracesForClass</li>
+<li>BracesForForLoop</li>
+<li>BracesForIfElse</li>
+<li>BracesForMethod</li>
+<li>BracesForTryCatchFinally</li>
+<li>ExplicitArrayListInstantiation</li>
+<li>MissingBlankLineAfterImports</li>
+<li>MissingBlankLineAfterPackage</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Updated fix rules<ul>
+<li>UnnecessaryGString: Fix replacements containing <code>\n</code> and <code>\r</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="460-2020-05-01">[4.6.0] 2020-05-01</h2>
+<ul>
+<li>New fix rules<ul>
+<li>SpaceBeforeClosingBrace</li>
+<li>UnnecessaryDefInMethodDeclaration</li>
+<li>UnnecessaryPackageReference</li>
+<li>UnnecessaryParenthesesForMethodCallWithClosure</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Updated fix rules<ul>
+<li>MisorderedStaticImports: Fix <code>@Grapes</code> killer fixing rule</li>
+<li>ElseBlockBrace :issue when instruction is on the same line than <code>else</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="455-2020-04-30">[4.5.5] 2020-04-30</h2>
+<ul>
+<li>Fixes<ul>
+<li>ignorepattern option not working <a href="https://github.com/nvuillam/npm-groovy-lint/issues/34">#34</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="452-2020-04-29">[4.5.2] 2020-04-29</h2>
+<ul>
+<li>Expose <code>loadConfig()</code> method to load rules when npm-groovy-lint is used as a library</li>
+<li>Fixes<ul>
+<li>Missing temporary rulesets file missing</li>
+<li>Handle better CodeNarcServer concurrent calls</li>
+</ul>
+</li>
+</ul>
+<h2 id="451-2020-04-28">[4.5.1] 2020-04-28</h2>
+<ul>
+<li>Fixes<ul>
+<li>Take in account user overridden indentation space (and other rules) when using --format option <a href="https://github.com/nvuillam/npm-groovy-lint/issues/31">#31</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="450-2020-04-24">[4.5.0] 2020-04-24</h2>
+<ul>
+<li>Configuration updates (<a href="https://github.com/nvuillam/npm-groovy-lint/issues/29">#29</a>):<ul>
+<li>New default config "recommended-jenkinsfile". Use it with argument <code>--config recommended-jenkinsfile</code></li>
+<li>Allow to directly target a config file name. Use it with argument <code>--config /my/custom/path/.groovylintrc-custom-name.json</code></li>
+<li>Allow to send a string key that will be used to find config file <code>--config custom-name</code></li>
+</ul>
+</li>
+<li>Updated fix rules:<ul>
+<li>IfStatementBraces</li>
+<li>ElseStatementBraces</li>
+</ul>
+</li>
+</ul>
+<h2 id="441-2020-04-16">[4.4.1] 2020-04-16</h2>
+<ul>
+<li>Fixes:<ul>
+<li>CodeNarcServer: Use cachedThreadPool instead of fixedThreadPool</li>
+</ul>
+</li>
+</ul>
+<h2 id="440-2020-04-16">[4.4.0] 2020-04-16</h2>
+<ul>
+<li>Cancel a CodeNarc Lint when a similar CodeNarcServer request is received (allowing onType mode for language servers)</li>
+</ul>
+<h2 id="430-2020-04-14">[4.3.0] 2020-04-14</h2>
+<ul>
+<li>Allow to disable rules using comments in source in <a href="https://eslint.org/docs/user-guide/configuring#disabling-rules-with-inline-comments">eslint style</a></li>
+</ul>
+<h2 id="420-2020-04-13">[4.2.0] 2020-04-13</h2>
+<ul>
+<li>New option <strong>--parse</strong>: Capability to parse source code and return compilation errors</li>
+<li>New fix rules (thanks <a href="https://github.com/CatSue">CatSue</a> !):<ul>
+<li>SpaceAfterSemicolon</li>
+<li>SpaceAfterWhile</li>
+</ul>
+</li>
+</ul>
+<h2 id="410-2020-04-12">[4.1.0] 2020-04-12</h2>
+<ul>
+<li>Upgrade to <a href="https://groovy.jfrog.io/ui/native/dist-release-local/groovy-zips/apache-groovy-binary-3.0.3.zip">Groovy 3.0.3</a></li>
+<li>Automatic generation of fixable rules list for README</li>
+<li>Refactor CodeNarcServer.groovy</li>
+</ul>
+<h2 id="400-2020-04-09">[4.0.0] 2020-04-09</h2>
+<ul>
+<li>Fix <a href="https://github.com/nvuillam/vscode-groovy-lint/issues/16">issue</a> affecting performances on Linux and MacOs</li>
+</ul>
+<h2 id="330-2020-04-06">[3.3.0] 2020-04-06</h2>
+<ul>
+<li>When formatting, always run some custom npm-groovy-lint fix rules not corresponding to CodeNarc violations</li>
+<li>Return CodeNarc and Groovy versions when --version options is called</li>
+<li>Fixes<ul>
+<li>Lost indentation when applying some fix rules</li>
+</ul>
+</li>
+<li>Updated fix rules:<ul>
+<li>IndentationClosingBraces</li>
+<li>IndentationComments</li>
+<li>SpaceAfterCatch</li>
+<li>SpaceAfterIf</li>
+</ul>
+</li>
+<li>New fix rules:<ul>
+<li>ClassEndsWithBlankLine</li>
+<li>ClassStartsWithNewLine</li>
+<li>SpaceAfterFor</li>
+<li>SpaceAfterSwitch</li>
+</ul>
+</li>
+</ul>
+<h2 id="324-2020-04-03">[3.2.4] 2020-04-03</h2>
+<ul>
+<li>Error message in postinstall if env Node.js is lower than the minimal required (12)</li>
+</ul>
+<h2 id="323-2020-04-02">[3.2.3] 2020-04-02</h2>
+<ul>
+<li>When If or Else brackets are fixed,trigger another rule lint &amp; fix only with Indentation rules so CodeNarc recalculate them correctly</li>
+<li>New option <code>nolintafter</code>: When format or fix is called, a new lint is performed after the fixes to update the error list. If you just want the updated source code and do not care about the error logs, use this parameter to improve performances</li>
+<li>Fixes<ul>
+<li>Manage correctly options <code>failonerror</code>, <code>failonwarning</code> and <code>failoninfo</code></li>
+<li><code>npm-groovy-lint -version</code> now returns version from package.json</li>
+</ul>
+</li>
+<li>Mocha tests updates:<ul>
+<li>Add stats on calls to CodeNarc (<code>globalThis.codeNarcCallsCounter</code> and <code>globalThis.codeNarcCalls</code>, activated if <code>globalThis.codeNarcCallsCounter</code> is set to 0 before calling NmpGroovyLint)</li>
+<li>Factorize test classes common code in module helper/common.js</li>
+<li>Use a smaller groovy file for test classes when not impacting the tests quality</li>
+</ul>
+</li>
+</ul>
+<h2 id="322-2020-03-31">[3.2.2] 2020-03-31</h2>
+<ul>
+<li>New option <strong>returnrules</strong> if you want to return rules descriptions and documentation url in results</li>
+<li>Use npm ci instead of npm install in CircleCI build</li>
+</ul>
+<h2 id="321-2020-03-29">[3.2.1] 2020-03-29</h2>
+<ul>
+<li>Return rules descriptions in results</li>
+<li>New option <strong>nolintafter</strong>: do not lint again a format or a fix, as the client prefers to request it</li>
+<li>Fixes<ul>
+<li><a href="https://github.com/nvuillam/npm-groovy-lint/issues/13">Issue #13</a>: False positive error ClassNameSameAsFileName</li>
+<li>Sometimes returning wrong .groovylint.json config file</li>
+</ul>
+</li>
+</ul>
+<h2 id="320-2020-03-26">[3.2.0] 2020-03-26</h2>
+<ul>
+<li>New option "--format", allowing to reformat source code (using .groovylintrc-format.json)</li>
+<li>Update default recommended rules</li>
+</ul>
+<h2 id="313-2020-03-22">[3.1.3] 2020-03-22</h2>
+<ul>
+<li>README: Link to <a href="https://marketplace.visualstudio.com/items?itemName=NicolasVuillamy.vscode-groovy-lint">Visual Studio Code Groovy Lint extension</a></li>
+</ul>
+<h2 id="312-2020-03-22">[3.1.2] 2020-03-22</h2>
+<ul>
+<li>New Fix rules:<ul>
+<li>BlockEndsWithBlankLine</li>
+<li>BlockStartsWithBlankLine</li>
+<li>MisorderedStaticImports</li>
+<li>SpaceAfterIf</li>
+</ul>
+</li>
+<li>Fix: Update correctly the lineNb &amp; ranges of next errors after an error has been fixed</li>
+<li>Do not return rules tests if call is not from a test file</li>
+<li>Fix rules:<ul>
+<li>ElseBlockBraces</li>
+<li>IfStatementBraces</li>
+<li>SpaceAroundOperator</li>
+<li>UnusedImport</li>
+</ul>
+</li>
+</ul>
+<h2 id="311-2020-03-20">[3.1.1] 2020-03-20</h2>
+<ul>
+<li>New Fix rules:<ul>
+<li>BlockEndsWithBlankLine</li>
+<li>BlockStartsWithBlankLine</li>
+<li>MisorderedStaticImports</li>
+<li>SpaceAfterIf</li>
+</ul>
+</li>
+<li>Updated Fix rules:<ul>
+<li>SpaceAroundOperator</li>
+</ul>
+</li>
+</ul>
+<h2 id="310-2020-03-18">[3.1.0] 2020-03-18</h2>
+<ul>
+<li>Test suites: Improve reliability &amp; logs for rule fixes tests (detected numerous bugs, now corrected)</li>
+<li>Send computed range to fix functions</li>
+<li>Updated Fix rules:<ul>
+<li>ClosingBraceNotAlone</li>
+<li>ElseBlockBraces</li>
+<li>IfStatementBraces</li>
+<li>NoTabCharacter</li>
+<li>SpaceAfterComma</li>
+<li>SystemExit</li>
+<li>TrailingWhitespace</li>
+<li>UnnecessaryGroovyImport</li>
+<li>UnusedImport</li>
+</ul>
+</li>
+</ul>
+<h2 id="301-2020-03-17">[3.0.1] 2020-03-17</h2>
+<ul>
+<li>Add new test suites: errors.test.js and miscellaneous.test.js</li>
+<li>Use JSON as default GroovyLint configuration file type</li>
+<li>Order of fixable rules must be defined in groovy-lint-rules.js</li>
+<li>Do not load rules test data except during tests</li>
+<li>Do not lint again after a call to fixErrors on an existing NpmGroovyLint instance (except if lintAgainAfterFix : true is sent in options)</li>
+<li>Fix: Deletion of temp RuleSite file</li>
+<li>Fix: UnnecessarySemiColon rule</li>
+<li>Fix: ClosingBraceNotAlone rule</li>
+</ul>
+<h2 id="300-2020-03-15">[3.0.0] 2020-03-15</h2>
+<ul>
+<li>Local microservice "CodeNarcServer" called via Http by npm-groovy-lint, to avoid loading all groovy/java classes at each lint request. This microservice auto-kills itself after one hour idle.</li>
+<li>Capability to define RuleSets in argument or js/json/yml config file formats instead of groovy/xml RuleSet format</li>
+<li>Test classes for rules fix (before / after fix defined in rule definitions)</li>
+<li>Add debug logs (use it by setting DEBUG env variable , ex: <code>DEBUG=npm-groovy-lint npm-groovy-lint args...</code>)</li>
+<li>Update lines and ranges of other errors after a fix updated the number of lines</li>
+<li>Generate automatically .groovylintrc-all.js during build</li>
+<li>Split rules definition into files instead of all in a huge single file</li>
+<li>Reorganize groovy-lint.js code, using codenarc-factory.js and codenarc-caller.js</li>
+<li>New lib utils.js that can be used by rules definition</li>
+<li>Fix: Crash when there was no error found in a file</li>
+<li>Fix: Remove Promise error display in log after launching CodeNarcServer</li>
+<li>Fix: Add more options exclusivity arguments rules</li>
+<li>Removed "Groovy", "Jenkinsfile" and "All" identifiers for --rulesets arguments. Please now use .groovylintrc.js configuration</li>
+</ul>
+<h2 id="220-2020-02-28">[2.2.0] 2020-02-28</h2>
+<ul>
+<li>Capability to call NpmGroovyLint with options as object, not only command line arguments</li>
+<li>New option "source", allowing to call NpmGroovyLint with the groovy code as a string , not only path &amp; files pattern</li>
+<li>Run lint again after fix all errors, to get updated lintResult</li>
+<li>Add gitattributes to normalized line-endings (thanks <a href="https://github.com/docwhat">docwhat</a>)</li>
+<li>API: fix only some errors after an initial lint (better performances)</li>
+<li>Return error range in files for some rules in JSON or API result (will be useful for the VsCode extension currently developed)</li>
+<li>Define range function for existing rules, new fixable rules</li>
+</ul>
+<h2 id="201-2020-02-21">[2.0.1] - 2020-02-21</h2>
+<ul>
+<li>Capability to fix errors<ul>
+<li>ConsecutiveBlankLines<ul>
+<li>Indentation (IfStatementBraces and ElseIfStatementBraces must be manually fixed to have correct indentation)</li>
+<li>IndentationComments (custom npm-groovy-rule triggered by Indentation rule)</li>
+<li>IndentationClosingBrace (custom npm-groovy-rule triggered by Indentation rule)</li>
+<li>NoTabCharacter</li>
+<li>SpaceAfterCatch</li>
+<li>SpaceAfterOpeningBrace</li>
+<li>SpaceAroundOperator</li>
+<li>SpaceAfterComma</li>
+<li>SpaceBeforeOpeningBrace</li>
+<li>UnnecessaryDefInFieldDeclaration</li>
+<li>UnnecessaryGString</li>
+<li>UnnecessaryPublicModifier</li>
+<li>UnnecessarySemicolon</li>
+<li>TrailingWhitespace</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Log formatting with severity colors and summary table</li>
+<li>Default recommended RuleSets for Groovy and Jenkins</li>
+<li>Progress bar in console</li>
+<li>More code coverage with test campaigns</li>
+<li>New Capability to call NpmGroovyLint from another package (VsCode extension development in progress ^^)</li>
+<li>Refactored command line arguments ( simpler, but different from CodeNarc ones : retro-compatibility with CodeNarc arguments assured if you add --codenarcargs)</li>
+<li>Upgrade to CodeNarc v1.5</li>
+<li>Upgrade to Groovy v3.0.1</li>
+<li>Refactored documentation with detailed arguments description &amp; examples</li>
+</ul>
+<hr />
+<h2 id="before">Before</h2>
+<ul>
+<li>I wasn't serious enough to keep a changelog, sorry !</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2020 <a href="https://github.com/nvuillam">Nicolas Vuillamy</a>
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/nvuillam/npm-groovy-lint/issues" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M464 256a208 208 0 1 0-416 0 208 208 0 1 0 416 0M0 256a256 256 0 1 1 512 0 256 256 0 1 1-512 0m256-80c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5v3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24v-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zm-32 192a32 32 0 1 1 64 0 32 32 0 1 1-64 0"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/nvuillam/npm-groovy-lint" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://hub.docker.com/r/nvuillam/npm-groovy-lint" target="_blank" rel="noopener" title="hub.docker.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M349.9 236.3h-66.1v-59.4h66.1zm0-204.3h-66.1v60.7h66.1zm78.2 144.8H362v59.4h66.1zm-156.3-72.1h-66.1v60.1h66.1zm78.1 0h-66.1v60.1h66.1zm276.8 100c-14.4-9.7-47.6-13.2-73.1-8.4-3.3-24-16.7-44.9-41.1-63.7l-14-9.3-9.3 14c-18.4 27.8-23.4 73.6-3.7 103.8-8.7 4.7-25.8 11.1-48.4 10.7H2.4c-8.7 50.8 5.8 116.8 44 162.1 37.1 43.9 92.7 66.2 165.4 66.2 157.4 0 273.9-72.5 328.4-204.2 21.4.4 67.6.1 91.3-45.2 1.5-2.5 6.6-13.2 8.5-17.1zm-511.1-27.9h-66v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1zm78.1 0h-66.1v59.4h66.1zm-78.1-72.1h-66.1v60.1h66.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.expand"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
+      
+        <script src="../javascripts/tables.js"></script>
+      
+    
+  </body>
+</html>
