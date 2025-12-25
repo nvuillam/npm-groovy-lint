@@ -1,0 +1,63 @@
+---
+# GitHub Dependents Info workflow
+# More info at https://github.com/nvuillam/github-dependents-info/
+name: GitHub Dependents Info
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master, dependent-actions]
+  schedule:
+    - cron: "0 0 * * 0" # Every sunday at midnight
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: GitHub Dependents Info
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: GitHub Dependents Info
+        uses: nvuillam/github-dependents-info@v3.0.0
+        with:
+          repo: ${{ github.repository }}
+          outputrepo: ${{ github.repository }}
+          markdownfile: docs/github-dependents-info.md
+          badgemarkdownfile: README.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Prepare commit
+        run: sudo chown -R $USER:$USER .
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+          branch: github-dependents-info-auto-update
+          commit-message: "[GitHub Dependents Info] Updated markdown file(s)"
+          delete-branch: true
+          title: "[GitHub Dependents Info] Updated markdown file"
+          body: "_Generated with [github-dependents-info](https://github.com/nvuillam/github-dependents-info), by [Nicolas Vuillamy](https://github.com/nvuillam)_"
+          labels: documentation
+
+      - name: Create PR output
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
