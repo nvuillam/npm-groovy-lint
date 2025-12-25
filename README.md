@@ -13,6 +13,7 @@
 [![Docker Stars](https://img.shields.io/docker/stars/nvuillam/npm-groovy-lint)](https://hub.docker.com/r/nvuillam/npm-groovy-lint)
 [![License](https://img.shields.io/npm/l/npm-groovy-lint.svg)](https://github.com/nvuillam/npm-groovy-lint/blob/master/package.json)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+<!-- gh-dependents-info-used-by-start --><!-- gh-dependents-info-used-by-end -->
 
 ## Groovy & Jenkinsfile Linter, Formatter and Auto-fixer
 
