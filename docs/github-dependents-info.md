@@ -19,9 +19,9 @@ The package is utilized by several organizations and individual developers acros
 The package is frequently integrated into **Checkmk** monitoring extensions and **Jenkins** CI/CD pipelines. It also supports development tools like **VS Code** extensions and **Cypress** automation frameworks.
 
 *   **Nomi-CEu/Nomi-CEu**: A highly popular repository with 270 stars.
-*   **nvuillam/vscode-groovy-lint**: A significant dependent tool with 84 stars.
+*   **nvuillam/vscode-groovy-lint**: The official VS Code extension integration, holding 84 stars.
 *   **HeinleinSupport/checkMK**: A monitoring-related repository with 9 stars.
-*   **docupike/docs**: A documentation-focused project with 5 stars.
+*   **docupike/docs**: Documentation resources with 5 stars.
 
 ## Package npm-groovy-lint
 
