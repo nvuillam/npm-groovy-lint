@@ -6,7 +6,8 @@
         ".vscode",
         "**/*.jar",
         "**/MANIFEST.MF",
-        "lib/example/**"
+        "lib/example/**",
+        "docs/github-dependents*.md"
     ],
     "language": "en",
     "version": "0.2",
