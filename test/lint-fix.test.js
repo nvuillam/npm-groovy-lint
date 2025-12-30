@@ -198,6 +198,51 @@ describe("Lint & fix with API", function () {
         }
     }).timeout(120000);
 
+    it("(API:file) should fix all errors except excluded rules", async function () {
+        const excludedRules = [
+            "Indentation",
+            "IndentationClosingBraces"
+        ];
+        const tmpDir = await copyFilesInTmpDir();
+        try {
+            const linter = await new NpmGroovyLint(
+                [
+                    process.execPath,
+                    "",
+                    "--path",
+                    '"' + tmpDir + '"',
+                    "--fix",
+                    "--fixrulesexclude",
+                    excludedRules.join(","),
+                    "--nolintafter",
+                    "--output",
+                    '"npm-groovy-fix-log-should-exclude-some-rules.txt"',
+                    "--failon", "none",
+                    "--no-insight",
+                    "--verbose"
+                ],
+                {}
+            ).run();
+
+            assert(linter.status === 0);
+            assert(linter.lintResult.summary.totalFixedNumber > 0, "Errors have been fixed");
+            assert(fs.existsSync("npm-groovy-fix-log-should-exclude-some-rules.txt"), "Output txt file produced");
+            assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
+            
+            // Verify excluded rules were not applied
+            const fixedRules = linter.lintResult.files ? 
+                Object.values(linter.lintResult.files)
+                    .flatMap(file => file.errors?.filter(e => e.fixed).map(e => e.rule) || []) : [];
+            const hasExcludedRule = fixedRules.some(rule => excludedRules.includes(rule));
+            assert(!hasExcludedRule, "Excluded rules should not have been fixed");
+            
+            checkCodeNarcCallsCounter(1);
+        } finally {
+            fs.removeSync("npm-groovy-fix-log-should-exclude-some-rules.txt");
+            rimraf.sync(tmpDir);
+        }
+    }).timeout(120000);
+
     it("(API:file) should fix groovy files", async function () {
         const tmpDir = await copyFilesInTmpDir();
         try {

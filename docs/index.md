@@ -53,6 +53,7 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 | --format                | Boolean | Format source code                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | --fix                   | Boolean | Automatically fix problems when possible<br/> See [Auto-fixable rules](#auto-fixable-rules)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | -x<br/> --fixrules      | String  | Option for --fix argument: List of rule identifiers to fix (if not specified, all available fixes will be applied). See [Auto-fixable rules](#auto-fixable-rules) <br/> Examples:<br/> - `"SpaceBeforeClosingBrace,SpaceAfterClosingBrace,UnusedImport"`<br/> - `"Indentation"`<br/>                                                                                                                                                                                                                                                                                          |
+| --fixrulesexclude       | String  | Option for --fix argument: Comma-separated list of rule identifiers to exclude from fixes (if not specified, none are excluded). If used with --fixrules, exclusion is applied last (excluded rules cancel included rules). See [Auto-fixable rules](#auto-fixable-rules) <br/> Examples:<br/> - `"Indentation,IndentationClosingBraces,BracesForIfElse"`<br/> - `"UnnecessarySemicolon,SpaceAfterComma"`<br/>                                                                                                                                                                                                                         |
 | --nolintafter           | Boolean | When format or fix is called, a new lint is performed after the fixes to update the returned error list. If you just want the updated source code and do not care about the error logs, use this parameter to improve performances                                                                                                                                                                                                                                                                                                                                            |
 | -r<br/> --rulesets      | String  | [RuleSet file(s)](http://codenarc.github.io/CodeNarc/codenarc-creating-ruleset.html) to use for linting, if you do not want to use recommended rules or .groovylintrc.js defined rules.<br/>If list of comma separated strings corresponding to CodeNarc rules, a RuleSet file will be dynamically generated </br>  Examples:<br/> - `"./config/codenarc/RuleSet-Custom.groovy"`<br/> - `"./path/to/my/ruleset/files"`<br/>- `Indentation{"spacesPerIndentLevel":2,"severity":"warning"},UnnecessarySemicolon,UnnecessaryGString`                                             |
 | --rulesetsoverridetype  | String  | If list of rules sent in rulesets option, defines if they replace rules defined in .groovylintrc.json, or if they are appended<br/> Values: `replaceConfig` (default), `appendConfig`                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -112,6 +113,18 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 
 ```shell
     npm-groovy-lint --fix my/path/to/file.groovy my/path/to/file2.groovy
+```
+
+- Fix files but exclude specific rules (useful for avoiding buggy indentation rules)
+
+```shell
+    npm-groovy-lint --fix --fixrulesexclude Indentation,IndentationClosingBraces,BracesForIfElse my/path/to/file.groovy
+```
+
+- Fix only specific rules
+
+```shell
+    npm-groovy-lint --fix --fixrules SpaceAfterComma,TrailingWhitespace,UnusedImport my/path/to/file.groovy
 ```
 
 - Get formatted sources in stdout from stdin
