@@ -148,6 +148,7 @@
         "fileset",
         "finalise",
         "fixrules",
+        "fixrulesexclude",
         "flattendeep",
         "fontawesome",
         "fromentries",
