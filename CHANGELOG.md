@@ -3,6 +3,7 @@
 ## Beta
 
 - Use npm Trusted Publishers program to sign releases
+- Generate multi-platform Docker images (linux/amd64, linux/arm64)
 - Add docker images to GitHub Container Registry (ghcr.io/nvuillam/npm-groovy-lint)
 - Scope Java requirements to Java 17 to 24
 - Upgrade dependencies
