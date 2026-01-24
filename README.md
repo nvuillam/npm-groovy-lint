@@ -412,9 +412,15 @@ Run with additional flags by simply appending them at after docker image name:
 docker run --rm -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint --failon warning --verbose
 ```
 
+Use the GitHub Container Registry image by replacing the image name:
+
+```shell
+docker run --rm -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp ghcr.io/nvuillam/npm-groovy-lint --failon warning --verbose
+```
+
 ### Other
 
-You can run npm-groovy-lint using its [official docker image](https://hub.docker.com/r/nvuillam/npm-groovy-lint)
+You can run npm-groovy-lint using its [official Docker Hub image](https://hub.docker.com/r/nvuillam/npm-groovy-lint) or its [GHCR image](https://github.com/nvuillam/npm-groovy-lint/pkgs/container/npm-groovy-lint)
 
 ## Use as module
 
