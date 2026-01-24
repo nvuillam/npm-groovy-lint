@@ -5,6 +5,8 @@
 - Use npm Trusted Publishers program to sign releases
 - Add docker images to GitHub Container Registry (ghcr.io/nvuillam/npm-groovy-lint)
 
+- Scope Java requirements to Java 17 to 24
+
 ## [16.1.0] 2025-12-31
 
 - Implement exclusion of specific rules in the fix process
