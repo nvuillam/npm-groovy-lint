@@ -42,6 +42,7 @@ class CodeNarcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeNarcServer.name)
     private static final int SERVER_PORT = System.getenv('SERVER_PORT') ? System.getenv('SERVER_PORT') as int : 7484
     private static final int MAX_IDLE_TIME = 3600000 // 1h
+    private static final long MAX_REQUEST_BODY_BYTES = 50 * 1024 * 1024 // 50 MB
     private static final ObjectMapper MAPPER = new ObjectMapper()
     private static final ObjectReader READER = MAPPER.reader()
     private static final ObjectWriter WRITER = MAPPER.writer((PrettyPrinter)null)
@@ -125,7 +126,7 @@ class CodeNarcServer {
         this.currentTimerTask = timer.runAfter(MAX_IDLE_TIME, { timerData ->
             this.stopServer()
         })
-        this.ex = Executors.newCachedThreadPool()
+        this.ex = Executors.newFixedThreadPool(Runtime.runtime.availableProcessors())
     }
 
     // Ping
@@ -168,7 +169,26 @@ class CodeNarcServer {
             // Parse input and call CodeNarc
             try {
                 http.responseHeaders.add('Content-type', 'application/json')
-                Request request = READER.readValue(http.getRequestBody(), Request)
+
+                // Enforce request body size limit to prevent OOM from oversized payloads
+                InputStream requestBody = http.getRequestBody()
+                ByteArrayOutputStream buf = new ByteArrayOutputStream()
+                byte[] chunk = new byte[8192]
+                long totalRead = 0
+                int bytesRead
+                while ((bytesRead = requestBody.read(chunk)) != -1) {
+                    totalRead += bytesRead
+                    if (totalRead > MAX_REQUEST_BODY_BYTES) {
+                        http.sendResponseHeaders(413, 0)
+                        http.responseBody.withWriter { out ->
+                            out << '{"status":"error","errorMessage":"Request body too large"}'
+                        }
+                        return
+                    }
+                    buf.write(chunk, 0, bytesRead)
+                }
+
+                Request request = READER.readValue(buf.toByteArray(), Request)
                 if (request.requestKey != null && request.requestKey != 'undefined') {
                     requestKey = request.requestKey
                     LOGGER.debug("requestKey: $requestKey")

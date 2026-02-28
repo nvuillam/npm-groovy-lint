@@ -43,7 +43,7 @@ jobs:
 
       # Upload Mega-Linter artifacts
       - name: Archive production artifacts
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: Expected sources

@@ -75,7 +75,10 @@ class Response {
         this.statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR
         this.status = 'error'
         this.errorMessage = t.message
-        this.errorDtl = t.stackTrace.join('\n')
+        // Limit stack trace depth to avoid leaking excessive internal details
+        StackTraceElement[] trace = t.stackTrace
+        int limit = Math.min(trace.length, 20)
+        this.errorDtl = trace.take(limit).join('\n')
         this.exceptionType = t.class.name
     }
 
@@ -88,7 +91,9 @@ class Response {
         this.statusCode = HttpURLConnection.HTTP_NOT_FOUND
         this.status = 'notFound'
         this.errorMessage = e.message
-        this.errorDtl = e.stackTrace.join('\n')
+        StackTraceElement[] trace = e.stackTrace
+        int limit = Math.min(trace.length, 20)
+        this.errorDtl = trace.take(limit).join('\n')
         this.exceptionType = e.class.name
     }
 

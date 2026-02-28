@@ -2,6 +2,63 @@
 
 ## Beta
 
+- Minimum Node version is now **Node 22**
+- Upgrade dependencies
+- Migrate code to match import-fresh v4 new behaviour
+- Fix closing brace indentation for lines with multiple braces (inline closures) 
+- Revert UnnecessaryGString for strings with slashes
+- Reduce noise in CI test output
+- Performance updates
+  - Use exponential backoff (50ms→400ms) for server startup polling instead of fixed 400ms interval
+  - Replace synchronous `readdirSync` with async `readdir` in temp file cleanup
+  - Use `structuredClone()` instead of `JSON.parse(JSON.stringify())` for deep cloning
+  - Cache loaded lint rules to avoid re-importing all rule files on every call
+  - Reuse single `GroovyShell`/`GroovyClassLoader` per request instead of per file
+  - Use bounded `FixedThreadPool` instead of unbounded `CachedThreadPool` in CodeNarcServer
+  - Reduce HTTP request timeout from 600s to 120s for local server calls
+- Security updates
+  - Restrict temp directory permissions from `0777` to `0700` (owner-only)
+  - Replace `Math.random()` with `crypto.randomUUID()` for temp file/directory names
+  - Add 50 MB request body size limit on CodeNarcServer to prevent OOM attacks
+  - Limit stack trace depth in error responses to 20 frames
+
+## [16.2.0] 2025-01-24
+
+- Use npm Trusted Publishers program to sign releases
+- Generate multi-platform Docker images (linux/amd64, linux/arm64)
+- Add docker images to GitHub Container Registry (ghcr.io/nvuillam/npm-groovy-lint)
+- Scope Java requirements to Java 17 to 24
+- Upgrade dependencies
+
+## [16.1.0] 2025-12-31
+
+- Implement exclusion of specific rules in the fix process
+- Upgrade dependencies
+
+## [16.0.1] 2025-12-07
+
+- fix disabling rules from CLI arguments
+
+## [16.0.0] 2025-12-04
+
+- Upgrade to CodeNarc 3.7.0
+- Build JSON Schema for .groovylintrc.json
+- Update code so it is compliant with both Node 20 and 24
+- CI: add tests with Node 24 & Java 25
+- Upgrade dependencies
+
+## [15.2.2] 2025-10-07
+
+- Fix curly bracket should not get commented out by method comments between parenthesis and curly brackets, by @damien-rembert in <https://github.com/nvuillam/npm-groovy-lint/pull/470>
+- Fix Autofix of unnecessary GString leaves invalid code in data provider of spock tests, by @damien-rembert in <https://github.com/nvuillam/npm-groovy-lint/pull/471>
+- Upgrade npm dependencies
+- Upgrade GitHub Actions dependencies
+
+## [15.2.1] 2025-07-27
+
+- Upgrade npm dependencies
+- Use MegaLinter custom flavor
+
 ## [15.2.0] 2025-05-11
 
 - New script to automate the upgrade of JAR dependencies
