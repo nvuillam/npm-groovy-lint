@@ -8,6 +8,19 @@
 - Fix closing brace indentation for lines with multiple braces (inline closures) 
 - Revert UnnecessaryGString for strings with slashes
 - Reduce noise in CI test output
+- Performance updates
+  - Use exponential backoff (50ms→400ms) for server startup polling instead of fixed 400ms interval
+  - Replace synchronous `readdirSync` with async `readdir` in temp file cleanup
+  - Use `structuredClone()` instead of `JSON.parse(JSON.stringify())` for deep cloning
+  - Cache loaded lint rules to avoid re-importing all rule files on every call
+  - Reuse single `GroovyShell`/`GroovyClassLoader` per request instead of per file
+  - Use bounded `FixedThreadPool` instead of unbounded `CachedThreadPool` in CodeNarcServer
+  - Reduce HTTP request timeout from 600s to 120s for local server calls
+- Security updates
+  - Restrict temp directory permissions from `0777` to `0700` (owner-only)
+  - Replace `Math.random()` with `crypto.randomUUID()` for temp file/directory names
+  - Add 50 MB request body size limit on CodeNarcServer to prevent OOM attacks
+  - Limit stack trace depth in error responses to 20 frames
 
 ## [16.2.0] 2025-01-24
 

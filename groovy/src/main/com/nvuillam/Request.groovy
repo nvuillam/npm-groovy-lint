@@ -149,8 +149,11 @@ class Request {
         Map<String, List<String>> parseErrors = [:]
         LOGGER.debug('parseFiles: parse={}, fileList={}', parse, fileList)
         if (parse) {
+            // Reuse a single GroovyClassLoader across all files in this request for performance
+            GroovyShell shell = new GroovyShell()
+            GroovyClassLoader loader = shell.getClassLoader()
             fileList.each { file ->
-                parseErrors.put(file, parseFile(new File(file)))
+                parseErrors.put(file, parseFile(new File(file), loader))
             }
         }
 
@@ -211,9 +214,9 @@ class Request {
     }
 
     // Try to parse file to get compilation errors as strings.
-    private List<String> parseFile(File file) {
+    private List<String> parseFile(File file, GroovyClassLoader loader) {
         List<String> errors = []
-        for (err in parseFileErrors(file)) {
+        for (err in parseFileErrors(file, loader)) {
             StringWriter out = new StringWriter();
             PrintWriter writer = new PrintWriter(out);
             err.write(writer)
@@ -224,13 +227,11 @@ class Request {
     }
 
     // Try to parse file to get compilation errors.
-    private List<Error> parseFileErrors(File file) {
+    private List<Error> parseFileErrors(File file, GroovyClassLoader loader) {
         try {
             // We don't use GroovyShell.parse as it calls InvokerHelper.createScript
             // which fails for files which contain a class which only have non-zero
             // argument constructors.
-            GroovyShell shell = new GroovyShell()
-            GroovyClassLoader loader = shell.getClassLoader()
             GroovyCodeSource codeSource = new GroovyCodeSource(file, CompilerConfiguration.DEFAULT.sourceEncoding)
             loader.parseClass(codeSource, false)
             LOGGER.debug('Parse "{}" success', file.getAbsolutePath())
