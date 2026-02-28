@@ -2,6 +2,8 @@
 
 ## Beta
 
+## [17.0.0] 2026-02-28
+
 - Minimum Node version is now **Node 22**
 - Upgrade dependencies
 - Migrate code to match import-fresh v4 new behaviour
