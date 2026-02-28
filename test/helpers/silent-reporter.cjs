@@ -9,7 +9,7 @@
  * Suite/test structure is still printed using the built-in Spec reporter.
  */
 
-import Mocha from "mocha";
+const Mocha = require("mocha");
 const { Spec } = Mocha.reporters;
 
 class SilentReporter extends Spec {
@@ -84,4 +84,4 @@ class SilentReporter extends Spec {
     }
 }
 
-export default SilentReporter;
+module.exports = SilentReporter;

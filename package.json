@@ -95,7 +95,7 @@
       "js"
     ],
     "recursive": true,
-    "reporter": "./test/helpers/silent-reporter.js",
+    "reporter": "./test/helpers/silent-reporter.cjs",
     "timeout": "300000"
   },
   "nyc": {
