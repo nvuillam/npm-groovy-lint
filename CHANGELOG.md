@@ -7,6 +7,7 @@
 - Migrate code to match import-fresh v4 new behaviour
 - Fix closing brace indentation for lines with multiple braces (inline closures) 
 - Revert UnnecessaryGString for strings with slashes
+- Reduce noise in CI test output
 
 ## [16.2.0] 2025-01-24
 

@@ -37,8 +37,6 @@ jobs:
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
-        env:
-          DEBUG: "npm-groovy-lint"
         run: npm run test
 
   coverage:
@@ -59,8 +57,6 @@ jobs:
       - name: Install dependencies and link
         run: npm ci && npm link
       - name: Run tests
-        env:
-          DEBUG: "npm-groovy-lint"
         run: npm run test:coverage
       
       # - name: Build coverage report
