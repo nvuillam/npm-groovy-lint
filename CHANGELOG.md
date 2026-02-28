@@ -2,6 +2,11 @@
 
 ## Beta
 
+- Upgrade dependencies
+- Migrate code to match import-fresh v4 new behaviour
+- Fix closing brace indentation for lines with multiple braces (inline closures) 
+- Revert UnnecessaryGString for strings with slashes
+
 ## [16.2.0] 2025-01-24
 
 - Use npm Trusted Publishers program to sign releases
