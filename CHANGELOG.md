@@ -2,6 +2,7 @@
 
 ## Beta
 
+- Minimum Node version is now **Node 22**
 - Upgrade dependencies
 - Migrate code to match import-fresh v4 new behaviour
 - Fix closing brace indentation for lines with multiple braces (inline closures) 

@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node_version: ['20','24']
+        node_version: ['22','24']
         java_version: ['11', '17','21','25']
         java_distrib: [temurin]
         os: [ubuntu-latest, macos-latest, windows-latest]
