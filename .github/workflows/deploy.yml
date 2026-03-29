@@ -101,7 +101,7 @@ jobs:
         uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Get current date
         run: echo "BUILD_DATE=$(date -d @"$(git log -1 --pretty=%ct)" +'%Y-%m-%dT%H:%M:%SZ')" >> ${GITHUB_ENV}
@@ -154,7 +154,7 @@ jobs:
         uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Get current date
         run: echo "BUILD_DATE=$(date -d @"$(git log -1 --pretty=%ct)" +'%Y-%m-%dT%H:%M:%SZ')" >> ${GITHUB_ENV}
