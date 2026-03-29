@@ -107,7 +107,7 @@ jobs:
         run: echo "BUILD_DATE=$(date -d @"$(git log -1 --pretty=%ct)" +'%Y-%m-%dT%H:%M:%SZ')" >> ${GITHUB_ENV}
 
       - name: Build & Push Docker Image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile
@@ -160,7 +160,7 @@ jobs:
         run: echo "BUILD_DATE=$(date -d @"$(git log -1 --pretty=%ct)" +'%Y-%m-%dT%H:%M:%SZ')" >> ${GITHUB_ENV}
 
       - name: Build & Push Docker Image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64, linux/arm64
           context: .
