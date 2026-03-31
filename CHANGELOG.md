@@ -2,6 +2,10 @@
 
 ## Beta
 
+## [17.0.3] 2026-03-31
+
+- Pin axios version to stay safe regarding its hack (we already were, it's a preventive action !)
+
 ## [17.0.2] 2026-03-29
 
 - Upgrade dependencies
