@@ -2,6 +2,10 @@
 
 ## Beta
 
+## [17.0.4] 2026-05-07
+
+- Upgrade dependencies, including axios
+
 ## [17.0.4] 2026-04-15
 
 - Upgrade dependencies
