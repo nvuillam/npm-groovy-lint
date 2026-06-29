@@ -19,6 +19,14 @@ jobs:
         java_version: ['11', '17','21','25']
         java_distrib: [temurin]
         os: [ubuntu-latest, macos-latest, windows-latest]
+        exclude:
+          # JDK 11 (< supported min 17) and JDK 25 (> supported max 24) are out of range,
+          # so java-caller auto-downloads a compatible JRE. On Windows that spawn fails
+          # (ENOENT under node 24), hanging the suite. Skip these out-of-range JDKs on Windows.
+          - os: windows-latest
+            java_version: '11'
+          - os: windows-latest
+            java_version: '25'
     name: Test
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
