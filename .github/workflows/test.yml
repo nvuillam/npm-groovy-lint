@@ -22,23 +22,25 @@ jobs:
       #   - macOS and Windows each get one representative in-range JDK leg.
       #   - Windows skips out-of-range JDKs (11 & 25): the JRE auto-download spawn fails there
       #     (ENOENT under node 24) and hangs the suite.
+      # NOTE: this is a pure `include` list with NO base matrix dimensions. A base
+      # dimension (e.g. `java_distrib: [temurin]`) would make GitHub merge every include
+      # entry into that single combination (last-one-wins), collapsing all legs into ONE
+      # job. With include only, each entry becomes its own job.
       matrix:
-        java_distrib: [temurin]
         include:
           # Linux - full JDK range on latest Node (incl. out-of-range auto-download 11 & 25)
-          - { os: ubuntu-latest, node_version: '24', java_version: '11' }
-          - { os: ubuntu-latest, node_version: '24', java_version: '17' }
-          - { os: ubuntu-latest, node_version: '24', java_version: '21' }
-          - { os: ubuntu-latest, node_version: '24', java_version: '25' }
+          - { os: ubuntu-latest, node_version: '24', java_version: '11', java_distrib: temurin }
+          - { os: ubuntu-latest, node_version: '24', java_version: '17', java_distrib: temurin }
+          - { os: ubuntu-latest, node_version: '24', java_version: '21', java_distrib: temurin }
+          - { os: ubuntu-latest, node_version: '24', java_version: '25', java_distrib: temurin }
           # Linux - older supported Node on the baseline JDK
-          - { os: ubuntu-latest, node_version: '22', java_version: '17' }
+          - { os: ubuntu-latest, node_version: '22', java_version: '17', java_distrib: temurin }
           # macOS - one representative in-range leg
-          - { os: macos-latest, node_version: '24', java_version: '21' }
+          - { os: macos-latest, node_version: '24', java_version: '21', java_distrib: temurin }
           # Windows - in-range JDKs only, one per supported Node version
-          - { os: windows-latest, node_version: '24', java_version: '17' }
-          - { os: windows-latest, node_version: '22', java_version: '21' }
+          - { os: windows-latest, node_version: '24', java_version: '17', java_distrib: temurin }
+          - { os: windows-latest, node_version: '22', java_version: '21', java_distrib: temurin }
     # Explicit name so each curated leg shows as a distinct, readable check
-    # (otherwise GitHub names them all "Test (temurin)", since os/node/java live in include).
     name: Test (${{ matrix.os }}, node ${{ matrix.node_version }}, jdk ${{ matrix.java_version }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
