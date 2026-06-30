@@ -14,19 +14,29 @@ jobs:
     if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     strategy:
       fail-fast: false
+      # Curated matrix (instead of the full node x java x os product) to keep CI fast
+      # while preserving meaningful coverage:
+      #   - Linux runs all 4 JDKs, including the out-of-range 11 & 25 that exercise
+      #     java-caller's JRE auto-download path (the path most sensitive to java-caller bumps).
+      #   - Both supported Node versions (22 & 24) are covered.
+      #   - macOS and Windows each get one representative in-range JDK leg.
+      #   - Windows skips out-of-range JDKs (11 & 25): the JRE auto-download spawn fails there
+      #     (ENOENT under node 24) and hangs the suite.
       matrix:
-        node_version: ['22','24']
-        java_version: ['11', '17','21','25']
         java_distrib: [temurin]
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        exclude:
-          # JDK 11 (< supported min 17) and JDK 25 (> supported max 24) are out of range,
-          # so java-caller auto-downloads a compatible JRE. On Windows that spawn fails
-          # (ENOENT under node 24), hanging the suite. Skip these out-of-range JDKs on Windows.
-          - os: windows-latest
-            java_version: '11'
-          - os: windows-latest
-            java_version: '25'
+        include:
+          # Linux - full JDK range on latest Node (incl. out-of-range auto-download 11 & 25)
+          - { os: ubuntu-latest, node_version: '24', java_version: '11' }
+          - { os: ubuntu-latest, node_version: '24', java_version: '17' }
+          - { os: ubuntu-latest, node_version: '24', java_version: '21' }
+          - { os: ubuntu-latest, node_version: '24', java_version: '25' }
+          # Linux - older supported Node on the baseline JDK
+          - { os: ubuntu-latest, node_version: '22', java_version: '17' }
+          # macOS - one representative in-range leg
+          - { os: macos-latest, node_version: '24', java_version: '21' }
+          # Windows - in-range JDKs only, one per supported Node version
+          - { os: windows-latest, node_version: '24', java_version: '17' }
+          - { os: windows-latest, node_version: '22', java_version: '21' }
     name: Test
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
