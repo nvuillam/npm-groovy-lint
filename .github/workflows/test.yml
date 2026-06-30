@@ -37,7 +37,9 @@ jobs:
           # Windows - in-range JDKs only, one per supported Node version
           - { os: windows-latest, node_version: '24', java_version: '17' }
           - { os: windows-latest, node_version: '22', java_version: '21' }
-    name: Test
+    # Explicit name so each curated leg shows as a distinct, readable check
+    # (otherwise GitHub names them all "Test (temurin)", since os/node/java live in include).
+    name: Test (${{ matrix.os }}, node ${{ matrix.node_version }}, jdk ${{ matrix.java_version }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
