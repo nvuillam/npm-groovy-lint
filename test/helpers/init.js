@@ -15,7 +15,7 @@ globalThis.NPM_GROOVY_LINT_TEST = true;
 
 // Pre-warm the CodeNarc server before the test run.
 // Without this, the first test to lint pays the full JVM cold-start + CodeNarc
-// classloading cost mid-run (~15-30s). Doing it once here, in an awaited mocha
+// class loading cost mid-run (~15-30s). Doing it once here, in an awaited mocha
 // global fixture, means every test reuses an already-warm server over HTTP.
 // This is a global setup fixture (https://mochajs.org/#global-setup-fixtures):
 // mocha awaits it once before any test, and it runs in the same process so the
