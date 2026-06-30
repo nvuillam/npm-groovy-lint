@@ -2,6 +2,29 @@
 
 ## Beta
 
+- Upgrade **java-caller to v5** ([#584](https://github.com/nvuillam/npm-groovy-lint/pull/584))
+  - **Breaking (upstream)**: when no compatible local JDK is found, the JRE that java-caller auto-downloads now comes from Eclipse Temurin (`api.adoptium.net`) instead of the deprecated AdoptOpenJDK endpoint
+  - Fixes hanging of CodeNarc calls during Java detection on **Node 24 + Windows** (java-caller `run()` / `java -version` no longer stalls)
+- Speed up CI test suite: pre-warm the CodeNarc server once before the Mocha run, and replace the full node × java × os product (20 jobs) with a curated 8-job matrix
+
+## [17.0.4] 2026-05-07
+
+- Upgrade dependencies, including axios
+
+## [17.0.4] 2026-04-15
+
+- Upgrade dependencies
+
+## [17.0.3] 2026-03-31
+
+- Pin axios version to stay safe regarding its hack (we already were, it's a preventive action !)
+
+## [17.0.2] 2026-03-29
+
+- Upgrade dependencies
+
+## [17.0.0] 2026-02-28
+
 - Minimum Node version is now **Node 22**
 - Upgrade dependencies
 - Migrate code to match import-fresh v4 new behaviour
