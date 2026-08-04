@@ -1,5 +1,10 @@
 # Configuration file for Mega-Linter
 # See all available variables at https://megalinter.io/#configuration and in linters documentation
+#
+# This repository uses a MegaLinter custom flavor (https://megalinter.io/latest/custom-flavors/)
+# instead of a standard flavor, so MEGALINTER_FLAVOR / MEGALINTER_VERSION are intentionally not set.
+# CI uses the action nvuillam/megalinter-custom-flavor-npm-groovy-lint@main ; to run locally:
+# npx mega-linter-runner --image ghcr.io/nvuillam/megalinter-custom-flavor-npm-groovy-lint/megalinter-custom-flavor:latest
 
 APPLY_FIXES: "all" # When true, APPLY_FIXES must also be defined as environment variable (in github/workflows/mega-linter.yml or other CI tool)
 FILTER_REGEX_EXCLUDE: (lib/example|\.github|\.vscode|\.claude|CLAUDE\.md|pull_request_template|docs/javascripts|package-lock\.json)
