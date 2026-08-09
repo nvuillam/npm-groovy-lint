@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: 3.x
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24.x"
       - run: pip install mkdocs-material mdx_truly_sane_lists
