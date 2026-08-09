@@ -217,8 +217,8 @@ class Request {
     private List<String> parseFile(File file, GroovyClassLoader loader) {
         List<String> errors = []
         for (err in parseFileErrors(file, loader)) {
-            StringWriter out = new StringWriter();
-            PrintWriter writer = new PrintWriter(out);
+            StringWriter out = new StringWriter()
+            PrintWriter writer = new PrintWriter(out)
             err.write(writer)
             errors << out.toString()
         }

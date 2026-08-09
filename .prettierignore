@@ -1,0 +1,10 @@
+# Generated / tool-owned files: formatting them makes prettier and the tool that
+# writes them rewrite each other on every run, which fails the "Update check" CI job.
+#
+# Written by scripts/build-config-all.js (`npm run build`):
+lib/.groovylintrc-all.json
+docs/groovy-lint.jsonschema.json
+# Written by npm:
+package-lock.json
+# Written by the skills CLI (`npx skills`):
+skills-lock.json

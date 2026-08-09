@@ -1,15 +1,15 @@
-import fs from 'fs-extra'
-import path from 'path'
-import os from 'os'
-import { Buffer } from 'buffer'
-import { execFileSync } from 'child_process'
+import fs from "fs-extra";
+import path from "path";
+import os from "os";
+import { Buffer } from "buffer";
+import { execFileSync } from "child_process";
 import { getNpmGroovyLintRules } from "../lib/groovy-lint-rules.js";
 
 const CODENARC_RESOURCES_BASE_URL = "https://raw.githubusercontent.com/CodeNarc/CodeNarc/master/src/main/resources";
 // Build Json containing all CodeNarc rules
 (async () => {
     // Imports
-    const ruleSetAll = fs.readFileSync('lib/example/RuleSet-All.groovy', 'utf8');
+    const ruleSetAll = fs.readFileSync("lib/example/RuleSet-All.groovy", "utf8");
     const allLines = ruleSetAll.replace(/\r?\n/g, "\r\n").split("\r\n");
 
     function buildAllRules(allLines) {
@@ -18,12 +18,12 @@ const CODENARC_RESOURCES_BASE_URL = "https://raw.githubusercontent.com/CodeNarc/
         let currentCategory = null;
 
         for (const line of allLines) {
-            if (line.includes('.xml')) {
-                const splits = line.split('/');
-                currentCategory = splits[splits.length - 1].replace('.xml', '').trim();
+            if (line.includes(".xml")) {
+                const splits = line.split("/");
+                currentCategory = splits[splits.length - 1].replace(".xml", "").trim();
                 continue;
             }
-            if (currentCategory && line.trim() !== '' && line.trim().match("^[a-zA-Z0-9]*$")) {
+            if (currentCategory && line.trim() !== "" && line.trim().match("^[a-zA-Z0-9]*$")) {
                 const ruleName = line.trim();
                 const propName = `${currentCategory}.${ruleName}`;
                 const description = toSentence(ruleName);
@@ -40,17 +40,17 @@ const CODENARC_RESOURCES_BASE_URL = "https://raw.githubusercontent.com/CodeNarc/
     }
 
     function toSentence(ruleName) {
-        const spaced = ruleName.replace(/([A-Z])/g, ' $1').trim();
+        const spaced = ruleName.replace(/([A-Z])/g, " $1").trim();
         return spaced.charAt(0).toUpperCase() + spaced.slice(1);
     }
 
     const { rulesConfig: allRulesConfig, metadata: ruleMetadata } = buildAllRules(allLines);
 
-    const fullConfigIndented = JSON.stringify({ "rules": allRulesConfig }, null, 4);
+    const fullConfigIndented = JSON.stringify({ rules: allRulesConfig }, null, 4);
 
-    fs.writeFileSync('./lib/.groovylintrc-all.json', fullConfigIndented);
+    fs.writeFileSync("./lib/.groovylintrc-all.json", fullConfigIndented);
 
-    console.log('Generated lib/.groovylintrc-all.json fullConfig');
+    console.log("Generated lib/.groovylintrc-all.json fullConfig");
 
     const npmDefinedRules = await getNpmGroovyLintRules();
     const rulePropertyMetadata = await collectRulePropertyMetadata();
@@ -58,13 +58,13 @@ const CODENARC_RESOURCES_BASE_URL = "https://raw.githubusercontent.com/CodeNarc/
     const fixableRules = [];
     for (const rule of Object.keys(npmDefinedRules)) {
         if (npmDefinedRules[rule].fix) {
-            fixableRules.push('- ' + rule);
+            fixableRules.push("- " + rule);
         }
     }
     fixableRules.sort();
-    const mdLog = fixableRules.join('\n');
-    console.log('Fixable rules :\n' + mdLog);
-})()
+    const mdLog = fixableRules.join("\n");
+    console.log("Fixable rules :\n" + mdLog);
+})();
 
 async function buildGroovyLintJsonSchema(ruleMetadata, npmDefinedRules, rulePropertyMetadata) {
     const severityEnum = ["off", "info", "warning", "error"];
@@ -251,7 +251,9 @@ async function collectRulePropertyMetadata() {
     const scriptPath = path.join(tempDir, "collect-rule-props.groovy");
     await fs.writeFile(scriptPath, scriptContent, "utf8");
 
-    const javaExecutable = process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, "bin", process.platform === "win32" ? "java.exe" : "java") : "java";
+    const javaExecutable = process.env.JAVA_HOME
+        ? path.join(process.env.JAVA_HOME, "bin", process.platform === "win32" ? "java.exe" : "java")
+        : "java";
     let stdout;
     try {
         stdout = execFileSync(javaExecutable, ["-cp", jarsClasspath, "groovy.ui.GroovyMain", scriptPath, resource.path], {

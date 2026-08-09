@@ -1,13 +1,13 @@
 #! /usr/bin / env node
-import NpmGroovyLint from "../lib/groovy-lint.js"
-import  assert from 'assert';
+import NpmGroovyLint from "../lib/groovy-lint.js";
+import assert from "assert";
 import { beforeEachTestCase, checkCodeNarcCallsCounter } from "./helpers/common.js";
 
-describe("Check disabled rules", function() {
+describe("Check disabled rules", function () {
     beforeEach(beforeEachTestCase);
 
     for (const [key, val] of getSamplesMap()) {
-        it("(API:source)" + key, async function() {
+        it("(API:source)" + key, async function () {
             await checkRule(key, val);
         }).timeout(30000);
     }
@@ -19,14 +19,14 @@ async function checkRule(key, check) {
         output: "txt",
         failon: "none",
         insight: false,
-        verbose: true
+        verbose: true,
     };
     const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
     assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
     assert(
         linter.lintResult.summary.totalFoundNumber === check.totalFound,
-        `${linter.lintResult.summary.totalFoundNumber} errors found (expected: ${check.totalFound})`
+        `${linter.lintResult.summary.totalFoundNumber} errors found (expected: ${check.totalFound})`,
     );
     checkCodeNarcCallsCounter(1);
 }
@@ -43,8 +43,8 @@ private void doSomething(){
             if (a == 2)
                 doSomething();
    }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableFileAll//",
@@ -56,8 +56,8 @@ private void doSomething(){
             if (a == 2)
                 doSomething();
    }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableFileIndentation/*",
@@ -69,8 +69,8 @@ private void doSomething(){
             if (a == 2)
                 doSomething();
    }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableFileIndentation//",
@@ -82,8 +82,8 @@ private void doSomething(){
             if (a == 2)
                 doSomething();
    }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableFileIndentationUnnecessarySemicolon",
@@ -95,8 +95,8 @@ private void doSomething(){
             if (a == 2)
                 doSomething();
    }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableLineAll",
@@ -107,8 +107,8 @@ private void doSomething(){
             if (a == 2)
                 doSomething(); // groovylint-disable-line
    }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableLineUnnecessarySemicolon",
@@ -119,8 +119,8 @@ private void doSomething(){
             if (a == 2)
                 doSomething(); // groovylint-disable-line UnnecessarySemicolon
    }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableNextLineUnnecessarySemicolon",
@@ -132,8 +132,8 @@ private void doSomething(){
                 // groovylint-disable-next-line UnnecessarySemicolon
                 doSomething();
    }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableNextLineToIgnore",
@@ -145,8 +145,8 @@ private void doSomething(){
                 // groovylint-disable-next-line DummyRule
                 doSomething();
    }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableEnableAll",
@@ -160,8 +160,8 @@ private void doSomething(){
     // groovylint-enable
     def a = 1;
 }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableEnableIndentation",
@@ -175,8 +175,8 @@ private void doSomething(){
     /* groovylint-enable Indentation */
          def a = 1;
 }
-`
-            }
+`,
+            },
         ],
         [
             "GroovyDisableEnableIndentationUnnecessarySemicolon",
@@ -190,8 +190,8 @@ private void doSomething(){
     /* groovylint-enable Indentation, UnnecessarySemicolon */
          def a = 1;
 }
-`
-            }
-        ]
+`,
+            },
+        ],
     ]);
 }

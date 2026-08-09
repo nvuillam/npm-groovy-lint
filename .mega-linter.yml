@@ -1,5 +1,12 @@
 # Configuration file for Mega-Linter
 # See all available variables at https://megalinter.io/#configuration and in linters documentation
+#
+# This repository uses a MegaLinter custom flavor (https://megalinter.io/latest/custom-flavors/)
+# instead of a standard flavor, so MEGALINTER_FLAVOR / MEGALINTER_VERSION are intentionally not set:
+# the custom flavor image follows the latest MegaLinter major (v10), and is rebuilt in
+# nvuillam/megalinter-custom-flavor-npm-groovy-lint each time MegaLinter publishes a new version.
+# CI uses the action nvuillam/megalinter-custom-flavor-npm-groovy-lint@main ; to run locally:
+# npx mega-linter-runner --image ghcr.io/nvuillam/megalinter-custom-flavor-npm-groovy-lint/megalinter-custom-flavor:latest
 
 APPLY_FIXES: "all" # When true, APPLY_FIXES must also be defined as environment variable (in github/workflows/mega-linter.yml or other CI tool)
 FILTER_REGEX_EXCLUDE: (lib/example|\.github|\.vscode|\.claude|CLAUDE\.md|pull_request_template|docs/javascripts|package-lock\.json)
@@ -9,7 +16,6 @@ DISABLE:
 JAVASCRIPT_DEFAULT_STYLE: prettier
 DISABLE_LINTERS:
   - JAVASCRIPT_STANDARD
-  - MARKDOWN_MARKDOWN_LINK_CHECK
   - TYPESCRIPT_STANDARD
 DISABLE_ERRORS_LINTERS:
   - REPOSITORY_SEMGREP

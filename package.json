@@ -1,116 +1,116 @@
 {
-  "name": "npm-groovy-lint",
-  "version": "18.0.0",
-  "description": "Lint, format and auto-fix your Groovy / Jenkinsfile / Gradle files",
-  "exports": "./lib/groovy-lint.js",
-  "type": "module",
-  "scripts": {
-    "lint:fix": "eslint **/*.{js,mjs} --fix && prettier --write \"./lib/**/*.{js,jsx,mjs}\" --tab-width 4 --print-width 150",
-    "server:run-from-source": "npm run server:kill && groovy -cp \"lib/java/*\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
-    "server:run": "npm run server:kill && java -Xms256m -Xmx2048m -jar lib/java/CodeNarcServer.jar --server",
-    "server:build": "node scripts/build-server.js",
-    "server:kill": "npm-groovy-lint --killserver",
-    "test": "npm run server:kill && mocha \"test/**/*.test.js\"",
-    "test:coverage": "nyc npm run test",
-    "test:debug": "npm run server:kill && mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
-    "build": "node scripts/build-config-all.js && cp -f README.md docs/index.md && cp -f CHANGELOG.md docs/CHANGELOG.md",
-    "dev:lint-install-local": "npm run server:kill && npm run lint:fix && npm link --force",
-    "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node scripts/deploy-in-vscode.js",
-    "dev:pre-commit": "npm-run-all lint:fix build server:build",
-    "dev:upgrade-jars": "node scripts/update-java-jars.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nvuillam/npm-groovy-lint.git"
-  },
-  "keywords": [
-    "groovy",
-    "lint",
-    "jenkinsfile",
-    "codenarc",
-    "format",
-    "linter",
-    "formatter",
-    "auto-fix",
-    "refactor",
-    "gradle"
-  ],
-  "author": "Nicolas Vuillamy",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nvuillam/npm-groovy-lint/issues"
-  },
-  "homepage": "https://github.com/nvuillam/npm-groovy-lint#readme",
-  "files": [
-    "index.d.ts",
-    "lib"
-  ],
-  "bin": {
-    "npm-groovy-lint": "lib/index.js"
-  },
-  "dependencies": {
-    "ansi-colors": "^4.1.1",
-    "axios": "1.18.1",
-    "chalk": "^5.3.0",
-    "cli-progress": "^3.12.0",
-    "commondir": "^1.0.1",
-    "debug": "^4.1.1",
-    "find-java-home": "^2.0.0",
-    "find-package-json": "^1.2.0",
-    "fs-extra": "^11.0.0",
-    "glob": "^13.0.0",
-    "import-fresh": "^4.0.0",
-    "java-caller": "^5.0.0",
-    "js-yaml": "^5.0.0",
-    "node-sarif-builder": "^4.0.0",
-    "optionator": "^0.9.0",
-    "strip-json-comments": "^5.0.0",
-    "uuid": "^14.0.0"
-  },
-  "resolutions": {
-    "axios": "1.18.1"
-  },
-  "devDependencies": {
-    "@babel/core": "^8.0.0",
-    "@babel/eslint-parser": "^8.0.0",
-    "@eslint/eslintrc": "^3.1.0",
-    "@eslint/js": "^9.9.1",
-    "adm-zip": "^0.5.10",
-    "diff": "^9.0.0",
-    "eslint": "^9.0.0",
-    "globals": "^17.0.0",
-    "handlebars": "^4.7.8",
-    "mocha": "^11.0.0",
-    "npm-run-all2": "^9.0.0",
-    "nyc": "^18.0.0",
-    "prettier": "^3.0.0",
-    "rimraf": "^6.0.0",
-    "which": "^7.0.0"
-  },
-  "engines": {
-    "node": ">=22.0.0"
-  },
-  "mocha": {
-    "require": [
-      "test/helpers/init.js"
+    "name": "npm-groovy-lint",
+    "version": "18.0.0",
+    "description": "Lint, format and auto-fix your Groovy / Jenkinsfile / Gradle files",
+    "exports": "./lib/groovy-lint.js",
+    "type": "module",
+    "scripts": {
+        "lint:fix": "eslint **/*.{js,mjs} --fix && prettier --write \"./lib/**/*.{js,jsx,mjs}\" --tab-width 4 --print-width 150",
+        "server:run-from-source": "npm run server:kill && groovy -cp \"lib/java/*\" groovy/src/main/com/nvuillam/CodeNarcServer.groovy --server",
+        "server:run": "npm run server:kill && java -Xms256m -Xmx2048m -jar lib/java/CodeNarcServer.jar --server",
+        "server:build": "node scripts/build-server.js",
+        "server:kill": "npm-groovy-lint --killserver",
+        "test": "npm run server:kill && mocha \"test/**/*.test.js\"",
+        "test:coverage": "nyc npm run test",
+        "test:debug": "npm run server:kill && mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
+        "build": "node scripts/build-config-all.js && cp -f README.md docs/index.md && cp -f CHANGELOG.md docs/CHANGELOG.md",
+        "dev:lint-install-local": "npm run server:kill && npm run lint:fix && npm link --force",
+        "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node scripts/deploy-in-vscode.js",
+        "dev:pre-commit": "npm-run-all lint:fix build server:build",
+        "dev:upgrade-jars": "node scripts/update-java-jars.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nvuillam/npm-groovy-lint.git"
+    },
+    "keywords": [
+        "groovy",
+        "lint",
+        "jenkinsfile",
+        "codenarc",
+        "format",
+        "linter",
+        "formatter",
+        "auto-fix",
+        "refactor",
+        "gradle"
     ],
-    "watch-extensions": [
-      "js"
+    "author": "Nicolas Vuillamy",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/nvuillam/npm-groovy-lint/issues"
+    },
+    "homepage": "https://github.com/nvuillam/npm-groovy-lint#readme",
+    "files": [
+        "index.d.ts",
+        "lib"
     ],
-    "recursive": true,
-    "reporter": "./test/helpers/silent-reporter.cjs",
-    "timeout": "300000"
-  },
-  "nyc": {
-    "include": [
-      "lib/**"
-    ],
-    "extension": [
-      ".js"
-    ],
-    "reporter": [
-      "html"
-    ],
-    "all": true
-  }
+    "bin": {
+        "npm-groovy-lint": "lib/index.js"
+    },
+    "dependencies": {
+        "ansi-colors": "^4.1.1",
+        "axios": "1.18.1",
+        "chalk": "^5.3.0",
+        "cli-progress": "^3.12.0",
+        "commondir": "^1.0.1",
+        "debug": "^4.1.1",
+        "find-java-home": "^2.0.0",
+        "find-package-json": "^1.2.0",
+        "fs-extra": "^11.0.0",
+        "glob": "^13.0.0",
+        "import-fresh": "^4.0.0",
+        "java-caller": "^5.0.0",
+        "js-yaml": "^5.0.0",
+        "node-sarif-builder": "^4.0.0",
+        "optionator": "^0.9.0",
+        "strip-json-comments": "^5.0.0",
+        "uuid": "^14.0.0"
+    },
+    "resolutions": {
+        "axios": "1.18.1"
+    },
+    "devDependencies": {
+        "@babel/core": "^8.0.0",
+        "@babel/eslint-parser": "^8.0.0",
+        "@eslint/eslintrc": "^3.1.0",
+        "@eslint/js": "^9.9.1",
+        "adm-zip": "^0.5.10",
+        "diff": "^9.0.0",
+        "eslint": "^9.0.0",
+        "globals": "^17.0.0",
+        "handlebars": "^4.7.8",
+        "mocha": "^11.0.0",
+        "npm-run-all2": "^9.0.0",
+        "nyc": "^18.0.0",
+        "prettier": "^3.0.0",
+        "rimraf": "^6.0.0",
+        "which": "^7.0.0"
+    },
+    "engines": {
+        "node": ">=22.0.0"
+    },
+    "mocha": {
+        "require": [
+            "test/helpers/init.js"
+        ],
+        "watch-extensions": [
+            "js"
+        ],
+        "recursive": true,
+        "reporter": "./test/helpers/silent-reporter.cjs",
+        "timeout": "300000"
+    },
+    "nyc": {
+        "include": [
+            "lib/**"
+        ],
+        "extension": [
+            ".js"
+        ],
+        "reporter": [
+            "html"
+        ],
+        "all": true
+    }
 }

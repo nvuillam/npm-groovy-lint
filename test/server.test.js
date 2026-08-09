@@ -1,11 +1,11 @@
 #! /usr/bin/env node
-import NpmGroovyLint from "../lib/groovy-lint.js"
-import  assert from 'assert';
-import * as which from 'which'
+import NpmGroovyLint from "../lib/groovy-lint.js";
+import assert from "assert";
+import * as which from "which";
 import { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG } from "./helpers/common.js";
 
-describe.skip("Server", function() {
-    it("(API:Server) should kill running server", async function() {
+describe.skip("Server", function () {
+    it("(API:Server) should kill running server", async function () {
         // Due to the interaction with the daemon, this test can be flakey so retry.
         this.retries(3);
 
@@ -17,14 +17,14 @@ describe.skip("Server", function() {
             files: "**/" + SAMPLE_FILE_BIG,
             insight: false,
             failon: "none",
-            output: "none"
+            output: "none",
         };
 
         const oldLinter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(oldLinter.status === 0, `Linter status is 0 (${oldLinter.status} returned)`);
 
         const linter = await new NpmGroovyLint([process.execPath, "", "--killserver", "--no-insight", "--verbose"], {
-            verbose: true
+            verbose: true,
         }).run();
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
@@ -32,21 +32,21 @@ describe.skip("Server", function() {
         checkCodeNarcCallsCounter(2);
     });
 
-    it("(API:Server) should not succeed to kill running server", async function() {
+    it("(API:Server) should not succeed to kill running server", async function () {
         // Due to the interaction with the daemon, this test can be flakey so retry.
         this.retries(3);
 
         beforeEachTestCase();
 
         const linter = await new NpmGroovyLint([process.execPath, "", "--killserver", "--no-insight", "--verbose"], {
-            verbose: true
+            verbose: true,
         }).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(linter.outputString.includes("CodeNarcServer was not running"), "CodeNarcServer not killed because not running");
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:Server) should kill java override running server", async function() {
+    it("(API:Server) should kill java override running server", async function () {
         // Due to the interaction with the daemon, this test can be flakey so retry.
         this.retries(3);
 
@@ -82,13 +82,13 @@ describe.skip("Server", function() {
             files: "**/" + SAMPLE_FILE_BIG,
             insight: false,
             failon: "none",
-            output: "none"
+            output: "none",
         };
         const oldLinter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(oldLinter.status === 0, `Linter status is 0 (${oldLinter.status} returned)`);
 
         const linter = await new NpmGroovyLint([process.execPath, "", "--killserver", "--no-insight", "--verbose"], {
-            verbose: true
+            verbose: true,
         }).run();
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);

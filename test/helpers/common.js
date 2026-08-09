@@ -1,7 +1,7 @@
 #! /usr/bin/env node
-import  assert from 'assert';
+import assert from "assert";
 import * as os from "os";
-import fs from 'fs-extra'
+import fs from "fs-extra";
 import * as jsdiff from "diff";
 
 const NPM_GROOVY_LINT = "npm-groovy-lint ";
@@ -22,18 +22,18 @@ const SAMPLE_RULESET_2 = "RuleSet-2.groovy";
 const SAMPLE_RULESET_2_PATH = EXAMPLE_DIRECTORY + SAMPLE_RULESET_2;
 
 // Reset codeNarcCallsCounter before each test
-const beforeEachTestCase = function() {
+const beforeEachTestCase = function () {
     globalThis.codeNarcCallsCounter = 0;
     globalThis.codeNarcCalls = [];
 };
 
 // Check counter of calls to CodeNarc
-const checkCodeNarcCallsCounter = expectedNb => {
+const checkCodeNarcCallsCounter = (expectedNb) => {
     assert(
         expectedNb === globalThis.codeNarcCallsCounter,
         `Number of calls to codeNarc is wrong: ${expectedNb} expected but ${
             globalThis.codeNarcCallsCounter
-        } returned.\nCodeNarc calls: \n${JSON.stringify(globalThis.codeNarcCalls, null, 2)}`
+        } returned.\nCodeNarc calls: \n${JSON.stringify(globalThis.codeNarcCalls, null, 2)}`,
     );
 };
 
@@ -53,7 +53,7 @@ async function copyFilesInTmpDir() {
 // Get diff between 2 strings
 function getDiff(expected, afterUpdate, beforeUpdate) {
     const diff = jsdiff.diffChars(expected, afterUpdate);
-    const effectiveDiffs = diff.filter(item => item.added || item.removed);
+    const effectiveDiffs = diff.filter((item) => item.added || item.removed);
     if (effectiveDiffs.length > 0) {
         console.error("BeforeFix: \n" + beforeUpdate);
         console.error("AfterFix: \n" + afterUpdate);
@@ -69,11 +69,8 @@ function getDiff(expected, afterUpdate, beforeUpdate) {
 function assertLintedFiles(output, expectedCount) {
     const lintedResult = output.matchAll(/npm-groovy-lint results in .\[1m(\S+).\[22m linted files/g);
     assert(lintedResult, "Missing linted files result");
-    const gotCount = Array.from(lintedResult, m => m[1]);
-    assert(
-        gotCount == expectedCount,
-        `Expected ${expectedCount} linted files got ${gotCount}`
-    );
+    const gotCount = Array.from(lintedResult, (m) => m[1]);
+    assert(gotCount == expectedCount, `Expected ${expectedCount} linted files got ${gotCount}`);
 }
 
 export {
@@ -97,5 +94,5 @@ export {
     checkCodeNarcCallsCounter,
     copyFilesInTmpDir,
     getDiff,
-    assertLintedFiles
+    assertLintedFiles,
 };

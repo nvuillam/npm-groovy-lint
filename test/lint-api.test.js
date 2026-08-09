@@ -1,7 +1,7 @@
 #! /usr/bin/env node
-import NpmGroovyLint from "../lib/groovy-lint.js"
-import  assert from 'assert';
-import fs from 'fs-extra'
+import NpmGroovyLint from "../lib/groovy-lint.js";
+import assert from "assert";
+import fs from "fs-extra";
 import * as path from "path";
 import {
     beforeEachTestCase,
@@ -14,15 +14,15 @@ import {
     SAMPLE_FILE_WITH_SPACES_PATH,
     SAMPLE_RULESET_1_PATH,
     SAMPLE_RULESET_2_PATH,
-    EXAMPLE_DIRECTORY
+    EXAMPLE_DIRECTORY,
 } from "./helpers/common.js";
 
 describe("Lint with API", () => {
     beforeEach(beforeEachTestCase);
 
-    it("(API:file) should generate text console output and stats", async function() {
+    it("(API:file) should generate text console output and stats", async function () {
         const linter = await new NpmGroovyLint([process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--verbose"], {
-            verbose: true
+            verbose: true,
         }).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
@@ -31,13 +31,24 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate text console output with loglevel=warning", async function() {
+    it("(API:file) should generate text console output with loglevel=warning", async function () {
         const linter = await new NpmGroovyLint(
-            [process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--loglevel", "warning",
-                "--failon", "warning", "--verbose"],
+            [
+                process.execPath,
+                "",
+                "--path",
+                '"lib/example"',
+                "--files",
+                "**/" + SAMPLE_FILE_SMALL,
+                "--loglevel",
+                "warning",
+                "--failon",
+                "warning",
+                "--verbose",
+            ],
             {
-                verbose: true
-            }
+                verbose: true,
+            },
         ).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
@@ -46,20 +57,10 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate json output with rules", async function() {
+    it("(API:file) should generate json output with rules", async function () {
         const linter = await new NpmGroovyLint(
-            [
-                process.execPath,
-                "",
-                "--path",
-                '"lib/example"',
-                "--files",
-                "**/" + SAMPLE_FILE_SMALL,
-                "--output",
-                "json",
-                "--no-insight"
-            ],
-            {}
+            [process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--output", "json", "--no-insight"],
+            {},
         ).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes(`"totalFoundWarningNumber":`), "Property totalFoundWarningNumber is in result");
@@ -67,20 +68,10 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate SARIF output", async function() {
+    it("(API:file) should generate SARIF output", async function () {
         const linter = await new NpmGroovyLint(
-            [
-                process.execPath,
-                "",
-                "--path",
-                '"lib/example"',
-                "--files",
-                "**/" + SAMPLE_FILE_SMALL,
-                "--output",
-                "sarif",
-                "--no-insight"
-            ],
-            {}
+            [process.execPath, "", "--path", '"lib/example"', "--files", "**/" + SAMPLE_FILE_SMALL, "--output", "sarif", "--no-insight"],
+            {},
         ).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         const sarifLog = JSON.parse(linter.outputString);
@@ -88,11 +79,11 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate codenarc HTML file report", async function() {
+    it("(API:file) should generate codenarc HTML file report", async function () {
         const reportFileName = path.resolve("./tmp/ReportTestCodenarc.html");
         const linter = await new NpmGroovyLint(
             [process.execPath, "", "--path", "./lib/example", "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight", "--output", reportFileName],
-            {}
+            {},
         ).run();
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
@@ -101,11 +92,11 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should generate codenarc XML file report", async function() {
+    it("(API:file) should generate codenarc XML file report", async function () {
         const reportFileName = path.resolve("./tmp/ReportTestCodenarc.xml");
         const linter = await new NpmGroovyLint(
             [process.execPath, "", "--path", "lib/example", "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight", "--output", reportFileName],
-            {}
+            {},
         ).run();
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
@@ -114,7 +105,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should use --codenarcargs to generate XML report", async function() {
+    it("(API:file) should use --codenarcargs to generate XML report", async function () {
         const reportFileName = path.resolve("./tmp/ReportTestCodenarc.xml");
         const linter = await new NpmGroovyLint(
             [
@@ -124,9 +115,9 @@ describe("Lint with API", () => {
                 `-basedir="${path.resolve("lib/example")}"`,
                 '-title="TestTitleCodenarc"',
                 "-maxPriority1Violations=0",
-                `-report="xml:${reportFileName}"`
+                `-report="xml:${reportFileName}"`,
             ],
-            {}
+            {},
         ).run();
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
@@ -135,12 +126,12 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a Jenkinsfile", async function() {
+    it("(API:file) should run on a Jenkinsfile", async function () {
         const linter = await new NpmGroovyLint(
             [process.execPath, "", "--path", '"lib/example"', "-f", "**/Jenkinsfile", "-c", "recommended-jenkinsfile", "--no-insight", "--verbose"],
             {
-                verbose: true
-            }
+                verbose: true,
+            },
         ).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
@@ -149,26 +140,26 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:files) should ignore fake_node_modules and groovy pattern", async function() {
+    it("(API:files) should ignore fake_node_modules and groovy pattern", async function () {
         const npmGroovyLintConfig = {
             files: "**/*.groovy",
             ignorepattern: "**/fake_node_modules/**,**/groovy/**",
             output: "txt",
             insight: false,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 1, `Expected linter status is 1 got ${linter.status}`);
         assertLintedFiles(linter.outputString, 11);
     });
 
-    it("(API:source) should run with source only (no parsing)", async function() {
+    it("(API:source) should run with source only (no parsing)", async function () {
         const npmGroovyLintConfig = {
             source: fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             insight: false,
             output: "txt",
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
@@ -176,7 +167,7 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:source) should run with CodeNarc ruleset file", async function() {
+    it("(API:source) should run with CodeNarc ruleset file", async function () {
         const npmGroovyLintConfig = {
             source: fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
@@ -184,7 +175,7 @@ describe("Lint with API", () => {
             output: "txt",
             insight: false,
             parse: true,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
@@ -192,14 +183,14 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:source) should run with source only (parse success)", async function() {
+    it("(API:source) should run with source only (parse success)", async function () {
         const npmGroovyLintConfig = {
             source: fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             output: "txt",
             insight: false,
             parse: true,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
@@ -207,14 +198,14 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:source) should run with source only (file with spaces)", async function() {
+    it("(API:source) should run with source only (file with spaces)", async function () {
         const npmGroovyLintConfig = {
             source: fs.readFileSync(SAMPLE_FILE_WITH_SPACES_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_WITH_SPACES_PATH,
             output: "txt",
             insight: false,
             parse: true,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
@@ -222,13 +213,13 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:source) should run with source only (parse error)", async function() {
+    it("(API:source) should run with source only (parse error)", async function () {
         const npmGroovyLintConfig = {
             source: fs.readFileSync(SAMPLE_FILE_PARSE_ERROR_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_PARSE_ERROR_PATH,
             output: "txt",
             insight: false,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
@@ -239,14 +230,14 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:source) should run without CodeNarc Server", async function() {
+    it("(API:source) should run without CodeNarc Server", async function () {
         const npmGroovyLintConfig = {
             source: fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString(),
             sourcefilepath: SAMPLE_FILE_SMALL_PATH,
             noserver: true,
             output: "none",
             insight: false,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
@@ -254,14 +245,9 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a single file (relative)", async function() {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            "",
-            "--verbose",
-            path.join("./lib/example", SAMPLE_FILE_SMALL)
-        ], {
-            verbose: true
+    it("(API:file) should run on a single file (relative)", async function () {
+        const linter = await new NpmGroovyLint([process.execPath, "", "--verbose", path.join("./lib/example", SAMPLE_FILE_SMALL)], {
+            verbose: true,
         }).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
@@ -270,14 +256,9 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a single file (absolute)", async function() {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            "",
-            "--verbose",
-            path.resolve(path.join("./lib/example", SAMPLE_FILE_SMALL))
-        ], {
-            verbose: true
+    it("(API:file) should run on a single file (absolute)", async function () {
+        const linter = await new NpmGroovyLint([process.execPath, "", "--verbose", path.resolve(path.join("./lib/example", SAMPLE_FILE_SMALL))], {
+            verbose: true,
         }).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
@@ -286,16 +267,13 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a list of files (relative)", async function() {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            "",
-            "--verbose",
-            path.join("./lib/example", SAMPLE_FILE_SMALL),
-            path.join("./lib/example", SAMPLE_FILE_WITH_SPACES)
-        ], {
-            verbose: true
-        }).run();
+    it("(API:file) should run on a list of files (relative)", async function () {
+        const linter = await new NpmGroovyLint(
+            [process.execPath, "", "--verbose", path.join("./lib/example", SAMPLE_FILE_SMALL), path.join("./lib/example", SAMPLE_FILE_WITH_SPACES)],
+            {
+                verbose: true,
+            },
+        ).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
@@ -303,16 +281,19 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a list of files (absolute)", async function() {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            "",
-            "--verbose",
-            path.resolve(path.join("./lib/example", SAMPLE_FILE_SMALL)),
-            path.resolve(path.join("./lib/example", SAMPLE_FILE_WITH_SPACES))
-        ], {
-            verbose: true
-        }).run();
+    it("(API:file) should run on a list of files (absolute)", async function () {
+        const linter = await new NpmGroovyLint(
+            [
+                process.execPath,
+                "",
+                "--verbose",
+                path.resolve(path.join("./lib/example", SAMPLE_FILE_SMALL)),
+                path.resolve(path.join("./lib/example", SAMPLE_FILE_WITH_SPACES)),
+            ],
+            {
+                verbose: true,
+            },
+        ).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
@@ -322,17 +303,20 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a list of files, no server (relative)", async function() {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            "",
-            "--verbose",
-            "--noserver",
-            path.join("./lib/example", SAMPLE_FILE_SMALL),
-            path.join("./lib/example", SAMPLE_FILE_WITH_SPACES)
-        ], {
-            verbose: true
-        }).run();
+    it("(API:file) should run on a list of files, no server (relative)", async function () {
+        const linter = await new NpmGroovyLint(
+            [
+                process.execPath,
+                "",
+                "--verbose",
+                "--noserver",
+                path.join("./lib/example", SAMPLE_FILE_SMALL),
+                path.join("./lib/example", SAMPLE_FILE_WITH_SPACES),
+            ],
+            {
+                verbose: true,
+            },
+        ).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
@@ -340,17 +324,20 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a list of files, no server (absolute)", async function() {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            "",
-            "--verbose",
-            "--noserver",
-            path.resolve(path.join("./lib/example", SAMPLE_FILE_SMALL)),
-            path.resolve(path.join("./lib/example", SAMPLE_FILE_WITH_SPACES))
-        ], {
-            verbose: true
-        }).run();
+    it("(API:file) should run on a list of files, no server (absolute)", async function () {
+        const linter = await new NpmGroovyLint(
+            [
+                process.execPath,
+                "",
+                "--verbose",
+                "--noserver",
+                path.resolve(path.join("./lib/example", SAMPLE_FILE_SMALL)),
+                path.resolve(path.join("./lib/example", SAMPLE_FILE_WITH_SPACES)),
+            ],
+            {
+                verbose: true,
+            },
+        ).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
@@ -360,20 +347,18 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
-    it("(API:file) should run on a directory", async function() {
-        const linter = await new NpmGroovyLint([
-            process.execPath,
-            "",
-            "--verbose",
-            EXAMPLE_DIRECTORY
-        ], {
-            verbose: true
+    it("(API:file) should run on a directory", async function () {
+        const linter = await new NpmGroovyLint([process.execPath, "", "--verbose", EXAMPLE_DIRECTORY], {
+            verbose: true,
         }).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 12, `Expected 2 files got ${Object.keys(linter.lintResult.files).length}`);
         assert(linter.lintResult.summary.totalFoundErrorNumber === 12, `Expected 12 errors to ${linter.lintResult.summary.totalFoundErrorNumber}`);
-        assert(linter.lintResult.summary.totalFoundWarningNumber === 333, `Expected 333 warnings to ${linter.lintResult.summary.totalFoundWarningNumber}`);
+        assert(
+            linter.lintResult.summary.totalFoundWarningNumber === 333,
+            `Expected 333 warnings to ${linter.lintResult.summary.totalFoundWarningNumber}`,
+        );
         assert(linter.lintResult.summary.totalFoundInfoNumber === 1649, `Expected 1649 infos to ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);
     });

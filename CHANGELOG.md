@@ -2,6 +2,13 @@
 
 ## Beta
 
+- Fix vulnerabilities reported by grype and trivy
+  - **js-yaml** 5.2.1 -> 5.2.3, **tar** 7.5.19 -> 7.5.22, **brace-expansion** -> 5.0.9
+  - Bundled jars: **jackson-core** / **jackson-databind** 2.22.0 -> 2.22.1, **logback-core** / **logback-classic** 1.5.25 -> 1.5.34
+- Upgrade MegaLinter CI to **v10** (custom flavor image rebuilt on MegaLinter 10.0.0, `REPOSITORY_GITLEAKS` replaced by `REPOSITORY_BETTERLEAKS`)
+- Add `.prettierrc.json` and `.prettierignore` so prettier uses the project conventions (tab width 4, print width 150) instead of its defaults, and leaves generated files alone
+- Remove unused imports and unnecessary semicolons from the Groovy server sources
+
 ## [18.0.0] 2026-06-30
 
 - Upgrade **java-caller to v5** ([#584](https://github.com/nvuillam/npm-groovy-lint/pull/584))
@@ -30,7 +37,7 @@
 - Minimum Node version is now **Node 22**
 - Upgrade dependencies
 - Migrate code to match import-fresh v4 new behaviour
-- Fix closing brace indentation for lines with multiple braces (inline closures) 
+- Fix closing brace indentation for lines with multiple braces (inline closures)
 - Revert UnnecessaryGString for strings with slashes
 - Reduce noise in CI test output
 - Performance updates
@@ -93,8 +100,8 @@
 ## [15.1.0] 2025-02-23
 
 - Upgrade to CodeNarc 3.6.0 and Groovy 4.0.25
-- Updates to support groovy 4 by @AngMits in https://github.com/nvuillam/npm-groovy-lint/pull/439
-- fix(cli): account for parse errors being of string type by @joshzcold in https://github.com/nvuillam/npm-groovy-lint/pull/444
+- Updates to support groovy 4 by @AngMits in <https://github.com/nvuillam/npm-groovy-lint/pull/439>
+- fix(cli): account for parse errors being of string type by @joshzcold in <https://github.com/nvuillam/npm-groovy-lint/pull/444>
 - Upgrade npm dependencies
 
 ## [15.0.2] 2024-08-30
@@ -104,7 +111,7 @@
 ## [15.0.1] 2024-08-29
 
 - Add module declaration
-- Fix crash in case of parsing error (https://github.com/nvuillam/npm-groovy-lint/issues/406)
+- Fix crash in case of parsing error (<https://github.com/nvuillam/npm-groovy-lint/issues/406>)
 - Disable codecov
 
 ## [15.0.0] 2024-08-26
@@ -144,7 +151,7 @@
 
 ## [14.2.3] 2024-02-26
 
-- Fix [#351](https://github.com/nvuillam/npm-groovy-lint/issues/351): temp directories aren't cleaned up 
+- Fix [#351](https://github.com/nvuillam/npm-groovy-lint/issues/351): temp directories aren't cleaned up
 
 ## [14.2.2] 2024-02-18
 
@@ -200,7 +207,7 @@
 
   - Fix command line -ext extensions not being processed correctly and matching too many files as it was missing the prefix.
 
-  - Ensure readFile and writeFile calls produce a stack trace on failure due to: https://github.com/nodejs/node/issues/30944.
+  - Ensure readFile and writeFile calls produce a stack trace on failure due to: <https://github.com/nodejs/node/issues/30944>.
 
   - Fix file delete race condition and variable clean up due to missing await.
 
@@ -237,7 +244,7 @@
 
 ## [12.0.1] 2023-11-06
 
-- Fix: bump openjdk version from 11 to 17 in Docker image by @SerhiiKorolik in https://github.com/nvuillam/npm-groovy-lint/pull/317
+- Fix: bump openjdk version from 11 to 17 in Docker image by @SerhiiKorolik in <https://github.com/nvuillam/npm-groovy-lint/pull/317>
 
 ## [12.0.0] 2023-11-04
 
@@ -245,17 +252,17 @@ Many fixes, including an issue with IPV6 that made npm-groovy-lint crash on many
 
 Breaking change: **Minimum java version to Java 17**
 
-* Use MegaLinter v7 by @nvuillam in https://github.com/nvuillam/npm-groovy-lint/pull/254
-* Bump json5 from 2.2.1 to 2.2.3 by @dependabot in https://github.com/nvuillam/npm-groovy-lint/pull/260
-* ci: fix action failures by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/309
-* chore: update node to 18 lts by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/310
-* feat: improve the vscode deployment by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/307
-* Improve publish via CI + beta when in main by @nvuillam in https://github.com/nvuillam/npm-groovy-lint/pull/311
-* chore: improve flow debugging by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/303
-* ci: predictable server builds and port option by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/312
-* fix: status bar message by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/302
-* fix: server and test stability by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/313
-* fix: UnnecessaryGString for strings with slashes by @stevenh in https://github.com/nvuillam/npm-groovy-lint/pull/304
+* Use MegaLinter v7 by @nvuillam in <https://github.com/nvuillam/npm-groovy-lint/pull/254>
+* Bump json5 from 2.2.1 to 2.2.3 by @dependabot in <https://github.com/nvuillam/npm-groovy-lint/pull/260>
+* ci: fix action failures by @stevenh in <https://github.com/nvuillam/npm-groovy-lint/pull/309>
+* chore: update node to 18 lts by @stevenh in <https://github.com/nvuillam/npm-groovy-lint/pull/310>
+* feat: improve the vscode deployment by @stevenh in <https://github.com/nvuillam/npm-groovy-lint/pull/307>
+* Improve publish via CI + beta when in main by @nvuillam in <https://github.com/nvuillam/npm-groovy-lint/pull/311>
+* chore: improve flow debugging by @stevenh in <https://github.com/nvuillam/npm-groovy-lint/pull/303>
+* ci: predictable server builds and port option by @stevenh in <https://github.com/nvuillam/npm-groovy-lint/pull/312>
+* fix: status bar message by @stevenh in <https://github.com/nvuillam/npm-groovy-lint/pull/302>
+* fix: server and test stability by @stevenh in <https://github.com/nvuillam/npm-groovy-lint/pull/313>
+* fix: UnnecessaryGString for strings with slashes by @stevenh in <https://github.com/nvuillam/npm-groovy-lint/pull/304>
 
 ## [11.1.1] 2022-10-31
 

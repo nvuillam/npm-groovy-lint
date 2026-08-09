@@ -1,15 +1,9 @@
 #! /usr/bin/env node
-import NpmGroovyLint from "../lib/groovy-lint.js"
-import  assert from 'assert';
-import fs from 'fs-extra'
+import NpmGroovyLint from "../lib/groovy-lint.js";
+import assert from "assert";
+import fs from "fs-extra";
 import * as rimraf from "rimraf";
-import {
-    beforeEachTestCase,
-    copyFilesInTmpDir,
-    checkCodeNarcCallsCounter,
-    SAMPLE_FILE_BIG_PATH,
-    SAMPLE_FILE_SMALL_PATH
-} from "./helpers/common.js";
+import { beforeEachTestCase, copyFilesInTmpDir, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG_PATH, SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
 
 describe("Lint & fix with API", function () {
     beforeEach(beforeEachTestCase);
@@ -23,11 +17,11 @@ describe("Lint & fix with API", function () {
             nolintafter: true,
             output: "none",
             insight: false,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-        let errIdList = linter.lintResult.files[0].errors.filter(error => error.fixable === true).map(err => err.id);
+        let errIdList = linter.lintResult.files[0].errors.filter((error) => error.fixable === true).map((err) => err.id);
         errIdList = errIdList.slice(0, 500);
         await linter.fixErrors(errIdList);
 
@@ -48,14 +42,14 @@ describe("Lint & fix with API", function () {
             fix: true,
             output: "txt",
             insight: false,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
         );
         assert(linter.lintResult.files[0].updatedSource && linter.lintResult.files[0].updatedSource !== prevFileContent, "Source has been updated");
         assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
@@ -73,14 +67,14 @@ describe("Lint & fix with API", function () {
             nolintafter: true,
             output: "txt",
             insight: false,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
         );
         assert(linter.lintResult.files[0].updatedSource && linter.lintResult.files[0].updatedSource !== prevFileContent, "Source has been updated");
         assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
@@ -98,14 +92,14 @@ describe("Lint & fix with API", function () {
             nolintafter: true,
             output: "txt",
             insight: false,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
         );
         assert(linter.lintResult.files[0].updatedSource && linter.lintResult.files[0].updatedSource !== prevFileContent, "Source has been updated");
         assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
@@ -129,14 +123,17 @@ describe("Lint & fix with API", function () {
                     "--nolintafter",
                     "--fix",
                     "--no-insight",
-                    "--verbose"
+                    "--verbose",
                 ],
-                {}
+                {},
             ).run();
 
             assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
             assert(linter.lintResult.summary.totalFixedNumber > 0, "Error have been fixed");
-            assert(linter.lintResult.files[Object.keys(linter.lintResult.files)[0]].updatedSource !== prevFileContent, "File content has been updated");
+            assert(
+                linter.lintResult.files[Object.keys(linter.lintResult.files)[0]].updatedSource !== prevFileContent,
+                "File content has been updated",
+            );
             assert(fs.existsSync("npm-groovy-fix-log.json"), "Output json file has been produced");
             assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
             checkCodeNarcCallsCounter(2);
@@ -158,7 +155,7 @@ describe("Lint & fix with API", function () {
             // "SpaceAroundOperator",
             // "SpaceAfterComma",
             // "UnnecessaryDefInFieldDeclaration",
-            "UnnecessarySemicolon"
+            "UnnecessarySemicolon",
             // "IfStatementBraces",
             // "ElseStatementBraces",
             // "ConsecutiveBlankLines",
@@ -180,11 +177,12 @@ describe("Lint & fix with API", function () {
                     "--nolintafter",
                     "--output",
                     '"npm-groovy-fix-log-should-fix-only-some-errors.txt"',
-                    "--failon", "none",
+                    "--failon",
+                    "none",
                     "--no-insight",
-                    "--verbose"
+                    "--verbose",
                 ],
-                {}
+                {},
             ).run();
 
             assert(linter.status === 0);
@@ -199,10 +197,7 @@ describe("Lint & fix with API", function () {
     }).timeout(120000);
 
     it("(API:file) should fix all errors except excluded rules", async function () {
-        const excludedRules = [
-            "Indentation",
-            "IndentationClosingBraces"
-        ];
+        const excludedRules = ["Indentation", "IndentationClosingBraces"];
         const tmpDir = await copyFilesInTmpDir();
         try {
             const linter = await new NpmGroovyLint(
@@ -217,25 +212,26 @@ describe("Lint & fix with API", function () {
                     "--nolintafter",
                     "--output",
                     '"npm-groovy-fix-log-should-exclude-some-rules.txt"',
-                    "--failon", "none",
+                    "--failon",
+                    "none",
                     "--no-insight",
-                    "--verbose"
+                    "--verbose",
                 ],
-                {}
+                {},
             ).run();
 
             assert(linter.status === 0);
             assert(linter.lintResult.summary.totalFixedNumber > 0, "Errors have been fixed");
             assert(fs.existsSync("npm-groovy-fix-log-should-exclude-some-rules.txt"), "Output txt file produced");
             assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
-            
+
             // Verify excluded rules were not applied
-            const fixedRules = linter.lintResult.files ? 
-                Object.values(linter.lintResult.files)
-                    .flatMap(file => file.errors?.filter(e => e.fixed).map(e => e.rule) || []) : [];
-            const hasExcludedRule = fixedRules.some(rule => excludedRules.includes(rule));
+            const fixedRules = linter.lintResult.files
+                ? Object.values(linter.lintResult.files).flatMap((file) => file.errors?.filter((e) => e.fixed).map((e) => e.rule) || [])
+                : [];
+            const hasExcludedRule = fixedRules.some((rule) => excludedRules.includes(rule));
             assert(!hasExcludedRule, "Excluded rules should not have been fixed");
-            
+
             checkCodeNarcCallsCounter(1);
         } finally {
             fs.removeSync("npm-groovy-fix-log-should-exclude-some-rules.txt");
@@ -257,9 +253,9 @@ describe("Lint & fix with API", function () {
                     "--fix",
                     "--nolintafter",
                     "--no-insight",
-                    "--verbose"
+                    "--verbose",
                 ],
-                {}
+                {},
             ).run();
 
             assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
