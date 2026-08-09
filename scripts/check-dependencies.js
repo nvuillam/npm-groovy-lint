@@ -4,7 +4,7 @@
 
 import { execSync } from "child_process";
 
-const MAX_PROD_PACKAGES = 28; // baseline 2026-08: java-caller (+ njre/tar/yauzl/semver), optionator, js-yaml, node-sarif-builder, strip-json-comments
+const MAX_PROD_PACKAGES = 27; // baseline 2026-08: java-caller (+ njre/tar/yauzl/semver), optionator, js-yaml, node-sarif-builder
 
 const output = execSync("npm ls --all --omit=dev --parseable", { encoding: "utf8" });
 const count = new Set(output.split(/\r?\n/).filter(Boolean)).size - 1; // -1 for the root project itself
