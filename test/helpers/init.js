@@ -1,13 +1,11 @@
 #! /usr/bin/env node
 
-import Debug from "debug";
-
 console.log("npm run test initialized");
 // Activate debug log if we are in debug mode
+// (must be set before lib modules are imported, as they create their util.debuglog loggers at import time)
 const debugActive = typeof v8debug === "object" || /--debug|--inspect|--inspect-brk/.test(process.execArgv.join(" "));
 if (debugActive) {
-    Debug.enable("npm-groovy-lint");
-    Debug.enable("java-caller");
+    process.env.NODE_DEBUG = [process.env.NODE_DEBUG, "npm-groovy-lint", "npm-groovy-lint-trace"].filter(Boolean).join(",");
 }
 // Reinitialize java-caller cache
 globalThis.NPM_JAVA_CALLER_IS_INITIALIZED = false;
