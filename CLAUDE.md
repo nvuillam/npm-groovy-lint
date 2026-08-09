@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `npm-groovy-lint` is a Node.js (ESM) CLI + library that **lints, formats and auto-fixes** Groovy / Jenkinsfile / Gradle files. It is a wrapper around the Java tool [CodeNarc](http://codenarc.github.io/CodeNarc/): the Node side translates options, drives CodeNarc, parses its results, and adds a formatting/auto-fix engine that CodeNarc does not have. It also powers the VS Code "Groovy Lint" extension and the MegaLinter Groovy flavor.
 
-Requires **Node >= 22** and a **JDK 17–24** on PATH (Groovy is also needed to rebuild the server — see below).
+Requires **Node >= 22.13** and a **JDK 17–24** on PATH (Groovy is also needed to rebuild the server — see below).
 
 ## Commands
 
@@ -15,7 +15,7 @@ npm install && npm link      # dev setup (link makes the `npm-groovy-lint` bin a
 npm run test                 # full test suite (kills any running server first, then Mocha)
 npm run test -- --grep "format"   # run a subset of tests by name
 npm run test:debug           # Mocha with --inspect-brk
-npm run test:coverage        # nyc coverage (the CI "No Java" leg)
+npm run test:coverage        # c8 coverage (the CI "No Java" leg) — config in .c8rc.json
 npm run lint:fix             # ESLint --fix + Prettier (tab-width 4, print-width 150)
 npm run build                # regenerate config presets + copy README/CHANGELOG into docs/
 npm run server:build         # recompile the Groovy server -> lib/java/CodeNarcServer.jar
@@ -28,7 +28,7 @@ There is **no Husky hook**. Quality is enforced by CI (`lint.yml`, the "Update c
 ## Architecture
 
 ### Two-process design (Node ⇄ Java)
-The expensive part — starting a JVM and loading CodeNarc — is amortized by running CodeNarc as a **long-lived local HTTP server** (`CodeNarcServer.jar`). The Node CLI starts the server on first use, then talks to it over HTTP (axios, forced to IPv4 because the JVM prefers it). Subsequent invocations reuse the running server, which is why linting feels fast after the first call. `--noserver` bypasses this and invokes the Java jar directly per call; `--killserver` stops the daemon (the test script does this first).
+The expensive part — starting a JVM and loading CodeNarc — is amortized by running CodeNarc as a **long-lived local HTTP server** (`CodeNarcServer.jar`). The Node CLI starts the server on first use, then talks to it over HTTP (native `fetch`; the default host is `http://127.0.0.1` because the JVM only listens on the IPv4 loopback — network errors carry their code in `e.cause.code`). Subsequent invocations reuse the running server, which is why linting feels fast after the first call. `--noserver` bypasses this and invokes the Java jar directly per call; `--killserver` stops the daemon (the test script does this first).
 
 - `lib/index.js` — CLI entry (`bin`), thin wrapper that runs `NpmGroovyLint` and sets the exit code.
 - `lib/groovy-lint.js` — `NpmGroovyLint` class, the orchestrator: parse options → prepare CodeNarc call → run via the caller → parse results → optionally format/fix → produce output.

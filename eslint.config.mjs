@@ -7,19 +7,7 @@ export default [
         languageOptions: {
             globals: {
                 ...globals.node,
-                ...globals.browser,
-                Atomics: "readonly",
-                SharedArrayBuffer: "readonly",
-                module: true,
-                require: true,
-                process: true,
-                __dirname: true,
-                describe: true,
-                it: true,
-                globalThis: true,
-                beforeEach: true,
-                app: true,
-                Tablesort: true,
+                ...globals.mocha,
             },
 
             ecmaVersion: "latest",
@@ -28,6 +16,17 @@ export default [
 
         rules: {
             indent: "off",
+        },
+    },
+    {
+        // Browser scripts embedded in the documentation site
+        files: ["docs/**/*.js"],
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+                app: "readonly",
+                Tablesort: "readonly",
+            },
         },
     },
 ];

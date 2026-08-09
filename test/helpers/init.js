@@ -1,12 +1,9 @@
 #! /usr/bin/env node
 
 console.log("npm run test initialized");
-// Activate debug log if we are in debug mode
-// (must be set before lib modules are imported, as they create their util.debuglog loggers at import time)
-const debugActive = typeof v8debug === "object" || /--debug|--inspect|--inspect-brk/.test(process.execArgv.join(" "));
-if (debugActive) {
-    process.env.NODE_DEBUG = [process.env.NODE_DEBUG, "npm-groovy-lint", "npm-groovy-lint-trace"].filter(Boolean).join(",");
-}
+// To see npm-groovy-lint debug logs during tests, set NODE_DEBUG=npm-groovy-lint,npm-groovy-lint-trace
+// in your environment BEFORE running mocha: Node reads NODE_DEBUG at process start,
+// so util.debuglog loggers cannot be enabled from inside this process.
 // Reinitialize java-caller cache
 globalThis.NPM_JAVA_CALLER_IS_INITIALIZED = false;
 globalThis.NPM_GROOVY_LINT_TEST = true;
