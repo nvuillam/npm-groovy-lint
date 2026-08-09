@@ -9,7 +9,11 @@
 # npx mega-linter-runner --image ghcr.io/nvuillam/megalinter-custom-flavor-npm-groovy-lint/megalinter-custom-flavor:latest
 
 APPLY_FIXES: "all" # When true, APPLY_FIXES must also be defined as environment variable (in github/workflows/mega-linter.yml or other CI tool)
-FILTER_REGEX_EXCLUDE: (lib/example|\.github|\.vscode|\.claude|CLAUDE\.md|pull_request_template|docs/javascripts|package-lock\.json)
+# Note: keep every alternative of FILTER_REGEX_EXCLUDE a plain literal (no lookahead, no nested
+# group): MegaLinter derives the directories it forwards to project-mode linters by splitting this
+# alternation, and a non-literal group makes it forward nothing at all.
+# .github/workflows is deliberately NOT excluded, so ACTION_ZIZMOR can audit the workflows.
+FILTER_REGEX_EXCLUDE: (lib/example|\.github/linters|\.github/FUNDING\.yml|\.vscode|\.claude|CLAUDE\.md|pull_request_template|docs/javascripts|package-lock\.json)
 DISABLE:
   - COPYPASTE
   - CSS
@@ -21,6 +25,11 @@ DISABLE_ERRORS_LINTERS:
   - REPOSITORY_SEMGREP
   - SPELL_LYCHEE
 FLAVOR_SUGGESTIONS: true
+# zizmor needs GitHub API access for its online audits (ref-confusion, impostor-commit,
+# known-vulnerable-actions). Without a token it gets a 401 and aborts the whole run with
+# "fatal: no audit was performed", so the (read-scoped) GITHUB_TOKEN is whitelisted for it.
+ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
+  - GITHUB_TOKEN
 JAVASCRIPT_ES_CONFIG_FILE: "LINTER_DEFAULT"
 GITHUB_STATUS_REPORTER: false
 PRE_COMMANDS:

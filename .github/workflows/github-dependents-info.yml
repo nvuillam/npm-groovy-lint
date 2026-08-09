@@ -26,13 +26,14 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v7
+        # zizmor: ignore[artipacked] credentials are needed: the workflow opens a pull request
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: GitHub Dependents Info
-        uses: nvuillam/github-dependents-info@v3.2.1
+        uses: nvuillam/github-dependents-info@1e22eb74e1f2daa3f0e8e6117c7539628dd86838 # v3.2.1
         with:
           repo: ${{ github.repository }}
           outputrepo: ${{ github.repository }}
@@ -47,7 +48,7 @@ jobs:
 
       - name: Create Pull Request
         id: cpr
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           branch: github-dependents-info-auto-update
@@ -58,6 +59,9 @@ jobs:
           labels: documentation
 
       - name: Create PR output
+        env:
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
         run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+          echo "Pull Request Number - $PR_NUMBER"
+          echo "Pull Request URL - $PR_URL"

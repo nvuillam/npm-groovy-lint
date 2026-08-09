@@ -36,7 +36,8 @@ jobs:
     steps:
       # Git Checkout
       - name: Checkout Code
-        uses: actions/checkout@v7
+        # zizmor: ignore[artipacked] credentials are needed: applied linter fixes are committed and pushed
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
@@ -44,7 +45,7 @@ jobs:
       # Mega-Linter
       - name: Mega-Linter
         id: ml
-        uses: nvuillam/megalinter-custom-flavor-npm-groovy-lint@main
+        uses: nvuillam/megalinter-custom-flavor-npm-groovy-lint@8fd7f849ae089904a54b88df40b375603c437f56 # main
         env:
           # All available variables are described in documentation
           # https://megalinter.io/#configuration
@@ -56,7 +57,7 @@ jobs:
       # Upload Mega-Linter artifacts
       - name: Archive production artifacts
         if: success() || failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: Mega-Linter reports
           include-hidden-files: "true"
@@ -68,7 +69,7 @@ jobs:
       - name: Create Pull Request with applied fixes
         id: cpr
         if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'pull_request'
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           commit-message: "[Mega-Linter] Apply linters automatic fixes"
@@ -76,9 +77,12 @@ jobs:
           labels: bot
       - name: Create PR output
         if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'pull_request'
+        env:
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
         run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+          echo "Pull Request Number - $PR_NUMBER"
+          echo "Pull Request URL - $PR_URL"
 
       # Push new commit if applicable
       - name: Prepare commit
@@ -86,6 +90,6 @@ jobs:
         run: sudo chown -Rc $UID .git/
       - name: Commit and push applied linter fixes
         if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && github.repository == github.event.pull_request.head.repo.full_name
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
         with:
           commit_message: "[Mega-Linter] Apply linters fixes"
