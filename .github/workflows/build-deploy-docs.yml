@@ -16,12 +16,14 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - name: Checkout Code
+        # zizmor: ignore[artipacked] credentials are needed: mkdocs gh-deploy pushes to gh-pages
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: 3.x
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "24.x"
       - run: pip install mkdocs-material mdx_truly_sane_lists
@@ -32,8 +34,8 @@ jobs:
       # This step will evaluate the repo status and report the change
       - name: Check if there are changes
         id: changes
-        if: ${{ success() }} || ${{ failure() }}
-        uses: UnicornGlobal/has-changes-action@v1.0.12
+        if: ${{ success() || failure() }}
+        uses: UnicornGlobal/has-changes-action@ea00e6f831a9e785271645729fa251907b314707 # v1.0.12
 
       # Push new commit if applicable
       - name: Prepare commit
@@ -41,7 +43,7 @@ jobs:
         run: sudo chown -Rc $UID .git/
       - name: Commit and push applied linter fixes
         if: steps.changes.outputs.changed == 1
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
         with:
           branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
           commit_message: "[automation] Update documentation"
