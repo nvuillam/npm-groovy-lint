@@ -3,14 +3,11 @@
 // npm-groovy-lint & vscode-groovy-lint must be in the same folder, else you have to override  VSCODE_GROOVY_LINT_PATH env variable
 
 // Imports
-import fs from "fs-extra";
+import fs from 'fs-extra';
 
-console.log(
-  "---- START DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----",
-);
+console.log('---- START DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----');
 
-const vsCodeGroovyLintPath =
-  process.env.VSCODE_GROOVY_LINT_PATH || "./../vscode-groovy-lint";
+const vsCodeGroovyLintPath = process.env.VSCODE_GROOVY_LINT_PATH || './../vscode-groovy-lint';
 
 const targetPath = `${vsCodeGroovyLintPath}/server/node_modules/npm-groovy-lint`;
 
@@ -18,27 +15,19 @@ console.info(`GroovyLint: Starting copying package in vscode for testing`);
 
 // Reset target folder
 if (fs.existsSync(targetPath)) {
-  fs.emptyDirSync(targetPath);
-} else {
-  fs.mkdirSync(targetPath);
+    fs.emptyDirSync(targetPath);
+}
+else {
+    fs.mkdirSync(targetPath);
 }
 
 // Copy files into dest folder
-for (const path of [
-  "package.json",
-  "README.md",
-  "CHANGELOG.md",
-  "LICENSE",
-  "index.d.ts",
-  "lib",
-]) {
-  fs.copySync(path, `${targetPath}/${path}`);
+for (const path of ['package.json', 'README.md', 'CHANGELOG.md', 'LICENSE', 'index.d.ts', 'lib']) {
+    fs.copySync(path, `${targetPath}/${path}`);
 }
 
 console.info(`GroovyLint: Copied files into ${targetPath}`);
 
-console.log(
-  "---- END DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----\n",
-);
+console.log('---- END DEPLOY IN VSCODE INSTALLED npm-groovy-lint PACKAGE ----\n');
 
 process.exit(0);

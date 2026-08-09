@@ -1,268 +1,225 @@
 #! /usr/bin/env node
-import NpmGroovyLint from "../lib/groovy-lint.js";
-import assert from "assert";
-import fs from "fs-extra";
+import NpmGroovyLint from "../lib/groovy-lint.js"
+import  assert from 'assert';
+import fs from 'fs-extra'
 import { normalizeNewLines } from "../lib/utils.js";
 import * as rimraf from "rimraf";
 import {
-  beforeEachTestCase,
-  checkCodeNarcCallsCounter,
-  getDiff,
-  copyFilesInTmpDir,
-  SAMPLE_FILE_BIG,
-  SAMPLE_FILE_BIG_PATH,
-  SAMPLE_FILE_SMALL_PATH,
+    beforeEachTestCase,
+    checkCodeNarcCallsCounter,
+    getDiff,
+    copyFilesInTmpDir,
+    SAMPLE_FILE_BIG,
+    SAMPLE_FILE_BIG_PATH,
+    SAMPLE_FILE_SMALL_PATH
 } from "./helpers/common.js";
 
 describe("Format with API", function () {
-  beforeEach(beforeEachTestCase);
+    beforeEach(beforeEachTestCase);
 
-  it("(API:source) should format code", async function () {
-    const expectedFixedErrs = 1096;
-    const prevFileContent = fs.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
-    const npmGroovyLintConfig = {
-      source: prevFileContent,
-      format: true,
-      nolintafter: true,
-      output: "txt",
-      insight: false,
-      verbose: true,
-    };
-    const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
+    it("(API:source) should format code", async function () {
+        const expectedFixedErrs = 1096;
+        const prevFileContent = fs.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
+        const npmGroovyLintConfig = {
+            source: prevFileContent,
+            format: true,
+            nolintafter: true,
+            output: "txt",
+            insight: false,
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-    assert(
-      linter.status === 1,
-      `Linter status is 1 (${linter.status} returned)`,
-    );
-    assert(
-      linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-      `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
-    );
-    assert(
-      linter.lintResult.files[0].updatedSource &&
-        linter.lintResult.files[0].updatedSource !== prevFileContent,
-      "Source has been updated",
-    );
-    const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
-    assert(
-      fixedNbInLogs >= expectedFixedErrs,
-      `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`,
-    );
-    assert(
-      !linter.outputString.includes("NaN"),
-      "Results does not contain NaN",
-    );
-    checkCodeNarcCallsCounter(2);
-  }).timeout(100000);
+        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
+        assert(
+            linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
+            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+        );
+        assert(linter.lintResult.files[0].updatedSource && linter.lintResult.files[0].updatedSource !== prevFileContent, "Source has been updated");
+        const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
+        assert(fixedNbInLogs >= expectedFixedErrs, `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`);
+        assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
+        checkCodeNarcCallsCounter(2);
+    }).timeout(100000);
 
-  it("(API:source) should format code with custom config", async function () {
-    const expectedFixedErrs = 37;
-    const prevFileContent = fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
-    const npmGroovyLintConfig = {
-      source: prevFileContent,
-      sourcefilepath: SAMPLE_FILE_SMALL_PATH,
-      config: "custom",
-      format: true,
-      nolintafter: true,
-      output: "txt",
-      insight: false,
-      verbose: true,
-    };
-    const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
+    it("(API:source) should format code with custom config", async function () {
+        const expectedFixedErrs = 37;
+        const prevFileContent = fs.readFileSync(SAMPLE_FILE_SMALL_PATH).toString();
+        const npmGroovyLintConfig = {
+            source: prevFileContent,
+            sourcefilepath: SAMPLE_FILE_SMALL_PATH,
+            config: "custom",
+            format: true,
+            nolintafter: true,
+            output: "txt",
+            insight: false,
+            verbose: true
+        };
+        const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-    assert(
-      linter.status === 0,
-      `Linter status is 0 (${linter.status} returned)`,
-    );
-    assert(
-      linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-      `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
-    );
-    assert(
-      linter.lintResult.files[0].updatedSource &&
-        linter.lintResult.files[0].updatedSource !== prevFileContent,
-      "Source has been updated",
-    );
-    const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
-    assert(
-      fixedNbInLogs >= expectedFixedErrs,
-      `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`,
-    );
-    assert(
-      !linter.outputString.includes("NaN"),
-      "Results does not contain NaN",
-    );
-    const rules = linter.options.rules || {};
-    assert(
-      rules["Indentation"]["spacesPerIndentLevel"] === 2,
-      "Indentation rule override has been taken in account",
-    );
-    checkCodeNarcCallsCounter(1);
-  }).timeout(100000);
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(
+            linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
+            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+        );
+        assert(linter.lintResult.files[0].updatedSource && linter.lintResult.files[0].updatedSource !== prevFileContent, "Source has been updated");
+        const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
+        assert(fixedNbInLogs >= expectedFixedErrs, `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`);
+        assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
+        const rules = linter.options.rules || {};
+        assert(rules["Indentation"]["spacesPerIndentLevel"] === 2, "Indentation rule override has been taken in account");
+        checkCodeNarcCallsCounter(1);
+    }).timeout(100000);
 
-  it("(API:file) should format code", async function () {
-    const expectedFixedErrs = 1096;
-    const tmpDir = await copyFilesInTmpDir();
-    try {
-      const prevFileContent = fs.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
-      const npmGroovyLintConfig = {
-        path: tmpDir,
-        files: `**/${SAMPLE_FILE_BIG}`,
-        format: true,
-        nolintafter: true,
-        output: "txt",
-        insight: false,
-        verbose: true,
-      };
-      const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
+    it("(API:file) should format code", async function () {
+        const expectedFixedErrs = 1096;
+        const tmpDir = await copyFilesInTmpDir();
+        try {
+            const prevFileContent = fs.readFileSync(SAMPLE_FILE_BIG_PATH).toString();
+            const npmGroovyLintConfig = {
+                path: tmpDir,
+                files: `**/${SAMPLE_FILE_BIG}`,
+                format: true,
+                nolintafter: true,
+                output: "txt",
+                insight: false,
+                verbose: true
+            };
+            const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-      assert(
-        linter.status === 1,
-        `Linter status is 1 (${linter.status} returned)`,
-      );
-      assert(
-        linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-        `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
-      );
-      const newFileContent = fs
-        .readFileSync(tmpDir + "/" + SAMPLE_FILE_BIG)
-        .toString();
-      assert(newFileContent !== prevFileContent, "File has been updated");
-      const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
-      assert(
-        fixedNbInLogs >= expectedFixedErrs,
-        `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`,
-      );
-      assert(
-        !linter.outputString.includes("NaN"),
-        "Results does not contain NaN",
-      );
-      checkCodeNarcCallsCounter(2);
-    } finally {
-      rimraf.sync(tmpDir);
+            assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
+            assert(
+                linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
+                `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+            );
+            const newFileContent = fs.readFileSync(tmpDir + "/" + SAMPLE_FILE_BIG).toString();
+            assert(newFileContent !== prevFileContent, "File has been updated");
+            const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
+            assert(fixedNbInLogs >= expectedFixedErrs, `Result log contains ${expectedFixedErrs} fixed errors (${fixedNbInLogs} returned)`);
+            assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
+            checkCodeNarcCallsCounter(2);
+        } finally {
+            rimraf.sync(tmpDir);
+        }
+    }).timeout(100000);
+
+    for (const [key, val] of getSamplesMap()) {
+        it("(API:source) " + key + " --format", async function () {
+            await checkRule(key, val, "format");
+        }).timeout(30000);
+        it("(API:source) " + key + " --fix", async function () {
+            await checkRule(key, val, "fix");
+        }).timeout(30000);
     }
-  }).timeout(100000);
-
-  for (const [key, val] of getSamplesMap()) {
-    it("(API:source) " + key + " --format", async function () {
-      await checkRule(key, val, "format");
-    }).timeout(30000);
-    it("(API:source) " + key + " --fix", async function () {
-      await checkRule(key, val, "fix");
-    }).timeout(30000);
-  }
 });
 
 async function checkRule(key, check, checkType) {
-  const source = normalizeNewLines(check.before);
-  const moreOptions = check.moreOptions ? check.moreOptions : {};
-  const npmGroovyLintConfig = Object.assign(
-    {
-      source: source,
-      nolintafter: true,
-      output: "none",
-      failon: "none",
-      insight: false,
-      verbose: true,
-    },
-    moreOptions,
-  );
-  if (checkType == "format") {
-    npmGroovyLintConfig.format = true;
-  } else if (checkType == "fix") {
-    npmGroovyLintConfig.fix = true;
-  }
-  const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
+    const source = normalizeNewLines(check.before);
+    const moreOptions = check.moreOptions ? check.moreOptions : {};
+    const npmGroovyLintConfig = Object.assign(
+        {
+            source: source,
+            nolintafter: true,
+            output: "none",
+            failon: "none",
+            insight: false,
+            verbose: true
+        },
+        moreOptions
+    );
+    if (checkType == "format") {
+        npmGroovyLintConfig.format = true;
+    } else if (checkType == "fix") {
+        npmGroovyLintConfig.fix = true;
+    }
+    const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
-  assert(
-    linter.lintResult.summary.totalFixedNumber >= check.totalFixed,
-    `${check.totalFixed} Errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
-  );
-  const result = linter.lintResult.files[0].updatedSource;
-  const expectedResult = normalizeNewLines(check.after);
-  const effectiveDiff = getDiff(expectedResult, result, source);
-  assert(
-    linter.status === 0,
-    `Expected linter status to be 0, but status was ${linter.status}`,
-  );
-  assert(effectiveDiff.length === 0, "Code was not formatted correctly");
-  checkCodeNarcCallsCounter(check.codeNarcCallsCounter);
+    assert(
+        linter.lintResult.summary.totalFixedNumber >= check.totalFixed,
+        `${check.totalFixed} Errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+    );
+    const result = linter.lintResult.files[0].updatedSource;
+    const expectedResult = normalizeNewLines(check.after);
+    const effectiveDiff = getDiff(expectedResult, result, source);
+    assert(linter.status === 0, `Expected linter status to be 0, but status was ${linter.status}`);
+    assert(effectiveDiff.length === 0, "Code was not formatted correctly");
+    checkCodeNarcCallsCounter(check.codeNarcCallsCounter);
 }
 
 function getSamplesMap() {
-  return new Map([
-    [
-      "SourceWithIfElseBracesToFormat",
-      {
-        totalFixed: 4,
-        codeNarcCallsCounter: 2,
-        before: `
+    return new Map([
+        [
+            "SourceWithIfElseBracesToFormat",
+            {
+                totalFixed: 4,
+                codeNarcCallsCounter: 2,
+                before: `
 private void doSomething(){
             if (a == 2)
                 doSomething();
 }
 `,
-        after: `
+                after: `
 private void doSomething() {
     if (a == 2) {
         doSomething()
     }
 }
-`,
-      },
-    ],
-    [
-      "OnlyNonCodeNarcFormatRules",
-      {
-        totalFixed: 0,
-        codeNarcCallsCounter: 1,
-        before: `
+`
+            }
+        ],
+        [
+            "OnlyNonCodeNarcFormatRules",
+            {
+                totalFixed: 0,
+                codeNarcCallsCounter: 1,
+                before: `
     // There is a comment badly aligned here
 if (a == 2) {
             // And here too
     x = 1
     }
 `,
-        after: `
+                after: `
 // There is a comment badly aligned here
 if (a == 2) {
     // And here too
     x = 1
 }
-`,
-      },
-    ],
-    [
-      "OverrideIndentation",
-      {
-        moreOptions: {
-          rulesets:
-            'Indentation{"spacesPerIndentLevel":2,"severity": "warning"},UnnecessarySemicolon,UnnecessaryGString,ConsecutiveBlankLines{"severity":"warning"},NoTabCharacter',
-          rulesetsoverridetype: "appendConfig",
-        },
-        totalFixed: 4,
-        codeNarcCallsCounter: 2,
-        before: `
+`
+            }
+        ],
+        [
+            "OverrideIndentation",
+            {
+                moreOptions: {
+                    rulesets:
+                        'Indentation{"spacesPerIndentLevel":2,"severity": "warning"},UnnecessarySemicolon,UnnecessaryGString,ConsecutiveBlankLines{"severity":"warning"},NoTabCharacter',
+                    rulesetsoverridetype: "appendConfig"
+                },
+                totalFixed: 4,
+                codeNarcCallsCounter: 2,
+                before: `
 private void doSomething(){
             if (a == 2)
                 doSomething();
 }
 `,
-        after: `
+                after: `
 private void doSomething() {
   if (a == 2) {
     doSomething()
   }
 }
-`,
-      },
-    ],
-    [
-      "ElseIfMustRemainSeparated",
-      {
-        totalFixed: 1,
-        codeNarcCallsCounter: 1,
-        before: `
+`
+            }
+        ],
+        [
+            "ElseIfMustRemainSeparated",
+            {
+                totalFixed: 1,
+                codeNarcCallsCounter: 1,
+                before: `
 boolean foo(boolean a, boolean b) {
     if (a) {
         return true
@@ -271,7 +228,7 @@ boolean foo(boolean a, boolean b) {
     }
 }
 `,
-        after: `
+                after: `
 boolean foo(boolean a, boolean b) {
     if (a) {
         return true
@@ -279,16 +236,16 @@ boolean foo(boolean a, boolean b) {
         return true
     }
 }
-`,
-      },
-    ],
-    // https://github.com/nvuillam/npm-groovy-lint/issues/121
-    [
-      "Issue121",
-      {
-        totalFixed: 1,
-        codeNarcCallsCounter: 1,
-        before: `
+`
+            }
+        ],
+        // https://github.com/nvuillam/npm-groovy-lint/issues/121
+        [
+            "Issue121",
+            {
+                totalFixed: 1,
+                codeNarcCallsCounter: 1,
+                before: `
 pipeline {
 agent any
         stages {
@@ -302,7 +259,7 @@ agent any
         }
     }
 `,
-        after: `
+                after: `
 pipeline {
     agent any
         stages {
@@ -315,8 +272,8 @@ pipeline {
             }
         }
 }
-`,
-        /* TODO: update CodeNarc or Groovy so that the good "after" can be uncommented !
+`
+                /* TODO: update CodeNarc or Groovy so that the good "after" can be uncommented !
                 after: `
                 pipeline {
                     agent any
@@ -331,25 +288,25 @@ pipeline {
                     }
                 }
                 ` */
-      },
-    ],
-    [
-      "MoveOpeningCurlyBracketShouldNotCommentOutBracket",
-      {
-        totalFixed: 1,
-        codeNarcCallsCounter: 1,
-        before: `
+            }
+        ],
+        [
+          "MoveOpeningCurlyBracketShouldNotCommentOutBracket",
+          {
+            totalFixed: 1,
+            codeNarcCallsCounter: 1,
+            before: `
 void foo() // comment
 {
     doSomething()
 }
 `,
-        after: `
+            after: `
 void foo() { // comment
     doSomething()
 }
 `,
-      },
-    ],
-  ]);
+            }
+        ]
+    ]);
 }
