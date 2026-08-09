@@ -451,12 +451,12 @@ Example
 
 If you have issues with MegaLinter, you can [report it on the repository](https://github.com/nvuillam/npm-groovy-lint/issues)
 
-To help reproducing, you can access advanced logs using DEBUG env variables
+To help reproducing, you can access advanced logs using the NODE_DEBUG env variable
 
 Examples:
 
-- `DEBUG=npm-groovy-lint npm-groovy-lint ....`
-- `DEBUG=npm-groovy-lint,npm-groovy-lint-trace npm-groovy-lint ....`
+- `NODE_DEBUG=npm-groovy-lint npm-groovy-lint ....`
+- `NODE_DEBUG=npm-groovy-lint,npm-groovy-lint-trace npm-groovy-lint ....`
 
 If you want to see what happens in CodeNarc Server, you can clone the repo and run locally `npm server:run` before running npm-groovy-lint: you'll see the live logs of the to CodeNarc Server for npm-groovy-lint.
 
