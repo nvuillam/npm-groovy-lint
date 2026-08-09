@@ -2,7 +2,6 @@
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
 import fs from "fs-extra";
-import * as rimraf from "rimraf";
 import { beforeEachTestCase, copyFilesInTmpDir, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG_PATH, SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
 
 describe("Lint & fix with API", function () {
@@ -139,7 +138,7 @@ describe("Lint & fix with API", function () {
             checkCodeNarcCallsCounter(2);
         } finally {
             fs.removeSync("npm-groovy-fix-log.json");
-            rimraf.sync(tmpDir);
+            fs.removeSync(tmpDir);
         }
     }).timeout(120000);
 
@@ -192,7 +191,7 @@ describe("Lint & fix with API", function () {
             checkCodeNarcCallsCounter(1);
         } finally {
             fs.removeSync("npm-groovy-fix-log-should-fix-only-some-errors.txt");
-            rimraf.sync(tmpDir);
+            fs.removeSync(tmpDir);
         }
     }).timeout(120000);
 
@@ -235,7 +234,7 @@ describe("Lint & fix with API", function () {
             checkCodeNarcCallsCounter(1);
         } finally {
             fs.removeSync("npm-groovy-fix-log-should-exclude-some-rules.txt");
-            rimraf.sync(tmpDir);
+            fs.removeSync(tmpDir);
         }
     }).timeout(120000);
 
@@ -265,7 +264,7 @@ describe("Lint & fix with API", function () {
             checkCodeNarcCallsCounter(2);
         } finally {
             fs.removeSync("npm-groovy-fix-log-should-fix-groovy-files.txt");
-            rimraf.sync(tmpDir);
+            fs.removeSync(tmpDir);
         }
     }).timeout(120000);
 });

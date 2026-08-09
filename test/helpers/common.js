@@ -1,8 +1,8 @@
 #! /usr/bin/env node
 import assert from "assert";
 import * as os from "os";
+import * as path from "path";
 import fs from "fs-extra";
-import * as jsdiff from "diff";
 
 const NPM_GROOVY_LINT = "npm-groovy-lint ";
 const EXAMPLE_DIRECTORY = "./lib/example/";
@@ -50,10 +50,9 @@ async function copyFilesInTmpDir() {
     return tmpDir;
 }
 
-// Get diff between 2 strings
+// Get diff between 2 strings (callers only check that there is no difference, so a simple comparison is enough)
 function getDiff(expected, afterUpdate, beforeUpdate) {
-    const diff = jsdiff.diffChars(expected, afterUpdate);
-    const effectiveDiffs = diff.filter((item) => item.added || item.removed);
+    const effectiveDiffs = expected === afterUpdate ? [] : [{ expected, actual: afterUpdate }];
     if (effectiveDiffs.length > 0) {
         console.error("BeforeFix: \n" + beforeUpdate);
         console.error("AfterFix: \n" + afterUpdate);
@@ -63,6 +62,23 @@ function getDiff(expected, afterUpdate, beforeUpdate) {
         console.info("Verified: \n" + afterUpdate);
     }
     return effectiveDiffs;
+}
+
+// Find an executable in the PATH, or throw (replaces the which package)
+function whichSync(cmd) {
+    const exts = process.platform === "win32" ? (process.env.PATHEXT || ".EXE;.CMD;.BAT;.COM").split(";") : [""];
+    for (const dir of (process.env.PATH || "").split(path.delimiter)) {
+        if (!dir) {
+            continue;
+        }
+        for (const ext of exts) {
+            const fullPath = path.join(dir, cmd + ext.toLowerCase());
+            if (fs.existsSync(fullPath)) {
+                return fullPath;
+            }
+        }
+    }
+    throw new Error(`not found: ${cmd}`);
 }
 
 // assert output includes expectedCount linted files result.
@@ -95,4 +111,5 @@ export {
     copyFilesInTmpDir,
     getDiff,
     assertLintedFiles,
+    whichSync,
 };

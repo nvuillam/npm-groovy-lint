@@ -1,8 +1,7 @@
 #! /usr/bin/env node
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
-import * as which from "which";
-import { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG } from "./helpers/common.js";
+import { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, whichSync } from "./helpers/common.js";
 
 describe.skip("Server", function () {
     it("(API:Server) should kill running server", async function () {
@@ -54,7 +53,7 @@ describe.skip("Server", function () {
 
         let javaPath;
         try {
-            javaPath = which.sync("java");
+            javaPath = whichSync("java");
         } catch (e) {
             console.log(`Java not found: ignore test method: ${e}`);
         }

@@ -2,7 +2,6 @@
 import assert from "assert";
 import * as util from "util";
 import fs from "fs-extra";
-import * as rimraf from "rimraf";
 import * as childProcess from "child_process";
 const exec = util.promisify(childProcess.exec);
 import { beforeEachTestCase, copyFilesInTmpDir, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_FORMAT, NPM_GROOVY_LINT } from "./helpers/common.js";
@@ -47,7 +46,7 @@ describe("Lint & format with EXE", function () {
             assert.strictEqual(newFileContent, expectedFileContent, "Formatted file is corresponding to expected result");
         } finally {
             fs.removeSync("npm-groovy-fix-log.json");
-            rimraf.sync(tmpDir);
+            fs.removeSync(tmpDir);
         }
     }).timeout(120000);
 });

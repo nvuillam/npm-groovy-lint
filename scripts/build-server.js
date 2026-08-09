@@ -3,7 +3,6 @@
 // Imports
 import fs from "fs-extra";
 import * as childProcess from "child_process";
-import Handlebars from "handlebars";
 import AdmZip from "adm-zip";
 import * as path from "path";
 import * as glob from "glob";
@@ -89,8 +88,7 @@ function buildManifest() {
     }
 
     // Update the manifest file if it has changed.
-    const template = Handlebars.compile(manifestTemplate);
-    const contents = template({ classPath: wrapped });
+    const contents = manifestTemplate.replace("{{classPath}}", wrapped);
 
     const srcManifestFile = `${srcDir}/${manifestFile}`;
     const oldContents = fs.readFileSync(srcManifestFile);

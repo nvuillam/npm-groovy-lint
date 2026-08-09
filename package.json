@@ -11,12 +11,12 @@
         "server:build": "node scripts/build-server.js",
         "server:kill": "npm-groovy-lint --killserver",
         "test": "npm run server:kill && mocha \"test/**/*.test.js\"",
-        "test:coverage": "nyc npm run test",
+        "test:coverage": "c8 npm run test",
         "test:debug": "npm run server:kill && mocha --reporter spec --inspect-brk \"test/**/*.test.js\"",
         "build": "node scripts/build-config-all.js && cp -f README.md docs/index.md && cp -f CHANGELOG.md docs/CHANGELOG.md",
         "dev:lint-install-local": "npm run server:kill && npm run lint:fix && npm link --force",
         "dev:lint-install-local-copy-vscode": "npm run dev:lint-install-local && node scripts/deploy-in-vscode.js",
-        "dev:pre-commit": "npm-run-all lint:fix build server:build",
+        "dev:pre-commit": "npm run lint:fix && npm run build && npm run server:build",
         "dev:upgrade-jars": "node scripts/update-java-jars.js"
     },
     "repository": {
@@ -56,23 +56,15 @@
         "strip-json-comments": "^5.0.0"
     },
     "devDependencies": {
-        "@babel/core": "^8.0.0",
-        "@babel/eslint-parser": "^8.0.0",
-        "@eslint/eslintrc": "^3.1.0",
         "@eslint/js": "^9.9.1",
         "adm-zip": "^0.6.0",
-        "diff": "^9.0.0",
+        "c8": "^10.0.0",
         "eslint": "^9.0.0",
         "fs-extra": "^11.0.0",
         "glob": "^13.0.0",
         "globals": "^17.0.0",
-        "handlebars": "^4.7.8",
         "mocha": "^11.0.0",
-        "npm-run-all2": "^9.0.0",
-        "nyc": "^18.0.0",
-        "prettier": "^3.0.0",
-        "rimraf": "^6.0.0",
-        "which": "^7.0.0"
+        "prettier": "^3.0.0"
     },
     "engines": {
         "node": ">=22.13.0"
@@ -87,17 +79,5 @@
         "recursive": true,
         "reporter": "./test/helpers/silent-reporter.cjs",
         "timeout": "300000"
-    },
-    "nyc": {
-        "include": [
-            "lib/**"
-        ],
-        "extension": [
-            ".js"
-        ],
-        "reporter": [
-            "html"
-        ],
-        "all": true
     }
 }

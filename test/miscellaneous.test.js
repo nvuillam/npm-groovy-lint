@@ -6,9 +6,8 @@ import fs from "fs-extra";
 import * as os from "os";
 import * as path from "path";
 import * as util from "util";
-import * as which from "which";
 const exec = util.promisify(childProcess.exec);
-import { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
+import { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH, whichSync } from "./helpers/common.js";
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -236,7 +235,7 @@ describe("Miscellaneous", function () {
     it("(API:source) override java executable", async function () {
         let javaPath;
         try {
-            javaPath = which.sync("java");
+            javaPath = whichSync("java");
         } catch (e) {
             console.log("Java not found: ignore test method: " + e.message);
         }
