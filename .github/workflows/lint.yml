@@ -38,6 +38,9 @@ jobs:
           npm ci
           npm link
 
+      - name: Check production dependency count
+        run: node scripts/check-dependencies.js
+
       - name: Validate no changes
         run: |
           npm run dev:pre-commit
