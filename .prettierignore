@@ -1,0 +1,8 @@
+# Generated files - rewritten by `npm run build` (scripts/build-config-all.js).
+# Formatting them with prettier makes the "Update check" CI job fail, because the
+# generator immediately rewrites them with its own indentation.
+lib/.groovylintrc-all.json
+lib/.groovylintrc-format.json
+lib/.groovylintrc-recommended.json
+lib/.groovylintrc-recommended-jenkinsfile.json
+docs/groovy-lint.jsonschema.json
