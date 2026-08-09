@@ -5,7 +5,6 @@ import * as childProcess from "child_process";
 import fs from "fs-extra";
 import * as os from "os";
 import * as path from "path";
-import find from "find-package-json";
 import * as util from "util";
 import * as which from "which";
 const exec = util.promisify(childProcess.exec);
@@ -285,8 +284,7 @@ describe("Miscellaneous", function () {
         process.env.npm_package_version = ""; // NV: Do not use npm_package_version to have more code coverage :)
         const linter = await new NpmGroovyLint([process.execPath, "", "-v"], {}).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
-        const finder = find(__dirname);
-        const v = finder.next().value.version;
+        const v = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")).version;
         assert(linter.outputString.includes(`npm-groovy-lint version ${v}`), `Provides version ${v}\nReturned outputString:\n${linter.outputString}`);
         assert(linter.outputString.includes(`CodeNarc version`), `Provides CodeNarc version\nReturned outputString:\n${linter.outputString}`);
         assert(linter.outputString.includes(`Groovy version`), `Provides CodeNarc version\nReturned outputString:\n${linter.outputString}`);

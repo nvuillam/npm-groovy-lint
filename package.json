@@ -55,7 +55,6 @@
         "cli-progress": "^3.12.0",
         "debug": "^4.1.1",
         "find-java-home": "^2.0.0",
-        "find-package-json": "^1.2.0",
         "fs-extra": "^11.0.0",
         "import-fresh": "^4.0.0",
         "java-caller": "^6.0.0",
