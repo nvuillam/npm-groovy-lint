@@ -55,15 +55,20 @@ npx mega-linter-runner --upgrade --no-prompt
 
 `--upgrade` migrates every MegaLinter reference of the repository to the current major version: image tags and action versions in the CI workflow files, deprecated variable names, and the `MEGALINTER_VERSION` property of `.mega-linter.yml`. Run it whenever the repository references an older MegaLinter major version (e.g. `v8` image tags), even if the user only asked for a "check".
 
-After upgrading, check the CI files for Docker image references still pointing to Docker Hub (`docker.io/oxsecurity/megalinter*` or bare `oxsecurity/megalinter:*` image references): since MegaLinter v9.5.0, images are **only published to GitHub Container Registry** — rewrite them to `ghcr.io/oxsecurity/megalinter...` (Docker Hub is frozen at v9.4.0). GitHub Action references (`uses: oxsecurity/megalinter@...`) are not affected.
+<!-- MAJOR-RELEASE-IMPACTED (example tags below) -->
+**Mandatory after `--upgrade` — migrate Docker image references to ghcr.io.** Since MegaLinter v9.5.0, images are **only published to GitHub Container Registry** (Docker Hub is frozen at v9.4.0), and `--upgrade` does NOT rewrite the registry: it normalizes references to the bare `oxsecurity/megalinter...` form. So always finish with this pass:
+
+1. Search every CI/workflow file of the repository (`.github/workflows/*`, `.gitlab-ci.yml`, `azure-pipelines.yml`, `bitbucket-pipelines.yml`, `Jenkinsfile`, `.drone.yml`, shell scripts...) for `oxsecurity/megalinter` occurrences.
+2. Rewrite every occurrence used as a **Docker image** (after `image:`, `container:`, `services:`, `docker run`, `docker pull`, or any `oxsecurity/megalinter[-<flavor>]:<tag>` form, including `megalinter-only-*` standalone images and `docker.io/`-prefixed references) to the same reference prefixed with `ghcr.io/` — keep flavor and tag unchanged: `oxsecurity/megalinter-python:v10` becomes `ghcr.io/oxsecurity/megalinter-python:v10`.
+3. Leave untouched: references already prefixed with `ghcr.io/`, GitHub Action references (`uses: oxsecurity/megalinter@...` — actions are not Docker images), and documentation URLs.
 
 ## 3. Refine `.mega-linter.yml` (only AFTER install/upgrade)
 
 Once the runner has generated/upgraded the files, you may adjust `.mega-linter.yml`:
 
-- Ensure `MEGALINTER_FLAVOR` and `MEGALINTER_VERSION` are set (the installer writes them; add them if upgrading an older config) — they drive which Docker image `mega-linter-runner` and these skills use. **Exception**: when the repository uses a [custom flavor](https://megalinter.io/latest/custom-flavors/) (CI references a `megalinter-custom-flavor` action/image), those variables cannot express it — leave them unset and instead document the custom flavor image and the local `npx mega-linter-runner --image <image>` command in a comment at the top of `.mega-linter.yml`, so the check/fix skills resolve the right image.
+- Ensure `MEGALINTER_FLAVOR` and `MEGALINTER_VERSION` are set (the installer writes them; add them if upgrading an older config) — they drive which Docker image `mega-linter-runner` and these skills use.
 - Add `DISABLE` / `DISABLE_LINTERS` entries the user asks for.
-- Add `FILTER_REGEX_EXCLUDE` for generated or vendored folders (e.g. `(dist/|build/|vendor/|node_modules/)`).
+- Add `FILTER_REGEX_EXCLUDE` for generated or vendored folders (e.g. `(dist/|build/|vendor/|node_modules/)`). Excluded directories (and folders identified from these regexes) are also automatically forwarded to project-mode linters through their native exclusion arguments or generated ignore/config files; if the repository already maintains its own up-to-date ignore/config files for a linter, that forwarding can be turned off with `FORWARD_EXCLUDED_DIRECTORIES: false` (global) or `<LINTER_KEY>_FORWARD_EXCLUDED_DIRECTORIES: false` (per linter).
 
 Validate the file against its JSON schema: <https://raw.githubusercontent.com/oxsecurity/megalinter/main/megalinter/descriptors/schemas/megalinter-configuration.jsonschema.json>
 
@@ -75,10 +80,24 @@ If the coding agent you are running on supports custom sub-agent definitions (Cl
 
 If a target file already exists, ask the user before overwriting it. If your platform has no sub-agent support, skip this step — the skills degrade gracefully to inline execution.
 
-## 5. Wrap up
+## 5. Observability dashboards (optional)
+
+MegaLinter can send its results to observability platforms (Grafana, Datadog, Elastic, New Relic) and ships ready-to-use dashboards: quality gate, error trends, top rules and files across repositories. Documentation: <https://megalinter.io/latest/observability/>
+
+Offer this to the user only if they seem interested in monitoring or already use one of these platforms. If accepted:
+
+1. Ask which provider they use, and make sure the provider auth environment variables are available (never write secrets in committed files):
+   - grafana: `GRAFANA_URL` + `GRAFANA_TOKEN` (service account token)
+   - datadog: `DD_SITE` + `DD_API_KEY` + `DD_APP_KEY` (or `DD_BEARER_TOKEN`)
+   - elastic: `KIBANA_URL` + `ELASTIC_API_KEY`
+   - newrelic: `NEW_RELIC_API_KEY` + `NEW_RELIC_ACCOUNT_ID` + `NEW_RELIC_REGION`
+2. Provision the dashboards: `npx mega-linter-runner --upload-dashboards <provider>` (idempotent, re-run anytime to refresh).
+3. Add to `.mega-linter.yml`: `API_REPORTER: true`, `API_REPORTER_PROVIDER: <provider>`, and the provider's non-secret variables (endpoints, site, region — see the documentation page of the provider). Point the user to the CI secrets to define for the auth variables (`API_REPORTER_*` tokens/keys).
+
+## 6. Wrap up
 
 - Show the user the generated/updated files.
-- Suggest the two ways to see MegaLinter in action (first install and upgrade alike), and offer to do it for them:
-  - **Run MegaLinter locally** through the `megalinter-check` skill (local mode) to preview and fix errors before pushing anything.
-  - **Create a pull request** with the generated/updated files (commit on the current branch if it is already a feature branch, otherwise on a new branch — never on the default branch —, push, open the PR), then run the `megalinter-check` skill (watch mode) on the created PR to watch the CI job results and fix the errors.
+- Propose the two ways to see MegaLinter in action (first install and upgrade alike), and offer to do it for them. A local run is **resource-consuming** (Docker-based, downloads an image of several GB on first run, then loads CPU/RAM/disk), so **running in CI is usually the recommended option** — ask the user which one they want (use your platform's structured question mechanism if it has one, with the CI option first/recommended) instead of picking silently:
+  - **Create a pull request** (recommended) with the generated/updated files (commit on the current branch if it is already a feature branch, otherwise on a new branch — never on the default branch —, push, open the PR), then run the `megalinter-check` skill (watch mode) on the created PR to watch the CI job results and fix the errors.
+  - **Run MegaLinter locally** through the `megalinter-check` skill (local mode) to preview and fix errors before pushing anything. Its first run starts with a prerun analysis (`--prerun`, MegaLinter v10 or beta) that suggests `.mega-linter.yml` performance tuning (directories to exclude, flavor) before the real lint.
 - Do not commit or push without user confirmation, and never on the default branch.
