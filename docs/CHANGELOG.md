@@ -2,6 +2,13 @@
 
 ## Beta
 
+- Fix vulnerabilities reported by grype and trivy
+  - **js-yaml** 5.2.1 -> 5.2.3, **tar** 7.5.19 -> 7.5.22, **brace-expansion** -> 5.0.9
+  - Bundled jars: **jackson-core** / **jackson-databind** 2.22.0 -> 2.22.1, **logback-core** / **logback-classic** 1.5.25 -> 1.5.34
+- Upgrade MegaLinter CI to **v10** (custom flavor image rebuilt on MegaLinter 10.0.0, `REPOSITORY_GITLEAKS` replaced by `REPOSITORY_BETTERLEAKS`)
+- Add `.prettierrc.json` and `.prettierignore` so prettier uses the project conventions (tab width 4, print width 150) instead of its defaults, and leaves generated files alone
+- Remove unused imports and unnecessary semicolons from the Groovy server sources
+
 ## [18.0.0] 2026-06-30
 
 - Upgrade **java-caller to v5** ([#584](https://github.com/nvuillam/npm-groovy-lint/pull/584))
