@@ -59,6 +59,9 @@ jobs:
           labels: documentation
 
       - name: Create PR output
+        env:
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
         run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+          echo "Pull Request Number - $PR_NUMBER"
+          echo "Pull Request URL - $PR_URL"
