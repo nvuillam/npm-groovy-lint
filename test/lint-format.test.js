@@ -1,7 +1,7 @@
 #! /usr/bin/env node
-import NpmGroovyLint from "../lib/groovy-lint.js"
-import  assert from 'assert';
-import fs from 'fs-extra'
+import NpmGroovyLint from "../lib/groovy-lint.js";
+import assert from "assert";
+import fs from "fs-extra";
 import { normalizeNewLines } from "../lib/utils.js";
 import * as rimraf from "rimraf";
 import {
@@ -11,7 +11,7 @@ import {
     copyFilesInTmpDir,
     SAMPLE_FILE_BIG,
     SAMPLE_FILE_BIG_PATH,
-    SAMPLE_FILE_SMALL_PATH
+    SAMPLE_FILE_SMALL_PATH,
 } from "./helpers/common.js";
 
 describe("Format with API", function () {
@@ -26,14 +26,14 @@ describe("Format with API", function () {
             nolintafter: true,
             output: "txt",
             insight: false,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
         );
         assert(linter.lintResult.files[0].updatedSource && linter.lintResult.files[0].updatedSource !== prevFileContent, "Source has been updated");
         const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
@@ -53,14 +53,14 @@ describe("Format with API", function () {
             nolintafter: true,
             output: "txt",
             insight: false,
-            verbose: true
+            verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(
             linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+            `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
         );
         assert(linter.lintResult.files[0].updatedSource && linter.lintResult.files[0].updatedSource !== prevFileContent, "Source has been updated");
         const fixedNbInLogs = (linter.outputString.match(/fixed/g) || []).length;
@@ -83,14 +83,14 @@ describe("Format with API", function () {
                 nolintafter: true,
                 output: "txt",
                 insight: false,
-                verbose: true
+                verbose: true,
             };
             const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
             assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
             assert(
                 linter.lintResult.summary.totalFixedNumber >= expectedFixedErrs,
-                `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+                `${expectedFixedErrs} errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
             );
             const newFileContent = fs.readFileSync(tmpDir + "/" + SAMPLE_FILE_BIG).toString();
             assert(newFileContent !== prevFileContent, "File has been updated");
@@ -123,9 +123,9 @@ async function checkRule(key, check, checkType) {
             output: "none",
             failon: "none",
             insight: false,
-            verbose: true
+            verbose: true,
         },
-        moreOptions
+        moreOptions,
     );
     if (checkType == "format") {
         npmGroovyLintConfig.format = true;
@@ -136,7 +136,7 @@ async function checkRule(key, check, checkType) {
 
     assert(
         linter.lintResult.summary.totalFixedNumber >= check.totalFixed,
-        `${check.totalFixed} Errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`
+        `${check.totalFixed} Errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
     );
     const result = linter.lintResult.files[0].updatedSource;
     const expectedResult = normalizeNewLines(check.after);
@@ -165,8 +165,8 @@ private void doSomething() {
         doSomething()
     }
 }
-`
-            }
+`,
+            },
         ],
         [
             "OnlyNonCodeNarcFormatRules",
@@ -186,8 +186,8 @@ if (a == 2) {
     // And here too
     x = 1
 }
-`
-            }
+`,
+            },
         ],
         [
             "OverrideIndentation",
@@ -195,7 +195,7 @@ if (a == 2) {
                 moreOptions: {
                     rulesets:
                         'Indentation{"spacesPerIndentLevel":2,"severity": "warning"},UnnecessarySemicolon,UnnecessaryGString,ConsecutiveBlankLines{"severity":"warning"},NoTabCharacter',
-                    rulesetsoverridetype: "appendConfig"
+                    rulesetsoverridetype: "appendConfig",
                 },
                 totalFixed: 4,
                 codeNarcCallsCounter: 2,
@@ -211,8 +211,8 @@ private void doSomething() {
     doSomething()
   }
 }
-`
-            }
+`,
+            },
         ],
         [
             "ElseIfMustRemainSeparated",
@@ -236,8 +236,8 @@ boolean foo(boolean a, boolean b) {
         return true
     }
 }
-`
-            }
+`,
+            },
         ],
         // https://github.com/nvuillam/npm-groovy-lint/issues/121
         [
@@ -272,7 +272,7 @@ pipeline {
             }
         }
 }
-`
+`,
                 /* TODO: update CodeNarc or Groovy so that the good "after" can be uncommented !
                 after: `
                 pipeline {
@@ -288,25 +288,25 @@ pipeline {
                     }
                 }
                 ` */
-            }
+            },
         ],
         [
-          "MoveOpeningCurlyBracketShouldNotCommentOutBracket",
-          {
-            totalFixed: 1,
-            codeNarcCallsCounter: 1,
-            before: `
+            "MoveOpeningCurlyBracketShouldNotCommentOutBracket",
+            {
+                totalFixed: 1,
+                codeNarcCallsCounter: 1,
+                before: `
 void foo() // comment
 {
     doSomething()
 }
 `,
-            after: `
+                after: `
 void foo() { // comment
     doSomething()
 }
 `,
-            }
-        ]
+            },
+        ],
     ]);
 }

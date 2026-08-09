@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-import Debug from 'debug';
+import Debug from "debug";
 
 console.log("npm run test initialized");
 // Activate debug log if we are in debug mode
@@ -29,9 +29,9 @@ export async function mochaGlobalSetup() {
                 files: "**/SampleFileSmall.groovy",
                 insight: false,
                 failon: "none",
-                output: "none"
+                output: "none",
             },
-            {}
+            {},
         ).run();
         console.log("npm run test: CodeNarc server pre-warmed");
     } catch (err) {

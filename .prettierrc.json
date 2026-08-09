@@ -1,0 +1,17 @@
+{
+    "overrides": [
+        {
+            "files": ["**/*.js", "**/*.mjs", "**/*.jsx"],
+            "options": {
+                "tabWidth": 4,
+                "printWidth": 150
+            }
+        },
+        {
+            "files": ["**/*.json"],
+            "options": {
+                "tabWidth": 4
+            }
+        }
+    ]
+}

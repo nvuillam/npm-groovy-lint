@@ -1,29 +1,29 @@
 {
-  "version": 1,
-  "skills": {
-    "megalinter": {
-      "source": "oxsecurity/megalinter",
-      "sourceType": "github",
-      "skillPath": "skills/megalinter/SKILL.md",
-      "computedHash": "755f80f5084c180f9f0326e29e495858da75deaa11dfa9f9b6b30aa495315989"
-    },
-    "megalinter-check": {
-      "source": "oxsecurity/megalinter",
-      "sourceType": "github",
-      "skillPath": "skills/megalinter-check/SKILL.md",
-      "computedHash": "056870ceb282faf86b9571161fe140d89b12b01a8ca9339a2a7b9b4624021165"
-    },
-    "megalinter-fix": {
-      "source": "oxsecurity/megalinter",
-      "sourceType": "github",
-      "skillPath": "skills/megalinter-fix/SKILL.md",
-      "computedHash": "c4ddb9266ba7cc89b2fb6d87f2f193e6dad09b1a0698f38fce3475ce2287f863"
-    },
-    "megalinter-setup": {
-      "source": "oxsecurity/megalinter",
-      "sourceType": "github",
-      "skillPath": "skills/megalinter-setup/SKILL.md",
-      "computedHash": "9465e410350b5ca8a61e8a8ae2acb233d212eda15d67331ddf1a66786b695604"
+    "version": 1,
+    "skills": {
+        "megalinter": {
+            "source": "oxsecurity/megalinter",
+            "sourceType": "github",
+            "skillPath": "skills/megalinter/SKILL.md",
+            "computedHash": "755f80f5084c180f9f0326e29e495858da75deaa11dfa9f9b6b30aa495315989"
+        },
+        "megalinter-check": {
+            "source": "oxsecurity/megalinter",
+            "sourceType": "github",
+            "skillPath": "skills/megalinter-check/SKILL.md",
+            "computedHash": "056870ceb282faf86b9571161fe140d89b12b01a8ca9339a2a7b9b4624021165"
+        },
+        "megalinter-fix": {
+            "source": "oxsecurity/megalinter",
+            "sourceType": "github",
+            "skillPath": "skills/megalinter-fix/SKILL.md",
+            "computedHash": "c4ddb9266ba7cc89b2fb6d87f2f193e6dad09b1a0698f38fce3475ce2287f863"
+        },
+        "megalinter-setup": {
+            "source": "oxsecurity/megalinter",
+            "sourceType": "github",
+            "skillPath": "skills/megalinter-setup/SKILL.md",
+            "computedHash": "9465e410350b5ca8a61e8a8ae2acb233d212eda15d67331ddf1a66786b695604"
+        }
     }
-  }
 }
