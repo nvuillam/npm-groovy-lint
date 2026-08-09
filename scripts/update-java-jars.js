@@ -1,11 +1,9 @@
 // scripts/update-java-jars.js
 // Node.js script to fetch the latest Groovy, Jackson, Logback, and SLF4J JARs into lib/java/
-// Requires: node-fetch (v3), fs/promises
 // Usage: node scripts/update-java-jars.js
 
 import fs from "fs/promises";
 import path from "path";
-import fetch from "node-fetch";
 import { fileURLToPath } from "url";
 import { Buffer } from "buffer";
 

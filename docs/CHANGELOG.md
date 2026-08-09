@@ -2,13 +2,14 @@
 
 ## Beta
 
-- Reduce npm supply-chain surface: production dependencies cut from 17 to 5 (82 to 28 installed packages), replaced by Node.js built-ins
+- Reduce npm supply-chain surface: production dependencies cut from 17 to 4 (82 to 27 installed packages), replaced by Node.js built-ins
   - **axios** -> native `fetch` (the default `--serverhost` is now `http://127.0.0.1` instead of `http://localhost`, matching the loopback address the CodeNarc server actually listens on)
   - **chalk** + **ansi-colors** -> `util.styleText`
   - **debug** -> `util.debuglog` (**breaking**: debug logs are now activated with `NODE_DEBUG=npm-groovy-lint` instead of `DEBUG=npm-groovy-lint`)
   - **fs-extra** -> `node:fs` / `node:fs/promises`
   - **cli-progress** -> minimal built-in progress bar
   - **import-fresh** -> cache-busted dynamic `import()`
+  - **strip-json-comments** -> small inlined comment stripper
   - **uuid** (unused), **commondir**, **find-package-json**, **find-java-home** -> removed or inlined
   - **glob** -> moved to devDependencies (only used by build scripts)
 - Reduce devDependencies too: remove **@babel/core**, **@babel/eslint-parser**, **@eslint/eslintrc**, **diff**, **handlebars**, **npm-run-all2**, **rimraf**, **which**, and replace **nyc** with **c8**

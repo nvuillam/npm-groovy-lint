@@ -2,7 +2,8 @@
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
 import * as childProcess from "child_process";
-import fs from "fs-extra";
+import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 import * as os from "os";
 import * as path from "path";
 import * as util from "util";
@@ -36,8 +37,8 @@ describe("Miscellaneous", function () {
 
     it("(API:source) load config using specific file name", async function () {
         const customConfigFilePath = process.platform.includes("linux") ? "~/.groovylintrc-custom.json" : os.tmpdir() + "\\.groovylintrc-custom.json";
-        await fs.ensureDir("~/", { mode: "0777" });
-        await fs.copy("./lib/example/.groovylintrc-custom.json", customConfigFilePath);
+        await fsPromises.mkdir("~/", { recursive: true, mode: "0777" });
+        await fsPromises.cp("./lib/example/.groovylintrc-custom.json", customConfigFilePath);
         const npmGroovyLintConfig = {
             config: customConfigFilePath,
             path: "./lib/example/",
@@ -47,7 +48,7 @@ describe("Miscellaneous", function () {
             verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        await fs.remove(customConfigFilePath);
+        await fsPromises.rm(customConfigFilePath, { force: true });
         const rules = linter.options.rules || {};
         assert(rules["CompileStatic"] == "off", "CompileStatic is off");
         assert(rules["CouldBeElvis"] == "off", "CouldBeElvis is off");
@@ -304,7 +305,7 @@ describe("Miscellaneous", function () {
         let logFileExist = fs.existsSync(logFile);
         if (logFileExist) {
             // Remove old log file.
-            await fs.remove(logFile);
+            await fsPromises.rm(logFile, { force: true });
         }
 
         const npmGroovyLintConfig = {

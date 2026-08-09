@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
-import fs from "fs-extra";
+import fs from "node:fs";
 import { beforeEachTestCase, copyFilesInTmpDir, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG_PATH, SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
 
 describe("Lint & fix with API", function () {
@@ -137,8 +137,8 @@ describe("Lint & fix with API", function () {
             assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
             checkCodeNarcCallsCounter(2);
         } finally {
-            fs.removeSync("npm-groovy-fix-log.json");
-            fs.removeSync(tmpDir);
+            fs.rmSync("npm-groovy-fix-log.json", { recursive: true, force: true });
+            fs.rmSync(tmpDir, { recursive: true, force: true });
         }
     }).timeout(120000);
 
@@ -190,8 +190,8 @@ describe("Lint & fix with API", function () {
             assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
             checkCodeNarcCallsCounter(1);
         } finally {
-            fs.removeSync("npm-groovy-fix-log-should-fix-only-some-errors.txt");
-            fs.removeSync(tmpDir);
+            fs.rmSync("npm-groovy-fix-log-should-fix-only-some-errors.txt", { recursive: true, force: true });
+            fs.rmSync(tmpDir, { recursive: true, force: true });
         }
     }).timeout(120000);
 
@@ -233,8 +233,8 @@ describe("Lint & fix with API", function () {
 
             checkCodeNarcCallsCounter(1);
         } finally {
-            fs.removeSync("npm-groovy-fix-log-should-exclude-some-rules.txt");
-            fs.removeSync(tmpDir);
+            fs.rmSync("npm-groovy-fix-log-should-exclude-some-rules.txt", { recursive: true, force: true });
+            fs.rmSync(tmpDir, { recursive: true, force: true });
         }
     }).timeout(120000);
 
@@ -263,8 +263,8 @@ describe("Lint & fix with API", function () {
             assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
             checkCodeNarcCallsCounter(2);
         } finally {
-            fs.removeSync("npm-groovy-fix-log-should-fix-groovy-files.txt");
-            fs.removeSync(tmpDir);
+            fs.rmSync("npm-groovy-fix-log-should-fix-groovy-files.txt", { recursive: true, force: true });
+            fs.rmSync(tmpDir, { recursive: true, force: true });
         }
     }).timeout(120000);
 });

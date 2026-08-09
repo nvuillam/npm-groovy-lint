@@ -1,11 +1,10 @@
 // Build Server creating a deterministic jar file.
 
 // Imports
-import fs from "fs-extra";
+import fs from "node:fs";
 import * as childProcess from "child_process";
 import AdmZip from "adm-zip";
 import * as path from "path";
-import * as glob from "glob";
 
 const srcDir = "groovy/src/main";
 const metaDir = "META-INF";
@@ -39,7 +38,11 @@ function jarFileTimes() {
 // Compile the server groovy.
 function compileGroovy() {
     console.info("Compiling groovy...");
-    const groovyFiles = glob.sync(`${srcDir}/${classPath}/*.groovy`).join(" ");
+    const groovyFiles = fs
+        .readdirSync(`${srcDir}/${classPath}`)
+        .filter((fileName) => fileName.endsWith(".groovy"))
+        .map((fileName) => `${srcDir}/${classPath}/${fileName}`)
+        .join(" ");
     childProcess.execSync(`groovyc -cp "lib/java/*" --encoding utf-8 ${groovyFiles} -d ${tmpDir}`, (err, stdout, stderr) => {
         if (err) {
             console.error(err);

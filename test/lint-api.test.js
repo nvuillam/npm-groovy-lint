@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
-import fs from "fs-extra";
+import fs from "node:fs";
 import * as path from "path";
 import {
     beforeEachTestCase,
@@ -88,7 +88,7 @@ describe("Lint with API", () => {
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(fs.existsSync(reportFileName), `CodeNarc HTML report generated at ${reportFileName}`);
-        fs.removeSync(reportFileName);
+        fs.rmSync(reportFileName, { recursive: true, force: true });
         checkCodeNarcCallsCounter(1);
     });
 
@@ -101,7 +101,7 @@ describe("Lint with API", () => {
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(fs.existsSync(reportFileName), `CodeNarc XML report generated at ${path.resolve(reportFileName)}`);
-        fs.removeSync(reportFileName);
+        fs.rmSync(reportFileName, { recursive: true, force: true });
         checkCodeNarcCallsCounter(1);
     });
 
@@ -122,7 +122,7 @@ describe("Lint with API", () => {
 
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
         assert(fs.existsSync(reportFileName), `XML HTML report generated at ${path.resolve(reportFileName)}`);
-        fs.removeSync(reportFileName);
+        fs.rmSync(reportFileName, { recursive: true, force: true });
         checkCodeNarcCallsCounter(1);
     });
 

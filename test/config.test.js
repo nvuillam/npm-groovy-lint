@@ -1,5 +1,5 @@
 import { strict as assert } from "assert";
-import fs from "fs-extra";
+import fs from "node:fs/promises";
 import os from "os";
 import path from "path";
 import { describe, beforeEach, afterEach, it } from "mocha";
@@ -18,7 +18,7 @@ describe("config import-fresh behavior", () => {
 
     afterEach(async () => {
         if (tempDir) {
-            await fs.remove(tempDir);
+            await fs.rm(tempDir, { recursive: true, force: true });
         }
     });
 

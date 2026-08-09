@@ -1,4 +1,5 @@
-import fs from "fs-extra";
+import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 import path from "path";
 import os from "os";
 import { Buffer } from "buffer";
@@ -148,13 +149,13 @@ async function buildGroovyLintJsonSchema(ruleMetadata, npmDefinedRules, ruleProp
     };
 
     const schemaPath = path.join(process.cwd(), "docs", "groovy-lint.jsonschema.json");
-    await fs.ensureDir(path.dirname(schemaPath));
-    await fs.writeJSON(schemaPath, schema, { spaces: 2 });
+    await fsPromises.mkdir(path.dirname(schemaPath), { recursive: true });
+    await fsPromises.writeFile(schemaPath, JSON.stringify(schema, null, 2) + "\n");
     console.log("Generated docs/groovy-lint.jsonschema.json");
 }
 
 async function getAvailableBaseConfigs() {
-    const libEntries = await fs.readdir("./lib");
+    const libEntries = await fsPromises.readdir("./lib");
     return libEntries
         .filter((entry) => entry.startsWith(".groovylintrc-") && entry.endsWith(".json"))
         .map((entry) => entry.replace(".groovylintrc-", "").replace(".json", ""))
@@ -247,9 +248,9 @@ async function collectRulePropertyMetadata() {
     }
 
     const scriptContent = buildRuleIntrospectionScript();
-    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "groovylint-schema-"));
+    const tempDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "groovylint-schema-"));
     const scriptPath = path.join(tempDir, "collect-rule-props.groovy");
-    await fs.writeFile(scriptPath, scriptContent, "utf8");
+    await fsPromises.writeFile(scriptPath, scriptContent, "utf8");
 
     const javaExecutable = process.env.JAVA_HOME
         ? path.join(process.env.JAVA_HOME, "bin", process.platform === "win32" ? "java.exe" : "java")
@@ -262,12 +263,12 @@ async function collectRulePropertyMetadata() {
         });
     } catch (error) {
         console.warn("Unable to collect rule property metadata", error.message);
-        await fs.remove(tempDir).catch(() => {});
+        await fsPromises.rm(tempDir, { recursive: true, force: true }).catch(() => {});
         await resource.cleanup();
         return {};
     }
 
-    await fs.remove(tempDir).catch(() => {});
+    await fsPromises.rm(tempDir, { recursive: true, force: true }).catch(() => {});
     await resource.cleanup();
 
     try {
@@ -368,19 +369,19 @@ async function downloadCodeNarcResource(filename) {
         throw new Error("Global fetch API is not available in this Node.js runtime.");
     }
     const url = `${CODENARC_RESOURCES_BASE_URL}/${filename}`;
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "groovylint-codenarc-"));
+    const tmpDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "groovylint-codenarc-"));
     const tmpPath = path.join(tmpDir, filename);
     const response = await fetchFn(url);
     if (!response.ok) {
-        await fs.remove(tmpDir).catch(() => {});
+        await fsPromises.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
         throw new Error(`Unable to download ${filename} (${response.status})`);
     }
     const buffer = Buffer.from(await response.arrayBuffer());
-    await fs.writeFile(tmpPath, buffer);
+    await fsPromises.writeFile(tmpPath, buffer);
     return {
         path: tmpPath,
         cleanup: async () => {
-            await fs.remove(tmpDir).catch(() => {});
+            await fsPromises.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
         },
     };
 }

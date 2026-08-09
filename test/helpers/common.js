@@ -2,7 +2,8 @@
 import assert from "assert";
 import * as os from "os";
 import * as path from "path";
-import fs from "fs-extra";
+import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 
 const NPM_GROOVY_LINT = "npm-groovy-lint ";
 const EXAMPLE_DIRECTORY = "./lib/example/";
@@ -44,8 +45,8 @@ async function copyFilesInTmpDir() {
             ? "./tmptest"
             : os.tmpdir(); // Windows / other
     const tmpDir = rootTmpDir + "/" + ("tmpGroovyLintTest_" + Math.random()).replace(".", "");
-    await fs.ensureDir(tmpDir, { mode: "0777" });
-    await fs.copy("./lib/example", tmpDir);
+    await fsPromises.mkdir(tmpDir, { recursive: true, mode: "0777" });
+    await fsPromises.cp("./lib/example", tmpDir, { recursive: true });
     console.info("GroovyLint: Copied ./lib/example into " + tmpDir);
     return tmpDir;
 }
