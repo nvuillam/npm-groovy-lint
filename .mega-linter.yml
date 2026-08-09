@@ -25,6 +25,11 @@ DISABLE_ERRORS_LINTERS:
   - REPOSITORY_SEMGREP
   - SPELL_LYCHEE
 FLAVOR_SUGGESTIONS: true
+# zizmor needs GitHub API access for its online audits (ref-confusion, impostor-commit,
+# known-vulnerable-actions). Without a token it gets a 401 and aborts the whole run with
+# "fatal: no audit was performed", so the (read-scoped) GITHUB_TOKEN is whitelisted for it.
+ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
+  - GITHUB_TOKEN
 JAVASCRIPT_ES_CONFIG_FILE: "LINTER_DEFAULT"
 GITHUB_STATUS_REPORTER: false
 PRE_COMMANDS:

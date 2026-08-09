@@ -7,7 +7,7 @@
 ############################################
 # Build & Deploy (beta and release)        #
 ############################################
-name: 'Build & Deploy'
+name: "Build & Deploy"
 
 on:
   push:
@@ -15,7 +15,7 @@ on:
       - main
   release:
     # Want to run the automation when a release is published
-    types: ['published']
+    types: ["published"]
 
 permissions: read-all
 
@@ -29,7 +29,7 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Required for OIDC (npm trusted publishers)
+      id-token: write # Required for OIDC (npm trusted publishers)
       contents: read
     environment:
       name: release
@@ -53,7 +53,7 @@ jobs:
     if: ${{ github.event_name == 'release' }}
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Required for OIDC (npm trusted publishers)
+      id-token: write # Required for OIDC (npm trusted publishers)
       contents: read
     environment:
       name: release

@@ -12,6 +12,13 @@
             "options": {
                 "tabWidth": 4
             }
+        },
+        {
+            "comment": "Keep GitHub Actions matrix entries on a single line: splitting them produces an indentation yamllint rejects",
+            "files": ["**/*.yml", "**/*.yaml"],
+            "options": {
+                "printWidth": 150
+            }
         }
     ]
 }
