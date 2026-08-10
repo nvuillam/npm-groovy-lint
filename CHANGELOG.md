@@ -2,6 +2,20 @@
 
 ## Beta
 
+- Reduce npm supply-chain surface: production dependencies cut from 17 to 4 (82 to 27 installed packages), replaced by Node.js built-ins
+  - **axios** -> native `fetch` (the default `--serverhost` is now `http://127.0.0.1` instead of `http://localhost`, matching the loopback address the CodeNarc server actually listens on)
+  - **chalk** + **ansi-colors** -> `util.styleText`
+  - **debug** -> `util.debuglog` (**breaking**: debug logs are now activated with `NODE_DEBUG=npm-groovy-lint` instead of `DEBUG=npm-groovy-lint`)
+  - **fs-extra** -> `node:fs` / `node:fs/promises`
+  - **cli-progress** -> minimal built-in progress bar
+  - **import-fresh** -> require-cache eviction for CommonJS config files, cache-busted dynamic `import()` for ES module ones
+  - **strip-json-comments** -> small inlined comment stripper
+  - **uuid** (unused), **commondir**, **find-package-json**, **find-java-home** -> removed or inlined
+  - **glob** -> removed (build scripts use `fs.readdirSync` instead)
+- Reduce devDependencies too: remove **@babel/core**, **@babel/eslint-parser**, **@eslint/eslintrc**, **diff**, **handlebars**, **npm-run-all2**, **rimraf**, **which**, and replace **nyc** with **c8**
+- Upgrade to **eslint v10**
+- Add supply-chain guards: CI fails if the production dependency count grows beyond the committed baseline, and Renovate now applies a 7-day cooldown (`minimumReleaseAge`) before proposing new dependency versions
+- Minimum Node version is now **22.13.0** (first LTS release where `util.styleText` is stable)
 - Fix vulnerabilities reported by grype and trivy
   - **js-yaml** 5.2.1 -> 5.2.3, **tar** 7.5.19 -> 7.5.22, **brace-expansion** -> 5.0.9
   - Bundled jars: **jackson-core** / **jackson-databind** 2.22.0 -> 2.22.1, **logback-core** / **logback-classic** 1.5.25 -> 1.5.34

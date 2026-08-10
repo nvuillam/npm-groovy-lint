@@ -1,0 +1,6 @@
+{
+    "include": ["lib/**"],
+    "extension": [".js"],
+    "reporter": ["html"],
+    "all": true
+}

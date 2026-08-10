@@ -1,12 +1,10 @@
 // Build Server creating a deterministic jar file.
 
 // Imports
-import fs from "fs-extra";
+import fs from "node:fs";
 import * as childProcess from "child_process";
-import Handlebars from "handlebars";
 import AdmZip from "adm-zip";
 import * as path from "path";
-import * as glob from "glob";
 
 const srcDir = "groovy/src/main";
 const metaDir = "META-INF";
@@ -40,7 +38,11 @@ function jarFileTimes() {
 // Compile the server groovy.
 function compileGroovy() {
     console.info("Compiling groovy...");
-    const groovyFiles = glob.sync(`${srcDir}/${classPath}/*.groovy`).join(" ");
+    const groovyFiles = fs
+        .readdirSync(`${srcDir}/${classPath}`)
+        .filter((fileName) => fileName.endsWith(".groovy"))
+        .map((fileName) => `${srcDir}/${classPath}/${fileName}`)
+        .join(" ");
     childProcess.execSync(`groovyc -cp "lib/java/*" --encoding utf-8 ${groovyFiles} -d ${tmpDir}`, (err, stdout, stderr) => {
         if (err) {
             console.error(err);
@@ -89,8 +91,8 @@ function buildManifest() {
     }
 
     // Update the manifest file if it has changed.
-    const template = Handlebars.compile(manifestTemplate);
-    const contents = template({ classPath: wrapped });
+    // Replacer function so that $ sequences in jar file names are kept literal
+    const contents = manifestTemplate.replace("{{classPath}}", () => wrapped);
 
     const srcManifestFile = `${srcDir}/${manifestFile}`;
     const oldContents = fs.readFileSync(srcManifestFile);

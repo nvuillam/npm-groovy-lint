@@ -1,8 +1,9 @@
 #! /usr/bin/env node
 import assert from "assert";
 import * as os from "os";
-import fs from "fs-extra";
-import * as jsdiff from "diff";
+import * as path from "path";
+import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 
 const NPM_GROOVY_LINT = "npm-groovy-lint ";
 const EXAMPLE_DIRECTORY = "./lib/example/";
@@ -44,16 +45,15 @@ async function copyFilesInTmpDir() {
             ? "./tmptest"
             : os.tmpdir(); // Windows / other
     const tmpDir = rootTmpDir + "/" + ("tmpGroovyLintTest_" + Math.random()).replace(".", "");
-    await fs.ensureDir(tmpDir, { mode: "0777" });
-    await fs.copy("./lib/example", tmpDir);
+    await fsPromises.mkdir(tmpDir, { recursive: true, mode: "0777" });
+    await fsPromises.cp("./lib/example", tmpDir, { recursive: true });
     console.info("GroovyLint: Copied ./lib/example into " + tmpDir);
     return tmpDir;
 }
 
-// Get diff between 2 strings
+// Get diff between 2 strings (callers only check that there is no difference, so a simple comparison is enough)
 function getDiff(expected, afterUpdate, beforeUpdate) {
-    const diff = jsdiff.diffChars(expected, afterUpdate);
-    const effectiveDiffs = diff.filter((item) => item.added || item.removed);
+    const effectiveDiffs = expected === afterUpdate ? [] : [{ expected, actual: afterUpdate }];
     if (effectiveDiffs.length > 0) {
         console.error("BeforeFix: \n" + beforeUpdate);
         console.error("AfterFix: \n" + afterUpdate);
@@ -63,6 +63,48 @@ function getDiff(expected, afterUpdate, beforeUpdate) {
         console.info("Verified: \n" + afterUpdate);
     }
     return effectiveDiffs;
+}
+
+// Find an executable in the PATH, or throw (replaces the which package)
+function isExecutableFile(fullPath) {
+    let stats;
+    try {
+        stats = fs.statSync(fullPath);
+    } catch {
+        return false;
+    }
+    if (!stats.isFile()) {
+        return false;
+    }
+    if (process.platform === "win32") {
+        // Windows has no executable bit: the PATHEXT extension match is the only criterion
+        return true;
+    }
+    try {
+        fs.accessSync(fullPath, fs.constants.X_OK);
+        return true;
+    } catch {
+        return false;
+    }
+}
+function whichSync(cmd) {
+    // The bare name comes last: PATHEXT does not list it and an executable with no extension is valid,
+    // but a real java.exe must win over an extension-less shim that Windows could not run anyway
+    const exts = process.platform === "win32" ? [...(process.env.PATHEXT || ".EXE;.CMD;.BAT;.COM").split(";"), ""] : [""];
+    for (const rawDir of (process.env.PATH || "").split(path.delimiter)) {
+        // PATH entries containing spaces are sometimes quoted on Windows
+        const dir = rawDir.replace(/^"(.*)"$/, "$1");
+        if (!dir) {
+            continue;
+        }
+        for (const ext of exts) {
+            const fullPath = path.join(dir, cmd + ext.toLowerCase());
+            if (isExecutableFile(fullPath)) {
+                return fullPath;
+            }
+        }
+    }
+    throw new Error(`not found: ${cmd}`);
 }
 
 // assert output includes expectedCount linted files result.
@@ -95,4 +137,5 @@ export {
     copyFilesInTmpDir,
     getDiff,
     assertLintedFiles,
+    whichSync,
 };

@@ -1,8 +1,7 @@
 #! /usr/bin/env node
 import assert from "assert";
 import * as util from "util";
-import fs from "fs-extra";
-import * as rimraf from "rimraf";
+import fs from "node:fs";
 import * as childProcess from "child_process";
 const exec = util.promisify(childProcess.exec);
 import { copyFilesInTmpDir, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_FIX, NPM_GROOVY_LINT } from "./helpers/common.js";
@@ -44,8 +43,8 @@ describe("Lint & fix with EXE", function () {
                 .replace(/\r\n/g, "\n");
             assert.strictEqual(newFileContent, expectedFileContent, "Formatted file is corresponding to expected result");
         } finally {
-            fs.removeSync("npm-groovy-fix-log.json");
-            rimraf.sync(tmpDir);
+            fs.rmSync("npm-groovy-fix-log.json", { recursive: true, force: true });
+            fs.rmSync(tmpDir, { recursive: true, force: true });
         }
     }).timeout(120000);
 });

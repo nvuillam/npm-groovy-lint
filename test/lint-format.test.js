@@ -1,9 +1,8 @@
 #! /usr/bin/env node
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
-import fs from "fs-extra";
+import fs from "node:fs";
 import { normalizeNewLines } from "../lib/utils.js";
-import * as rimraf from "rimraf";
 import {
     beforeEachTestCase,
     checkCodeNarcCallsCounter,
@@ -99,7 +98,7 @@ describe("Format with API", function () {
             assert(!linter.outputString.includes("NaN"), "Results does not contain NaN");
             checkCodeNarcCallsCounter(2);
         } finally {
-            rimraf.sync(tmpDir);
+            fs.rmSync(tmpDir, { recursive: true, force: true });
         }
     }).timeout(100000);
 

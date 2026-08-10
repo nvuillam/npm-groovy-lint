@@ -2,14 +2,20 @@
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
 import * as childProcess from "child_process";
-import fs from "fs-extra";
+import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 import * as os from "os";
 import * as path from "path";
-import find from "find-package-json";
 import * as util from "util";
-import * as which from "which";
 const exec = util.promisify(childProcess.exec);
-import { beforeEachTestCase, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG, SAMPLE_FILE_SMALL, SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
+import {
+    beforeEachTestCase,
+    checkCodeNarcCallsCounter,
+    SAMPLE_FILE_BIG,
+    SAMPLE_FILE_SMALL,
+    SAMPLE_FILE_SMALL_PATH,
+    whichSync,
+} from "./helpers/common.js";
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -38,8 +44,8 @@ describe("Miscellaneous", function () {
 
     it("(API:source) load config using specific file name", async function () {
         const customConfigFilePath = process.platform.includes("linux") ? "~/.groovylintrc-custom.json" : os.tmpdir() + "\\.groovylintrc-custom.json";
-        await fs.ensureDir("~/", { mode: "0777" });
-        await fs.copy("./lib/example/.groovylintrc-custom.json", customConfigFilePath);
+        await fsPromises.mkdir("~/", { recursive: true, mode: "0777" });
+        await fsPromises.cp("./lib/example/.groovylintrc-custom.json", customConfigFilePath);
         const npmGroovyLintConfig = {
             config: customConfigFilePath,
             path: "./lib/example/",
@@ -49,7 +55,7 @@ describe("Miscellaneous", function () {
             verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
-        await fs.remove(customConfigFilePath);
+        await fsPromises.rm(customConfigFilePath, { force: true });
         const rules = linter.options.rules || {};
         assert(rules["CompileStatic"] == "off", "CompileStatic is off");
         assert(rules["CouldBeElvis"] == "off", "CouldBeElvis is off");
@@ -237,7 +243,7 @@ describe("Miscellaneous", function () {
     it("(API:source) override java executable", async function () {
         let javaPath;
         try {
-            javaPath = which.sync("java");
+            javaPath = whichSync("java");
         } catch (e) {
             console.log("Java not found: ignore test method: " + e.message);
         }
@@ -285,8 +291,7 @@ describe("Miscellaneous", function () {
         process.env.npm_package_version = ""; // NV: Do not use npm_package_version to have more code coverage :)
         const linter = await new NpmGroovyLint([process.execPath, "", "-v"], {}).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
-        const finder = find(__dirname);
-        const v = finder.next().value.version;
+        const v = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")).version;
         assert(linter.outputString.includes(`npm-groovy-lint version ${v}`), `Provides version ${v}\nReturned outputString:\n${linter.outputString}`);
         assert(linter.outputString.includes(`CodeNarc version`), `Provides CodeNarc version\nReturned outputString:\n${linter.outputString}`);
         assert(linter.outputString.includes(`Groovy version`), `Provides CodeNarc version\nReturned outputString:\n${linter.outputString}`);
@@ -307,7 +312,7 @@ describe("Miscellaneous", function () {
         let logFileExist = fs.existsSync(logFile);
         if (logFileExist) {
             // Remove old log file.
-            await fs.remove(logFile);
+            await fsPromises.rm(logFile, { force: true });
         }
 
         const npmGroovyLintConfig = {
