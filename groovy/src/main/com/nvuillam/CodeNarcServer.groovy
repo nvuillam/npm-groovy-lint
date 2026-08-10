@@ -52,6 +52,7 @@ class CodeNarcServer {
     private final HttpServer server
     private final ExecutorService ex
     private final ExecutorService analysisPool
+    private final ResultCache resultCache
 
     // timerLock protects access to the items below.
     private final Object timerLock
@@ -138,6 +139,7 @@ class CodeNarcServer {
         // serving the request would deadlock once all HTTP threads are busy.
         this.analysisPool = Executors.newFixedThreadPool(
             Math.max(1, Math.min(Runtime.runtime.availableProcessors(), AnalysisPartitioner.MAX_PARTITIONS)))
+        this.resultCache = new ResultCache()
     }
 
     // Ping
@@ -210,7 +212,7 @@ class CodeNarcServer {
                     }
                 }
 
-                request.process(response, new LintContext(analysisPool, null))
+                request.process(response, new LintContext(analysisPool, resultCache))
             } catch (InterruptedException ie) {
                 LOGGER.debug('Interrupted by duplicate')
                 response.setInterrupted()

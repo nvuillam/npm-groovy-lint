@@ -146,14 +146,50 @@ class Request {
             relativise(absolute)
         }
 
+        List<String> orderedKeys = orderedResultKeys(response.fileList)
+
+        Map<String, List<Map>> cached = [:]
+        List<String> toAnalyse = relativePaths
+        Map<String, String> keyByRelative = [:]
+        String fingerprint = null
+
+        if (ctx.cache != null) {
+            fingerprint = ctx.cache.fingerprint(baseArgs)
+            toAnalyse = []
+            relativePaths.eachWithIndex { String relative, int i ->
+                File file = new File(response.fileList[i])
+                String key = ctx.cache.keyFor(fingerprint, relative, file)
+                keyByRelative.put(relative, key)
+                List<Map> hit = ctx.cache.get(key)
+                if (hit != null) {
+                    cached.put(packageFileKey(relative), hit)
+                } else {
+                    toAnalyse << relative
+                }
+            }
+        }
+
         LOGGER.debug('Calling CodeNarc with base args: {}', baseArgs)
         AnalysisPartitioner.AnalysisOutcome outcome =
-            AnalysisPartitioner.analyse(relativePaths, baseArgs, parallelism, ctx.pool)
+            AnalysisPartitioner.analyse(toAnalyse, baseArgs, parallelism, ctx.pool)
+
+        // Store freshly computed results before merging.
+        String template = outcome.reports ? outcome.reports[0] : null
+        if (ctx.cache != null) {
+            storeResults(outcome.reports, keyByRelative, ctx.cache)
+            if (template != null) {
+                ctx.cache.putTemplate(fingerprint, template)
+            } else {
+                // Every file was a cache hit: reuse the stored template so the merged
+                // report still carries the 'codeNarc' and 'rules' blocks Node requires.
+                template = ctx.cache.getTemplate(fingerprint)
+            }
+            response.cacheHits = ctx.cache.hits
+            response.cacheMisses = ctx.cache.misses
+        }
 
         response.partitionCount = outcome.partitionCount
-
-        List<String> orderedKeys = orderedResultKeys(response.fileList)
-        response.setJsonResult(ResultMerger.merge(outcome.reports, [:], outcome.reports ? outcome.reports[0] : null, orderedKeys))
+        response.setJsonResult(ResultMerger.merge(outcome.reports, cached, template, orderedKeys))
     }
 
     /**
@@ -194,10 +230,40 @@ class Request {
         File baseDir = new File(codeNarcBaseDir).getAbsoluteFile()
         return absoluteFiles.collect { String absolutePath ->
             String relativePath = baseDir.toURI().relativize(new File(absolutePath).toURI()).getPath()
-            int sep = relativePath.lastIndexOf('/')
-            String pkgPath = sep >= 0 ? relativePath.substring(0, sep) : ''
-            String fileName = sep >= 0 ? relativePath.substring(sep + 1) : relativePath
-            return "${pkgPath}|${fileName}"
+            return packageFileKey(relativePath)
+        }
+    }
+
+    /**
+     * Build the "packagePath|fileName" key ResultMerger uses to identify a file, from a
+     * path relative to codeNarcBaseDir. Shared by orderedResultKeys() (merge ordering) and
+     * the cache lookup in process() (cached violations), so both agree on the same key for
+     * the same file.
+     */
+    private String packageFileKey(String relativePath) {
+        int sep = relativePath.lastIndexOf('/')
+        String pkgPath = sep >= 0 ? relativePath.substring(0, sep) : ''
+        String fileName = sep >= 0 ? relativePath.substring(sep + 1) : relativePath
+        return "${pkgPath}|${fileName}"
+    }
+
+    /**
+     * Store per-file violations from freshly produced reports into the cache.
+     */
+    private void storeResults(List<String> reports, Map<String, String> keyByRelative, ResultCache cache) {
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper()
+        reports.findAll { it }.each { String report ->
+            Map parsed = mapper.readValue(report, Map)
+            (parsed.packages ?: []).each { Map pkg ->
+                String pkgPath = pkg.path ?: ''
+                (pkg.files ?: []).each { Map file ->
+                    String relative = pkgPath ? "${pkgPath}/${file.name}" : file.name.toString()
+                    String key = keyByRelative.get(relative)
+                    if (key != null) {
+                        cache.put(key, (file.violations ?: []) as List<Map>)
+                    }
+                }
+            }
         }
     }
 
