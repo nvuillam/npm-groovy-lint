@@ -66,6 +66,27 @@ function getDiff(expected, afterUpdate, beforeUpdate) {
 }
 
 // Find an executable in the PATH, or throw (replaces the which package)
+function isExecutableFile(fullPath) {
+    let stats;
+    try {
+        stats = fs.statSync(fullPath);
+    } catch {
+        return false;
+    }
+    if (!stats.isFile()) {
+        return false;
+    }
+    if (process.platform === "win32") {
+        // Windows has no executable bit: the PATHEXT extension match is the only criterion
+        return true;
+    }
+    try {
+        fs.accessSync(fullPath, fs.constants.X_OK);
+        return true;
+    } catch {
+        return false;
+    }
+}
 function whichSync(cmd) {
     const exts = process.platform === "win32" ? (process.env.PATHEXT || ".EXE;.CMD;.BAT;.COM").split(";") : [""];
     for (const dir of (process.env.PATH || "").split(path.delimiter)) {
@@ -74,7 +95,7 @@ function whichSync(cmd) {
         }
         for (const ext of exts) {
             const fullPath = path.join(dir, cmd + ext.toLowerCase());
-            if (fs.existsSync(fullPath)) {
+            if (isExecutableFile(fullPath)) {
                 return fullPath;
             }
         }

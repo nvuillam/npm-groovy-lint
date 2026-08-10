@@ -91,7 +91,8 @@ function buildManifest() {
     }
 
     // Update the manifest file if it has changed.
-    const contents = manifestTemplate.replace("{{classPath}}", wrapped);
+    // Replacer function so that $ sequences in jar file names are kept literal
+    const contents = manifestTemplate.replace("{{classPath}}", () => wrapped);
 
     const srcManifestFile = `${srcDir}/${manifestFile}`;
     const oldContents = fs.readFileSync(srcManifestFile);

@@ -32,7 +32,7 @@ The expensive part — starting a JVM and loading CodeNarc — is amortized by r
 
 - `lib/index.js` — CLI entry (`bin`), thin wrapper that runs `NpmGroovyLint` and sets the exit code.
 - `lib/groovy-lint.js` — `NpmGroovyLint` class, the orchestrator: parse options → prepare CodeNarc call → run via the caller → parse results → optionally format/fix → produce output.
-- `lib/codenarc-caller.js` — owns the **server lifecycle and Java invocation** (find Java, start/keep-alive the server, HTTP calls, java fallback). Java version bounds (17–24) and jar path live here.
+- `lib/codenarc-caller.js` — owns the **server lifecycle and Java invocation** (start/keep-alive the server, HTTP calls, java fallback). Java version bounds (17–24) and jar path live here; locating the JDK is delegated to `java-caller`.
 - `lib/codenarc-factory.js` — converts npm-groovy-lint options into CodeNarc args (creating temp ruleset/files as needed) and parses the CodeNarc result back into the npm-groovy-lint error model.
 - `lib/config.js` — resolves `.groovylintrc.{json,js,yml}` / `package.json` config, and the built-in presets `recommended | recommended-jenkinsfile | all`.
 - `lib/options.js` — CLI option definitions (optionator).

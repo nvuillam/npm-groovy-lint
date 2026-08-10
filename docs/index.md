@@ -153,7 +153,7 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 ```
 
 - If you have issues with v9, install previous version with `npm install -g npm-groovy-lint@8.2.0`
-- Node.js >= 12 is required to run this package. If you can't upgrade, you can use [nvm](https://github.com/nvm-sh/nvm) to have [different node versions on your computer](https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/)
+- Node.js >= 22.13.0 is required to run this package. If you can't upgrade, you can use [nvm](https://github.com/nvm-sh/nvm) to have [different node versions on your computer](https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/)
 - Java 17 or higher is required. If you do not have a compatible Java version installed on your computer, npm-groovy-lint will install Java 17 for you, so the first run may be long.
 
 ## Configuration
@@ -433,11 +433,11 @@ Example
 ```
 
 ```javascript
-    const NpmGroovyLint = require("npm-groovy-lint/lib/groovy-lint.js");
-    const fse = require("fs-extra");
+    import NpmGroovyLint from "npm-groovy-lint/lib/groovy-lint.js";
+    import fs from "node:fs";
 
     const npmGroovyLintConfig = {
-        source: fse.readFileSync('./lib/example/SampleFile.groovy').toString(),
+        source: fs.readFileSync('./lib/example/SampleFile.groovy').toString(),
         fix: true,
         loglevel: 'warning',
         output: 'none'
