@@ -88,8 +88,9 @@ function isExecutableFile(fullPath) {
     }
 }
 function whichSync(cmd) {
-    // Always try the bare name too: PATHEXT does not list it, but an executable with no extension is valid
-    const exts = process.platform === "win32" ? ["", ...(process.env.PATHEXT || ".EXE;.CMD;.BAT;.COM").split(";")] : [""];
+    // The bare name comes last: PATHEXT does not list it and an executable with no extension is valid,
+    // but a real java.exe must win over an extension-less shim that Windows could not run anyway
+    const exts = process.platform === "win32" ? [...(process.env.PATHEXT || ".EXE;.CMD;.BAT;.COM").split(";"), ""] : [""];
     for (const rawDir of (process.env.PATH || "").split(path.delimiter)) {
         // PATH entries containing spaces are sometimes quoted on Windows
         const dir = rawDir.replace(/^"(.*)"$/, "$1");
