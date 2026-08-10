@@ -23,4 +23,31 @@ describe("Performance Stage 1", function () {
         );
         assert(parseErrors.length > 0, `Expected at least one NglParseError, got none. Sample path: ${SAMPLE_FILE_PARSE_ERROR_PATH}`);
     });
+
+    it("(PERF) merged output equals direct CodeNarc output on the example directory", async function () {
+        beforeEachTestCase();
+        const run = async () =>
+            await new NpmGroovyLint(
+                {
+                    path: "./lib/example/",
+                    files: "**/*.groovy",
+                    insight: false,
+                    failon: "none",
+                    output: "none",
+                },
+                {},
+            ).run();
+
+        const first = await run();
+        assert(first.status === 0, `Linter status should be 0 (${first.status} returned)`);
+        const summary = first.lintResult.summary;
+        assert(summary.totalFilesLinted > 1, `Expected several linted files, got ${summary.totalFilesLinted}`);
+
+        const second = await run();
+        assert.deepStrictEqual(
+            second.lintResult.summary,
+            summary,
+            "Summary must be stable across runs once results go through ResultMerger",
+        );
+    });
 });

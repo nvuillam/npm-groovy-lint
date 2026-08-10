@@ -129,7 +129,7 @@ class Request {
 
             CapturedReportWriter captured = (CapturedReportWriter)reportWriter
             if (captured.capturedClassName().toLowerCase().contains('json')) {
-                response.setJsonResult(captured.report())
+                response.setJsonResult(ResultMerger.merge([captured.report()], [:], captured.report()))
             } else {
                 response.setStdout(captured.report())
             }
