@@ -17,6 +17,11 @@
             "severity": "info"
         },
         "dry.DuplicateStringLiteral": "info",
+        "enhanced.CloneWithoutCloneable": "off",
+        "enhanced.JUnitAssertEqualsConstantActualValue": "off",
+        "enhanced.MissingOverrideAnnotation": "off",
+        "enhanced.UnsafeImplementationAsMap": "off",
+        "grails.GrailsDomainGormMethods": "off",
         "exceptions.ThrowException": "info",
         "exceptions.ThrowNullPointerException": "info",
         "exceptions.ThrowRuntimeException": "info",

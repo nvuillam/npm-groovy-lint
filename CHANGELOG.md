@@ -23,6 +23,17 @@
 - Add `.prettierrc.json` and `.prettierignore` so prettier uses the project conventions (tab width 4, print width 150) instead of its defaults, and leaves generated files alone
 - Remove unused imports and unnecessary semicolons from the Groovy server sources
 
+### Changed
+
+- Performance: the `recommended` preset now disables five rules that require the
+  semantic-analysis compiler phase (`enhanced.CloneWithoutCloneable`,
+  `enhanced.JUnitAssertEqualsConstantActualValue`, `enhanced.MissingOverrideAnnotation`,
+  `enhanced.UnsafeImplementationAsMap`, `grails.GrailsDomainGormMethods`).
+  npm-groovy-lint does not pass a user classpath, so these rules could not resolve
+  imported classes and reported nothing while costing roughly 9 seconds on a
+  20-file corpus. Re-enable them in your `.groovylintrc.json` if your sources have
+  no unresolvable imports and you rely on them.
+
 ## [18.0.0] 2026-06-30
 
 - Upgrade **java-caller to v5** ([#584](https://github.com/nvuillam/npm-groovy-lint/pull/584))

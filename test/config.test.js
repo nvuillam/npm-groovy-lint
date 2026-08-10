@@ -4,6 +4,7 @@ import os from "os";
 import path from "path";
 import { describe, beforeEach, afterEach, it } from "mocha";
 import { loadConfig } from "../lib/config.js";
+import NpmGroovyLint from "../lib/groovy-lint.js";
 
 // Validate that loadConfig reloads JS configs via import-fresh instead of a cached module
 describe("config import-fresh behavior", () => {
@@ -171,5 +172,25 @@ describe("config JSON comments", () => {
         // Blanking out the rest of the file would accept a config truncated mid-write as valid
         await writeConfig(`{ "customFlag": 3, "rules": {} } /* truncated`);
         await assert.rejects(() => loadConfig(tempDir), /Cannot read config file/);
+    });
+});
+
+describe("recommended preset rules", () => {
+    it("(CFG) recommended disables the phase-4 rules that cannot resolve classes", async function () {
+        const linter = new NpmGroovyLint([process.execPath, "", "--no-insight"], { parseOptions: true });
+        const config = await linter.loadConfig("recommended");
+        const deadRules = [
+            "CloneWithoutCloneable",
+            "JUnitAssertEqualsConstantActualValue",
+            "MissingOverrideAnnotation",
+            "UnsafeImplementationAsMap",
+            "GrailsDomainGormMethods",
+        ];
+        for (const ruleName of deadRules) {
+            assert(
+                config.rules[ruleName] === "off",
+                `${ruleName} should be "off" in recommended (was ${JSON.stringify(config.rules[ruleName])})`,
+            );
+        }
     });
 });
