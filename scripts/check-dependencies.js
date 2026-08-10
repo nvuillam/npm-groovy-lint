@@ -4,7 +4,10 @@
 
 import { execSync } from "child_process";
 
-const MAX_PROD_PACKAGES = 27; // baseline 2026-08: java-caller (+ njre/tar/yauzl/semver), optionator, js-yaml, node-sarif-builder
+// Baseline 2026-08 is 27 packages: java-caller (+ njre/tar/yauzl/semver), optionator, js-yaml, node-sarif-builder.
+// The ceiling keeps a small buffer so a transitive dependency added by an upstream patch release does not
+// break CI on sight: the guard is here to catch us adding dependencies, not to pin the whole tree.
+const MAX_PROD_PACKAGES = 30;
 
 let output;
 try {
@@ -19,7 +22,9 @@ const count = new Set(output.split(/\r?\n/).filter(Boolean)).size - 1; // -1 for
 
 if (count > MAX_PROD_PACKAGES) {
     console.error(`Production dependency count ${count} exceeds the allowed maximum of ${MAX_PROD_PACKAGES}.`);
-    console.error("If this increase is intentional, update MAX_PROD_PACKAGES in scripts/check-dependencies.js in the same PR.");
+    console.error("Run `npm ls --all --omit=dev` to see what was added: it may be a new direct dependency, or an");
+    console.error("upstream package that grew its own dependencies. If the increase is justified, raise");
+    console.error("MAX_PROD_PACKAGES in scripts/check-dependencies.js in the same PR.");
     process.exit(1);
 }
 console.info(`Production dependency count OK: ${count} <= ${MAX_PROD_PACKAGES}`);

@@ -8,7 +8,7 @@
   - **debug** -> `util.debuglog` (**breaking**: debug logs are now activated with `NODE_DEBUG=npm-groovy-lint` instead of `DEBUG=npm-groovy-lint`)
   - **fs-extra** -> `node:fs` / `node:fs/promises`
   - **cli-progress** -> minimal built-in progress bar
-  - **import-fresh** -> cache-busted dynamic `import()`
+  - **import-fresh** -> require-cache eviction for CommonJS config files, cache-busted dynamic `import()` for ES module ones
   - **strip-json-comments** -> small inlined comment stripper
   - **uuid** (unused), **commondir**, **find-package-json**, **find-java-home** -> removed or inlined
   - **glob** -> removed (build scripts use `fs.readdirSync` instead)
