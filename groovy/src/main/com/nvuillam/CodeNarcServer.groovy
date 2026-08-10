@@ -51,6 +51,7 @@ class CodeNarcServer {
     private final Map<String, Thread> threads
     private final HttpServer server
     private final ExecutorService ex
+    private final ExecutorService analysisPool
 
     // timerLock protects access to the items below.
     private final Object timerLock
@@ -107,7 +108,13 @@ class CodeNarcServer {
         PrintStream originalSystemOut = System.out
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
         System.out = new PrintStream(outputStream)
-        request.process(response)
+        ExecutorService oneShotPool = Executors.newFixedThreadPool(
+            Math.max(1, Math.min(Runtime.runtime.availableProcessors(), AnalysisPartitioner.MAX_PARTITIONS)))
+        try {
+            request.process(response, new LintContext(oneShotPool, null))
+        } finally {
+            oneShotPool.shutdownNow()
+        }
         response.stdout = outputStream.toString()
 
         WRITER.writeValue(originalSystemOut, response)
@@ -127,6 +134,10 @@ class CodeNarcServer {
             this.stopServer()
         })
         this.ex = Executors.newFixedThreadPool(Runtime.runtime.availableProcessors())
+        // Separate from the HTTP executor: analysis tasks submitted to the pool that is
+        // serving the request would deadlock once all HTTP threads are busy.
+        this.analysisPool = Executors.newFixedThreadPool(
+            Math.max(1, Math.min(Runtime.runtime.availableProcessors(), AnalysisPartitioner.MAX_PARTITIONS)))
     }
 
     // Ping
@@ -199,7 +210,7 @@ class CodeNarcServer {
                     }
                 }
 
-                request.process(response)
+                request.process(response, new LintContext(analysisPool, null))
             } catch (InterruptedException ie) {
                 LOGGER.debug('Interrupted by duplicate')
                 response.setInterrupted()
@@ -257,6 +268,7 @@ class CodeNarcServer {
     private void stopServer() {
         LOGGER.info('Shutting down...')
         timer.cancel()
+        analysisPool.shutdownNow()
         ex.shutdown()
         ex.awaitTermination(1, TimeUnit.SECONDS)
         LOGGER.debug('Threads stopped')

@@ -19,6 +19,11 @@ class Response {
     // Detected files.
     List<String> fileList
 
+    // Diagnostics (optional, used by tests and --verbose).
+    Integer partitionCount
+    Integer cacheHits
+    Integer cacheMisses
+
     // Errors.
     String errorMessage
     String errorDtl

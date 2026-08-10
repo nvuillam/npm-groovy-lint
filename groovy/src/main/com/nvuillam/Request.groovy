@@ -2,6 +2,8 @@ package com.nvuillam
 
 import groovy.ant.AntBuilder
 import groovy.transform.CompileDynamic
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import org.codehaus.groovy.ant.FileScanner
@@ -42,6 +44,7 @@ class Request {
     boolean parse
     String[] fileList
     String requestKey
+    Integer parallelism
 
     Request() {
         this.codeNarcArgs = []
@@ -51,6 +54,7 @@ class Request {
         this.parse = false
         this.fileList = []
         this.requestKey = null
+        this.parallelism = null
     }
 
     /**
@@ -97,11 +101,30 @@ class Request {
     }
 
     /**
-     * Process the request.
+     * Process the request, using a same-thread executor as the analysis pool.
+     *
+     * Kept for callers that have no pool of their own to offer (e.g. tests exercising
+     * Request in isolation). The pool is shut down once processing completes, otherwise
+     * every call through this overload leaks a thread.
      *
      * @param response the response to populate.
      */
     void process(Response response) {
+        ExecutorService pool = Executors.newSingleThreadExecutor()
+        try {
+            process(response, new LintContext(pool, null))
+        } finally {
+            pool.shutdownNow()
+        }
+    }
+
+    /**
+     * Process the request.
+     *
+     * @param response the response to populate.
+     * @param ctx collaborators (the analysis thread pool, and the result cache once Task 5 lands).
+     */
+    void process(Response response, LintContext ctx) {
         if (codeNarcArgs == VERSION_ARGS) {
             response.setStdout(codeNarcVersion())
             return
@@ -116,25 +139,33 @@ class Request {
         response.fileList = listFiles()
         response.parseErrors = parseFiles(response.fileList)
 
-        // Run CodeNarc capturing the output if needed.
-        codeNarcArgs.add('-plugins=com.nvuillam.CapturePlugin')
-        LOGGER.debug('Calling CodeNarc with args: {}', codeNarcArgs)
-        CodeNarc codeNarc = new CodeNarc()
-        codeNarc.execute(codeNarcArgs as String[])
-        codeNarc.reports.each { reportWriter ->
-            if (!(reportWriter instanceof CapturedReportWriter)) { // groovylint-disable-line Instanceof
-                // Not a captured report writer, ignore.
-                return
-            }
+        // Strip any -includes the caller supplied: partitions supply their own.
+        List<String> baseArgs = codeNarcArgs.findAll { !it.startsWith('-includes=') }
 
-            CapturedReportWriter captured = (CapturedReportWriter)reportWriter
-            if (captured.capturedClassName().toLowerCase().contains('json')) {
-                List<String> orderedKeys = orderedResultKeys(response.fileList)
-                response.setJsonResult(ResultMerger.merge([captured.report()], [:], captured.report(), orderedKeys))
-            } else {
-                response.setStdout(captured.report())
-            }
+        List<String> relativePaths = response.fileList.collect { String absolute ->
+            relativise(absolute)
         }
+
+        LOGGER.debug('Calling CodeNarc with base args: {}', baseArgs)
+        AnalysisPartitioner.AnalysisOutcome outcome =
+            AnalysisPartitioner.analyse(relativePaths, baseArgs, parallelism, ctx.pool)
+
+        response.partitionCount = outcome.partitionCount
+
+        List<String> orderedKeys = orderedResultKeys(response.fileList)
+        response.setJsonResult(ResultMerger.merge(outcome.reports, [:], outcome.reports ? outcome.reports[0] : null, orderedKeys))
+    }
+
+    /**
+     * Convert an absolute path into a CodeNarc basedir-relative ant path.
+     */
+    private String relativise(String absolutePath) {
+        String base = new File(codeNarcBaseDir).canonicalPath
+        String target = new File(absolutePath).canonicalPath
+        if (target.startsWith(base)) {
+            return target.substring(base.length()).replace('\\', '/').replaceAll('^/', '')
+        }
+        return target.replace('\\', '/')
     }
 
     /**
