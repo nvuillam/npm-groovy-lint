@@ -22,9 +22,14 @@ class ResultMerger {
      * @param cachedByFile map of "packagePath|fileName" to violation maps, may be empty
      * @param template a report to copy the 'codeNarc' and 'rules' blocks from; when null the
      *        first partial report is used
+     * @param orderedKeys "packagePath|fileName" keys in the order files should appear in the
+     *        merged report (e.g. the request's own file list order); when null or empty, falls
+     *        back to alphabetical order. A file present in the reports but absent from this list
+     *        is still emitted, appended after the ordered ones, sorted alphabetically.
      * @return the merged report as a JSON string
      */
-    static String merge(List<String> partialReports, Map<String, List<Map>> cachedByFile, String template) {
+    static String merge(List<String> partialReports, Map<String, List<Map>> cachedByFile, String template,
+                         List<String> orderedKeys = null) {
         List<Map> parsed = partialReports.findAll { it }.collect { MAPPER.readValue(it, Map) }
 
         Map merged = [:]
@@ -58,14 +63,38 @@ class ResultMerger {
             files.computeIfAbsent(fileName, { [] }).addAll(violations)
         }
 
-        // Rebuild packages, sorted so output is deterministic regardless of completion order.
-        List packages = []
-        byPackage.keySet().sort().each { String pkgPath ->
-            Map<String, List> files = byPackage.get(pkgPath)
-            List fileEntries = []
-            files.keySet().sort().each { String fileName ->
-                fileEntries << [name: fileName, violations: files.get(fileName)]
+        // Rebuild packages, ordered by orderedKeys (typically the request's own file list order)
+        // so the merged report keeps the original file processing order. Falls back to
+        // alphabetical order (by pkgPath, then fileName) when no ordering is given, or for any
+        // file present in the data but absent from orderedKeys, so nothing is silently dropped.
+        Map<String, Integer> rank = [:]
+        if (orderedKeys) {
+            orderedKeys.eachWithIndex { String key, int idx -> rank[key] = idx }
+        }
+
+        List<List<String>> allEntries = []
+        byPackage.each { String pkgPath, Map<String, List> files ->
+            files.keySet().each { String fileName ->
+                allEntries << [pkgPath, fileName]
             }
+        }
+
+        List<List<String>> known = allEntries.findAll { List<String> entry -> rank.containsKey("${entry[0]}|${entry[1]}".toString()) }
+        List<List<String>> unknown = allEntries.findAll { List<String> entry -> !rank.containsKey("${entry[0]}|${entry[1]}".toString()) }
+        known = known.sort { List<String> entry -> rank["${entry[0]}|${entry[1]}".toString()] }
+        unknown = unknown.sort()
+        List<List<String>> sortedEntries = known + unknown
+
+        Map<String, List> orderedPackages = new LinkedHashMap<>()
+        sortedEntries.each { List<String> entry ->
+            String pkgPath = entry[0]
+            String fileName = entry[1]
+            List fileEntries = orderedPackages.computeIfAbsent(pkgPath, { [] })
+            fileEntries << [name: fileName, violations: byPackage[pkgPath][fileName]]
+        }
+
+        List packages = []
+        orderedPackages.each { String pkgPath, List fileEntries ->
             Map pkg = [files: fileEntries]
             if (pkgPath) {
                 pkg.path = pkgPath

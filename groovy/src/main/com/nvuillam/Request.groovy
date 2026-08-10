@@ -129,7 +129,8 @@ class Request {
 
             CapturedReportWriter captured = (CapturedReportWriter)reportWriter
             if (captured.capturedClassName().toLowerCase().contains('json')) {
-                response.setJsonResult(ResultMerger.merge([captured.report()], [:], captured.report()))
+                List<String> orderedKeys = orderedResultKeys(response.fileList)
+                response.setJsonResult(ResultMerger.merge([captured.report()], [:], captured.report(), orderedKeys))
             } else {
                 response.setStdout(captured.report())
             }
@@ -148,6 +149,25 @@ class Request {
             return [:]
         }
         return SourceParser.parseFiles(fileList)
+    }
+
+    /**
+     * Build the "packagePath|fileName" keys ResultMerger uses to order its output, in the same
+     * order as the request's own file list, so the merged report keeps the file processing order
+     * a caller would see without the merger.
+     *
+     * @param absoluteFiles the absolute file paths, in request order (as produced by listFiles())
+     * @return the ordered list of "packagePath|fileName" keys, relative to codeNarcBaseDir
+     */
+    private List<String> orderedResultKeys(List<String> absoluteFiles) {
+        File baseDir = new File(codeNarcBaseDir).getAbsoluteFile()
+        return absoluteFiles.collect { String absolutePath ->
+            String relativePath = baseDir.toURI().relativize(new File(absolutePath).toURI()).getPath()
+            int sep = relativePath.lastIndexOf('/')
+            String pkgPath = sep >= 0 ? relativePath.substring(0, sep) : ''
+            String fileName = sep >= 0 ? relativePath.substring(sep + 1) : relativePath
+            return "${pkgPath}|${fileName}"
+        }
     }
 
     /**
