@@ -86,7 +86,7 @@ class AnalysisPartitioner {
             return 1
         }
         if (requested != null && requested > 0) {
-            return Math.min(requested, relativePaths.size())
+            return Math.min(Math.min(requested, MAX_PARTITIONS), relativePaths.size())
         }
         int cores = Runtime.runtime.availableProcessors()
         return Math.max(1, Math.min(Math.min(cores, MAX_PARTITIONS), relativePaths.size()))
