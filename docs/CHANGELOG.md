@@ -11,7 +11,7 @@
   - **import-fresh** -> cache-busted dynamic `import()`
   - **strip-json-comments** -> small inlined comment stripper
   - **uuid** (unused), **commondir**, **find-package-json**, **find-java-home** -> removed or inlined
-  - **glob** -> moved to devDependencies (only used by build scripts)
+  - **glob** -> removed (build scripts use `fs.readdirSync` instead)
 - Reduce devDependencies too: remove **@babel/core**, **@babel/eslint-parser**, **@eslint/eslintrc**, **diff**, **handlebars**, **npm-run-all2**, **rimraf**, **which**, and replace **nyc** with **c8**
 - Upgrade to **eslint v10**
 - Add supply-chain guards: CI fails if the production dependency count grows beyond the committed baseline, and Renovate now applies a 7-day cooldown (`minimumReleaseAge`) before proposing new dependency versions

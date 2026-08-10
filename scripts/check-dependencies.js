@@ -6,7 +6,15 @@ import { execSync } from "child_process";
 
 const MAX_PROD_PACKAGES = 27; // baseline 2026-08: java-caller (+ njre/tar/yauzl/semver), optionator, js-yaml, node-sarif-builder
 
-const output = execSync("npm ls --all --omit=dev --parseable", { encoding: "utf8" });
+let output;
+try {
+    output = execSync("npm ls --all --omit=dev --parseable", { encoding: "utf8" });
+} catch (e) {
+    // npm ls exits non-zero when the installed tree has problems (missing or invalid dependencies)
+    console.error("Unable to count production dependencies: npm ls reported problems with the installed tree (run npm ci and retry).");
+    console.error(String(e.stderr || e.message));
+    process.exit(1);
+}
 const count = new Set(output.split(/\r?\n/).filter(Boolean)).size - 1; // -1 for the root project itself
 
 if (count > MAX_PROD_PACKAGES) {
