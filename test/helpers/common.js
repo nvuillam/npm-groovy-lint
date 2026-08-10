@@ -88,8 +88,11 @@ function isExecutableFile(fullPath) {
     }
 }
 function whichSync(cmd) {
-    const exts = process.platform === "win32" ? (process.env.PATHEXT || ".EXE;.CMD;.BAT;.COM").split(";") : [""];
-    for (const dir of (process.env.PATH || "").split(path.delimiter)) {
+    // Always try the bare name too: PATHEXT does not list it, but an extensionless executable is valid
+    const exts = process.platform === "win32" ? ["", ...(process.env.PATHEXT || ".EXE;.CMD;.BAT;.COM").split(";")] : [""];
+    for (const rawDir of (process.env.PATH || "").split(path.delimiter)) {
+        // PATH entries containing spaces are sometimes quoted on Windows
+        const dir = rawDir.replace(/^"(.*)"$/, "$1");
         if (!dir) {
             continue;
         }
