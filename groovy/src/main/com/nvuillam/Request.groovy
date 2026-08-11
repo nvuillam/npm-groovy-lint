@@ -167,12 +167,21 @@ class Request {
 
         List<String> orderedKeys = orderedResultKeys(response.fileList)
 
+        // A file-destination report (-report=<type>:<path>, as opposed to
+        // -report=<type>:stdout) is produced by CodeNarc actually executing and writing to
+        // disk - see AnalysisPartitioner.runCodeNarc. It is not part of the JSON result, so
+        // it cannot be reconstructed from cached per-file violations. Bypass the cache
+        // entirely in that case - neither read from it nor write to it - so CodeNarc always
+        // actually runs and the file always gets (re)written, instead of a fully-cached
+        // request silently skipping execution and never producing the file.
+        boolean fileReport = AnalysisPartitioner.hasFileReport(baseArgs)
+
         Map<String, List<Map>> cached = [:]
         List<String> toAnalyse = relativePaths
         Map<String, String> keyByRelative = [:]
         String fingerprint = null
 
-        if (ctx.cache != null) {
+        if (ctx.cache != null && !fileReport) {
             fingerprint = ctx.cache.fingerprint(baseArgs)
             toAnalyse = []
             relativePaths.eachWithIndex { String relative, int i ->
@@ -194,7 +203,7 @@ class Request {
 
         // Store freshly computed results before merging.
         String template = outcome.reports ? outcome.reports[0] : null
-        if (ctx.cache != null) {
+        if (ctx.cache != null && !fileReport) {
             storeResults(outcome.reports, keyByRelative, ctx.cache)
             if (template != null) {
                 ctx.cache.putTemplate(fingerprint, template)
@@ -209,6 +218,12 @@ class Request {
 
         response.partitionCount = outcome.partitionCount
         response.setJsonResult(ResultMerger.merge(outcome.reports, cached, template, orderedKeys))
+        if (outcome.stdoutReport != null) {
+            // A non-JSON captured report (e.g. -report=xml:stdout) is a different format
+            // ResultMerger cannot parse as JSON: surface it separately, mirroring the
+            // original single-threaded implementation's json/else branch.
+            response.setStdout(outcome.stdoutReport)
+        }
     }
 
     /**

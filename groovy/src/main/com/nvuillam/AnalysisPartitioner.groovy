@@ -29,6 +29,23 @@ class AnalysisPartitioner {
 
         List<String> reports = []
         int partitionCount = 0
+        // Non-JSON captured report (e.g. -report=xml:stdout), populated only on the
+        // single-partition path - see runCodeNarc() and CodeNarcRunResult below.
+        String stdoutReport = null
+
+    }
+
+    /**
+     * What a single CodeNarc invocation captured: the JSON report (from -report=json:stdout,
+     * if requested) and any other captured report that also targeted stdout but in a
+     * different format (e.g. -report=xml:stdout). A report targeting a real file is never
+     * captured here at all - CodeNarc writes it straight to disk as a side effect of
+     * execute() - see CapturePlugin, which only wraps writers whose destination is stdout.
+     */
+    private static class CodeNarcRunResult {
+
+        String jsonReport
+        String stdoutReport
 
     }
 
@@ -114,22 +131,27 @@ class AnalysisPartitioner {
             return outcome
         }
 
-        int partitions = choosePartitionCount(relativePaths, requested)
+        int partitions = choosePartitionCount(relativePaths, requested, codeNarcArgs)
         outcome.partitionCount = partitions
 
         if (partitions <= 1) {
-            outcome.reports = [runCodeNarc(relativePaths, codeNarcArgs)]
+            CodeNarcRunResult result = runCodeNarc(relativePaths, codeNarcArgs)
+            outcome.reports = [result.jsonReport]
+            outcome.stdoutReport = result.stdoutReport
             return outcome
         }
 
         List<List<String>> batches = split(relativePaths, partitions)
-        List<Future<String>> futures = batches.collect { List<String> batch ->
-            pool.submit({ runCodeNarc(batch, codeNarcArgs) } as Callable<String>)
+        List<Future<CodeNarcRunResult>> futures = batches.collect { List<String> batch ->
+            pool.submit({ runCodeNarc(batch, codeNarcArgs) } as Callable<CodeNarcRunResult>)
         }
         handle?.register(futures)
 
         try {
-            outcome.reports = futures.collect { it.get() }
+            // A file-destination report forces a single partition (see choosePartitionCount),
+            // so with more than one partition here there is nothing but the JSON report to
+            // aggregate: any non-JSON stdoutReport a partition captured is discarded.
+            outcome.reports = futures.collect { it.get().jsonReport }
         } catch (InterruptedException | CancellationException cancelled) {
             // The handler thread was interrupted, or one of our own futures was cancelled:
             // this is a genuine cancellation, not a partition failure. Do not fall back to
@@ -151,7 +173,9 @@ class AnalysisPartitioner {
             LOGGER.debug('Parallel analysis failed ({}), retrying sequentially', ee.cause?.class?.simpleName ?: ee.class.simpleName)
             // Retry once on a single thread. A partition failure must never fail the whole
             // request.
-            outcome.reports = [runCodeNarc(relativePaths, codeNarcArgs)]
+            CodeNarcRunResult retry = runCodeNarc(relativePaths, codeNarcArgs)
+            outcome.reports = [retry.jsonReport]
+            outcome.stdoutReport = retry.stdoutReport
             outcome.partitionCount = 1
         } catch (Throwable t) {
             futures.each { it.cancel(true) }
@@ -162,7 +186,9 @@ class AnalysisPartitioner {
             // deliberate: it covers OutOfMemoryError, where N concurrent CodeNarc
             // instances exhausted the heap and one sequential pass may still succeed.
             // A partition failure must never fail the whole request.
-            outcome.reports = [runCodeNarc(relativePaths, codeNarcArgs)]
+            CodeNarcRunResult retry = runCodeNarc(relativePaths, codeNarcArgs)
+            outcome.reports = [retry.jsonReport]
+            outcome.stdoutReport = retry.stdoutReport
             outcome.partitionCount = 1
         }
 
@@ -173,12 +199,20 @@ class AnalysisPartitioner {
      * Decide how many partitions to use.
      *
      * Returns 1 when parallelism would be unsafe or pointless: an explicit request of 1,
-     * a single file, or any path containing a comma (CodeNarc's -includes is comma
-     * separated, so such a path cannot be expressed in a partition).
+     * a single file, any path containing a comma (CodeNarc's -includes is comma separated,
+     * so such a path cannot be expressed in a partition), or a file-destination report
+     * (-report=<type>:<path>). The latter is a hard requirement, not just an optimisation:
+     * with N > 1 partitions every partition would run its own CodeNarc writing to the SAME
+     * output path, so the file would end up containing only whichever partition finished
+     * last, silently losing every other partition's results.
      */
-    static int choosePartitionCount(List<String> relativePaths, Integer requested) {
+    static int choosePartitionCount(List<String> relativePaths, Integer requested, List<String> codeNarcArgs = []) {
         if (relativePaths.any { it.contains(',') }) {
             LOGGER.debug('Disabling parallelism: a file path contains a comma')
+            return 1
+        }
+        if (hasFileReport(codeNarcArgs)) {
+            LOGGER.debug('Disabling parallelism: a file-destination report was requested')
             return 1
         }
         if (requested != null && requested > 0) {
@@ -186,6 +220,30 @@ class AnalysisPartitioner {
         }
         int cores = Runtime.runtime.availableProcessors()
         return Math.max(1, Math.min(Math.min(cores, MAX_PARTITIONS), relativePaths.size()))
+    }
+
+    /**
+     * True when codeNarcArgs contains a -report=&lt;type&gt;:&lt;destination&gt; whose
+     * destination is a real file rather than stdout. Such a report is a side effect of
+     * CodeNarc actually executing (CodeNarc writes it straight to disk) - it is not part of
+     * the JSON result, so it can neither be served from ResultCache nor safely split across
+     * partitions (see choosePartitionCount above and Request.process, which uses this same
+     * check to bypass the cache).
+     *
+     * The destination is everything after the FIRST colon in the -report= value, not a
+     * simple split(':'), because the destination itself is a path and so may legitimately
+     * contain further colons (e.g. a Windows drive letter: -report=html:C:\path\report.html).
+     */
+    static boolean hasFileReport(List<String> codeNarcArgs) {
+        return codeNarcArgs.any { String arg ->
+            if (!arg.startsWith('-report=')) {
+                return false
+            }
+            String value = arg.substring('-report='.length())
+            int sep = value.indexOf(':')
+            String destination = sep >= 0 ? value.substring(sep + 1) : null
+            return destination && !destination.equalsIgnoreCase('stdout')
+        }
     }
 
     private static List<List<String>> split(List<String> paths, int partitions) {
@@ -196,7 +254,7 @@ class AnalysisPartitioner {
         return batches.findAll { !it.isEmpty() }
     }
 
-    private static String runCodeNarc(List<String> relativePaths, List<String> baseArgs) {
+    private static CodeNarcRunResult runCodeNarc(List<String> relativePaths, List<String> baseArgs) {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException('Cancelled before analysis')
         }
@@ -212,17 +270,27 @@ class AnalysisPartitioner {
             throw new InterruptedException('Cancelled after analysis')
         }
 
-        String report = null
+        CodeNarcRunResult result = new CodeNarcRunResult()
         codeNarc.reports.each { reportWriter ->
             if (!(reportWriter instanceof CapturedReportWriter)) { // groovylint-disable-line Instanceof
+                // Not a captured report writer: either it targets a real file, written
+                // directly to disk by execute() above as a side effect, or it is some other
+                // writer type CapturePlugin does not wrap. Either way, there is nothing to
+                // capture here.
                 return
             }
             CapturedReportWriter captured = (CapturedReportWriter)reportWriter
             if (captured.capturedClassName().toLowerCase().contains('json')) {
-                report = captured.report()
+                result.jsonReport = captured.report()
+            } else {
+                // A captured report writer that isn't JSON (e.g. -report=xml:stdout) still
+                // targeted stdout, so surface its content the same way the original
+                // single-threaded implementation did: as Response.stdout, not as part of the
+                // JSON result ResultMerger aggregates.
+                result.stdoutReport = captured.report()
             }
         }
-        return report
+        return result
     }
 
 }

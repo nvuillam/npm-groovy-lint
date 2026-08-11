@@ -2,6 +2,7 @@
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
 import { beforeEachTestCase, SAMPLE_FILE_PARSE_ERROR_PATH } from "./helpers/common.js";
+import fs from "node:fs";
 
 describe("Performance Stage 1", function () {
     it("(PERF) still reports parse errors after the parser rewrite", async function () {
@@ -151,6 +152,52 @@ describe("Performance Stage 1", function () {
             JSON.stringify(afterEdit.lintResult.files[editedKey].errors) !== JSON.stringify(cold.lintResult.files[key].errors),
             "Editing the file must invalidate its cache entry",
         );
+    });
+
+    it("(PERF) a file report is still written when every file is served from the cache", async function () {
+        this.timeout(300000);
+        const path = await import("node:path");
+        const { copyFilesInTmpDir } = await import("./helpers/common.js");
+        beforeEachTestCase();
+
+        // Regression test for a bug that the plain (API:file) HTML/XML report tests only
+        // caught by accident of pre-warm ordering (mochaGlobalSetup pre-lints ./lib/example
+        // before any test runs, so those tests' basedir was always already cached). Here we
+        // control the cache state explicitly: lint a corpus once to populate the cache, then
+        // lint the exact same corpus again on the exact same (still running, still warm)
+        // server, requesting an HTML file report. If the "every file is a cache hit" path
+        // skips CodeNarc execution entirely, the report file - a side effect of CodeNarc
+        // actually running - never gets written.
+        const tmpDir = await copyFilesInTmpDir();
+        const reportFileName = path.resolve(tmpDir, "CacheHitReport.html");
+        const lint = (extraOptions) => new NpmGroovyLint({ path: tmpDir, insight: false, failon: "none", ...extraOptions }, {}).run();
+
+        // Populate the cache.
+        const warmup = await lint({ output: "none" });
+        assert(warmup.status === 0, `Warm-up run status should be 0 (${warmup.status} returned)`);
+
+        // Prove the corpus is now fully cached, via a plain run identical to the one about to
+        // request the file report (except for --output). A file-destination report
+        // deliberately bypasses the cache entirely - see Request.process - so cache stats
+        // cannot be observed on that call itself; this is how we know it would otherwise have
+        // been a 100% cache hit, which is exactly the scenario the bug needs.
+        // cacheHits/cacheMisses are cumulative counters for the whole server process
+        // (ResultCache never resets them), not scoped to a single request, so compare the
+        // delta between these two consecutive calls rather than the raw totals.
+        const stillCached = await lint({ output: "none" });
+        const hitsDelta = stillCached.cacheHits - warmup.cacheHits;
+        const missesDelta = stillCached.cacheMisses - warmup.cacheMisses;
+        assert(
+            hitsDelta > 0 && missesDelta === 0,
+            `Expected the corpus to be fully served from the cache before requesting the report, got hitsDelta=${hitsDelta} missesDelta=${missesDelta}`,
+        );
+
+        // This is the actual regression check: before the fix, a fully-cached basedir made
+        // AnalysisPartitioner.analyse([]) return immediately without ever executing CodeNarc,
+        // so the report file was never written.
+        const reportRun = await lint({ output: reportFileName });
+        assert(reportRun.status === 0, `Report run status should be 0 (${reportRun.status} returned)`);
+        assert(fs.existsSync(reportFileName), `Expected the HTML report to be written at ${reportFileName} even though every file was cached`);
     });
 
     it("(PERF) a duplicate requestKey cancels in-flight partition workers, not just the handler thread", async function () {
