@@ -18,9 +18,7 @@ describe("Performance Stage 1", function () {
         ).run();
         assert(linter.status === 0, `Linter status should be 0 (${linter.status} returned)`);
         const files = Object.keys(linter.lintResult.files);
-        const parseErrors = files.flatMap((f) =>
-            linter.lintResult.files[f].errors.filter((e) => e.rule === "NglParseError"),
-        );
+        const parseErrors = files.flatMap((f) => linter.lintResult.files[f].errors.filter((e) => e.rule === "NglParseError"));
         assert(parseErrors.length > 0, `Expected at least one NglParseError, got none. Sample path: ${SAMPLE_FILE_PARSE_ERROR_PATH}`);
     });
 
@@ -44,11 +42,7 @@ describe("Performance Stage 1", function () {
         assert(summary.totalFilesLinted > 1, `Expected several linted files, got ${summary.totalFilesLinted}`);
 
         const second = await run();
-        assert.deepStrictEqual(
-            second.lintResult.summary,
-            summary,
-            "Summary must be stable across runs once results go through ResultMerger",
-        );
+        assert.deepStrictEqual(second.lintResult.summary, summary, "Summary must be stable across runs once results go through ResultMerger");
     });
 
     it("(PERF) parallel analysis returns the same violations as sequential", async function () {
@@ -130,8 +124,7 @@ describe("Performance Stage 1", function () {
         // never populates, so "files" silently does nothing and the whole directory would be
         // linted instead of just this file - making Object.keys(...)[0] below point at
         // whichever file happens to sort first rather than the one this test edits.
-        const lint = async () =>
-            await new NpmGroovyLint({ path: tmpDir, _: [target], insight: false, failon: "none", output: "none" }, {}).run();
+        const lint = async () => await new NpmGroovyLint({ path: tmpDir, _: [target], insight: false, failon: "none", output: "none" }, {}).run();
 
         const cold = await lint();
         const warm = await lint();
@@ -141,10 +134,7 @@ describe("Performance Stage 1", function () {
         assert(warm.status === 0, `Fully-cached run status should be 0 (${warm.status} returned)`);
         // A cache test that would still pass with no cache at all is worthless: assert the
         // warm run actually served from the cache rather than just happening to match.
-        assert(
-            warm.cacheHits > 0,
-            `Expected the warm run to report cache hits, got cacheHits=${warm.cacheHits} cacheMisses=${warm.cacheMisses}`,
-        );
+        assert(warm.cacheHits > 0, `Expected the warm run to report cache hits, got cacheHits=${warm.cacheHits} cacheMisses=${warm.cacheMisses}`);
         const key = Object.keys(cold.lintResult.files)[0];
         assert.deepStrictEqual(
             warm.lintResult.files[key].errors.map((e) => `${e.rule}:${e.line}`).sort(),
@@ -158,9 +148,99 @@ describe("Performance Stage 1", function () {
         const afterEdit = await lint();
         const editedKey = Object.keys(afterEdit.lintResult.files)[0];
         assert(
-            JSON.stringify(afterEdit.lintResult.files[editedKey].errors) !==
-                JSON.stringify(cold.lintResult.files[key].errors),
+            JSON.stringify(afterEdit.lintResult.files[editedKey].errors) !== JSON.stringify(cold.lintResult.files[key].errors),
             "Editing the file must invalidate its cache entry",
+        );
+    });
+
+    it("(PERF) a duplicate requestKey cancels in-flight partition workers, not just the handler thread", async function () {
+        this.timeout(300000);
+        const fs = await import("node:fs/promises");
+        const path = await import("node:path");
+        const { copyFilesInTmpDir } = await import("./helpers/common.js");
+        beforeEachTestCase();
+
+        // A single copy of lib/example (11 files) is analysed in well under 400ms, so the
+        // duplicate request below would race a first request that has often already
+        // finished - which would make the test pass without the fix ever running (the
+        // handler-thread interrupt alone is enough once there is nothing left to cancel).
+        // Duplicating the corpus (x3, ~44 files spread across up to 4 partitions) pushes a
+        // single analysis to ~13-14s on this machine (measured separately with the same
+        // ruleset), so at +400ms every partition is still deep inside CodeNarc.execute() -
+        // comfortably (>30x) inside the window, not right on the edge of a race.
+        // Every duplicate also gets a marker unique to this test run appended to its
+        // content, so the Task 5 result cache (keyed on file content) can never serve the
+        // second request's files from a previous run and short-circuit the race.
+        const DUPLICATION_FACTOR = 3;
+        const tmpDir = await copyFilesInTmpDir();
+        const relPaths = (await fs.readdir(tmpDir, { recursive: true })).filter((p) => p.endsWith(".groovy"));
+        const marker = `cancel-test-${Math.random()}`;
+        for (const relPath of relPaths) {
+            const original = await fs.readFile(path.join(tmpDir, relPath), "utf8");
+            for (let i = 0; i < DUPLICATION_FACTOR; i++) {
+                const dupPath = path.join(tmpDir, relPath.replace(/\.groovy$/, `.dup${i}.groovy`));
+                await fs.writeFile(dupPath, `${original}\n// ${marker}-${i}\n`);
+            }
+        }
+
+        const options = {
+            path: tmpDir,
+            files: "**/*.groovy",
+            insight: false,
+            failon: "none",
+            output: "none",
+            // This test exercises AnalysisPartitioner/worker cancellation, not parse-error
+            // detection (covered separately above). Disabling it here also sidesteps a
+            // pre-existing, unrelated thread-safety bug: SourceParser.parseFiles() falls back
+            // to logging the caught MultipleCompilationErrorsException via
+            // LOGGER.debug(msg, throwable), and rendering that exception's message calls into
+            // Groovy's ErrorCollector, which is not safe to do concurrently from two threads at
+            // once (observed as a ConcurrentModificationException on the server when two
+            // requests over duplicated copies of WithParseError.groovy - part of lib/example -
+            // parse at the same moment). That 500 makes the client fall back to a direct java
+            // call, which bypasses requestKey cancellation entirely and is what actually made
+            // this test intermittently see two status-0 results with cancellation never having
+            // had a chance to run. Worth its own fix, but out of scope for partition-future
+            // cancellation.
+            parse: false,
+        };
+
+        const first = new NpmGroovyLint(options, { requestKey: "dup-key-test" }).run();
+        // Give the first request time to start analysing before superseding it.
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        const second = new NpmGroovyLint(options, { requestKey: "dup-key-test" }).run();
+
+        const [firstResult, secondResult] = await Promise.all([first, second]);
+
+        // Which of the two client-issued calls actually reaches the server *first* is not
+        // guaranteed by the order this test fires them in (HTTP/connection scheduling can
+        // reorder them - confirmed empirically: a standalone repro of this same race
+        // sometimes had the client's "second" call arrive at the server before "first").
+        // The server always cancels whichever one registered earlier, so pick out whichever
+        // of the two ended up cancelled rather than assuming it is "first" - the property
+        // this task is actually about (did cancellation reach the workers?) does not depend
+        // on which side won that race.
+        const cancelled = firstResult.status === 9 ? firstResult : secondResult.status === 9 ? secondResult : null;
+        const succeeded = cancelled === firstResult ? secondResult : firstResult;
+
+        assert(
+            cancelled !== null,
+            "Expected exactly one of the two duplicate requests to be cancelled (status 9), got " + `${firstResult.status} / ${secondResult.status}`,
+        );
+        assert.strictEqual(succeeded.status, 0, `Expected the other (superseding) request to succeed, got ${succeeded.status}`);
+        // The discriminating assertion: before this task, a duplicate requestKey only
+        // interrupted the HTTP handler thread. That was enough to make the handler stop
+        // waiting and return status 9 (so the assertions above would already pass), while
+        // the partition futures kept running to completion on the worker pool, wasting
+        // CPU on a superseded request. cancelledWorkers is populated only from
+        // Future.cancel(true) actually returning true (see AnalysisPartitioner.RequestHandle),
+        // so a value of 0 here would mean cancellation never reached the workers - proving
+        // this specific test would fail without the fix, not merely that a request returned.
+        assert(
+            cancelled.cancelledWorkers > 0,
+            `Expected cancellation to reach in-flight partition workers (cancelledWorkers > 0), got ` +
+                `${cancelled.cancelledWorkers}. A value of 0 (or undefined) means only the handler ` +
+                "thread was interrupted while the analysis workers kept running to completion.",
         );
     });
 });

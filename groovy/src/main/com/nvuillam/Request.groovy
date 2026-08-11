@@ -119,12 +119,25 @@ class Request {
     }
 
     /**
-     * Process the request.
+     * Process the request, with no cancellation handle to register partition futures on.
      *
      * @param response the response to populate.
      * @param ctx collaborators (the analysis thread pool, and the result cache once Task 5 lands).
      */
     void process(Response response, LintContext ctx) {
+        process(response, ctx, null)
+    }
+
+    /**
+     * Process the request.
+     *
+     * @param response the response to populate.
+     * @param ctx collaborators (the analysis thread pool, and the result cache once Task 5 lands).
+     * @param handle registers this request's partition futures so a duplicate requestKey can
+     *        cancel them; may be null when there is no cancellation tracking (e.g. tests
+     *        exercising Request in isolation, or the one-shot CLI call).
+     */
+    void process(Response response, LintContext ctx, AnalysisPartitioner.RequestHandle handle) {
         if (codeNarcArgs == VERSION_ARGS) {
             response.setStdout(codeNarcVersion())
             return
@@ -133,6 +146,12 @@ class Request {
         if (codeNarcArgs == HELP_ARGS) {
             response.setStdout(codeNarcHelp())
             return
+        }
+
+        // A request cancelled before reaching AnalysisPartitioner (e.g. while another
+        // duplicate was still being handled) should not even start listing/parsing files.
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedException('Cancelled before processing')
         }
 
         // Detect parse errors if requested.
@@ -171,7 +190,7 @@ class Request {
 
         LOGGER.debug('Calling CodeNarc with base args: {}', baseArgs)
         AnalysisPartitioner.AnalysisOutcome outcome =
-            AnalysisPartitioner.analyse(toAnalyse, baseArgs, parallelism, ctx.pool)
+            AnalysisPartitioner.analyse(toAnalyse, baseArgs, parallelism, ctx.pool, handle)
 
         // Store freshly computed results before merging.
         String template = outcome.reports ? outcome.reports[0] : null
