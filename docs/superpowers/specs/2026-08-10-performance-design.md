@@ -27,11 +27,11 @@ what the design relies on.
 overrides only 31 rules. "Recommended" is therefore *all 390 CodeNarc rules*
 with a few tweaked — 386 active after overrides.
 
-| Ruleset | Time (same corpus) |
-| --- | --- |
-| 10 rules | ~1.0 s |
-| 60 rules | ~1.8 s |
-| **386 rules (default)** | **~36–50 s** |
+| Ruleset                 | Time (same corpus) |
+|-------------------------|--------------------|
+| 10 rules                | ~1.0 s             |
+| 60 rules                | ~1.8 s             |
+| **386 rules (default)** | **~36–50 s**       |
 
 Cost is **additive per rule**, not superlinear: bisecting the 386 rules into
 60-rule chunks gives times summing to ~53 s, against ~45.6 s for all 386 at
@@ -46,12 +46,12 @@ every file sequentially, using one core of eight.
 
 Partitioning files across threads was validated to produce **identical output**:
 
-| Threads | Time | Violations |
-| --- | --- | --- |
-| 1 | 64.3 s | 35,600 |
-| 2 | 71.4 s | 35,600 |
-| 4 | 30.8 s | 35,600 (**2.09x**) |
-| 8 | 32.6 s | 35,600 (1.97x) |
+| Threads | Time   | Violations         |
+|---------|--------|--------------------|
+| 1       | 64.3 s | 35,600             |
+| 2       | 71.4 s | 35,600             |
+| 4       | 30.8 s | 35,600 (**2.09x**) |
+| 8       | 32.6 s | 35,600 (1.97x)     |
 
 Speedup plateaus at ~2x around 4 threads, well short of core count. The likely
 causes (shared classloader contention, memory bandwidth during AST traversal)
@@ -80,11 +80,11 @@ third-party imports.
 a full compilation, purely to collect syntax errors. Only the CONVERSION phase is
 needed.
 
-| Strategy | Time (20 files) |
-| --- | --- |
-| per-file `parseClass` (current) | 767 ms |
-| per-file `CompilationUnit` @ CONVERSION | 662 ms |
-| **single shared `CompilationUnit` @ CONVERSION** | **153 ms** |
+| Strategy                                         | Time (20 files) |
+|--------------------------------------------------|-----------------|
+| per-file `parseClass` (current)                  | 767 ms          |
+| per-file `CompilationUnit` @ CONVERSION          | 662 ms          |
+| **single shared `CompilationUnit` @ CONVERSION** | **153 ms**      |
 
 ### 5. Whitespace rules dominate the per-rule ranking
 
@@ -232,14 +232,14 @@ restore path.
 
 ## Expected outcome
 
-| Change | Expected |
-| --- | --- |
-| Drop 5 dead rules + logging storm | ~9 s off the benchmark corpus |
-| Parse step | 5x on the parse phase |
-| Parallelism (cap 4) | ~2x overall |
-| Cache | near-zero on repeat lints (VS Code, local CLI) |
-| **Stage 1 combined** | **~2.5–3x, first run** |
-| **Stage 2 (curated ruleset)** | **~10x** |
+| Change                            | Expected                                       |
+|-----------------------------------|------------------------------------------------|
+| Drop 5 dead rules + logging storm | ~9 s off the benchmark corpus                  |
+| Parse step                        | 5x on the parse phase                          |
+| Parallelism (cap 4)               | ~2x overall                                    |
+| Cache                             | near-zero on repeat lints (VS Code, local CLI) |
+| **Stage 1 combined**              | **~2.5–3x, first run**                         |
+| **Stage 2 (curated ruleset)**     | **~10x**                                       |
 
 ## Out of scope
 
@@ -258,11 +258,11 @@ Measured 2026-08-11 on the same class of machine as the Problem-section baseline
 corpus (`lib/example/SampleFile.groovy` x20). Each scenario run **3 times**;
 medians reported below, with all three raw samples so variance is visible.
 
-| Scenario | Command | Raw samples (s) | Median |
-| --- | --- | --- | --- |
-| COLD (server start + full analysis, empty cache) | `node lib/index.js -o none <corpus>` after `--killserver` | 68.820, 51.145, 59.862 | **59.862 s** |
-| WARM (same request repeated, cache hits) | same command, immediately after | 6.139, 6.478, 6.237 | **6.237 s** |
-| SEQUENTIAL (cold, `--parallelism 1`) | `node lib/index.js -o none --parallelism 1 <corpus>` after `--killserver` | 74.845, 73.936, 75.861 | **74.845 s** |
+| Scenario                                         | Command                                                                   | Raw samples (s)        | Median       |
+|--------------------------------------------------|---------------------------------------------------------------------------|------------------------|--------------|
+| COLD (server start + full analysis, empty cache) | `node lib/index.js -o none <corpus>` after `--killserver`                 | 68.820, 51.145, 59.862 | **59.862 s** |
+| WARM (same request repeated, cache hits)         | same command, immediately after                                           | 6.139, 6.478, 6.237    | **6.237 s**  |
+| SEQUENTIAL (cold, `--parallelism 1`)             | `node lib/index.js -o none --parallelism 1 <corpus>` after `--killserver` | 74.845, 73.936, 75.861 | **74.845 s** |
 
 Pre-change baseline (from the Problem section, measured on a **warm CodeNarc
 server**, i.e. JVM already up, JIT warmed, no result cache — that capability

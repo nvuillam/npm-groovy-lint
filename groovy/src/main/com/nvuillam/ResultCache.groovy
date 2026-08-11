@@ -31,10 +31,12 @@ class ResultCache {
     ResultCache(int maxEntries = DEFAULT_MAX_ENTRIES) {
         this.entries = Collections.synchronizedMap(
             new LinkedHashMap<String, List<Map>>(16, 0.75f, true) {
+
                 @Override
                 protected boolean removeEldestEntry(Map.Entry<String, List<Map>> eldest) {
                     return size() > maxEntries
                 }
+
             })
     }
 
@@ -88,7 +90,7 @@ class ResultCache {
                             sb.append(sha256(f.bytes)).append('|')
                         }
                     } catch (Throwable ignored) {
-                        // Unreadable ruleset reference: fall back to the raw string already appended.
+                    // Unreadable ruleset reference: fall back to the raw string already appended.
                     }
                 }
             }

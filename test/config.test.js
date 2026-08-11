@@ -187,10 +187,7 @@ describe("recommended preset rules", () => {
             "GrailsDomainGormMethods",
         ];
         for (const ruleName of deadRules) {
-            assert(
-                config.rules[ruleName] === "off",
-                `${ruleName} should be "off" in recommended (was ${JSON.stringify(config.rules[ruleName])})`,
-            );
+            assert(config.rules[ruleName] === "off", `${ruleName} should be "off" in recommended (was ${JSON.stringify(config.rules[ruleName])})`);
         }
     });
 });

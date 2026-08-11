@@ -26,8 +26,10 @@ class AnalysisPartitioner {
     static final int MAX_PARTITIONS = 4
 
     static class AnalysisOutcome {
+
         List<String> reports = []
         int partitionCount = 0
+
     }
 
     /**
@@ -37,6 +39,7 @@ class AnalysisPartitioner {
      * completion.
      */
     static class RequestHandle {
+
         Thread thread
         private final List<Future> futures = Collections.synchronizedList([])
         private final AtomicInteger cancelledCount = new AtomicInteger(0)
@@ -89,6 +92,7 @@ class AnalysisPartitioner {
         int getCancelledCount() {
             return cancelledCount.get()
         }
+
     }
 
     /**
@@ -163,7 +167,7 @@ class AnalysisPartitioner {
         }
 
         return outcome
-    }
+                                   }
 
     /**
      * Decide how many partitions to use.

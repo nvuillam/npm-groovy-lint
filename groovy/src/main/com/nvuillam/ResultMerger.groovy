@@ -137,6 +137,6 @@ class ResultMerger {
         ]
 
         return MAPPER.writeValueAsString(merged)
-    }
+                         }
 
 }
