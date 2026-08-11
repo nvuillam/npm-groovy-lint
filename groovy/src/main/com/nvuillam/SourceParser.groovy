@@ -20,8 +20,11 @@ class SourceParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SourceParser)
 
-    // Raised well above the default of 10 so a single noisy file does not abort
-    // the shared compile before later files have been processed.
+    // Raised well above the default of 10. Only parseSingle relies on this: parseFiles
+    // no longer trusts the shared pass once it reports any error and redoes the whole
+    // batch file by file (see parseFiles below), so this tolerance's only effect is
+    // letting a single file with many syntax errors report all of them in one pass
+    // instead of stopping after the default 10.
     private static final int ERROR_TOLERANCE = 1000
 
     /**

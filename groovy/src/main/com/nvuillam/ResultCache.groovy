@@ -69,6 +69,13 @@ class ResultCache {
         sb.append(CodeNarcVersion.getVersion()).append('|')
         codeNarcArgs.sort(false).each { String arg ->
             if (arg.startsWith('-basedir=') || arg.startsWith('-includes=') || arg.startsWith('-report=')) {
+                // -basedir is deliberately excluded: identical content at the same
+                // basedir-relative path is shared across different base directories. That
+                // is sound only as long as every enabled rule is per-SourceFile and sees
+                // nothing but content plus the basedir-relative path (see class javadoc).
+                // It breaks the moment a classpath-dependent rule is enabled - e.g. one of
+                // the five phase-4 rules this branch currently disables - since those can
+                // resolve imports relative to the real basedir, not just the relative path.
                 return // do not affect per-file results
             }
             sb.append(arg).append('|')
@@ -91,6 +98,9 @@ class ResultCache {
 
     /**
      * Build the cache key for one file.
+     *
+     * Keyed on fingerprint + basedir-relative path + content only - no basedir. See the
+     * -basedir= exclusion in fingerprint() above for the assumption this relies on.
      */
     String keyFor(String fingerprint, String relativePath, File file) {
         StringBuilder sb = new StringBuilder()

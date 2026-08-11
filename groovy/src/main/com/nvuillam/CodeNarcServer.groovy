@@ -236,6 +236,17 @@ class CodeNarcServer {
                 response.setError(t)
             }
 
+            // cancelAll() can land at any point during processing, including after
+            // Request's last isInterrupted() check - e.g. while ResultMerger.merge,
+            // storeResults or JSON serialization are running. In that case the request
+            // completes normally (no InterruptedException, no catch above runs) but the
+            // thread's interrupt flag is still set, and writing the response below on an
+            // interrupted thread reproduces the same connection-reset / silent client
+            // retry that commit 93a091e set out to prevent. Clear it unconditionally here
+            // so every path - success, cancellation or error - writes its response on a
+            // non-interrupted thread.
+            Thread.interrupted()
+
             try {
                 http.sendResponseHeaders(response.statusCode, 0)
                 http.responseBody.withWriter { out ->

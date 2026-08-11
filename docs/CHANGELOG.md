@@ -35,6 +35,9 @@
   stays alive. Syntax-error detection now compiles only to the CONVERSION phase
   instead of generating bytecode. Use `--parallelism 1` to restore single-threaded
   analysis.
+- The default JVM heap max used to run the CodeNarc server is now `-Xmx4096m` (was
+  `-Xmx2048m`), to give the new parallel analysis room to work. `--javaoptions` still
+  overrides this default.
 
 ## [18.0.0] 2026-06-30
 
