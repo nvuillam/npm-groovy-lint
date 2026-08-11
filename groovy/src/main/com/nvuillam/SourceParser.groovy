@@ -47,7 +47,14 @@ class SourceParser {
             // way to tell, from the partial result alone, which files were skipped - so treat
             // any failure of the shared pass as untrustworthy and redo the whole batch file by
             // file, which parses each file in isolation and cannot lose another file's errors.
-            LOGGER.debug('Shared parse found errors, falling back to per-file parse for full coverage', t)
+            // Do not hand t itself to the logger: if it is a MultipleCompilationErrorsException,
+            // rendering it (getMessage() -> ErrorCollector.write(), which iterates a plain
+            // LinkedList) is not safe to do concurrently with another thread doing the same on
+            // its own ErrorCollector, and can throw ConcurrentModificationException/NPE deep
+            // inside logback - turning a routine parse-error fallback into a request failure.
+            // The real error text is still captured safely by parseSingle() below, which runs
+            // single-file and does not race.
+            LOGGER.debug('Shared parse found errors ({}), falling back to per-file parse for full coverage', t.class.simpleName)
             absolutePaths.each { path ->
                 result.put(path, parseSingle(path))
             }

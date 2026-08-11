@@ -140,14 +140,20 @@ class AnalysisPartitioner {
                 throw new InterruptedException('Cancelled during parallel analysis')
             }
             futures.each { it.cancel(true) }
-            LOGGER.debug('Parallel analysis failed, retrying sequentially', ee)
+            // Do not hand ee itself to the logger: rendering its cause chain (logback builds a
+            // ThrowableProxy for every cause) can call getMessage() on a wrapped
+            // MultipleCompilationErrorsException, which is not safe to do concurrently with
+            // another thread doing the same - see SourceParser.parseFiles for the full story.
+            LOGGER.debug('Parallel analysis failed ({}), retrying sequentially', ee.cause?.class?.simpleName ?: ee.class.simpleName)
             // Retry once on a single thread. A partition failure must never fail the whole
             // request.
             outcome.reports = [runCodeNarc(relativePaths, codeNarcArgs)]
             outcome.partitionCount = 1
         } catch (Throwable t) {
             futures.each { it.cancel(true) }
-            LOGGER.debug('Parallel analysis failed, retrying sequentially', t)
+            // Same reasoning as the ExecutionException branch above: do not hand t itself to
+            // the logger.
+            LOGGER.debug('Parallel analysis failed ({}), retrying sequentially', t.class.simpleName)
             // Retry once on a single thread. Catching Throwable (not Exception) is
             // deliberate: it covers OutOfMemoryError, where N concurrent CodeNarc
             // instances exhausted the heap and one sequential pass may still succeed.

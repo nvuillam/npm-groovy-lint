@@ -189,20 +189,6 @@ describe("Performance Stage 1", function () {
             insight: false,
             failon: "none",
             output: "none",
-            // This test exercises AnalysisPartitioner/worker cancellation, not parse-error
-            // detection (covered separately above). Disabling it here also sidesteps a
-            // pre-existing, unrelated thread-safety bug: SourceParser.parseFiles() falls back
-            // to logging the caught MultipleCompilationErrorsException via
-            // LOGGER.debug(msg, throwable), and rendering that exception's message calls into
-            // Groovy's ErrorCollector, which is not safe to do concurrently from two threads at
-            // once (observed as a ConcurrentModificationException on the server when two
-            // requests over duplicated copies of WithParseError.groovy - part of lib/example -
-            // parse at the same moment). That 500 makes the client fall back to a direct java
-            // call, which bypasses requestKey cancellation entirely and is what actually made
-            // this test intermittently see two status-0 results with cancellation never having
-            // had a chance to run. Worth its own fix, but out of scope for partition-future
-            // cancellation.
-            parse: false,
         };
 
         const first = new NpmGroovyLint(options, { requestKey: "dup-key-test" }).run();
