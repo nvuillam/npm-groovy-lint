@@ -22,9 +22,6 @@
 - Upgrade MegaLinter CI to **v10** (custom flavor image rebuilt on MegaLinter 10.0.0, `REPOSITORY_GITLEAKS` replaced by `REPOSITORY_BETTERLEAKS`)
 - Add `.prettierrc.json` and `.prettierignore` so prettier uses the project conventions (tab width 4, print width 150) instead of its defaults, and leaves generated files alone
 - Remove unused imports and unnecessary semicolons from the Groovy server sources
-
-### Changed
-
 - Performance: the `recommended` preset now disables five rules that require the
   semantic-analysis compiler phase (`enhanced.CloneWithoutCloneable`,
   `enhanced.JUnitAssertEqualsConstantActualValue`, `enhanced.MissingOverrideAnnotation`,
@@ -33,6 +30,11 @@
   imported classes and reported nothing while costing roughly 9 seconds on a
   20-file corpus. Re-enable them in your `.groovylintrc.json` if your sources have
   no unresolvable imports and you rely on them.
+- Performance: files are now analysed in parallel inside the CodeNarc server (up to
+  4 threads), with per-file results cached in memory across runs while the server
+  stays alive. Syntax-error detection now compiles only to the CONVERSION phase
+  instead of generating bytecode. Use `--parallelism 1` to restore single-threaded
+  analysis.
 
 ## [18.0.0] 2026-06-30
 

@@ -250,3 +250,64 @@ make locally. Recorded for a possible future contribution.
 On-disk caching (which would serve fresh CI containers) was considered and
 deferred, along with its serialization, eviction, corruption and concurrent-writer
 surface.
+
+## Measured outcome (Stage 1)
+
+Measured 2026-08-11 on the same class of machine as the Problem-section baseline:
+**8 cores**, JDK 17, Node v24.11.1, Windows 11. Same 20-file / 18,940-line
+corpus (`lib/example/SampleFile.groovy` x20). Each scenario run **3 times**;
+medians reported below, with all three raw samples so variance is visible.
+
+| Scenario | Command | Raw samples (s) | Median |
+| --- | --- | --- | --- |
+| COLD (server start + full analysis, empty cache) | `node lib/index.js -o none <corpus>` after `--killserver` | 68.820, 51.145, 59.862 | **59.862 s** |
+| WARM (same request repeated, cache hits) | same command, immediately after | 6.139, 6.478, 6.237 | **6.237 s** |
+| SEQUENTIAL (cold, `--parallelism 1`) | `node lib/index.js -o none --parallelism 1 <corpus>` after `--killserver` | 74.845, 73.936, 75.861 | **74.845 s** |
+
+Pre-change baseline (from the Problem section, measured on a **warm CodeNarc
+server**, i.e. JVM already up, JIT warmed, no result cache — that capability
+did not exist yet): **31–66 s**.
+
+**The headline number is disappointing and is reported as such.** COLD —
+which is the scenario that matters for CI/MegaLinter and for any first
+invocation, and is the fairest read of the spec's "~2.5–3x, first run" claim
+— came in at 59.862 s, i.e. inside the old 31–66 s baseline range, near its
+upper end. Compared to the baseline midpoint (48.5 s) COLD is **0.81x — slower,
+not faster**. Compared to the baseline's best case (31 s) it is **0.52x**.
+Only against the baseline's own worst case (66 s) does COLD show a (modest,
+1.10x) improvement. This is far short of the projected 2.5–3x.
+
+Isolating the parallelism contribution by comparing COLD against SEQUENTIAL
+(both cold-started, both cache-empty, differing only in thread count) gives
+**74.845 / 59.862 = 1.25x** from parallelism end-to-end — well short of the
+2.09x measured in isolation during diagnosis (see "All analysis is
+single-threaded" above). The likely explanation: COLD and SEQUENTIAL here both
+pay full JVM + server startup cost (because the harness kills the server
+first), which the original "warm CodeNarc server" baseline explicitly
+excluded. That fixed startup cost dilutes the proportional benefit of both
+parallelism and the dropped-rules/parse-phase wins, and the larger default
+heap (`-Xmx4096m`, up from `-Xmx2048m`) may itself add to cold-start time.
+Notably, SEQUENTIAL (74.845 s) is *slower* than the entire old baseline range
+even though it already includes the five-dead-rules removal and the
+CONVERSION-phase parse fix — suggesting cold-start overhead in this
+configuration outweighs those wins for a single-threaded, single-shot run.
+
+WARM is the one figure that clearly beats the projection: 6.237 s against the
+31–66 s baseline is **4.97x–10.58x**. But this win is attributable almost
+entirely to the new in-memory per-file result cache — a capability that did
+not exist in the baseline at all — not to parallelism or the engine changes
+measured in isolation above. It only pays off for repeat lints against a
+server that stayed alive (VS Code interactive use, iterative local CLI runs).
+It does not help the first-run / CI case, which is most of what the spec's
+"~2.5–3x" figure was meant to describe.
+
+**Bottom line:** for a fresh server / first run (COLD), Stage 1 delivered
+roughly **parity with the pre-change baseline, not a 2.5–3x speedup** — on
+this measurement the parallel cold run is arguably no better, and the
+single-threaded cold run is measurably worse, than the old warm-server
+baseline. The large win is real but conditional: repeat runs against a warm,
+cache-populated server are 5–10x faster. Stage 2 (ruleset curation, ~36–50 s
+of the corpus) remains the change most likely to move the COLD number, and
+this result increases its priority rather than decreasing it — engine-level
+parallelism and caching alone did not deliver the projected first-run
+speedup on this run of measurements.
