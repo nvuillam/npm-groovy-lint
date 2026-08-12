@@ -154,7 +154,7 @@ Kept deliberately: `Indentation` and the braces/blank-line rules; and `NoDef` /
 
 Removing the `Space*` rules from `recommended` initially weakened `--fix`, which
 resolves the lint ruleset: it stopped tidying `printlnLog( 'x')` and
-`catch (e){`. Rather than accept that, `--fix` now unions the `format` preset's
+`catch (e){`. Rather than accept that, `--fix` now merges the `format` preset's
 rules on top of the lint ruleset (`NpmGroovyLint.addFormattingRulesForFix`), so:
 
 - plain linting no longer *reports* spacing — the 45% saving is kept;
