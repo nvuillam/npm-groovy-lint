@@ -38,6 +38,29 @@
 - The default JVM heap max used to run the CodeNarc server is now `-Xmx4096m` (was
   `-Xmx2048m`), to give the new parallel analysis room to work. `--javaoptions` still
   overrides this default.
+- **Breaking**: the `recommended` preset is now a **curated list of 244 rules** instead
+  of `extends: all` (386 rules) with a few overrides. Measured on 649 files / 66k lines
+  of real Groovy sampled from CodeNarc, Spock, grails-core and jenkinsci/pipeline-examples,
+  this makes a lint run roughly **2x faster** (2.07x on the final ruleset; run-to-run
+  spread on this workload is 25-50%, so treat it as approximate) while still reporting
+  **95%** of the violations.
+  Restore the previous behaviour with `{ "extends": "all" }` in your `.groovylintrc.json`,
+  or re-enable individual rules by naming them in your own `rules` block.
+  - The 13 `Space*` whitespace rules were **45% of an entire lint run** while reporting
+    very little on already-formatted code. They remain in the `format` preset, so
+    `npm-groovy-lint --format` still reports and fixes spacing.
+  - Also removed: the framework- and tool-specific categories (`grails`, `jdbc`, `junit`,
+    `comments`, `generic`) and stylistic rules npm-groovy-lint cannot auto-fix.
+  - Kept: everything that catches a defect, including rules that fire rarely, plus
+    `Indentation`, the braces and blank-line rules (so `--fix` still repairs layout) and
+    the `NoDef` / `CompileStatic` / `*TypeRequired` conventions.
+  - Because the preset no longer extends `all`, rules added by future CodeNarc releases
+    are now opt-in instead of silently joining `recommended`.
+- Fix `--files` being silently ignored: `lib/codenarc-factory.js` read the option from
+  `options.file` instead of `options.files`, so every file under `--path` was linted and
+  the pattern had no effect. Introduced in
+  [#320](https://github.com/nvuillam/npm-groovy-lint/pull/320) when the option handling
+  moved to arrays.
 
 ## [18.0.0] 2026-06-30
 

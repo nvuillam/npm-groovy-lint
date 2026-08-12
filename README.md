@@ -159,7 +159,17 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 
 ## Configuration
 
-Default rules definition ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json), based on [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json) tracks a lot of errors, do not hesitate to ignore some of them (like NoDef ou RequiredVariableType) if they are too mean for your project.
+The default rules definition is [`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json): a curated list of **244 CodeNarc rules**. It still tracks a lot of errors, so do not hesitate to ignore some of them (like `NoDef` or `VariableTypeRequired`) if they are too mean for your project.
+
+If you want every CodeNarc rule instead, use [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json):
+
+```json
+{
+    "extends": "all"
+}
+```
+
+**What `recommended` leaves out, and why:** the 13 `Space*` whitespace rules alone accounted for about 45% of a lint run while reporting very little on already-formatted code, so spacing is now handled by [`--format`](#format) — which still reports *and fixes* it, and is unaffected by this list. Also excluded are the framework- and tool-specific categories (`grails`, `jdbc`, `junit`, `comments`, `generic`) and stylistic rules that npm-groovy-lint cannot auto-fix. Everything that catches a defect is kept, including rules that fire rarely. Re-enable anything you miss by naming it in your own `rules` block.
 
 Create a file named **.groovylintrc.json** in the current or any parent directory of where your files to analyze are located
 

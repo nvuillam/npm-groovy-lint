@@ -133,16 +133,21 @@ async function checkRule(key, check, checkType) {
     }
     const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
 
+    // --format resolves the self-contained `format` preset, while --fix uses the lint
+    // ruleset. Since `recommended` no longer carries the Space* rules, the two paths
+    // legitimately differ on whitespace; such samples declare a `fixExpectations` override.
+    const expected = checkType === "fix" && check.fixExpectations ? { ...check, ...check.fixExpectations } : check;
+
     assert(
-        linter.lintResult.summary.totalFixedNumber >= check.totalFixed,
-        `${check.totalFixed} Errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
+        linter.lintResult.summary.totalFixedNumber >= expected.totalFixed,
+        `${expected.totalFixed} Errors have been fixed (${linter.lintResult.summary.totalFixedNumber} returned)`,
     );
     const result = linter.lintResult.files[0].updatedSource;
-    const expectedResult = normalizeNewLines(check.after);
+    const expectedResult = normalizeNewLines(expected.after);
     const effectiveDiff = getDiff(expectedResult, result, source);
     assert(linter.status === 0, `Expected linter status to be 0, but status was ${linter.status}`);
     assert(effectiveDiff.length === 0, "Code was not formatted correctly");
-    checkCodeNarcCallsCounter(check.codeNarcCallsCounter);
+    checkCodeNarcCallsCounter(expected.codeNarcCallsCounter);
 }
 
 function getSamplesMap() {
@@ -165,6 +170,18 @@ private void doSomething() {
     }
 }
 `,
+                // --fix cannot add the space in `doSomething(){`: SpaceBeforeOpeningBrace
+                // is no longer in `recommended`. --format still fixes it.
+                fixExpectations: {
+                    totalFixed: 3,
+                    after: `
+private void doSomething(){
+    if (a == 2) {
+        doSomething()
+    }
+}
+`,
+                },
             },
         ],
         [
@@ -211,6 +228,18 @@ private void doSomething() {
   }
 }
 `,
+                // Same as SourceWithIfElseBracesToFormat: SpaceBeforeOpeningBrace is not in
+                // `recommended`, so --fix leaves `doSomething(){` alone.
+                fixExpectations: {
+                    totalFixed: 3,
+                    after: `
+private void doSomething(){
+  if (a == 2) {
+    doSomething()
+  }
+}
+`,
+                },
             },
         ],
         [
@@ -236,6 +265,20 @@ boolean foo(boolean a, boolean b) {
     }
 }
 `,
+                // The only fix here is SpaceAfterIf, which `recommended` no longer carries,
+                // so --fix leaves the source untouched and only --format repairs it.
+                fixExpectations: {
+                    totalFixed: 0,
+                    after: `
+boolean foo(boolean a, boolean b) {
+    if (a) {
+        return true
+    } else if(b) {
+        return true
+    }
+}
+`,
+                },
             },
         ],
         // https://github.com/nvuillam/npm-groovy-lint/issues/121

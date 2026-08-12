@@ -176,7 +176,7 @@ describe("config JSON comments", () => {
 });
 
 describe("recommended preset rules", () => {
-    it("(CFG) recommended disables the phase-4 rules that cannot resolve classes", async function () {
+    it("(CFG) recommended excludes the phase-4 rules that cannot resolve classes", async function () {
         const linter = new NpmGroovyLint([process.execPath, "", "--no-insight"], { parseOptions: true });
         const config = await linter.loadConfig("recommended");
         const deadRules = [
@@ -186,8 +186,54 @@ describe("recommended preset rules", () => {
             "UnsafeImplementationAsMap",
             "GrailsDomainGormMethods",
         ];
+        // recommended is now an explicit keep-list rather than `extends: all` plus
+        // overrides, so a disabled rule is simply absent instead of set to "off".
         for (const ruleName of deadRules) {
-            assert(config.rules[ruleName] === "off", `${ruleName} should be "off" in recommended (was ${JSON.stringify(config.rules[ruleName])})`);
+            assert(config.rules[ruleName] === undefined, `${ruleName} should be absent from recommended (was ${JSON.stringify(config.rules[ruleName])})`);
         }
+    });
+
+    it("(CFG) recommended is an explicit rule list, not extends:all", async function () {
+        const recommended = JSON.parse(await fs.readFile("./lib/.groovylintrc-recommended.json", "utf8"));
+        // Guards the root cause of the original 386-rule default: under `extends: all`,
+        // every rule a future CodeNarc release adds joins recommended silently.
+        assert(recommended.extends === undefined, `recommended must not extend another preset (extends: ${recommended.extends})`);
+        const ruleCount = Object.keys(recommended.rules).length;
+        assert(ruleCount > 200 && ruleCount < 300, `recommended should hold ~244 curated rules, found ${ruleCount}`);
+        assert(
+            Object.keys(recommended.rules).every((ruleName) => ruleName.includes(".")),
+            "every recommended rule must be listed as category.RuleName",
+        );
+    });
+
+    it("(CFG) recommended excludes the Space* rules, which remain in the format preset", async function () {
+        const recommended = JSON.parse(await fs.readFile("./lib/.groovylintrc-recommended.json", "utf8"));
+        const format = JSON.parse(await fs.readFile("./lib/.groovylintrc-format.json", "utf8"));
+        // These 13 rules measured ~45% of a lint run while reporting very little, so
+        // spacing is handled by --format. See docs/superpowers/specs/2026-08-12-ruleset-curation.md
+        const spaceRules = [
+            "SpaceAfterCatch",
+            "SpaceAfterComma",
+            "SpaceAfterFor",
+            "SpaceAfterIf",
+            "SpaceAfterMethodCallName",
+            "SpaceAfterOpeningBrace",
+            "SpaceAfterSemicolon",
+            "SpaceAfterSwitch",
+            "SpaceAfterWhile",
+            "SpaceAroundOperator",
+            "SpaceBeforeClosingBrace",
+            "SpaceBeforeOpeningBrace",
+            "SpaceInsideParentheses",
+        ];
+        const shortNames = (config) => new Set(Object.keys(config.rules).map((ruleName) => ruleName.split(".").pop()));
+        const inRecommended = shortNames(recommended);
+        const inFormat = shortNames(format);
+        for (const ruleName of spaceRules) {
+            assert(!inRecommended.has(ruleName), `${ruleName} should not be in recommended`);
+            assert(inFormat.has(ruleName), `${ruleName} must stay in the format preset so --format still fixes spacing`);
+        }
+        // Indentation is cheap and high-yield, so it stays in the default.
+        assert(inRecommended.has("Indentation"), "Indentation must stay in recommended so --fix still repairs layout");
     });
 });

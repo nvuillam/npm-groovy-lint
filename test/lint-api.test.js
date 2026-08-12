@@ -150,7 +150,10 @@ describe("Lint with API", () => {
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 1, `Expected linter status is 1 got ${linter.status}`);
-        assertLintedFiles(linter.outputString, 11);
+        // 10, not 11: lib/example/Jenkinsfile does not match **/*.groovy. It used to be
+        // linted because the files option was read from the wrong key and silently ignored,
+        // so the default patterns (which include Jenkinsfile) applied instead.
+        assertLintedFiles(linter.outputString, 10);
     });
 
     it("(API:source) should run with source only (no parsing)", async function () {
@@ -299,7 +302,7 @@ describe("Lint with API", () => {
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
         assert(linter.lintResult.summary.totalFoundErrorNumber === 4, "Error found");
         assert(linter.lintResult.summary.totalFoundWarningNumber === 6, "Warnings found");
-        assert(linter.lintResult.summary.totalFoundInfoNumber === 65, "Infos found");
+        assert(linter.lintResult.summary.totalFoundInfoNumber === 44, `Expected 44 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);
     });
 
@@ -343,7 +346,25 @@ describe("Lint with API", () => {
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
         assert(linter.lintResult.summary.totalFoundErrorNumber === 4, "Error found");
         assert(linter.lintResult.summary.totalFoundWarningNumber === 6, "Warnings found");
-        assert(linter.lintResult.summary.totalFoundInfoNumber === 65, "Infos found");
+        assert(linter.lintResult.summary.totalFoundInfoNumber === 44, `Expected 44 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it("(API:file) should restrict linting to the --files patterns", async function () {
+        const linter = await new NpmGroovyLint([process.execPath, "", "--path", "lib/example", "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight"], {}).run();
+        const lintedFiles = Object.keys(linter.lintResult.files);
+        assert(lintedFiles.length === 1, `Expected only ${SAMPLE_FILE_SMALL} to be linted, got ${JSON.stringify(lintedFiles)}`);
+        assert(lintedFiles[0].endsWith(SAMPLE_FILE_SMALL), `Expected ${SAMPLE_FILE_SMALL}, got ${lintedFiles[0]}`);
+        checkCodeNarcCallsCounter(1);
+    });
+
+    it("(API:file) should accept a comma-separated list of --files patterns", async function () {
+        const linter = await new NpmGroovyLint(
+            [process.execPath, "", "--path", "lib/example", "--files", `**/${SAMPLE_FILE_SMALL},**/${SAMPLE_FILE_WITH_SPACES}`, "--no-insight"],
+            {},
+        ).run();
+        const lintedFiles = Object.keys(linter.lintResult.files);
+        assert(lintedFiles.length === 2, `Expected 2 linted files, got ${JSON.stringify(lintedFiles)}`);
         checkCodeNarcCallsCounter(1);
     });
 
@@ -356,10 +377,10 @@ describe("Lint with API", () => {
         assert(Object.keys(linter.lintResult.files).length === 12, `Expected 2 files got ${Object.keys(linter.lintResult.files).length}`);
         assert(linter.lintResult.summary.totalFoundErrorNumber === 12, `Expected 12 errors to ${linter.lintResult.summary.totalFoundErrorNumber}`);
         assert(
-            linter.lintResult.summary.totalFoundWarningNumber === 333,
-            `Expected 333 warnings to ${linter.lintResult.summary.totalFoundWarningNumber}`,
+            linter.lintResult.summary.totalFoundWarningNumber === 331,
+            `Expected 331 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`,
         );
-        assert(linter.lintResult.summary.totalFoundInfoNumber === 1649, `Expected 1649 infos to ${linter.lintResult.summary.totalFoundInfoNumber}`);
+        assert(linter.lintResult.summary.totalFoundInfoNumber === 1260, `Expected 1260 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);
     });
 });
