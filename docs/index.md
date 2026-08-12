@@ -169,7 +169,9 @@ If you want every CodeNarc rule instead, use [`all`](https://github.com/nvuillam
 }
 ```
 
-**What `recommended` leaves out, and why:** the 13 `Space*` whitespace rules alone accounted for about 45% of a lint run while reporting very little on already-formatted code, so spacing is now handled by [`--format`](#format) — which still reports *and fixes* it, and is unaffected by this list. Also excluded are the framework- and tool-specific categories (`grails`, `jdbc`, `junit`, `comments`, `generic`) and stylistic rules that npm-groovy-lint cannot auto-fix. Everything that catches a defect is kept, including rules that fire rarely. Re-enable anything you miss by naming it in your own `rules` block.
+**What `recommended` leaves out, and why:** the 13 `Space*` whitespace rules alone accounted for about 45% of a lint run while reporting very little on already-formatted code, so spacing is no longer *reported* by default. It is still *fixed*: both `--format` and `--fix` apply the formatting rules, so `npm-groovy-lint --fix` repairs spacing exactly as before. A `Space*` rule you disable in your own config stays disabled under `--fix`.
+
+Also excluded are the framework- and tool-specific categories (`grails`, `jdbc`, `junit`, `comments`, `generic`) and stylistic rules that npm-groovy-lint cannot auto-fix. Everything that catches a defect is kept, including rules that fire rarely. Re-enable anything you miss by naming it in your own `rules` block.
 
 Create a file named **.groovylintrc.json** in the current or any parent directory of where your files to analyze are located
 

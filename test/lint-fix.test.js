@@ -2,10 +2,49 @@
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
 import fs from "node:fs";
+import os from "os";
+import * as path from "path";
 import { beforeEachTestCase, copyFilesInTmpDir, checkCodeNarcCallsCounter, SAMPLE_FILE_BIG_PATH, SAMPLE_FILE_SMALL_PATH } from "./helpers/common.js";
 
 describe("Lint & fix with API", function () {
     beforeEach(beforeEachTestCase);
+
+    // The `recommended` preset excludes the Space* rules because they cost about 45% of a
+    // lint run. --fix borrows the `format` preset's rules so it still repairs layout.
+    it("(API:source) --fix repairs spacing even though recommended excludes the Space* rules", async function () {
+        const lintOnly = await new NpmGroovyLint(
+            { source: "def foo(){\n    return 1\n}\n", nolintafter: true, output: "none", failon: "none", insight: false },
+            {},
+        ).run();
+        const reportedByLint = (lintOnly.lintResult.files[0]?.errors || []).map((error) => error.rule);
+        assert(!reportedByLint.includes("SpaceBeforeOpeningBrace"), `plain linting must not report SpaceBeforeOpeningBrace, got ${reportedByLint}`);
+
+        const fixed = await new NpmGroovyLint(
+            { source: "def foo(){\n    return 1\n}\n", fix: true, nolintafter: true, output: "none", failon: "none", insight: false },
+            {},
+        ).run();
+        const fixedSource = fixed.lintResult.files[0].updatedSource;
+        assert(fixedSource.includes("def foo() {"), `--fix should still add the space, got: ${JSON.stringify(fixedSource)}`);
+    });
+
+    it("(API:file) --fix does not re-enable a Space* rule disabled in .groovylintrc", async function () {
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ngl-fix-off-"));
+        try {
+            fs.writeFileSync(
+                path.join(tmpDir, ".groovylintrc.json"),
+                JSON.stringify({ extends: "recommended", rules: { "formatting.SpaceBeforeOpeningBrace": "off" } }),
+            );
+            fs.writeFileSync(path.join(tmpDir, "Sample.groovy"), "def foo(){\n    return 1\n}\n");
+            await new NpmGroovyLint(
+                [process.execPath, "", "--path", tmpDir, "--files", "**/Sample.groovy", "--fix", "--no-insight", "--failon", "none", "--output", "none"],
+                {},
+            ).run();
+            const fixedSource = fs.readFileSync(path.join(tmpDir, "Sample.groovy"), "utf8");
+            assert(fixedSource.includes("def foo(){"), `a disabled rule must stay disabled under --fix, got: ${JSON.stringify(fixedSource)}`);
+        } finally {
+            fs.rmSync(tmpDir, { recursive: true, force: true });
+        }
+    });
 
     it("(API:source) should lint then fix only a list of errors", async function () {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
@@ -33,7 +72,7 @@ describe("Lint & fix with API", function () {
 
     it("(API:source) should lint and fix (one shot)", async function () {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
-        const expectedFixedErrs = 898;
+        const expectedFixedErrs = 1076;
         const prevFileContent = fs.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,
@@ -57,7 +96,7 @@ describe("Lint & fix with API", function () {
 
     it("(API:source) should lint and fix (no lintagainafterfix)", async function () {
         const sampleFilePath = SAMPLE_FILE_BIG_PATH;
-        const expectedFixedErrs = 898;
+        const expectedFixedErrs = 1076;
         const prevFileContent = fs.readFileSync(sampleFilePath).toString();
         const npmGroovyLintConfig = {
             source: prevFileContent,

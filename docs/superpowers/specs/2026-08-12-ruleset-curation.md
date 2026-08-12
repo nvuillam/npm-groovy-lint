@@ -147,9 +147,27 @@ Selection:
   "fixable or fired" rule to them would have contradicted the reasoning that keeps
   `basic` and `security` whole.
 
-Kept deliberately: `Indentation` and the braces/blank-line rules, so `--fix` still
-repairs layout; and `NoDef` / `CompileStatic` / `*TypeRequired`, which users
-configure today.
+Kept deliberately: `Indentation` and the braces/blank-line rules; and `NoDef` /
+`CompileStatic` / `*TypeRequired`, which users configure today.
+
+### `--fix` keeps repairing spacing
+
+Removing the `Space*` rules from `recommended` initially weakened `--fix`, which
+resolves the lint ruleset: it stopped tidying `printlnLog( 'x')` and
+`catch (e){`. Rather than accept that, `--fix` now unions the `format` preset's
+rules on top of the lint ruleset (`NpmGroovyLint.addFormattingRulesForFix`), so:
+
+- plain linting no longer *reports* spacing — the 45% saving is kept;
+- `--fix` *repairs* spacing exactly as before, byte-for-byte on the
+  `SampleFileSmallFixed.txt` fixture;
+- `--format` is untouched;
+- only rules the lint config does not mention are added, so a rule the user set
+  to `"off"` stays off. Covered by a regression test using a real
+  `.groovylintrc.json`, because passing `rules` through the API *replaces* the
+  ruleset rather than overriding it.
+
+The union does not apply when the caller supplies its own `codenarcRulesets` or
+`--rulesets` (unless `rulesetsoverridetype` is `appendConfig`).
 
 All 26 severities and rule properties `recommended` previously configured are
 preserved. All 11 `recommended-jenkinsfile` overrides still target rules present in

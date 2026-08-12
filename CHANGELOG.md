@@ -47,8 +47,11 @@
   Restore the previous behaviour with `{ "extends": "all" }` in your `.groovylintrc.json`,
   or re-enable individual rules by naming them in your own `rules` block.
   - The 13 `Space*` whitespace rules were **45% of an entire lint run** while reporting
-    very little on already-formatted code. They remain in the `format` preset, so
-    `npm-groovy-lint --format` still reports and fixes spacing.
+    very little on already-formatted code. Spacing is therefore no longer *reported* by
+    default, but it is still *fixed*: `--fix` now applies the `format` preset's rules on
+    top of the lint ruleset, so `npm-groovy-lint --fix` repairs spacing exactly as before,
+    and `--format` is unchanged. A rule you disable in your own config stays disabled
+    under `--fix`.
   - Also removed: the framework- and tool-specific categories (`grails`, `jdbc`, `junit`,
     `comments`, `generic`) and stylistic rules npm-groovy-lint cannot auto-fix.
   - Kept: everything that catches a defect, including rules that fire rarely, plus
