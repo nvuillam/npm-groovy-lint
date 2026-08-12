@@ -211,14 +211,21 @@ describe("Performance Stage 1", function () {
         // duplicate request below would race a first request that has often already
         // finished - which would make the test pass without the fix ever running (the
         // handler-thread interrupt alone is enough once there is nothing left to cancel).
-        // Duplicating the corpus (x3, ~44 files spread across up to 4 partitions) pushes a
-        // single analysis to ~13-14s on this machine (measured separately with the same
-        // ruleset), so at +400ms every partition is still deep inside CodeNarc.execute() -
-        // comfortably (>30x) inside the window, not right on the edge of a race.
+        // Duplicating the corpus spreads the work across up to 4 partitions and keeps every
+        // one of them deep inside CodeNarc.execute() when the superseding request arrives.
+        //
+        // The factor is 8 rather than 3 because the curated `recommended` preset roughly
+        // halved analysis time: at x3 this took ~13-14s before the curation and ~4.4s after,
+        // and the resulting window failed on two CI runners (ubuntu/jdk17, macos/jdk21) where
+        // the first request needs longer to get from run() into CodeNarc.execute(). x8
+        // restores a margin of ~25x over the 400ms delay rather than ~11x. If this test ever
+        // flakes again after a speedup, raise the factor - do not shorten the delay, which
+        // would instead risk superseding a request that has not started analysing yet.
+        //
         // Every duplicate also gets a marker unique to this test run appended to its
         // content, so the Task 5 result cache (keyed on file content) can never serve the
         // second request's files from a previous run and short-circuit the race.
-        const DUPLICATION_FACTOR = 3;
+        const DUPLICATION_FACTOR = 8;
         const tmpDir = await copyFilesInTmpDir();
         const relPaths = (await fs.readdir(tmpDir, { recursive: true })).filter((p) => p.endsWith(".groovy"));
         const marker = `cancel-test-${Math.random()}`;
