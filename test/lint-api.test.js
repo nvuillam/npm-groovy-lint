@@ -351,7 +351,10 @@ describe("Lint with API", () => {
     });
 
     it("(API:file) should restrict linting to the --files patterns", async function () {
-        const linter = await new NpmGroovyLint([process.execPath, "", "--path", "lib/example", "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight"], {}).run();
+        const linter = await new NpmGroovyLint(
+            [process.execPath, "", "--path", "lib/example", "--files", "**/" + SAMPLE_FILE_SMALL, "--no-insight"],
+            {},
+        ).run();
         const lintedFiles = Object.keys(linter.lintResult.files);
         assert(lintedFiles.length === 1, `Expected only ${SAMPLE_FILE_SMALL} to be linted, got ${JSON.stringify(lintedFiles)}`);
         assert(lintedFiles[0].endsWith(SAMPLE_FILE_SMALL), `Expected ${SAMPLE_FILE_SMALL}, got ${lintedFiles[0]}`);

@@ -189,7 +189,10 @@ describe("recommended preset rules", () => {
         // recommended is now an explicit keep-list rather than `extends: all` plus
         // overrides, so a disabled rule is simply absent instead of set to "off".
         for (const ruleName of deadRules) {
-            assert(config.rules[ruleName] === undefined, `${ruleName} should be absent from recommended (was ${JSON.stringify(config.rules[ruleName])})`);
+            assert(
+                config.rules[ruleName] === undefined,
+                `${ruleName} should be absent from recommended (was ${JSON.stringify(config.rules[ruleName])})`,
+            );
         }
     });
 

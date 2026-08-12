@@ -118,13 +118,7 @@
         "dry.DuplicateListLiteral": "info",
         "dry.DuplicateMapLiteral": "warning",
         "dry.DuplicateNumberLiteral": {
-            "ignoreNumbers": [
-                0,
-                1,
-                2,
-                3,
-                -1
-            ],
+            "ignoreNumbers": [0, 1, 2, 3, -1],
             "severity": "info"
         },
         "dry.DuplicateStringLiteral": "info",

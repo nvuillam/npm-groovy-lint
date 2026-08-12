@@ -45,11 +45,11 @@ Caveats, recorded rather than hidden:
 
 ## Baseline
 
-| | pre-Stage-1 (386 rules) | Stage 1 `recommended` (381) |
-|---|---|---|
-| CodeNarc over the corpus | 270.1 s | 139.5 s |
-| Violations | 26,865 | 26,864 |
-| Distinct rules firing | 159 | 158 |
+|                          | pre-Stage-1 (386 rules) | Stage 1 `recommended` (381) |
+|--------------------------|-------------------------|-----------------------------|
+| CodeNarc over the corpus | 270.1 s                 | 139.5 s                     |
+| Violations               | 26,865                  | 26,864                      |
+| Distinct rules firing    | 159                     | 158                         |
 
 Stage 1's removal of the five phase-4 rules halved the run and cost **one**
 violation across 66k lines of real code — stronger validation of that decision than
@@ -65,10 +65,10 @@ so a silent rule must justify its cost on the value of the case it would catch.
 Measured by applying each rule directly to a pre-parsed `SourceFile`, single pass,
 so first-call costs are counted as CodeNarc pays them:
 
-| | |
-|---|---|
-| Parse (649 files) | 10.5 s (7%) |
-| Rule application | 69.2 s (46%) |
+|                                   |              |
+|-----------------------------------|--------------|
+| Parse (649 files)                 | 10.5 s (7%)  |
+| Rule application                  | 69.2 s (46%) |
 | CodeNarc driver + report building | 69.8 s (47%) |
 
 ### The overhead avenue is closed
@@ -91,23 +91,23 @@ violations to process.
 
 Cost is **not** proportional to rule count. Candidate rulesets, medians:
 
-| ruleset | rules | median | speedup | violations |
-|---|---|---|---|---|
-| current | 381 | 88.8 s | 1.00x | 26,864 (100%) |
-| − the 13 `Space*` only | 368 | 54.1 s | 1.64x | 26,568 (98.9%) |
-| moderate − `Space*` | 236 | 35.7 s | 2.49x | 25,482 (94.9%) |
-| lean − `Space*` | 178 | 25.0 s | 3.55x | 13,571 (50.5%) |
-| lint-focused (all layout to `--format`) | 158 | 21.2 s | 4.19x | 5,922 (22.0%) |
+| ruleset                                 | rules | median | speedup | violations     |
+|-----------------------------------------|-------|--------|---------|----------------|
+| current                                 | 381   | 88.8 s | 1.00x   | 26,864 (100%)  |
+| − the 13 `Space*` only                  | 368   | 54.1 s | 1.64x   | 26,568 (98.9%) |
+| moderate − `Space*`                     | 236   | 35.7 s | 2.49x   | 25,482 (94.9%) |
+| lean − `Space*`                         | 178   | 25.0 s | 3.55x   | 13,571 (50.5%) |
+| lint-focused (all layout to `--format`) | 158   | 21.2 s | 4.19x   | 5,922 (22.0%)  |
 
 Dropping 132 rules (381→249) buys 1.16x. The next 33 buy the remaining 2.2x.
 Isolating them:
 
-| ruleset | rules | median | violations |
-|---|---|---|---|
-| `Indentation` alone | 1 | 11.6 s | 5,993 |
-| the 13 `Space*` rules alone | 13 | 25.8 s | **296** |
-| lean − `Indentation` | 190 | 77.3 s | 7,874 |
-| lean − `Space*` | 178 | 46.1 s | 13,571 |
+| ruleset                     | rules | median | violations |
+|-----------------------------|-------|--------|------------|
+| `Indentation` alone         | 1     | 11.6 s | 5,993      |
+| the 13 `Space*` rules alone | 13    | 25.8 s | **296**    |
+| lean − `Indentation`        | 190   | 77.3 s | 7,874      |
+| lean − `Space*`             | 178   | 46.1 s | 13,571     |
 
 Against the ~11 s floor: `Indentation` costs ~0.6 s and finds 5,993 violations. The
 13 `Space*` rules cost **37.4 s and find 296** — roughly 126 ms per finding against

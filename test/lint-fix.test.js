@@ -36,7 +36,20 @@ describe("Lint & fix with API", function () {
             );
             fs.writeFileSync(path.join(tmpDir, "Sample.groovy"), "def foo(){\n    return 1\n}\n");
             await new NpmGroovyLint(
-                [process.execPath, "", "--path", tmpDir, "--files", "**/Sample.groovy", "--fix", "--no-insight", "--failon", "none", "--output", "none"],
+                [
+                    process.execPath,
+                    "",
+                    "--path",
+                    tmpDir,
+                    "--files",
+                    "**/Sample.groovy",
+                    "--fix",
+                    "--no-insight",
+                    "--failon",
+                    "none",
+                    "--output",
+                    "none",
+                ],
                 {},
             ).run();
             const fixedSource = fs.readFileSync(path.join(tmpDir, "Sample.groovy"), "utf8");
