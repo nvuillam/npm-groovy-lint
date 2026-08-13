@@ -2,6 +2,7 @@ package com.nvuillam
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileDynamic
+import org.codenarc.util.CodeNarcVersion
 
 /**
  * Merges partial CodeNarc JSON reports (one per partition, plus cached
@@ -34,12 +35,13 @@ class ResultMerger {
 
         Map merged = [:]
         Map source = template ? MAPPER.readValue(template, Map) : (parsed ? parsed[0] : [:])
-        if (source.codeNarc != null) {
-            merged.codeNarc = source.codeNarc
-        }
-        if (source.rules != null) {
-            merged.rules = source.rules
-        }
+        // The 'codeNarc' and 'rules' blocks are what makes the report usable by the Node side,
+        // which rejects a result without them. There is nothing to copy them from when no
+        // partition ran and no template was cached - which happens when the request matched no
+        // file at all. Emit them anyway, so an empty match reports zero violations instead of
+        // failing the run.
+        merged.codeNarc = source.codeNarc != null ? source.codeNarc : [version: CodeNarcVersion.version]
+        merged.rules = source.rules != null ? source.rules : []
 
         // packagePath -> (fileName -> violations)
         Map<String, Map<String, List>> byPackage = [:]

@@ -34,6 +34,12 @@
   stays alive. Syntax-error detection now compiles only to the CONVERSION phase
   instead of generating bytecode. Use `--parallelism 1` to restore single-threaded
   analysis.
+- Fix a run failing with `Unable to use CodeNarc JSON result` (exit code 2) when the
+  `--files` pattern matched no file: the parallel analysis does not invoke CodeNarc when
+  there is nothing to analyse, so the merged report carried neither the `codeNarc` nor the
+  `rules` block the result parser requires. A pattern that matches nothing reports zero
+  violations again. An unreadable CodeNarc result is now reported as such instead of
+  crashing with `Cannot convert undefined or null to object` on text output.
 - The default JVM heap max used to run the CodeNarc server is now `-Xmx4096m` (was
   `-Xmx2048m`), to give the new parallel analysis room to work. `--javaoptions` still
   overrides this default.

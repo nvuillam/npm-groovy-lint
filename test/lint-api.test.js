@@ -402,6 +402,20 @@ describe("Lint with API", () => {
         checkCodeNarcCallsCounter(1);
     });
 
+    it("(API:file) should report zero violations when no file matches", async function () {
+        // The partitioner does not invoke CodeNarc when there is nothing to analyse, so the
+        // merged report has to carry the `codeNarc` and `rules` blocks on its own: without them
+        // a typo'd --files pattern failed the run with "Unable to use CodeNarc JSON result"
+        const linter = await new NpmGroovyLint(
+            [process.execPath, "", "--path", "lib/example", "--files", "**/*.nonexistent", "--no-insight"],
+            {},
+        ).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.lintResult.error === undefined, `Expected no error, got ${JSON.stringify(linter.lintResult.error)}`);
+        assert(linter.lintResult.summary.totalFilesLinted === 0, `Expected 0 file linted got ${linter.lintResult.summary.totalFilesLinted}`);
+        assert(linter.lintResult.summary.totalFoundNumber === 0, `Expected 0 violations got ${linter.lintResult.summary.totalFoundNumber}`);
+    });
+
     it("(API:file) should run on a directory", async function () {
         const linter = await new NpmGroovyLint([process.execPath, "", "--verbose", EXAMPLE_DIRECTORY], {
             verbose: true,
