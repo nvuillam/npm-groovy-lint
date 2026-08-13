@@ -2,6 +2,7 @@
 import NpmGroovyLint from "../lib/groovy-lint.js";
 import assert from "assert";
 import fs from "node:fs";
+import os from "node:os";
 import * as path from "path";
 import {
     beforeEachTestCase,
@@ -127,17 +128,45 @@ describe("Lint with API", () => {
     });
 
     it("(API:file) should run on a Jenkinsfile", async function () {
+        // The sample pipeline holds no likely mistake, so the default preset reports nothing on it
         const linter = await new NpmGroovyLint(
             [process.execPath, "", "--path", '"lib/example"', "-f", "**/Jenkinsfile", "-c", "recommended-jenkinsfile", "--no-insight", "--verbose"],
             {
                 verbose: true,
             },
         ).run();
-        assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
-        assert(linter.outputString.includes("warning"), "Output string contains warning");
-        assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
-        assert(linter.lintResult.summary.totalFoundInfoNumber > 0, "Infos found");
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(linter.lintResult.summary.totalFilesLinted === 1, `Expected 1 file linted got ${linter.lintResult.summary.totalFilesLinted}`);
         checkCodeNarcCallsCounter(1);
+    });
+
+    it("(API:file) should run on a Jenkinsfile with the jenkinsfile add-on over advanced", async function () {
+        // The add-on is what makes a strict preset usable on a pipeline: it must relax the
+        // dynamic-typing and naming rules `advanced` would otherwise report on every step
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ngl-jenkinsfile-"));
+        try {
+            const configFilePath = path.join(tmpDir, ".groovylintrc.json");
+            fs.writeFileSync(configFilePath, JSON.stringify({ extends: ["advanced", "jenkinsfile"] }));
+            const linter = await new NpmGroovyLint(
+                [process.execPath, "", "--path", '"lib/example"', "-f", "**/Jenkinsfile", "-c", configFilePath, "--no-insight", "--verbose"],
+                {
+                    verbose: true,
+                },
+            ).run();
+            assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
+            assert(linter.lintResult.summary.totalFoundWarningNumber > 0, "Warnings found");
+            const rulesFound = new Set(
+                Object.values(linter.lintResult.files)
+                    .flatMap((file) => file.errors)
+                    .map((error) => error.rule),
+            );
+            for (const relaxedRule of ["NoDef", "VariableName", "VariableTypeRequired", "UnnecessaryGetter"]) {
+                assert(!rulesFound.has(relaxedRule), `${relaxedRule} must be switched off by the jenkinsfile add-on`);
+            }
+            checkCodeNarcCallsCounter(1);
+        } finally {
+            fs.rmSync(tmpDir, { recursive: true, force: true });
+        }
     });
 
     it("(API:files) should ignore fake_node_modules and groovy pattern", async function () {
@@ -227,8 +256,10 @@ describe("Lint with API", () => {
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
         assert(linter.status === 1, `Linter status is 1 (${linter.status} returned)`);
         assert(linter.lintResult.summary.totalFilesLinted === 1, `Expected 1 file linted got ${linter.lintResult.summary.totalFilesLinted}`);
-        assert(linter.lintResult.summary.totalFoundInfoNumber === 1, `Expected 1 info got ${linter.lintResult.summary.totalFoundInfoNumber}`);
-        assert(linter.lintResult.files[0].errors.length === 2, `Expected 2 errors got ${linter.lintResult.files[0].errors.length}`);
+        // The parse error is all the default preset reports here: the rest of the sample is a
+        // style matter, which `advanced` covers
+        assert(linter.lintResult.files[0].errors.length === 1, `Expected 1 error got ${linter.lintResult.files[0].errors.length}`);
+        assert(linter.lintResult.files[0].errors[0].rule === "NglParseError", `Expected NglParseError got ${linter.lintResult.files[0].errors[0].rule}`);
         assert(linter.outputString.includes("NglParseError"), `Expected NglParseError got ${linter.outputString}`);
         checkCodeNarcCallsCounter(1);
     });
@@ -301,8 +332,8 @@ describe("Lint with API", () => {
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
         assert(linter.lintResult.summary.totalFoundErrorNumber === 4, "Error found");
-        assert(linter.lintResult.summary.totalFoundWarningNumber === 6, "Warnings found");
-        assert(linter.lintResult.summary.totalFoundInfoNumber === 44, `Expected 44 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
+        assert(linter.lintResult.summary.totalFoundWarningNumber === 4, `Expected 4 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`);
+        assert(linter.lintResult.summary.totalFoundInfoNumber === 5, `Expected 5 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);
     });
 
@@ -345,8 +376,8 @@ describe("Lint with API", () => {
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
         assert(linter.lintResult.summary.totalFoundErrorNumber === 4, "Error found");
-        assert(linter.lintResult.summary.totalFoundWarningNumber === 6, "Warnings found");
-        assert(linter.lintResult.summary.totalFoundInfoNumber === 44, `Expected 44 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
+        assert(linter.lintResult.summary.totalFoundWarningNumber === 4, `Expected 4 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`);
+        assert(linter.lintResult.summary.totalFoundInfoNumber === 5, `Expected 5 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);
     });
 
@@ -379,11 +410,10 @@ describe("Lint with API", () => {
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 12, `Expected 2 files got ${Object.keys(linter.lintResult.files).length}`);
         assert(linter.lintResult.summary.totalFoundErrorNumber === 12, `Expected 12 errors to ${linter.lintResult.summary.totalFoundErrorNumber}`);
-        assert(
-            linter.lintResult.summary.totalFoundWarningNumber === 331,
-            `Expected 331 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`,
-        );
-        assert(linter.lintResult.summary.totalFoundInfoNumber === 1260, `Expected 1260 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
+        // Snapshot of what the default preset reports on the example folder. It dropped from
+        // 331/1260 when `recommended` stopped reporting style and layout.
+        assert(linter.lintResult.summary.totalFoundWarningNumber === 11, `Expected 11 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`);
+        assert(linter.lintResult.summary.totalFoundInfoNumber === 9, `Expected 9 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);
     });
 });

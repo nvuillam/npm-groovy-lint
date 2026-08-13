@@ -1,0 +1,29 @@
+{
+    "rules": {
+        "enhanced.JUnitAssertEqualsConstantActualValue": {},
+        "junit.ChainedTest": {},
+        "junit.CoupledTestCase": {},
+        "junit.JUnitAssertAlwaysFails": {},
+        "junit.JUnitAssertAlwaysSucceeds": {},
+        "junit.JUnitFailWithoutMessage": {},
+        "junit.JUnitLostTest": {},
+        "junit.JUnitPublicField": {},
+        "junit.JUnitPublicNonTestMethod": {},
+        "junit.JUnitPublicProperty": {},
+        "junit.JUnitSetUpCallsSuper": {},
+        "junit.JUnitStyleAssertions": {},
+        "junit.JUnitTearDownCallsSuper": {},
+        "junit.JUnitTestMethodWithoutAssert": {},
+        "junit.JUnitUnnecessarySetUp": {},
+        "junit.JUnitUnnecessaryTearDown": {},
+        "junit.JUnitUnnecessaryThrowsException": {},
+        "junit.SpockIgnoreRestUsed": {},
+        "junit.UnnecessaryFail": {},
+        "junit.UseAssertEqualsInsteadOfAssertTrue": {},
+        "junit.UseAssertFalseInsteadOfNegation": {},
+        "junit.UseAssertNullInsteadOfAssertEquals": {},
+        "junit.UseAssertSameInsteadOfAssertTrue": {},
+        "junit.UseAssertTrueInsteadOfAssertEquals": {},
+        "junit.UseAssertTrueInsteadOfNegation": {}
+    }
+}

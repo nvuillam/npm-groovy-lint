@@ -68,6 +68,10 @@ describe("Lint & fix with API", function () {
             nolintafter: true,
             output: "none",
             insight: false,
+            // Fixing a list of already-reported errors can only repair what the lint pass reported:
+            // `recommended` reports likely mistakes only, so the layout errors this exercises come
+            // from `advanced`. A plain `--fix` run gets them through the `format` preset instead.
+            config: "advanced",
             verbose: true,
         };
         const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();

@@ -22,14 +22,13 @@
 - Upgrade MegaLinter CI to **v10** (custom flavor image rebuilt on MegaLinter 10.0.0, `REPOSITORY_GITLEAKS` replaced by `REPOSITORY_BETTERLEAKS`)
 - Add `.prettierrc.json` and `.prettierignore` so prettier uses the project conventions (tab width 4, print width 150) instead of its defaults, and leaves generated files alone
 - Remove unused imports and unnecessary semicolons from the Groovy server sources
-- Performance: the `recommended` preset now disables five rules that require the
-  semantic-analysis compiler phase (`enhanced.CloneWithoutCloneable`,
-  `enhanced.JUnitAssertEqualsConstantActualValue`, `enhanced.MissingOverrideAnnotation`,
-  `enhanced.UnsafeImplementationAsMap`, `grails.GrailsDomainGormMethods`).
-  npm-groovy-lint does not pass a user classpath, so these rules could not resolve
-  imported classes and reported nothing while costing roughly 9 seconds on a
-  20-file corpus. Re-enable them in your `.groovylintrc.json` if your sources have
-  no unresolvable imports and you rely on them.
+- Performance: the five rules that require the semantic-analysis compiler phase
+  (`enhanced.CloneWithoutCloneable`, `enhanced.JUnitAssertEqualsConstantActualValue`,
+  `enhanced.MissingOverrideAnnotation`, `enhanced.UnsafeImplementationAsMap`,
+  `grails.GrailsDomainGormMethods`) are out of the default preset. npm-groovy-lint does not
+  pass a user classpath, so these rules cannot resolve imported classes: on 66k lines of real
+  Groovy they reported a single violation while doubling the run. They ship in `advanced`,
+  `tests` and `grails`, and you can name them in your own `rules` block.
 - Performance: files are now analysed in parallel inside the CodeNarc server (up to
   4 threads), with per-file results cached in memory across runs while the server
   stays alive. Syntax-error detection now compiles only to the CONVERSION phase
@@ -38,27 +37,46 @@
 - The default JVM heap max used to run the CodeNarc server is now `-Xmx4096m` (was
   `-Xmx2048m`), to give the new parallel analysis room to work. `--javaoptions` still
   overrides this default.
-- **Breaking**: the `recommended` preset is now a **curated list of 244 rules** instead
-  of `extends: all` (386 rules) with a few overrides. Measured on 649 files / 66k lines
-  of real Groovy sampled from CodeNarc, Spock, grails-core and jenkinsci/pipeline-examples,
-  this makes a lint run roughly **2x faster** (2.07x on the final ruleset; run-to-run
-  spread on this workload is 25-50%, so treat it as approximate) while still reporting
-  **95%** of the violations.
-  Restore the previous behaviour with `{ "extends": "all" }` in your `.groovylintrc.json`,
-  or re-enable individual rules by naming them in your own `rules` block.
-  - The 13 `Space*` whitespace rules were **45% of an entire lint run** while reporting
-    very little on already-formatted code. Spacing is therefore no longer *reported* by
-    default, but it is still *fixed*: `--fix` now applies the `format` preset's rules on
-    top of the lint ruleset, so `npm-groovy-lint --fix` repairs spacing exactly as before,
-    and `--format` is unchanged. A rule you disable in your own config stays disabled
-    under `--fix`.
-  - Also removed: the framework- and tool-specific categories (`grails`, `jdbc`, `junit`,
-    `comments`, `generic`) and stylistic rules npm-groovy-lint cannot auto-fix.
-  - Kept: everything that catches a defect, including rules that fire rarely, plus
-    `Indentation`, the braces and blank-line rules (so `--fix` still repairs layout) and
-    the `NoDef` / `CompileStatic` / `*TypeRequired` conventions.
-  - Because the preset no longer extends `all`, rules added by future CodeNarc releases
-    are now opt-in instead of silently joining `recommended`.
+- **Breaking**: the configuration presets are reorganised into tiers, the way ESLint
+  separates `eslint:recommended` from the rest. `recommended`, the default, is now a list of
+  **149 rules whose violations are most likely mistakes** instead of `extends: all`
+  (386 rules) with a few overrides.
+  - **`recommended`** (default, 149 rules) - code that does not do what its author meant,
+    dead code, security and concurrency hazards, well-known API misuse. The `basic`,
+    `concurrency`, `exceptions`, `security`, `serialization` and `unused` categories are
+    kept whole, including the rules that fire rarely.
+  - **`advanced`** (344 rules) - `recommended` plus everything that expresses a preference
+    between two correct ways of writing the same thing: style, Groovy idioms, design,
+    naming conventions, complexity thresholds, Javadoc and layout.
+  - **`all`** (390 rules) - every CodeNarc rule, including the ones that do nothing until
+    you configure them (`generic.IllegalRegex`, `generic.RequiredString`...).
+  - **`grails`**, **`tests`** (JUnit and Spock) and **`jenkinsfile`** - framework add-ons,
+    composed on top of a tier with the new list form of `extends`:
+    `{ "extends": ["recommended", "grails", "tests"] }`. `recommended-jenkinsfile` still
+    works and is exactly `["recommended", "jenkinsfile"]`.
+  - **`format`** is unchanged: it owns layout, and is what `--format` and `--fix` apply.
+  - **What moved out of the default**, and where to get it back:
+
+    | You want | Use |
+    | --- | --- |
+    | Indentation, braces, blank lines, spacing reported | `{ "extends": ["recommended", "format"] }` or `advanced` |
+    | Naming conventions, `NoDef` / `*TypeRequired`, `Unnecessary*`, size thresholds, Javadoc | `{ "extends": "advanced" }` |
+    | The pre-v19 behaviour | `{ "extends": "all" }` |
+    | Grails, JUnit/Spock rules | `{ "extends": ["recommended", "grails", "tests"] }` |
+
+  - **Layout is still fixed, just not reported.** `--fix` applies the `format` preset's
+    rules on top of the lint ruleset, so `npm-groovy-lint --fix` repairs indentation,
+    braces and spacing exactly as before, and `--format` is unchanged. A rule you disable
+    in your own config stays disabled under `--fix`.
+  - Because the presets no longer extend `all`, rules added by future CodeNarc releases are
+    opt-in instead of silently joining `recommended`: the build now fails until each new
+    rule is assigned a tier.
+- `extends` accepts a **list of presets** merged from left to right, so add-ons can be
+  composed: `{ "extends": ["advanced", "jenkinsfile"] }`. A single string still works.
+- Fix `--fix` crashing with `Cannot convert undefined or null to object` when the rules a
+  brace fix re-triggers (`Indentation` and friends) were absent from the lint ruleset, and
+  stop sending npm-groovy-lint-only rules (`IndentationClosingBraces`,
+  `IndentationComments`) to CodeNarc, which rejects them.
 - Fix `--files` being silently ignored: `lib/codenarc-factory.js` read the option from
   `options.file` instead of `options.files`, so every file under `--path` was linted and
   the pattern had no effect. Introduced in

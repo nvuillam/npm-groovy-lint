@@ -13,12 +13,18 @@ describe("Check disabled rules", function () {
     }
 });
 
+// These samples are about the groovylint-disable comments, not about which rules a preset
+// happens to carry: pin the ruleset so the expected counts stay meaningful when the presets
+// change. `recommended` reports likely mistakes only, so it would find nothing here.
+const DISABLE_COMMENT_RULES = "Indentation,UnnecessarySemicolon,IfStatementBraces,UnusedVariable";
+
 async function checkRule(key, check) {
     const npmGroovyLintConfig = {
         source: check.source,
         output: "txt",
         failon: "none",
         insight: false,
+        rulesets: DISABLE_COMMENT_RULES,
         verbose: true,
     };
     const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();

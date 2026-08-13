@@ -1,7 +1,9 @@
 # npm-groovy-lint performance Stage 2: ruleset curation
 
 Date: 2026-08-12
-Status: Implemented
+Status: Superseded by [`2026-08-13-ruleset-tiers.md`](2026-08-13-ruleset-tiers.md), which
+replaces the selection criterion below (cheap rules stay) with a value-based one
+(likely-mistake rules stay). The measurements recorded here remain the reference.
 
 Follows [`2026-08-10-performance-design.md`](2026-08-10-performance-design.md), which
 deferred Stage 2 on the grounds that "curating a rule list is a product judgement
