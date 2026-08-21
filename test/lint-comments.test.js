@@ -13,12 +13,18 @@ describe("Check disabled rules", function () {
     }
 });
 
+// These samples are about the groovylint-disable comments, not about which rules a preset
+// happens to carry: pin the ruleset so the expected counts stay meaningful when the presets
+// change. `recommended` reports likely mistakes only, so it would find nothing here.
+const DISABLE_COMMENT_RULES = "Indentation,UnnecessarySemicolon,IfStatementBraces,UnusedVariable";
+
 async function checkRule(key, check) {
     const npmGroovyLintConfig = {
         source: check.source,
         output: "txt",
         failon: "none",
         insight: false,
+        rulesets: DISABLE_COMMENT_RULES,
         verbose: true,
     };
     const linter = await new NpmGroovyLint(npmGroovyLintConfig, {}).run();
@@ -62,7 +68,7 @@ private void doSomething(){
         [
             "GroovyDisableFileIndentation/*",
             {
-                totalFound: 3,
+                totalFound: 2,
                 source: `
 /* groovylint-disable Indentation */
 private void doSomething(){
@@ -75,7 +81,7 @@ private void doSomething(){
         [
             "GroovyDisableFileIndentation//",
             {
-                totalFound: 3,
+                totalFound: 2,
                 source: `
 // groovylint-disable Indentation
 private void doSomething(){
@@ -88,7 +94,7 @@ private void doSomething(){
         [
             "GroovyDisableFileIndentationUnnecessarySemicolon",
             {
-                totalFound: 2,
+                totalFound: 1,
                 source: `
 // groovylint-disable Indentation,UnnecessarySemicolon
 private void doSomething(){
@@ -101,7 +107,7 @@ private void doSomething(){
         [
             "GroovyDisableLineAll",
             {
-                totalFound: 3,
+                totalFound: 2,
                 source: `
 private void doSomething(){
             if (a == 2)
@@ -113,7 +119,7 @@ private void doSomething(){
         [
             "GroovyDisableLineUnnecessarySemicolon",
             {
-                totalFound: 3,
+                totalFound: 2,
                 source: `
 private void doSomething(){
             if (a == 2)
@@ -125,7 +131,7 @@ private void doSomething(){
         [
             "GroovyDisableNextLineUnnecessarySemicolon",
             {
-                totalFound: 3,
+                totalFound: 2,
                 source: `
 private void doSomething(){
             if (a == 2)
@@ -138,7 +144,7 @@ private void doSomething(){
         [
             "GroovyDisableNextLineToIgnore",
             {
-                totalFound: 4,
+                totalFound: 3,
                 source: `
 private void doSomething(){
             if (a == 2)
@@ -151,7 +157,7 @@ private void doSomething(){
         [
             "GroovyDisableEnableAll",
             {
-                totalFound: 3,
+                totalFound: 2,
                 source: `
 private void doSomething(){
     // groovylint-disable
@@ -166,7 +172,7 @@ private void doSomething(){
         [
             "GroovyDisableEnableIndentation",
             {
-                totalFound: 6,
+                totalFound: 5,
                 source: `
 private void doSomething(){
     /* groovylint-disable Indentation */
@@ -181,7 +187,7 @@ private void doSomething(){
         [
             "GroovyDisableEnableIndentationUnnecessarySemicolon",
             {
-                totalFound: 5,
+                totalFound: 4,
                 source: `
 private void doSomething(){
     /* groovylint-disable Indentation, UnnecessarySemicolon */

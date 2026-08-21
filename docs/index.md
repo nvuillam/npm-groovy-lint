@@ -49,7 +49,7 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 | -o<br/> --output        | String  | Output format (txt,json,sarif,html,xml), or path to a file with one of these extensions<br/> Default: `txt`<br/> Examples:<br/> - `"txt"`<br/> - `"json"`<br/> - `"./logs/myLintResults.txt"`<br/> - `"./logs/myLintResults.sarif"`<br/> - `"./logs/myLintResults.html"`<br/> - `"./logs/myLintResults.xml"`<br/>Note: HTML and XML are directly from CodeNarc so using these formats will disable many npm-groovy-lint features                                                                                                  |
 | -l<br/> --loglevel      | String  | Log level (error,warning or info)<br/>Default: info                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | --failon                | String  | Defines the error level where CLI will fail (return code = 1). error,warning,info or none. Each failure level includes the more critical ones.                                                                                                                                                                                                                                                                                                                                                                                    |
-| -c<br/> --config        | String  | Custom path to [GroovyLint config file](#configuration), or preset config `recommended\|recommended-jenkinsfile\|all`<br/> Default: Browse current directory to find `.groovylintrc.json\|js\|yml\|package.json` config file, or default npm-groovy-lint config if not defined.<br/>Note: command-line arguments have priority on config file properties                                                                                                                                                                          |
+| -c<br/> --config        | String  | Custom path to [GroovyLint config file](#configuration), or a [preset](#rule-presets) name `recommended\|advanced\|all\|format\|grails\|tests\|jenkinsfile\|recommended-jenkinsfile`<br/> Default: Browse current directory to find `.groovylintrc.json\|js\|yml\|package.json` config file, or default npm-groovy-lint config if not defined.<br/>Note: command-line arguments have priority on config file properties                                                                                                                                                                          |
 | --parse                 | Boolean | Try to compile the source code and return parse errors (since v5.7.0, default to true, use --no-parse to deactivate)                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --format                | Boolean | Format source code                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | --fix                   | Boolean | Automatically fix problems when possible<br/> See [Auto-fixable rules](#auto-fixable-rules)                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -64,7 +64,8 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 | --noserver              | Boolean | npm-groovy-lint launches a microservice to avoid performance issues caused by loading java/groovy each time,that auto kills itself after 1h idle. Use this argument if you do not want to use this feature                                                                                                                                                                                                                                                                                                                        |
 | --returnrules           | Boolean | Return rules descriptions and URL if set                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | --javaexecutable        | String  | Override java executable to use  <br/>Default: java<br/>Example: C:\\Program Files\\Java\\jdk1.8.0_144\\bin\\java.exe                                                                                                                                                                                                                                                                                                                                                                                                             |
-| --javaoptions           | String  | Override java options to use  <br/>Default: "-Xms256m,-Xmx2048m"                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --javaoptions           | String  | Override java options to use  <br/>Default: "-Xms256m,-Xmx4096m"                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| -P<br/> --parallelism   | Int     | Number of threads used to analyse files in parallel (default: auto, max 4). Use 1 to disable.<br/>Server mode only: has no effect with --noserver                                                                                                                                                                                                                                                                                                                                                                                 |
 | --insight               | Boolean | npm-groovy-lint collects anonymous usage statistics using [amplitude](https://www.npmjs.com/package/amplitude), in order to make new improvements based on how users use this package. <br/> Summary charts are available at [https://tinyurl.com/groovy-stats](https://tinyurl.com/groovy-stats).<br/> Analytics obviously does not receive sensitive information like your code, as you can see in analytics.js.<br/> If you want to enable anonymous usage statistics, use `--insight` option.                                 |
 | --codenarcargs          | String  | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: <http://codenarc.github.io/CodeNarc/codenarc-command-line.html><br/> Example: `npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                  |
 | -h<br/> --help          | Boolean | Show help (npm-groovy-lint -h OPTIONNAME to see option detail with examples)                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -158,7 +159,38 @@ Any **question**, **problem** or **enhancement request** ? Ask [**here**](https:
 
 ## Configuration
 
-Default rules definition ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json), based on [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json) tracks a lot of errors, do not hesitate to ignore some of them (like NoDef ou RequiredVariableType) if they are too mean for your project.
+### Rule presets
+
+npm-groovy-lint ships tiered presets, the way ESLint separates `eslint:recommended` from the rest. The default is [`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json).
+
+| Preset | Rules | What it reports |
+| --- | --- | --- |
+| [`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json) *(default)* | 149 | Only what is **most likely a mistake**: code that does not do what its author meant, dead code, security and concurrency hazards, misused APIs |
+| [`advanced`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-advanced.json) | 344 | `recommended` **+ style**: Groovy idioms, design, naming conventions, complexity thresholds, Javadoc and layout |
+| [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json) | 390 | Every CodeNarc rule, including those that do nothing until you configure them (`IllegalRegex`, `RequiredString`...) |
+| [`format`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-format.json) | 40 | Layout only: indentation, braces, blank lines, spacing. This is what `--format` and `--fix` apply |
+
+Plus three framework add-ons, meant to be composed on top of a tier: [`grails`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-grails.json), [`tests`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-tests.json) (JUnit and Spock) and [`jenkinsfile`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-jenkinsfile.json) (relaxes the rules a pipeline always breaks).
+
+```json
+{
+    "extends": ["recommended", "grails", "tests"]
+}
+```
+
+Presets are merged from left to right, and your own `rules` always win.
+
+**`recommended` reports no layout at all** — that belongs to `format`. Layout is still **fixed**, just not reported: `npm-groovy-lint --fix` applies the `format` rules on top of the lint ruleset, so it repairs indentation, braces and spacing exactly as before, and `--format` is unchanged. A rule you disable in your own config stays disabled under `--fix`.
+
+To report layout too, add the `format` preset — or take everything with `advanced`:
+
+```json
+{
+    "extends": ["recommended", "format"]
+}
+```
+
+Anything can be re-enabled one rule at a time by naming it in your own `rules` block.
 
 Create a file named **.groovylintrc.json** in the current or any parent directory of where your files to analyze are located
 
@@ -173,7 +205,7 @@ Create a file named **.groovylintrc.json** in the current or any parent director
 
 ### Format
 
-- **extends**: Name of a base configuration ([`recommended`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended.json), [`recommended-jenkinsfile`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-recommended-jenkinsfile.json), [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json))
+- **extends**: Name of a base configuration (`recommended`, `advanced`, `all`, `format`, `grails`, `tests`, `jenkinsfile`, `recommended-jenkinsfile`), or a **list** of them merged from left to right — see [Rule presets](#rule-presets)
 - **rules**: List of rules definition, following format `"RuleSection.RuleName": ruleParameters` or `"RuleName": ruleParameters`
   - *RuleName*: any of the **[CodeNarc rules](https://codenarc.github.io/CodeNarc/codenarc-rule-index.html)**
   - *ruleParameters*: can be just a severity override ( `"off"`, `"error"`, `"warning"`, `"info"` ) , or a property list :
@@ -203,7 +235,7 @@ OR
 
 ```json
 {
-    "extends": "recommended-jenkinsfile",
+    "extends": ["advanced", "jenkinsfile"],
     "rules": {
         "CouldBeElvis": "off",
         "CouldBeSwitchStatement": "off",

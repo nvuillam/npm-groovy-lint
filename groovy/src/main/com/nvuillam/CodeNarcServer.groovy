@@ -48,9 +48,11 @@ class CodeNarcServer {
     private static final ObjectWriter WRITER = MAPPER.writer((PrettyPrinter)null)
 
     private final CountDownLatch latch
-    private final Map<String, Thread> threads
+    private final Map<String, AnalysisPartitioner.RequestHandle> handles
     private final HttpServer server
     private final ExecutorService ex
+    private final ExecutorService analysisPool
+    private final ResultCache resultCache
 
     // timerLock protects access to the items below.
     private final Object timerLock
@@ -107,7 +109,13 @@ class CodeNarcServer {
         PrintStream originalSystemOut = System.out
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
         System.out = new PrintStream(outputStream)
-        request.process(response)
+        ExecutorService oneShotPool = Executors.newFixedThreadPool(
+            Math.max(1, Math.min(Runtime.runtime.availableProcessors(), AnalysisPartitioner.MAX_PARTITIONS)))
+        try {
+            request.process(response, new LintContext(oneShotPool, null))
+        } finally {
+            oneShotPool.shutdownNow()
+        }
         response.stdout = outputStream.toString()
 
         WRITER.writeValue(originalSystemOut, response)
@@ -121,12 +129,17 @@ class CodeNarcServer {
         this.server = HttpServer.create(sockAddr, 0)
         this.latch = new CountDownLatch(1)
         this.timerLock = new Object()
-        this.threads = new ConcurrentHashMap<String, Thread>()
+        this.handles = new ConcurrentHashMap<String, AnalysisPartitioner.RequestHandle>()
         this.timer = new Timer()
         this.currentTimerTask = timer.runAfter(MAX_IDLE_TIME, { timerData ->
             this.stopServer()
         })
         this.ex = Executors.newFixedThreadPool(Runtime.runtime.availableProcessors())
+        // Separate from the HTTP executor: analysis tasks submitted to the pool that is
+        // serving the request would deadlock once all HTTP threads are busy.
+        this.analysisPool = Executors.newFixedThreadPool(
+            Math.max(1, Math.min(Runtime.runtime.availableProcessors(), AnalysisPartitioner.MAX_PARTITIONS)))
+        this.resultCache = new ResultCache()
     }
 
     // Ping
@@ -165,6 +178,8 @@ class CodeNarcServer {
             }
 
             String requestKey
+            AnalysisPartitioner.RequestHandle handle = new AnalysisPartitioner.RequestHandle()
+            handle.thread = Thread.currentThread()
             Response response = new Response()
             // Parse input and call CodeNarc
             try {
@@ -192,17 +207,27 @@ class CodeNarcServer {
                 if (request.requestKey != null && request.requestKey != 'undefined') {
                     requestKey = request.requestKey
                     LOGGER.debug("requestKey: $requestKey")
-                    Thread thread = threads.put(requestKey, Thread.currentThread())
-                    if (thread != null) {
-                        // Cancel already running request.
-                        thread.interrupt()
+                    AnalysisPartitioner.RequestHandle previous = handles.put(requestKey, handle)
+                    if (previous != null) {
+                        // Cancel the superseded request, including its analysis workers.
+                        previous.cancelAll()
                     }
                 }
 
-                request.process(response)
+                request.process(response, new LintContext(analysisPool, resultCache), handle)
             } catch (InterruptedException ie) {
                 LOGGER.debug('Interrupted by duplicate')
                 response.setInterrupted()
+                response.cancelledWorkers = handle.cancelledCount
+                // cancelAll() called Thread.interrupt() on this thread, and nothing on the
+                // path back up here (listFiles/parseFiles/CodeNarc) necessarily consumed it -
+                // a plain isInterrupted() check, unlike a blocking call throwing
+                // InterruptedException, does not clear the flag. Clear it now: otherwise the
+                // HTTP response write below runs on a thread that still looks interrupted,
+                // which can make that write itself fail (observed as a connection reset),
+                // costing this cancelled request its clean HTTP 444 response and making the
+                // client silently retry the whole request instead of seeing status 9.
+                Thread.interrupted()
             } catch (FileNotFoundException e) {
                 LOGGER.debug('File not found', e.message)
                 response.setNotFound(e)
@@ -210,6 +235,17 @@ class CodeNarcServer {
                 LOGGER.error('Request failed', t)
                 response.setError(t)
             }
+
+            // cancelAll() can land at any point during processing, including after
+            // Request's last isInterrupted() check - e.g. while ResultMerger.merge,
+            // storeResults or JSON serialization are running. In that case the request
+            // completes normally (no InterruptedException, no catch above runs) but the
+            // thread's interrupt flag is still set, and writing the response below on an
+            // interrupted thread reproduces the same connection-reset / silent client
+            // retry that commit 93a091e set out to prevent. Clear it unconditionally here
+            // so every path - success, cancellation or error - writes its response on a
+            // non-interrupted thread.
+            Thread.interrupted()
 
             try {
                 http.sendResponseHeaders(response.statusCode, 0)
@@ -219,8 +255,13 @@ class CodeNarcServer {
             } catch (Exception e) {
                 LOGGER.error('Write response', e)
             } finally {
+                // Conditional removal: only drop the map entry if it is still this request's
+                // own handle. An unconditional remove(requestKey) here could otherwise evict a
+                // newer request's handle that has since replaced this one (this request was
+                // itself cancelled and is only now unwinding), letting that newer request
+                // dodge cancellation from any duplicate that arrives after this point.
                 if (requestKey) {
-                    threads.remove(requestKey)
+                    handles.remove(requestKey, handle)
                 }
             }
         }
@@ -257,6 +298,7 @@ class CodeNarcServer {
     private void stopServer() {
         LOGGER.info('Shutting down...')
         timer.cancel()
+        analysisPool.shutdownNow()
         ex.shutdown()
         ex.awaitTermination(1, TimeUnit.SECONDS)
         LOGGER.debug('Threads stopped')

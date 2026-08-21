@@ -19,6 +19,14 @@ class Response {
     // Detected files.
     List<String> fileList
 
+    // Diagnostics (optional, used by tests and --verbose).
+    Integer partitionCount
+    Integer cacheHits
+    Integer cacheMisses
+    // Number of partition futures actually cancelled when this request was superseded by a
+    // duplicate requestKey; null/absent for normal, non-cancelled requests.
+    Integer cancelledWorkers
+
     // Errors.
     String errorMessage
     String errorDtl

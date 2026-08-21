@@ -7,13 +7,38 @@
   "additionalProperties": false,
   "properties": {
     "extends": {
-      "type": "string",
-      "description": "Name of a base configuration bundled with npm-groovy-lint.",
-      "enum": [
-        "all",
-        "format",
-        "recommended",
-        "recommended-jenkinsfile"
+      "description": "Name of a base configuration bundled with npm-groovy-lint, or a list of them merged from left to right (later entries win).",
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "advanced",
+            "all",
+            "format",
+            "grails",
+            "jenkinsfile",
+            "recommended",
+            "recommended-jenkinsfile",
+            "tests"
+          ]
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "advanced",
+              "all",
+              "format",
+              "grails",
+              "jenkinsfile",
+              "recommended",
+              "recommended-jenkinsfile",
+              "tests"
+            ]
+          }
+        }
       ]
     },
     "rules": {
