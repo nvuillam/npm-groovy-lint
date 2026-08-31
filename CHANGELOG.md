@@ -2,6 +2,44 @@
 
 ## Beta
 
+### Breaking changes
+
+- **The default preset `recommended` is curated down to 149 rules** (it was `extends: all`,
+  386 rules, with a few overrides): a lint with no configuration reports fewer, more
+  meaningful violations, and runs about twice as fast. Layout (indentation, braces,
+  spacing) is no longer *reported* by default but is still *fixed* by `--fix` / `--format`.
+  Restore the previous behaviour with `{ "extends": "all" }` - full details and a
+  migration table in the preset entry below.
+- **The `grails`, `tests` and `jenkinsfile` add-on presets now extend `recommended`**:
+  `-c grails` alone is now a full lint instead of only the add-on rules. To get the old
+  "add-on only" scope, list the add-on's rules explicitly in your own config.
+- **Minimum Node version is now 22.13.0** (was 22.0.0).
+- **Debug logs are enabled with `NODE_DEBUG=npm-groovy-lint`** instead of
+  `DEBUG=npm-groovy-lint` (the `debug` dependency was replaced by Node's `util.debuglog`).
+- **The default `--serverhost` is `http://127.0.0.1`** instead of `http://localhost`
+  (the CodeNarc server only listens on the IPv4 loopback; `localhost` resolves to `::1`
+  first on some hosts). Only affects setups that relied on overriding name resolution.
+- **The CodeNarc server's `/kill` endpoint requires an authorization token**: during an
+  upgrade, a pre-19 `--killserver` cannot stop a v19 server (kill it by PID or let it idle
+  out after 1h). A v19 `--killserver` stops both old and new servers.
+
+### Performance
+
+Measured against the published **v18.0.0**, same command and default configuration, on a
+40-file / ~29k-line corpus, medians of interleaved passes on one machine (ranges shown;
+JVM workloads have a large run-to-run spread):
+
+| Scenario | v18.0.0 | This release | Speedup |
+| --- | --- | --- | --- |
+| First run (JVM + server start + analysis) | 88.6 s (88.6-99.5) | 24.7 s (24.7-29.9) | **~3.6x** |
+| Re-run, no file changed (warm server) | 62.6 s (61.6-101.6) | 3.5 s (3.2-5.9) | **~18x** |
+| Re-run, every file modified (warm server) | 57.8 s (57.8-186.7) | 8.2 s (8.2-10.1) | **~7x** |
+
+The gains combine the curated default ruleset (149 rules instead of 386 - see Breaking
+changes), parallel analysis, the in-memory result cache (the "no file changed" row) and
+cheaper parsing. With `{ "extends": "all" }` (the pre-19 ruleset) only the engine gains
+apply.
+
 - Reduce npm supply-chain surface: production dependencies cut from 17 to 4 (82 to 27 installed packages), replaced by Node.js built-ins
   - **axios** -> native `fetch` (the default `--serverhost` is now `http://127.0.0.1` instead of `http://localhost`, matching the loopback address the CodeNarc server actually listens on)
   - **chalk** + **ansi-colors** -> `util.styleText`
