@@ -29,11 +29,11 @@ Measured against the published **v18.0.0**, same command and default configurati
 40-file / ~29k-line corpus, medians of interleaved passes on one machine (ranges shown;
 JVM workloads have a large run-to-run spread):
 
-| Scenario | v18.0.0 | This release | Speedup |
-| --- | --- | --- | --- |
-| First run (JVM + server start + analysis) | 88.6 s (88.6-99.5) | 24.7 s (24.7-29.9) | **~3.6x** |
-| Re-run, no file changed (warm server) | 62.6 s (61.6-101.6) | 3.5 s (3.2-5.9) | **~18x** |
-| Re-run, every file modified (warm server) | 57.8 s (57.8-186.7) | 8.2 s (8.2-10.1) | **~7x** |
+| Scenario                                  | v18.0.0             | This release       | Speedup   |
+|-------------------------------------------|---------------------|--------------------|-----------|
+| First run (JVM + server start + analysis) | 88.6 s (88.6-99.5)  | 24.7 s (24.7-29.9) | **~3.6x** |
+| Re-run, no file changed (warm server)     | 62.6 s (61.6-101.6) | 3.5 s (3.2-5.9)    | **~18x**  |
+| Re-run, every file modified (warm server) | 57.8 s (57.8-186.7) | 8.2 s (8.2-10.1)   | **~7x**   |
 
 The gains combine the curated default ruleset (149 rules instead of 386 - see Breaking
 changes), parallel analysis, the in-memory result cache (the "no file changed" row) and
@@ -155,12 +155,12 @@ apply.
   - **`format`** is unchanged: it owns layout, and is what `--format` and `--fix` apply.
   - **What moved out of the default**, and where to get it back:
 
-    | You want | Use |
-    | --- | --- |
-    | Indentation, braces, blank lines, spacing reported | `{ "extends": ["recommended", "format"] }` or `advanced` |
-    | Naming conventions, `NoDef` / `*TypeRequired`, `Unnecessary*`, size thresholds, Javadoc | `{ "extends": "advanced" }` |
-    | The pre-v19 behaviour | `{ "extends": "all" }` |
-    | Grails, JUnit/Spock rules | `{ "extends": ["recommended", "grails", "tests"] }` |
+    | You want                                                                                | Use                                                      |
+    |-----------------------------------------------------------------------------------------|----------------------------------------------------------|
+    | Indentation, braces, blank lines, spacing reported                                      | `{ "extends": ["recommended", "format"] }` or `advanced` |
+    | Naming conventions, `NoDef` / `*TypeRequired`, `Unnecessary*`, size thresholds, Javadoc | `{ "extends": "advanced" }`                              |
+    | The pre-v19 behaviour                                                                   | `{ "extends": "all" }`                                   |
+    | Grails, JUnit/Spock rules                                                               | `{ "extends": ["recommended", "grails", "tests"] }`      |
 
   - **Layout is still fixed, just not reported.** `--fix` applies the `format` preset's
     rules on top of the lint ruleset, so `npm-groovy-lint --fix` repairs indentation,

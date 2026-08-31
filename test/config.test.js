@@ -229,10 +229,7 @@ describe("ruleset presets", () => {
         assert.deepEqual(notInAdvanced, [], "advanced must contain every recommended rule");
         const notInAll = Object.keys(advanced.rules).filter((ruleName) => all.rules[ruleName] === undefined);
         assert.deepEqual(notInAll, [], "all must contain every advanced rule");
-        assert(
-            Object.keys(advanced.rules).length > Object.keys(recommended.rules).length,
-            "advanced must add rules on top of recommended",
-        );
+        assert(Object.keys(advanced.rules).length > Object.keys(recommended.rules).length, "advanced must add rules on top of recommended");
     });
 
     it("(CFG) framework and inert rules stay out of the framework-agnostic tiers", async function () {
@@ -260,10 +257,7 @@ describe("ruleset presets", () => {
         const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "ngl-config-extends-"));
         try {
             const configFilePath = path.join(tempDir, ".groovylintrc.json");
-            await fs.writeFile(
-                configFilePath,
-                JSON.stringify({ extends: ["recommended", "grails", "tests"], rules: { "basic.DeadCode": "off" } }),
-            );
+            await fs.writeFile(configFilePath, JSON.stringify({ extends: ["recommended", "grails", "tests"], rules: { "basic.DeadCode": "off" } }));
             const config = await loadConfig(configFilePath);
             assert(config.rules.EmptyCatchBlock !== undefined, "rules of the first base must be kept");
             assert(config.rules.GrailsMassAssignment !== undefined, "rules of the grails add-on must be merged in");

@@ -397,7 +397,7 @@ class Request {
                             keyAfterAnalysis = cache.keyFor(fingerprint, relative, sourceFile)
                         }
                     } catch (Throwable ignored) {
-                        // Unreadable file: treat as changed, do not cache.
+                    // Unreadable file: treat as changed, do not cache.
                     }
                     if (keyAfterAnalysis == key) {
                         cache.put(key, (file.violations ?: []) as List<Map>)
@@ -407,7 +407,7 @@ class Request {
                 }
             }
         }
-    }
+                              }
 
     /**
      * List files to be parsed / linted.

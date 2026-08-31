@@ -259,7 +259,10 @@ describe("Lint with API", () => {
         // The parse error is all the default preset reports here: the rest of the sample is a
         // style matter, which `advanced` covers
         assert(linter.lintResult.files[0].errors.length === 1, `Expected 1 error got ${linter.lintResult.files[0].errors.length}`);
-        assert(linter.lintResult.files[0].errors[0].rule === "NglParseError", `Expected NglParseError got ${linter.lintResult.files[0].errors[0].rule}`);
+        assert(
+            linter.lintResult.files[0].errors[0].rule === "NglParseError",
+            `Expected NglParseError got ${linter.lintResult.files[0].errors[0].rule}`,
+        );
         assert(linter.outputString.includes("NglParseError"), `Expected NglParseError got ${linter.outputString}`);
         checkCodeNarcCallsCounter(1);
     });
@@ -332,7 +335,10 @@ describe("Lint with API", () => {
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
         assert(linter.lintResult.summary.totalFoundErrorNumber === 4, "Error found");
-        assert(linter.lintResult.summary.totalFoundWarningNumber === 4, `Expected 4 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`);
+        assert(
+            linter.lintResult.summary.totalFoundWarningNumber === 4,
+            `Expected 4 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`,
+        );
         assert(linter.lintResult.summary.totalFoundInfoNumber === 5, `Expected 5 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);
     });
@@ -376,7 +382,10 @@ describe("Lint with API", () => {
         assert(linter.outputString.includes("warning"), "Output string contains warning");
         assert(Object.keys(linter.lintResult.files).length === 2, "Files array contains 2 files");
         assert(linter.lintResult.summary.totalFoundErrorNumber === 4, "Error found");
-        assert(linter.lintResult.summary.totalFoundWarningNumber === 4, `Expected 4 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`);
+        assert(
+            linter.lintResult.summary.totalFoundWarningNumber === 4,
+            `Expected 4 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`,
+        );
         assert(linter.lintResult.summary.totalFoundInfoNumber === 5, `Expected 5 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);
     });
@@ -426,7 +435,10 @@ describe("Lint with API", () => {
         assert(linter.lintResult.summary.totalFoundErrorNumber === 12, `Expected 12 errors to ${linter.lintResult.summary.totalFoundErrorNumber}`);
         // Snapshot of what the default preset reports on the example folder. It dropped from
         // 331/1260 when `recommended` stopped reporting style and layout.
-        assert(linter.lintResult.summary.totalFoundWarningNumber === 11, `Expected 11 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`);
+        assert(
+            linter.lintResult.summary.totalFoundWarningNumber === 11,
+            `Expected 11 warnings got ${linter.lintResult.summary.totalFoundWarningNumber}`,
+        );
         assert(linter.lintResult.summary.totalFoundInfoNumber === 9, `Expected 9 infos got ${linter.lintResult.summary.totalFoundInfoNumber}`);
         checkCodeNarcCallsCounter(1);
     });

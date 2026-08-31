@@ -74,10 +74,7 @@ describe("Review fixes", function () {
         // skip instead of failing on an unrelated setup difference.
         const defaultReportPath = path.resolve("CodeNarcXmlReport.xml");
         const runIt = async () =>
-            await new NpmGroovyLint(
-                [process.execPath, "", "--codenarcargs", `-basedir=${path.resolve("lib/example")}`, "-report=xml"],
-                {},
-            ).run();
+            await new NpmGroovyLint([process.execPath, "", "--codenarcargs", `-basedir=${path.resolve("lib/example")}`, "-report=xml"], {}).run();
 
         const first = await runIt();
         assert(first.status === 0, `First run status is 0 (${first.status} returned)`);
@@ -331,11 +328,7 @@ describe("Review fixes (round 2)", function () {
             {},
         ).run();
         assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
-        assert.strictEqual(
-            linter.partitionCount,
-            1,
-            `Expected --noserver --parallelism 1 to run a single partition, got ${linter.partitionCount}`,
-        );
+        assert.strictEqual(linter.partitionCount, 1, `Expected --noserver --parallelism 1 to run a single partition, got ${linter.partitionCount}`);
     });
 
     it("(REVIEW2:fix) fixErrors() keeps a failure status raised by remaining non-borrowed violations", async function () {

@@ -71,8 +71,8 @@ class ResultCache {
             Map parsed = MAPPER.readValue(report, Map)
             templates.put(fingerprint, MAPPER.writeValueAsString([codeNarc: parsed.codeNarc, rules: parsed.rules]))
         } catch (Throwable ignored) {
-            // Unparseable report: better no template (the merger falls back to a fresh
-            // 'codeNarc' block and empty rules) than an unbounded raw one.
+        // Unparseable report: better no template (the merger falls back to a fresh
+        // 'codeNarc' block and empty rules) than an unbounded raw one.
         }
     }
 

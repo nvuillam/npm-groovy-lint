@@ -184,7 +184,7 @@ class CodeNarcServer {
     // a file another user controls: /kill from other processes is then unavailable (warned),
     // but never leaked. On Windows the ACL of the per-user %TEMP% directory protects the file.
     private static String createKillToken(File tokenFile) {
-        String token = UUID.randomUUID().toString()
+        String token = UUID.randomUUID()
         try {
             Path path = tokenFile.toPath()
             Files.deleteIfExists(path)

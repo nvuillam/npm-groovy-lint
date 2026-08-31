@@ -34,16 +34,16 @@ what decides that.
 
 ## The tiers
 
-| Preset | Rules | Contents |
-|--------|-------|----------|
-| `recommended` (default) | 149 | Likely mistakes |
-| `advanced` | 344 | `recommended` + style, idioms, design, naming, size, Javadoc, layout |
-| `all` | 390 | Every CodeNarc rule, including the inert-until-configured `generic` ones |
-| `format` | 40 | Layout only (unchanged, hand-maintained) |
-| `grails` | 12 | Grails add-on |
-| `tests` | 25 | JUnit + Spock add-on (the `junit` category and `enhanced.JUnitAssertEqualsConstantActualValue`) |
-| `jenkinsfile` | 13 | Overrides that relax a tier for pipelines |
-| `recommended-jenkinsfile` | - | `["recommended", "jenkinsfile"]`, kept for compatibility |
+| Preset                    | Rules | Contents                                                                                        |
+|---------------------------|-------|-------------------------------------------------------------------------------------------------|
+| `recommended` (default)   | 149   | Likely mistakes                                                                                 |
+| `advanced`                | 344   | `recommended` + style, idioms, design, naming, size, Javadoc, layout                            |
+| `all`                     | 390   | Every CodeNarc rule, including the inert-until-configured `generic` ones                        |
+| `format`                  | 40    | Layout only (unchanged, hand-maintained)                                                        |
+| `grails`                  | 12    | Grails add-on                                                                                   |
+| `tests`                   | 25    | JUnit + Spock add-on (the `junit` category and `enhanced.JUnitAssertEqualsConstantActualValue`) |
+| `jenkinsfile`             | 13    | Overrides that relax a tier for pipelines                                                       |
+| `recommended-jenkinsfile` | -     | `["recommended", "jenkinsfile"]`, kept for compatibility                                        |
 
 `extends` now accepts a list, merged left to right, so add-ons compose:
 `{ "extends": ["advanced", "grails", "tests"] }`.
@@ -60,14 +60,14 @@ cheap in noise and valuable when it does fire.
 split: the mistake-shaped rules are in, the preference-shaped ones are in `advanced`. Some
 examples of the line being drawn:
 
-| In `recommended` | In `advanced` | Why |
-|------------------|---------------|-----|
-| `GStringAsMapKey` | `ExplicitCallToEqualsMethod` | A GString key never matches its String lookup; `a.equals(b)` works fine |
-| `ObjectOverrideMisspelledMethodName` | `MethodName` | A misspelled `equals()` is never called; a naming convention is a convention |
-| `LongLiteralWithLowerCaseL` | `TrailingComma` | `1l` reads as `11` |
-| `UnnecessaryModOne` | `UnnecessaryReturnKeyword` | `x % 1` is always 0, so the expression is not what its author meant |
-| `ImportFromSunPackages` | `NoWildcardImports` | `sun.*` is not portable across JDKs |
-| `HashtableIsObsolete` | `Instanceof` | Obsolete API, not a matter of taste |
+| In `recommended`                     | In `advanced`                | Why                                                                          |
+|--------------------------------------|------------------------------|------------------------------------------------------------------------------|
+| `GStringAsMapKey`                    | `ExplicitCallToEqualsMethod` | A GString key never matches its String lookup; `a.equals(b)` works fine      |
+| `ObjectOverrideMisspelledMethodName` | `MethodName`                 | A misspelled `equals()` is never called; a naming convention is a convention |
+| `LongLiteralWithLowerCaseL`          | `TrailingComma`              | `1l` reads as `11`                                                           |
+| `UnnecessaryModOne`                  | `UnnecessaryReturnKeyword`   | `x % 1` is always 0, so the expression is not what its author meant          |
+| `ImportFromSunPackages`              | `NoWildcardImports`          | `sun.*` is not portable across JDKs                                          |
+| `HashtableIsObsolete`                | `Instanceof`                 | Obsolete API, not a matter of taste                                          |
 
 Full diff against the 244-rule preset it replaces: **103 rules moved to `advanced`** (all
 of `braces`, `dry`, `size`, the 21 `formatting` rules, 21 `convention`, 20 `unnecessary`,
