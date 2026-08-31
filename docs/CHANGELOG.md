@@ -31,9 +31,36 @@
   `tests` and `grails`, and you can name them in your own `rules` block.
 - Performance: files are now analysed in parallel inside the CodeNarc server (up to
   4 threads), with per-file results cached in memory across runs while the server
-  stays alive. Syntax-error detection now compiles only to the CONVERSION phase
-  instead of generating bytecode. Use `--parallelism 1` to restore single-threaded
-  analysis.
+  stays alive. Syntax and semantic error detection now compiles only to the
+  SEMANTIC_ANALYSIS phase instead of generating bytecode, so it keeps reporting the
+  same parse errors as before (duplicate variable, unresolvable superclass...) while
+  skipping the expensive bytecode-generation phases. Use `--parallelism 1` to restore
+  single-threaded analysis.
+  - The result cache never serves results that could be wrong: it is bypassed for any
+    report other than `json:stdout` (file reports and e.g. `-report=xml:stdout` are side
+    effects of CodeNarc actually running), a file modified while its analysis was in
+    flight is not cached, and the cache key includes the base directory whenever a
+    classpath-dependent (phase 4) rule such as `enhanced.UnsafeImplementationAsMap` is
+    enabled, so identical files in different projects cannot collide.
+  - Parallelism is disabled for any report other than `json:stdout` (partitions would
+    overwrite the same report file, and a non-JSON stdout report cannot be merged), and
+    files whose path cannot be expressed in CodeNarc's comma-separated `-includes`
+    (a comma in the path, a symlink out of the base directory) are analysed with the
+    caller's original include patterns instead of being silently skipped.
+  - `--codenarcargs` requests honor the `-basedir`/`-includes`/`-excludes` provided in
+    the CodeNarc arguments when going through the server, instead of scanning the
+    server's own working directory (which produced empty reports).
+  - Upgrading npm-groovy-lint while an old CodeNarc server is still running no longer
+    silently degrades every lint to a cold-start JVM call: the client detects the stale
+    server rejecting the new request payload, restarts it on the new jar, and retries.
+    The server now also ignores unknown request fields, so future upgrades do not hit
+    this at all.
+- Security: the CodeNarc server's `/kill` endpoint now requires an authorization token
+  (it listens on the loopback only, but without a token any local process or user could
+  shut it down - reported in [#607](https://github.com/nvuillam/npm-groovy-lint/pull/607)).
+  The server generates a random token at startup and persists it to a file readable only
+  by the current OS user, and `--killserver` reads that file to authorize its request, so
+  killing your own server keeps working across separate npm-groovy-lint invocations.
 - Fix a run failing with `Unable to use CodeNarc JSON result` (exit code 2) when the
   `--files` pattern matched no file: the parallel analysis does not invoke CodeNarc when
   there is nothing to analyse, so the merged report carried neither the `codeNarc` nor the
@@ -56,9 +83,10 @@
     naming conventions, complexity thresholds, Javadoc and layout.
   - **`all`** (390 rules) - every CodeNarc rule, including the ones that do nothing until
     you configure them (`generic.IllegalRegex`, `generic.RequiredString`...).
-  - **`grails`**, **`tests`** (JUnit and Spock) and **`jenkinsfile`** - framework add-ons,
-    composed on top of a tier with the new list form of `extends`:
-    `{ "extends": ["recommended", "grails", "tests"] }`. `recommended-jenkinsfile` still
+  - **`grails`**, **`tests`** (JUnit and Spock) and **`jenkinsfile`** - framework add-ons.
+    Each extends `recommended`, so `-c jenkinsfile` alone is a full lint; compose one over
+    another tier with the list form of `extends`:
+    `{ "extends": ["advanced", "grails", "tests"] }`. `recommended-jenkinsfile` still
     works and is exactly `["recommended", "jenkinsfile"]`.
   - **`format`** is unchanged: it owns layout, and is what `--format` and `--fix` apply.
   - **What moved out of the default**, and where to get it back:
@@ -73,7 +101,10 @@
   - **Layout is still fixed, just not reported.** `--fix` applies the `format` preset's
     rules on top of the lint ruleset, so `npm-groovy-lint --fix` repairs indentation,
     braces and spacing exactly as before, and `--format` is unchanged. A rule you disable
-    in your own config stays disabled under `--fix`.
+    in your own config stays disabled under `--fix`. Only format rules that have a fixer
+    are borrowed, and whatever they could not fix is dropped from the report - so `--fix`
+    never fails (`--failon`) on a layout violation a plain lint of the same configuration
+    would not even have reported.
   - Because the presets no longer extend `all`, rules added by future CodeNarc releases are
     opt-in instead of silently joining `recommended`: the build now fails until each new
     rule is assigned a tier.

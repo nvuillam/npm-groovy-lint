@@ -198,6 +198,12 @@ export const OVERRIDE_PRESETS = {
 };
 
 // The generated presets. `rules` presets list rules explicitly; `extends` presets only compose.
+// Add-on presets carry `base: ["recommended"]` so that using one STANDALONE (`-c grails`,
+// `-c jenkinsfile`) still runs a full lint instead of just the add-on's handful of
+// overrides - which for `jenkinsfile` (mostly "off" entries) used to mean an almost empty
+// ruleset that reported nothing. Composing them over another tier keeps working: in
+// { "extends": ["advanced", "jenkinsfile"] } the add-on's own resolved rules simply
+// override the earlier base's, rule by rule.
 export const GENERATED_PRESETS = [
     {
         name: "recommended",
@@ -212,17 +218,20 @@ export const GENERATED_PRESETS = [
     {
         name: "grails",
         tiers: ["grails"],
-        header: 'Grails add-on. Compose it: { "extends": ["recommended", "grails"] }.',
+        base: ["recommended"],
+        header: 'Grails add-on over recommended. Compose it over another tier: { "extends": ["advanced", "grails"] }.',
     },
     {
         name: "tests",
         tiers: ["tests"],
-        header: 'JUnit and Spock add-on. Compose it: { "extends": ["recommended", "tests"] }.',
+        base: ["recommended"],
+        header: 'JUnit and Spock add-on over recommended. Compose it over another tier: { "extends": ["advanced", "tests"] }.',
     },
     {
         name: "jenkinsfile",
         overrides: "jenkinsfile",
-        header: 'Jenkinsfile add-on. Compose it: { "extends": ["recommended", "jenkinsfile"] }.',
+        base: ["recommended"],
+        header: 'Jenkinsfile add-on over recommended. Compose it over another tier: { "extends": ["advanced", "jenkinsfile"] }.',
     },
     {
         name: "recommended-jenkinsfile",

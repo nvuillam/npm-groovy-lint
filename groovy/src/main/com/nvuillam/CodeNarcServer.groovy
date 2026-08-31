@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit
 
 // Groovy Json Management
 import com.fasterxml.jackson.core.PrettyPrinter
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectReader
 import com.fasterxml.jackson.databind.ObjectWriter
@@ -43,7 +44,13 @@ class CodeNarcServer {
     private static final int SERVER_PORT = System.getenv('SERVER_PORT') ? System.getenv('SERVER_PORT') as int : 7484
     private static final int MAX_IDLE_TIME = 3600000 // 1h
     private static final long MAX_REQUEST_BODY_BYTES = 50 * 1024 * 1024 // 50 MB
+    // Ignore JSON fields this server does not know: a client newer than this server may
+    // send extra request fields, and rejecting them would turn every lint into an HTTP 500
+    // (the client would then silently fall back to a slow cold-start JVM per call). The
+    // client side symmetrically restarts a server that still rejects unknown fields - see
+    // isStaleServerResponse in lib/codenarc-caller.js.
     private static final ObjectMapper MAPPER = new ObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     private static final ObjectReader READER = MAPPER.reader()
     private static final ObjectWriter WRITER = MAPPER.writer((PrettyPrinter)null)
 
@@ -53,6 +60,13 @@ class CodeNarcServer {
     private final ExecutorService ex
     private final ExecutorService analysisPool
     private final ResultCache resultCache
+    // Random secret required on /kill requests. The server listens on the loopback only, but
+    // that still exposes it to every local process/user: without a token, any of them could
+    // shut the server down (see nvuillam/npm-groovy-lint#607). The token is persisted to a
+    // file restricted to the current OS user so that sibling npm-groovy-lint processes (which
+    // did not start the server) can still authorize their own --killserver.
+    private final String killToken
+    private final File killTokenFile
 
     // timerLock protects access to the items below.
     private final Object timerLock
@@ -74,6 +88,7 @@ class CodeNarcServer {
             p(longOpt: 'port', type: int, defaultValue: "$SERVER_PORT", "Sets the server port (default: $SERVER_PORT)")
             a(longOpt: 'parse', type: boolean, 'Enables parsing of the source files for errors (CodeNarc direct only)')
             f(longOpt: 'file', type: String, 'File overrides to parse instead of using CodeNarc args (CodeNarc direct only)')
+            t(longOpt: 'tokenfile', type: String, 'File where the /kill authorization token is persisted (server mode only, default: <tmpdir>/npm-groovy-lint-server-kill-<port>.token)')
         }
 
         def options = cli.parse(args)
@@ -93,7 +108,7 @@ class CodeNarcServer {
         if (options.server) {
             // Initialize CodeNarc Server for later calls
             try {
-                new CodeNarcServer(options.port).run()
+                new CodeNarcServer(options.port, options.tokenfile ?: null).run()
             } catch (java.net.BindException e) {
                 LOGGER.error('Error starting server on port {}. Is another instance already running?', options.port)
             }
@@ -121,12 +136,19 @@ class CodeNarcServer {
         WRITER.writeValue(originalSystemOut, response)
     }
 
-    CodeNarcServer(int port) {
+    CodeNarcServer(int port, String killTokenPath = null) {
         // Create a server who accepts only calls from localhost ( https://stackoverflow.com/questions/50770747/how-to-configure-com-sun-net-httpserver-to-accept-only-requests-from-localhost )
         InetAddress localHost = InetAddress.getLoopbackAddress()
         InetSocketAddress sockAddr = new InetSocketAddress(localHost, port)
 
         this.server = HttpServer.create(sockAddr, 0)
+        // The Node client passes an explicit --tokenfile computed from os.tmpdir() so that both
+        // sides agree on the location even where java.io.tmpdir and os.tmpdir() diverge (e.g.
+        // Linux with TMPDIR set, which Java ignores). The default below covers manual starts.
+        this.killTokenFile = killTokenPath
+            ? new File(killTokenPath)
+            : new File(System.getProperty('java.io.tmpdir'), "npm-groovy-lint-server-kill-${port}.token")
+        this.killToken = createKillToken(this.killTokenFile)
         this.latch = new CountDownLatch(1)
         this.timerLock = new Object()
         this.handles = new ConcurrentHashMap<String, AnalysisPartitioner.RequestHandle>()
@@ -142,6 +164,28 @@ class CodeNarcServer {
         this.resultCache = new ResultCache()
     }
 
+    // Generate the random /kill authorization token and persist it to a file that only the
+    // current OS user can read, so other local users cannot discover it. The file is created
+    // and locked down BEFORE the token is written into it, to avoid a window where another
+    // user could read the token. On Windows, File.setReadable(false, false) is not supported
+    // by the filesystem ACL model, but the temp directory itself is already per-user.
+    private static String createKillToken(File tokenFile) {
+        String token = UUID.randomUUID().toString()
+        try {
+            tokenFile.delete()
+            tokenFile.createNewFile()
+            tokenFile.setReadable(false, false)
+            tokenFile.setWritable(false, false)
+            tokenFile.setReadable(true, true)
+            tokenFile.setWritable(true, true)
+            tokenFile.text = token
+            tokenFile.deleteOnExit()
+        } catch (Exception e) {
+            LOGGER.warn("Unable to persist the kill token to ${tokenFile}: --killserver from other processes will not work", e)
+        }
+        return token
+    }
+
     // Ping
     private HttpHandler ping() {
         return { HttpExchange http ->
@@ -153,11 +197,21 @@ class CodeNarcServer {
         }
     }
 
-    // Kill server
+    // Kill server. Requires the token generated at startup: without it, any local process or
+    // user could disrupt the server through the loopback interface.
     private HttpHandler kill() {
         return { HttpExchange http ->
-            http.sendResponseHeaders(200, 0)
+            String providedToken = http.requestHeaders.getFirst('X-CodeNarc-Kill-Token')
+            if (providedToken != this.killToken) {
+                http.responseHeaders.add('Content-type', 'application/json')
+                http.sendResponseHeaders(401, 0)
+                http.responseBody.withWriter { out ->
+                    out << '{"status":"unauthorized","errorMessage":"Missing or invalid kill token"}'
+                }
+                return
+            }
             http.responseHeaders.add('Content-type', 'application/json')
+            http.sendResponseHeaders(200, 0)
             http.responseBody.withWriter { out ->
                 out << '{"status":"killed"}'
             }
@@ -297,6 +351,7 @@ class CodeNarcServer {
 
     private void stopServer() {
         LOGGER.info('Shutting down...')
+        killTokenFile?.delete()
         timer.cancel()
         analysisPool.shutdownNow()
         ex.shutdown()

@@ -152,6 +152,11 @@ function generatePresets(ruleMetadata) {
             }
             content = { rules };
         }
+        if (preset.base) {
+            // Add-on preset: extend a base tier so standalone use is a full lint (see
+            // GENERATED_PRESETS in rule-tiers.js). The preset's own rules override the base's.
+            content = { extends: preset.base, ...content };
+        }
         const ruleCount = content.rules ? Object.keys(content.rules).length : 0;
         writePreset(preset.name, content, content.rules ? `${ruleCount} rules. ${preset.header}` : preset.header);
     }

@@ -1,4 +1,7 @@
 {
+    "extends": [
+        "recommended"
+    ],
     "rules": {
         "enhanced.JUnitAssertEqualsConstantActualValue": {},
         "junit.ChainedTest": {},

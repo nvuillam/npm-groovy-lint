@@ -10,10 +10,15 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
- * Collects Groovy syntax errors without generating bytecode.
+ * Collects Groovy compilation errors without generating bytecode.
  *
- * Compiles only to Phases.CONVERSION: enough to surface syntax errors, and far
- * cheaper than GroovyClassLoader.parseClass which runs the whole pipeline.
+ * Compiles only to Phases.SEMANTIC_ANALYSIS: enough to surface both syntax errors
+ * (raised at CONVERSION) and semantic errors such as a duplicate local variable or an
+ * unresolvable superclass (raised by VariableScopeVisitor / ResolveVisitor at
+ * SEMANTIC_ANALYSIS), while remaining far cheaper than GroovyClassLoader.parseClass which
+ * runs the whole pipeline down to bytecode. Stopping at CONVERSION would silently drop the
+ * semantic errors the old parseClass pipeline reported. Note the Node side filters out
+ * "unable to resolve class" messages, since no user classpath is passed here.
  */
 @CompileDynamic
 class SourceParser {
@@ -75,7 +80,7 @@ class SourceParser {
         config.setTolerance(ERROR_TOLERANCE)
         CompilationUnit unit = new CompilationUnit(config, null, new GroovyClassLoader())
         absolutePaths.each { unit.addSource(new File(it)) }
-        unit.compile(Phases.CONVERSION)
+        unit.compile(Phases.SEMANTIC_ANALYSIS)
     }
 
     private static List<String> parseSingle(String path) {
@@ -84,7 +89,7 @@ class SourceParser {
         CompilationUnit unit = new CompilationUnit(config, null, new GroovyClassLoader())
         unit.addSource(new File(path))
         try {
-            unit.compile(Phases.CONVERSION)
+            unit.compile(Phases.SEMANTIC_ANALYSIS)
         } catch (MultipleCompilationErrorsException e) {
             return e.errorCollector.errors.collect { formatMessage(it) }
         } catch (Throwable t) {

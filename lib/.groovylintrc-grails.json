@@ -1,4 +1,7 @@
 {
+    "extends": [
+        "recommended"
+    ],
     "rules": {
         "grails.GrailsDomainGormMethods": {},
         "grails.GrailsDomainHasEquals": {},

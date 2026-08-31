@@ -1,4 +1,7 @@
 {
+    "extends": [
+        "recommended"
+    ],
     "rules": {
         "convention.CompileStatic": "off",
         "convention.NoDef": "off",

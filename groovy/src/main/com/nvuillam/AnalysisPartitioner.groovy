@@ -148,9 +148,10 @@ class AnalysisPartitioner {
         handle?.register(futures)
 
         try {
-            // A file-destination report forces a single partition (see choosePartitionCount),
-            // so with more than one partition here there is nothing but the JSON report to
-            // aggregate: any non-JSON stdoutReport a partition captured is discarded.
+            // Any report other than json:stdout forces a single partition (see
+            // choosePartitionCount), so with more than one partition here the JSON report is
+            // the only report there is: no partition can have captured a non-JSON stdout
+            // report that would need aggregating.
             outcome.reports = futures.collect { it.get().jsonReport }
         } catch (InterruptedException | CancellationException cancelled) {
             // The handler thread was interrupted, or one of our own futures was cancelled:
@@ -200,19 +201,20 @@ class AnalysisPartitioner {
      *
      * Returns 1 when parallelism would be unsafe or pointless: an explicit request of 1,
      * a single file, any path containing a comma (CodeNarc's -includes is comma separated,
-     * so such a path cannot be expressed in a partition), or a file-destination report
-     * (-report=<type>:<path>). The latter is a hard requirement, not just an optimisation:
-     * with N > 1 partitions every partition would run its own CodeNarc writing to the SAME
-     * output path, so the file would end up containing only whichever partition finished
-     * last, silently losing every other partition's results.
+     * so such a path cannot be expressed in a partition), or any report that is not
+     * -report=json:stdout (see hasNonMergeableReport). The report condition is a hard
+     * requirement, not just an optimisation: with N > 1 partitions, a file-destination
+     * report would be written to the SAME output path by every partition (only whichever
+     * finished last would survive), and a non-JSON stdout report (e.g. -report=xml:stdout)
+     * cannot be merged across partitions at all, so its content would be discarded.
      */
     static int choosePartitionCount(List<String> relativePaths, Integer requested, List<String> codeNarcArgs = []) {
         if (relativePaths.any { it.contains(',') }) {
             LOGGER.debug('Disabling parallelism: a file path contains a comma')
             return 1
         }
-        if (hasFileReport(codeNarcArgs)) {
-            LOGGER.debug('Disabling parallelism: a file-destination report was requested')
+        if (hasNonMergeableReport(codeNarcArgs)) {
+            LOGGER.debug('Disabling parallelism: a report other than json:stdout was requested')
             return 1
         }
         if (requested != null && requested > 0) {
@@ -223,27 +225,62 @@ class AnalysisPartitioner {
     }
 
     /**
-     * True when codeNarcArgs contains a -report=&lt;type&gt;:&lt;destination&gt; whose
-     * destination is a real file rather than stdout. Such a report is a side effect of
-     * CodeNarc actually executing (CodeNarc writes it straight to disk) - it is not part of
-     * the JSON result, so it can neither be served from ResultCache nor safely split across
-     * partitions (see choosePartitionCount above and Request.process, which uses this same
-     * check to bypass the cache).
+     * True when codeNarcArgs requests any report OTHER than -report=json:stdout - the only
+     * report ResultMerger can merge across partitions and reconstruct from cached per-file
+     * violations. That is:
+     * <ul>
+     *   <li>a file-destination report (-report=&lt;type&gt;:&lt;path&gt;), written straight
+     *       to disk by CodeNarc as a side effect of executing;</li>
+     *   <li>a report with no destination at all (-report=html / -report=xml): CodeNarc then
+     *       writes its DEFAULT report file (e.g. CodeNarcReport.html) - still a file report,
+     *       even though there is no colon in the value;</li>
+     *   <li>a non-JSON stdout report (-report=xml:stdout): captured, but a format
+     *       ResultMerger cannot merge.</li>
+     * </ul>
+     * Such a request must run in a single partition (see choosePartitionCount) and bypass
+     * ResultCache entirely (see Request.process, which uses this same check).
      *
      * The destination is everything after the FIRST colon in the -report= value, not a
      * simple split(':'), because the destination itself is a path and so may legitimately
      * contain further colons (e.g. a Windows drive letter: -report=html:C:\path\report.html).
      */
-    static boolean hasFileReport(List<String> codeNarcArgs) {
+    static boolean hasNonMergeableReport(List<String> codeNarcArgs) {
         return codeNarcArgs.any { String arg ->
             if (!arg.startsWith('-report=')) {
                 return false
             }
             String value = arg.substring('-report='.length())
             int sep = value.indexOf(':')
-            String destination = sep >= 0 ? value.substring(sep + 1) : null
-            return destination && !destination.equalsIgnoreCase('stdout')
+            if (sep < 0) {
+                // No destination: CodeNarc writes its default report file.
+                return true
+            }
+            String type = value.substring(0, sep)
+            String destination = value.substring(sep + 1)
+            if (!destination.equalsIgnoreCase('stdout')) {
+                // File-destination report.
+                return true
+            }
+            // A stdout report is mergeable only when it is the JSON one.
+            return !type.toLowerCase().contains('json')
         }
+    }
+
+    /**
+     * Analyse using the caller's own ant include patterns verbatim, in a single CodeNarc
+     * run, instead of rebuilding -includes from individual file paths. Used by
+     * Request.process when a file path cannot be expressed in a rebuilt comma-separated
+     * -includes value (a comma in the path, or a file outside the canonical basedir) -
+     * rebuilding would silently drop that file from the analysis, while the caller's
+     * original patterns are exactly what matched it in the first place.
+     */
+    static AnalysisOutcome analysePatterns(List<String> includePatterns, List<String> codeNarcArgs) {
+        AnalysisOutcome outcome = new AnalysisOutcome()
+        outcome.partitionCount = 1
+        CodeNarcRunResult result = runCodeNarc(includePatterns, codeNarcArgs)
+        outcome.reports = [result.jsonReport]
+        outcome.stdoutReport = result.stdoutReport
+        return outcome
     }
 
     private static List<List<String>> split(List<String> paths, int partitions) {

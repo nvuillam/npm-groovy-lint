@@ -59,6 +59,19 @@ class ResultCache {
         missCount.set(0)
     }
 
+    // Rules that require CodeNarc's phase-4 (semantic analysis) compilation. Their result
+    // can depend on classes resolved from the classpath, which varies with the real base
+    // directory - so when any of them is enabled, per-file results are NOT shareable across
+    // base directories and the fingerprint must include -basedir. The `advanced`, `tests`
+    // and `grails` presets ship some of these enabled.
+    private static final List<String> CLASSPATH_SENSITIVE_RULES = [
+        'CloneWithoutCloneable',
+        'JUnitAssertEqualsConstantActualValue',
+        'MissingOverrideAnnotation',
+        'UnsafeImplementationAsMap',
+        'GrailsDomainGormMethods',
+    ].asImmutable()
+
     /**
      * Build a fingerprint of everything that affects results other than the file itself.
      *
@@ -69,25 +82,38 @@ class ResultCache {
         StringBuilder sb = new StringBuilder()
         sb.append(SCHEMA_VERSION).append('|')
         sb.append(CodeNarcVersion.getVersion()).append('|')
+        String basedirArg = null
+        boolean classpathSensitive = false
         codeNarcArgs.sort(false).each { String arg ->
-            if (arg.startsWith('-basedir=') || arg.startsWith('-includes=') || arg.startsWith('-report=')) {
-                // -basedir is deliberately excluded: identical content at the same
+            if (arg.startsWith('-basedir=')) {
+                // -basedir is normally excluded: identical content at the same
                 // basedir-relative path is shared across different base directories. That
                 // is sound only as long as every enabled rule is per-SourceFile and sees
                 // nothing but content plus the basedir-relative path (see class javadoc).
-                // It breaks the moment a classpath-dependent rule is enabled - e.g. one of
-                // the five phase-4 rules this branch currently disables - since those can
-                // resolve imports relative to the real basedir, not just the relative path.
+                // It breaks when a classpath-dependent (phase-4) rule is enabled, since
+                // those can resolve imports relative to the real basedir - so in that case
+                // the basedir is appended after this loop, see below.
+                basedirArg = arg
+                return
+            }
+            if (arg.startsWith('-includes=') || arg.startsWith('-report=')) {
                 return // do not affect per-file results
             }
             sb.append(arg).append('|')
+            if (mentionsClasspathSensitiveRule(arg)) {
+                classpathSensitive = true
+            }
             if (arg.startsWith('-rulesetfiles=')) {
                 arg.substring('-rulesetfiles='.length()).split(',').each { String ref ->
                     String path = ref.startsWith('file:') ? ref.substring('file:'.length()) : ref
                     try {
                         File f = new File(URLDecoder.decode(path, 'UTF-8'))
                         if (f.exists()) {
-                            sb.append(sha256(f.bytes)).append('|')
+                            byte[] rulesetBytes = f.bytes
+                            sb.append(sha256(rulesetBytes)).append('|')
+                            if (mentionsClasspathSensitiveRule(new String(rulesetBytes, 'UTF-8'))) {
+                                classpathSensitive = true
+                            }
                         }
                     } catch (Throwable ignored) {
                     // Unreadable ruleset reference: fall back to the raw string already appended.
@@ -95,14 +121,36 @@ class ResultCache {
                 }
             }
         }
+        if (classpathSensitive && basedirArg != null) {
+            // Canonicalise so '.' and the absolute path of the same directory produce the
+            // same fingerprint on the same server.
+            String dir = basedirArg.substring('-basedir='.length())
+            String canonical
+            try {
+                canonical = new File(dir).canonicalPath
+            } catch (Throwable ignored) {
+                canonical = dir
+            }
+            sb.append('-basedir=').append(canonical).append('|')
+        }
         return sha256(sb.toString().getBytes('UTF-8'))
+    }
+
+    /**
+     * True when the given text (a raw CodeNarc argument - including an url-encoded
+     * -ruleset= JSON value, whose rule names encode to themselves - or the content of a
+     * ruleset file) names any classpath-sensitive rule.
+     */
+    private static boolean mentionsClasspathSensitiveRule(String text) {
+        return CLASSPATH_SENSITIVE_RULES.any { String rule -> text.contains(rule) }
     }
 
     /**
      * Build the cache key for one file.
      *
-     * Keyed on fingerprint + basedir-relative path + content only - no basedir. See the
-     * -basedir= exclusion in fingerprint() above for the assumption this relies on.
+     * Keyed on fingerprint + basedir-relative path + content. The basedir takes part only
+     * through the fingerprint, and only when a classpath-sensitive rule is enabled - see
+     * fingerprint() above for the assumption this relies on.
      */
     String keyFor(String fingerprint, String relativePath, File file) {
         StringBuilder sb = new StringBuilder()

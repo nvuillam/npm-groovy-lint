@@ -170,11 +170,11 @@ npm-groovy-lint ships tiered presets, the way ESLint separates `eslint:recommend
 | [`all`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-all.json) | 390 | Every CodeNarc rule, including those that do nothing until you configure them (`IllegalRegex`, `RequiredString`...) |
 | [`format`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-format.json) | 40 | Layout only: indentation, braces, blank lines, spacing. This is what `--format` and `--fix` apply |
 
-Plus three framework add-ons, meant to be composed on top of a tier: [`grails`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-grails.json), [`tests`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-tests.json) (JUnit and Spock) and [`jenkinsfile`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-jenkinsfile.json) (relaxes the rules a pipeline always breaks).
+Plus three framework add-ons: [`grails`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-grails.json), [`tests`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-tests.json) (JUnit and Spock) and [`jenkinsfile`](https://github.com/nvuillam/npm-groovy-lint/blob/master/lib/.groovylintrc-jenkinsfile.json) (relaxes the rules a pipeline always breaks). Each extends `recommended`, so using one standalone (`-c jenkinsfile`) is a full lint; to compose them on top of another tier, list them after it:
 
 ```json
 {
-    "extends": ["recommended", "grails", "tests"]
+    "extends": ["advanced", "grails", "tests"]
 }
 ```
 
