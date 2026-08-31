@@ -1,0 +1,19 @@
+{
+    "extends": [
+        "recommended"
+    ],
+    "rules": {
+        "grails.GrailsDomainGormMethods": {},
+        "grails.GrailsDomainHasEquals": {},
+        "grails.GrailsDomainHasToString": {},
+        "grails.GrailsDomainReservedSqlKeywordName": {},
+        "grails.GrailsDomainStringPropertyMaxSize": {},
+        "grails.GrailsDomainWithServiceReference": {},
+        "grails.GrailsDuplicateConstraint": {},
+        "grails.GrailsDuplicateMapping": {},
+        "grails.GrailsMassAssignment": {},
+        "grails.GrailsPublicControllerMethod": {},
+        "grails.GrailsServletContextReference": {},
+        "grails.GrailsStatelessService": {}
+    }
+}
