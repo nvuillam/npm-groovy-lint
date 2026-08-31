@@ -99,6 +99,32 @@ apply.
   The server generates a random token at startup and persists it to a file readable only
   by the current OS user, and `--killserver` reads that file to authorize its request, so
   killing your own server keeps working across separate npm-groovy-lint invocations.
+- Hardening from a second code-review round of the performance work:
+  - A file whose canonical path merely shares the base directory's string prefix (basedir
+    `/repo/app`, file `/repo/app-utils/Foo.groovy`) is no longer mis-relativised: paths are
+    compared component-wise, so such a file can no longer be silently dropped from the
+    analysis or poison cache and merge keys.
+  - A report written by CodeNarc as a side effect of executing (file destination or default
+    report file) is produced even when no file matches the patterns, as before the parallel
+    analysis (a CI step reading the report file no longer fails on a missing file).
+  - The API entry point `fixErrors()` (used by the VS Code extension) recomputes its return
+    status after dropping unfixed borrowed layout violations, instead of wiping a genuine
+    failure status.
+  - Extending a built-in preset (`advanced`, `grails`, `tests`, `jenkinsfile`, `format`) no
+    longer overwrites the reported `overriddenRules` with the preset's full rule map: only
+    the rules the user explicitly configured are reported as overridden.
+  - `--parallelism` now also applies to `--noserver` runs (it was silently ignored there,
+    and partitioning forced on).
+  - The in-memory result cache's per-ruleset report templates are now bounded and reduced
+    to the two blocks the merger actually needs, so a long-lived server no longer grows its
+    heap with every ruleset edit; the classpath-sensitive rule detection also recognises
+    category ruleset references (`rulesets/enhanced.xml`, `rulesets/grails.xml`).
+  - The kill-token file is created atomically with owner-only permissions before the secret
+    is written (never into a pre-existing file another local user could control), and its
+    path is quoted on Windows so a profile directory containing a space keeps `--killserver`
+    working.
+  - Cancelled-request accounting (`cancelledWorkers`) is race-free: workers are cancelled
+    and counted before the handler thread is interrupted.
 - Fix a run failing with `Unable to use CodeNarc JSON result` (exit code 2) when the
   `--files` pattern matched no file: the parallel analysis does not invoke CodeNarc when
   there is nothing to analyse, so the merged report carried neither the `codeNarc` nor the

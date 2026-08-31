@@ -92,7 +92,11 @@ class AnalysisPartitioner {
          *         finished or already been cancelled), for diagnostics.
          */
         int cancelAll() {
-            thread?.interrupt()
+            // Cancel and count the workers BEFORE interrupting the handler thread: the
+            // interrupted handler unwinds and reads cancelledCount for its response, so
+            // interrupting first could let it report 0 despite workers being cancelled
+            // moments later - or let its own unwinding futures.cancel() win the race and
+            // keep this count at 0 permanently.
             int justCancelled = 0
             synchronized (futures) {
                 cancelled = true
@@ -101,13 +105,19 @@ class AnalysisPartitioner {
                         justCancelled++
                     }
                 }
+                cancelledCount.addAndGet(justCancelled)
             }
-            cancelledCount.addAndGet(justCancelled)
+            thread?.interrupt()
             return justCancelled
         }
 
         int getCancelledCount() {
-            return cancelledCount.get()
+            // Taken under the same lock as cancelAll()'s counting loop: a handler woken by
+            // the future cancellations themselves (before the interrupt) would otherwise be
+            // able to read the count mid-update and report cancelledWorkers=0.
+            synchronized (futures) {
+                return cancelledCount.get()
+            }
         }
 
     }

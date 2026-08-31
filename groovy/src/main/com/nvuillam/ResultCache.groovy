@@ -1,5 +1,6 @@
 package com.nvuillam
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileDynamic
 import java.security.MessageDigest
 import java.util.concurrent.atomic.AtomicInteger
@@ -18,13 +19,19 @@ class ResultCache {
     // Entries are small (a violation list per file); this is a soft memory bound.
     static final int DEFAULT_MAX_ENTRIES = 5000
 
+    // A template is stored per fingerprint (ruleset + args combination); a long-lived server
+    // can accumulate fingerprints (every ruleset edit makes a new one), so bound them too.
+    static final int MAX_TEMPLATES = 100
+
     // Bump when the cached value shape changes, to invalidate stale in-memory entries.
     private static final String SCHEMA_VERSION = '1'
 
+    private static final ObjectMapper MAPPER = new ObjectMapper()
+
     private final Map<String, List<Map>> entries
-    // One report per fingerprint, kept so a fully-cached run can still emit the
+    // One reduced report per fingerprint, kept so a fully-cached run can still emit the
     // 'codeNarc' and 'rules' blocks that lib/codenarc-factory.js requires.
-    private final Map<String, String> templates = new java.util.concurrent.ConcurrentHashMap<String, String>()
+    private final Map<String, String> templates
     private final AtomicInteger hitCount = new AtomicInteger(0)
     private final AtomicInteger missCount = new AtomicInteger(0)
 
@@ -38,6 +45,15 @@ class ResultCache {
                 }
 
             })
+        this.templates = Collections.synchronizedMap(
+            new LinkedHashMap<String, String>(16, 0.75f, true) {
+
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
+                    return size() > MAX_TEMPLATES
+                }
+
+            })
     }
 
     String getTemplate(String fingerprint) {
@@ -45,8 +61,18 @@ class ResultCache {
     }
 
     void putTemplate(String fingerprint, String report) {
-        if (report != null) {
-            templates.put(fingerprint, report)
+        if (report == null) {
+            return
+        }
+        try {
+            // ResultMerger only ever reads the 'codeNarc' and 'rules' blocks from a template:
+            // storing the full report would keep one partition's every package and violation
+            // (megabytes on a large project) alive per fingerprint until eviction.
+            Map parsed = MAPPER.readValue(report, Map)
+            templates.put(fingerprint, MAPPER.writeValueAsString([codeNarc: parsed.codeNarc, rules: parsed.rules]))
+        } catch (Throwable ignored) {
+            // Unparseable report: better no template (the merger falls back to a fresh
+            // 'codeNarc' block and empty rules) than an unbounded raw one.
         }
     }
 
@@ -64,12 +90,24 @@ class ResultCache {
     // directory - so when any of them is enabled, per-file results are NOT shareable across
     // base directories and the fingerprint must include -basedir. The `advanced`, `tests`
     // and `grails` presets ship some of these enabled.
+    // Kept in sync by hand with the phase-4 rules in scripts/rule-tiers.js. The matching is
+    // a deliberate over-approximation on raw ruleset text (see mentionsClasspathSensitiveRule):
+    // a false positive merely disables cross-basedir sharing (results stay correct, only
+    // fewer cache hits), while a miss would serve another project's cached violations.
     private static final List<String> CLASSPATH_SENSITIVE_RULES = [
         'CloneWithoutCloneable',
         'JUnitAssertEqualsConstantActualValue',
         'MissingOverrideAnnotation',
         'UnsafeImplementationAsMap',
         'GrailsDomainGormMethods',
+    ].asImmutable()
+
+    // Category ruleset references that enable classpath-sensitive rules WITHOUT naming them
+    // (e.g. a custom XML ruleset with <ruleset-ref path='rulesets/enhanced.xml'/>): 'enhanced'
+    // hosts four of the five rules above, 'grails' hosts GrailsDomainGormMethods.
+    private static final List<String> CLASSPATH_SENSITIVE_CATEGORY_REFS = [
+        'enhanced.xml',
+        'grails.xml',
     ].asImmutable()
 
     /**
@@ -142,7 +180,8 @@ class ResultCache {
      * ruleset file) names any classpath-sensitive rule.
      */
     private static boolean mentionsClasspathSensitiveRule(String text) {
-        return CLASSPATH_SENSITIVE_RULES.any { String rule -> text.contains(rule) }
+        return CLASSPATH_SENSITIVE_RULES.any { String rule -> text.contains(rule) } ||
+            CLASSPATH_SENSITIVE_CATEGORY_REFS.any { String ref -> text.contains(ref) }
     }
 
     /**

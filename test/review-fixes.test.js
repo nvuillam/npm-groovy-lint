@@ -275,3 +275,88 @@ describe("Review fixes", function () {
         );
     });
 });
+
+// Regression tests for the second review round of the performance branch.
+describe("Review fixes (round 2)", function () {
+    it("(REVIEW2:report) a file-destination report is still written when no file matches", async function () {
+        this.timeout(300000);
+        beforeEachTestCase();
+        const emptyDir = fs.mkdtempSync(path.join(os.tmpdir(), "ngl-empty-"));
+        const reportFile = path.join(emptyDir, "report.xml");
+        // No .groovy file in the directory: the default '**/*.groovy' includes match nothing.
+        // CodeNarc must still execute once so the (empty) report file is produced - a CI step
+        // reading it would otherwise fail on a missing file.
+        const linter = await new NpmGroovyLint(
+            [process.execPath, "", "--codenarcargs", `-basedir=${emptyDir}`, `-report=xml:${reportFile}`],
+            {},
+        ).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert(fs.existsSync(reportFile), "Expected the empty XML report file to be written even though no file matched");
+        const totalFiles = xmlReportTotalFiles(fs.readFileSync(reportFile, "utf8"));
+        assert(totalFiles === 0, `Expected an empty report (totalFiles=0), got ${totalFiles}`);
+        fs.rmSync(emptyDir, { recursive: true, force: true });
+    });
+
+    it("(REVIEW2:config) extending a built-in preset does not clobber the user's overriddenRules", async function () {
+        const userDir = fs.mkdtempSync(path.join(os.tmpdir(), "ngl-overrides-"));
+        fs.writeFileSync(path.join(userDir, ".groovylintrc.json"), JSON.stringify({ extends: "advanced", rules: { Indentation: "off" } }));
+        const config = await loadConfig(userDir, "lint", null, []);
+        // The merged ruleset must carry the advanced preset...
+        assert(Object.keys(config.rules).length > 300, `Expected the advanced ruleset to be merged, got ${Object.keys(config.rules).length}`);
+        assert(config.rules["Indentation"] === "off", "The user's own override must win over the preset");
+        // ...but overriddenRules must list ONLY what the user explicitly configured, not the
+        // preset's full rule map (loading the preset as an extends base used to clobber it).
+        assert(
+            config.overriddenRules && Object.keys(config.overriddenRules).length === 1 && config.overriddenRules["Indentation"] === "off",
+            `Expected overriddenRules to hold exactly the user's single override, got: ${JSON.stringify(Object.keys(config.overriddenRules || {}))}`,
+        );
+        fs.rmSync(userDir, { recursive: true, force: true });
+    });
+
+    it("(REVIEW2:parallelism) --noserver honors an explicit --parallelism 1", async function () {
+        this.timeout(300000);
+        beforeEachTestCase();
+        // Several files + multi-core CI runners: without the fix, the direct java path had no
+        // way to carry the requested parallelism and partitioned anyway.
+        const linter = await new NpmGroovyLint(
+            {
+                path: "./lib/example/",
+                files: "**/*.groovy",
+                noserver: true,
+                parallelism: 1,
+                insight: false,
+                failon: "none",
+                output: "none",
+            },
+            {},
+        ).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        assert.strictEqual(
+            linter.partitionCount,
+            1,
+            `Expected --noserver --parallelism 1 to run a single partition, got ${linter.partitionCount}`,
+        );
+    });
+
+    it("(REVIEW2:fix) fixErrors() keeps a failure status raised by remaining non-borrowed violations", async function () {
+        this.timeout(300000);
+        beforeEachTestCase();
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ngl-fixstatus-"));
+        // An unused variable is a genuine (non-layout) violation that fixing nothing leaves in place.
+        fs.writeFileSync(path.join(tmpDir, "Unused.groovy"), "def unusedVariable = 1\nprintln 'hello'\n");
+        const linter = new NpmGroovyLint({ path: tmpDir, insight: false, failon: "info", output: "none" }, {});
+        await linter.run();
+        assert(linter.status === 1, `Initial lint must fail on the unused variable (status ${linter.status})`);
+        // Simulate the --fix flow having borrowed format rules, then fix nothing: the
+        // post-filter status reset must be recomputed from the remaining real violations
+        // instead of leaking status 0 to API callers (e.g. the VS Code extension).
+        linter.borrowedFormatRules = ["TrailingWhitespace"];
+        await linter.fixErrors([999999999]);
+        assert.strictEqual(
+            linter.status,
+            1,
+            `fixErrors() must keep status 1 while a failon-level non-borrowed violation remains, got ${linter.status}`,
+        );
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+    });
+});

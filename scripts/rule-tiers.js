@@ -82,6 +82,9 @@ export const RULE_TIERS = {
     // Splitting `enhanced` matters: these rules need CodeNarc compilation phase 4, which roughly
     // doubles a lint run. They are in `advanced`, not `recommended`, because they also fire very
     // rarely - see the spec for the measurement.
+    // The phase-4 (classpath-sensitive) rules are also listed by hand in the server's
+    // ResultCache.groovy (CLASSPATH_SENSITIVE_RULES): when one is enabled, per-file cached
+    // results are not shared across base directories. Keep both lists in sync.
     enhanced: {
         tests: ["JUnitAssertEqualsConstantActualValue"],
         advanced: REST,

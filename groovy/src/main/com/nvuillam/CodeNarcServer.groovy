@@ -11,6 +11,10 @@ import com.sun.net.httpserver.Filter
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.attribute.PosixFilePermissions
 import java.util.function.Supplier
 
 // Concurrency & Timer management
@@ -89,6 +93,7 @@ class CodeNarcServer {
             a(longOpt: 'parse', type: boolean, 'Enables parsing of the source files for errors (CodeNarc direct only)')
             f(longOpt: 'file', type: String, 'File overrides to parse instead of using CodeNarc args (CodeNarc direct only)')
             t(longOpt: 'tokenfile', type: String, 'File where the /kill authorization token is persisted (server mode only, default: <tmpdir>/npm-groovy-lint-server-kill-<port>.token)')
+            P(longOpt: 'parallelism', type: int, 'Number of parallel analysis threads, 1 to disable parallelism (CodeNarc direct only; HTTP requests carry it in their payload)')
         }
 
         def options = cli.parse(args)
@@ -117,6 +122,11 @@ class CodeNarcServer {
 
         // Do not use server, just call CodeNarc (worse performances as Java classes must be reloaded each time)
         Request request = new Request(options.parse, options.files ?: [], options.arguments())
+        // --noserver has no HTTP payload to carry the requested parallelism: without this,
+        // an explicit --parallelism 1 would be ignored and partitioning forced on.
+        if (options.parallelism) {
+            request.parallelism = options.parallelism as Integer
+        }
         Response response = new Response()
 
         // Prevent CodeNarc from writing directly to System.out
@@ -165,20 +175,25 @@ class CodeNarcServer {
     }
 
     // Generate the random /kill authorization token and persist it to a file that only the
-    // current OS user can read, so other local users cannot discover it. The file is created
-    // and locked down BEFORE the token is written into it, to avoid a window where another
-    // user could read the token. On Windows, File.setReadable(false, false) is not supported
-    // by the filesystem ACL model, but the temp directory itself is already per-user.
+    // current OS user can read, so other local users cannot discover it.
+    // Written defensively for a shared tmpdir (multi-user /tmp): any pre-existing file at the
+    // path is deleted first, the file is then created ATOMICALLY with owner-only permissions
+    // (Files.createFile uses O_CREAT|O_EXCL, which fails on an existing file and does not
+    // follow a symlink) before the token is written into it. If a foreign file or symlink
+    // cannot be removed (sticky-bit /tmp), creation fails and the secret is NOT written into
+    // a file another user controls: /kill from other processes is then unavailable (warned),
+    // but never leaked. On Windows the ACL of the per-user %TEMP% directory protects the file.
     private static String createKillToken(File tokenFile) {
         String token = UUID.randomUUID().toString()
         try {
-            tokenFile.delete()
-            tokenFile.createNewFile()
-            tokenFile.setReadable(false, false)
-            tokenFile.setWritable(false, false)
-            tokenFile.setReadable(true, true)
-            tokenFile.setWritable(true, true)
-            tokenFile.text = token
+            Path path = tokenFile.toPath()
+            Files.deleteIfExists(path)
+            if (FileSystems.default.supportedFileAttributeViews().contains('posix')) {
+                Files.createFile(path, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString('rw-------')))
+            } else {
+                Files.createFile(path)
+            }
+            Files.write(path, token.getBytes('UTF-8'))
             tokenFile.deleteOnExit()
         } catch (Exception e) {
             LOGGER.warn("Unable to persist the kill token to ${tokenFile}: --killserver from other processes will not work", e)

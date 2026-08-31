@@ -251,6 +251,14 @@ class Request {
             LOGGER.debug('Includes cannot be rebuilt from file paths (comma or out-of-basedir path): using caller patterns {}',
                 codeNarcIncludes)
             outcome = AnalysisPartitioner.analysePatterns(codeNarcIncludes as List<String>, baseArgs)
+        } else if (relativePaths.isEmpty() && nonMergeableReport) {
+            // No file matched, but the request carries a report CodeNarc produces as a side
+            // effect of executing (file destination, or the default report file): run CodeNarc
+            // once anyway so the (empty) report is still written, as the pre-partitioning
+            // implementation always did. Without this, analyse() short-circuits on an empty
+            // list and e.g. a CI step reading the report file fails on a missing file.
+            List<String> patterns = (codeNarcIncludes as List<String>) ?: ['**/__npm-groovy-lint-no-match__.groovy']
+            outcome = AnalysisPartitioner.analysePatterns(patterns, baseArgs)
         } else {
             outcome = AnalysisPartitioner.analyse(toAnalyse, baseArgs, parallelism, ctx.pool, handle)
         }
@@ -289,12 +297,16 @@ class Request {
      * pattern relative to basedir.
      */
     private String relativise(String absolutePath) {
-        String base = new File(codeNarcBaseDir).canonicalPath
-        String target = new File(absolutePath).canonicalPath
+        // Compare whole path components (java.nio.file.Path.startsWith), not string prefixes:
+        // a string startsWith would accept a SIBLING directory sharing the basedir's prefix
+        // (basedir /repo/app, file /repo/app-utils/Foo.groovy -> bogus '-utils/Foo.groovy'),
+        // silently dropping the file from analysis and poisoning cache and merge keys.
+        java.nio.file.Path base = new File(codeNarcBaseDir).canonicalFile.toPath()
+        java.nio.file.Path target = new File(absolutePath).canonicalFile.toPath()
         if (target.startsWith(base)) {
-            return target.substring(base.length()).replace('\\', '/').replaceAll('^/', '')
+            return base.relativize(target).toString().replace('\\', '/')
         }
-        return target.replace('\\', '/')
+        return target.toString().replace('\\', '/')
     }
 
     /**
