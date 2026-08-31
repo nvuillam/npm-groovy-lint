@@ -51,6 +51,8 @@ class CodeNarcServer {
     private final Map<String, Thread> threads
     private final HttpServer server
     private final ExecutorService ex
+    // Random secret required to authorize /kill requests, restricted to the current OS user via file permissions.
+    private final String killToken
 
     // timerLock protects access to the items below.
     private final Object timerLock
@@ -119,6 +121,7 @@ class CodeNarcServer {
         InetSocketAddress sockAddr = new InetSocketAddress(localHost, port)
 
         this.server = HttpServer.create(sockAddr, 0)
+        this.killToken = generateKillToken(port)
         this.latch = new CountDownLatch(1)
         this.timerLock = new Object()
         this.threads = new ConcurrentHashMap<String, Thread>()
@@ -127,6 +130,23 @@ class CodeNarcServer {
             this.stopServer()
         })
         this.ex = Executors.newFixedThreadPool(Runtime.runtime.availableProcessors())
+    }
+
+    // Generate a random authorization token for /kill, persisted to a file readable only by the current OS user
+    // so that other local users cannot disrupt the server by sending unauthorized kill requests.
+    private static String generateKillToken(int port) {
+        String token = UUID.randomUUID().toString()
+        try {
+            File tokenFile = new File(System.getProperty('java.io.tmpdir'), ".codenarc-server-${port}.token")
+            tokenFile.text = token
+            tokenFile.setReadable(false, false)
+            tokenFile.setWritable(false, false)
+            tokenFile.setReadable(true, true)
+            tokenFile.setWritable(true, true)
+        } catch (Exception e) {
+            LOGGER.warn('Unable to persist kill token', e)
+        }
+        return token
     }
 
     // Ping
@@ -143,6 +163,17 @@ class CodeNarcServer {
     // Kill server
     private HttpHandler kill() {
         return { HttpExchange http ->
+            // Only accept the kill request if it carries the token generated at server startup,
+            // preventing other local processes/users from shutting down the server without authorization.
+            String providedToken = http.requestHeaders.getFirst('X-CodeNarc-Kill-Token')
+            if (providedToken != this.killToken) {
+                http.sendResponseHeaders(401, 0)
+                http.responseHeaders.add('Content-type', 'application/json')
+                http.responseBody.withWriter { out ->
+                    out << '{"status":"error","errorMessage":"Unauthorized"}'
+                }
+                return
+            }
             http.sendResponseHeaders(200, 0)
             http.responseHeaders.add('Content-type', 'application/json')
             http.responseBody.withWriter { out ->
