@@ -4,7 +4,8 @@
 
 **Goal:** Make a lint run ~2.5–3x faster by removing dead rule work, cheapening the parse phase, and adding in-server file-level parallelism plus a result cache — without changing reported violations.
 
-**Architecture:** All changes live in the Groovy server (`groovy/src/main/com/nvuillam/`) plus one preset file and one heap default. `Request.process()` gains three collaborators: a `ResultCache` (in-memory LRU), an `AnalysisPartitioner` (dedicated thread pool running one `CodeNarc` per file subset), and a `ResultMerger` (folds cached + per-partition JSON into one CodeNarc-shaped result). The HTTP contract is unchanged, so no Node or VS Code extension code changes.
+**Architecture:** All changes live in the Groovy server (`groovy/src/main/com/nvuillam/`) plus one preset file and one heap default.
+`Request.process()` gains three collaborators: a `ResultCache` (in-memory LRU), an `AnalysisPartitioner` (dedicated thread pool running one `CodeNarc` per file subset), and a `ResultMerger` (folds cached + per-partition JSON into one CodeNarc-shaped result). The HTTP contract is unchanged, so no Node or VS Code extension code changes.
 
 **Tech Stack:** Groovy 4.0.26, CodeNarc 3.7.0, Jackson 2.22, Java 17–24, Node ≥22.13 (ESM), Mocha integration tests.
 
