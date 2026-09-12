@@ -3,6 +3,12 @@
 #
 # Written by scripts/build-config-all.js (`npm run build`):
 lib/.groovylintrc-all.json
+lib/.groovylintrc-advanced.json
+lib/.groovylintrc-grails.json
+lib/.groovylintrc-jenkinsfile.json
+lib/.groovylintrc-recommended.json
+lib/.groovylintrc-recommended-jenkinsfile.json
+lib/.groovylintrc-tests.json
 docs/groovy-lint.jsonschema.json
 # Written by npm:
 package-lock.json

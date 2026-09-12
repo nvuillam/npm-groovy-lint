@@ -5,6 +5,7 @@ import os from "os";
 import { Buffer } from "buffer";
 import { execFileSync } from "child_process";
 import { getNpmGroovyLintRules } from "../lib/groovy-lint-rules.js";
+import { REST, RULE_TIERS, RULE_CONFIG, OVERRIDE_PRESETS, GENERATED_PRESETS } from "./rule-tiers.js";
 
 const CODENARC_RESOURCES_BASE_URL = "https://raw.githubusercontent.com/CodeNarc/CodeNarc/master/src/main/resources";
 // Build Json containing all CodeNarc rules
@@ -47,11 +48,9 @@ const CODENARC_RESOURCES_BASE_URL = "https://raw.githubusercontent.com/CodeNarc/
 
     const { rulesConfig: allRulesConfig, metadata: ruleMetadata } = buildAllRules(allLines);
 
-    const fullConfigIndented = JSON.stringify({ rules: allRulesConfig }, null, 4);
+    writePreset("all", { rules: allRulesConfig }, `Every CodeNarc rule bundled with npm-groovy-lint (${Object.keys(allRulesConfig).length}).`);
 
-    fs.writeFileSync("./lib/.groovylintrc-all.json", fullConfigIndented);
-
-    console.log("Generated lib/.groovylintrc-all.json fullConfig");
+    generatePresets(ruleMetadata);
 
     const npmDefinedRules = await getNpmGroovyLintRules();
     const rulePropertyMetadata = await collectRulePropertyMetadata();
@@ -66,6 +65,102 @@ const CODENARC_RESOURCES_BASE_URL = "https://raw.githubusercontent.com/CodeNarc/
     const mdLog = fixableRules.join("\n");
     console.log("Fixable rules :\n" + mdLog);
 })();
+
+// Write a preset next to the others, with a trailing newline. Generated presets are listed in
+// .prettierignore, so the exact bytes written here are the ones committed.
+function writePreset(name, content, description) {
+    const filePath = `./lib/.groovylintrc-${name}.json`;
+    fs.writeFileSync(filePath, JSON.stringify(content, null, 4) + "\n");
+    console.log(`Generated ${filePath.replace("./", "")} - ${description}`);
+}
+
+// Spread every CodeNarc rule over the tiers declared in rule-tiers.js. Anything the table does not
+// account for throws: a new CodeNarc category or a rule of a fully enumerated category has to be
+// triaged explicitly rather than silently joining a preset (this is what let `recommended` drift
+// to 386 rules back when it was `extends: all`).
+function assignTiers(ruleMetadata) {
+    const errors = [];
+    const rulesByCategory = new Map();
+    for (const [fullName, meta] of Object.entries(ruleMetadata)) {
+        if (!rulesByCategory.has(meta.category)) {
+            rulesByCategory.set(meta.category, []);
+        }
+        rulesByCategory.get(meta.category).push({ fullName, rule: meta.rule });
+    }
+
+    const tierRules = {};
+    for (const [category, categoryRules] of rulesByCategory) {
+        const tierDefinition = RULE_TIERS[category];
+        if (tierDefinition == null) {
+            errors.push(`Category "${category}" is missing from RULE_TIERS: assign its rules to a tier in scripts/rule-tiers.js`);
+            continue;
+        }
+        const knownRules = new Set(categoryRules.map((entry) => entry.rule));
+        const claimedBy = new Map();
+        let restTier = null;
+        for (const [tier, selection] of Object.entries(tierDefinition)) {
+            if (selection === REST) {
+                restTier = tier;
+                continue;
+            }
+            for (const ruleName of selection) {
+                if (!knownRules.has(ruleName)) {
+                    errors.push(`RULE_TIERS lists "${category}.${ruleName}", which is not a CodeNarc rule of that category`);
+                } else if (claimedBy.has(ruleName)) {
+                    errors.push(`RULE_TIERS assigns "${category}.${ruleName}" to both "${claimedBy.get(ruleName)}" and "${tier}"`);
+                }
+                claimedBy.set(ruleName, tier);
+            }
+        }
+        for (const { fullName, rule } of categoryRules) {
+            const tier = claimedBy.get(rule) ?? restTier;
+            if (tier == null) {
+                errors.push(`Rule "${fullName}" is not assigned to a tier: add it to RULE_TIERS.${category}`);
+                continue;
+            }
+            (tierRules[tier] ??= []).push(fullName);
+        }
+    }
+
+    const allRuleNames = new Set(Object.keys(ruleMetadata));
+    for (const ruleName of [...Object.keys(RULE_CONFIG), ...Object.values(OVERRIDE_PRESETS).flatMap((preset) => Object.keys(preset))]) {
+        if (!allRuleNames.has(ruleName)) {
+            errors.push(`"${ruleName}" is configured in scripts/rule-tiers.js but is not a known CodeNarc rule`);
+        }
+    }
+
+    if (errors.length > 0) {
+        throw new Error(`Rule tiers are inconsistent with the CodeNarc rule list:\n- ${errors.join("\n- ")}`);
+    }
+    return tierRules;
+}
+
+// Generate every preset but `format`, which is hand-maintained: it is the list of rules the
+// formatting engine knows how to apply, not a tier of the lint rulesets.
+function generatePresets(ruleMetadata) {
+    const tierRules = assignTiers(ruleMetadata);
+    for (const preset of GENERATED_PRESETS) {
+        let content;
+        if (preset.extends) {
+            content = { extends: preset.extends };
+        } else if (preset.overrides) {
+            content = { rules: { ...OVERRIDE_PRESETS[preset.overrides] } };
+        } else {
+            const rules = {};
+            for (const ruleName of preset.tiers.flatMap((tier) => tierRules[tier] ?? []).sort()) {
+                rules[ruleName] = RULE_CONFIG[ruleName] ?? {};
+            }
+            content = { rules };
+        }
+        if (preset.base) {
+            // Add-on preset: extend a base tier so standalone use is a full lint (see
+            // GENERATED_PRESETS in rule-tiers.js). The preset's own rules override the base's.
+            content = { extends: preset.base, ...content };
+        }
+        const ruleCount = content.rules ? Object.keys(content.rules).length : 0;
+        writePreset(preset.name, content, content.rules ? `${ruleCount} rules. ${preset.header}` : preset.header);
+    }
+}
 
 async function buildGroovyLintJsonSchema(ruleMetadata, npmDefinedRules, rulePropertyMetadata) {
     const severityEnum = ["off", "info", "warning", "error"];
@@ -105,9 +200,12 @@ async function buildGroovyLintJsonSchema(ruleMetadata, npmDefinedRules, ruleProp
         additionalProperties: false,
         properties: {
             extends: {
-                type: "string",
-                description: "Name of a base configuration bundled with npm-groovy-lint.",
-                enum: availableExtends,
+                description:
+                    "Name of a base configuration bundled with npm-groovy-lint, or a list of them merged from left to right (later entries win).",
+                anyOf: [
+                    { type: "string", enum: availableExtends },
+                    { type: "array", minItems: 1, items: { type: "string", enum: availableExtends } },
+                ],
             },
             rules: {
                 type: "object",

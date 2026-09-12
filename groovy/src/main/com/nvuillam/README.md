@@ -96,7 +96,7 @@ Usage: java org.codenarc.CodeNarc [OPTIONS]
 
 ## Logging
 
-The defaults for logging are detailed in [logback.xml](/lib/java/logback.xml).
+The defaults for logging are detailed in [logback.xml](../../../../../lib/java/logback.xml).
 
 You can also override the defaults using system properties, for example to enable
 debug and change the file location add the following to the command line:

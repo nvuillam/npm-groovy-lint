@@ -1,3 +1,9 @@
+# Each line is a regex matched against the URL.
+# Sites that systematically reject CI crawlers (403 / bot protection), not dead links.
 https://www.linkedin.com/in/steven-hartland-a7435b4/
 https://hub.docker.com/r/nvuillam/npm-groovy-lint
 https://www.patreon.com/feross
+# npmjs.com (and npmjs.org, which 301s to it) returns 403 to datacenter IPs
+^https://(www\.)?npmjs\.(com|org)/
+# Medium-hosted custom domain, returns 403 to non-browser user agents
+^https://nicolas\.vuillamy\.fr/

@@ -191,7 +191,10 @@ describe("Lint with executable", () => {
             console.error(stderr);
         }
         assert(stdout, "stdout is set");
-        assert(stdout.includes("warning"), 'stdout should contain word "warning"');
+        assert(stdout.includes("Jenkinsfile"), "stdout should name the linted Jenkinsfile");
+        assert(stdout.includes("linted files"), "stdout should contain the results summary");
+        // The sample pipeline holds no likely mistake, so the default preset reports no violation
+        assert(!stdout.includes("warning:"), `stdout should not report a violation, got ${stdout}`);
     });
 
     it("(EXE:help) should show npm-groovy-lint help", async function () {
