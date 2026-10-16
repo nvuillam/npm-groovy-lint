@@ -1,0 +1,24 @@
+{
+    "extends": [
+        "recommended"
+    ],
+    "rules": {
+        "convention.CompileStatic": "off",
+        "convention.NoDef": "off",
+        "convention.VariableTypeRequired": "off",
+        "convention.MethodReturnTypeRequired": "off",
+        "convention.FieldTypeRequired": "off",
+        "convention.MethodParameterTypeRequired": "off",
+        "groovyism.ExplicitCallToEqualsMethod": "off",
+        "groovyism.GStringExpressionWithinString": "off",
+        "naming.VariableName": "off",
+        "naming.FactoryMethodName": "off",
+        "unnecessary.UnnecessaryGetter": "off",
+        "size.NestedBlockDepth": {
+            "maxNestedBlockDepth": 10
+        },
+        "unused.UnusedVariable": {
+            "ignoreVariableNames": "_"
+        }
+    }
+}
