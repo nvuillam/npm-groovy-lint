@@ -307,5 +307,55 @@ void foo() { // comment
 `,
             },
         ],
+        [
+            "ClosingBraceAfterMultiLineCallIsAlignedWithCallStart",
+            {
+                totalFixed: 0,
+                codeNarcCallsCounter: 1,
+                before: `
+def testFunction() {
+    testClosure(['first item', 'second item',
+                 'newline item']) {
+        println('hello world')
+    }
+}
+`,
+                after: `
+def testFunction() {
+    testClosure(['first item', 'second item',
+                 'newline item']) {
+        println('hello world')
+    }
+}
+`,
+            },
+        ],
+        [
+            "ClosingBraceAfterMultiLineWithEnvIsAlignedWithCallStart",
+            {
+                totalFixed: 0,
+                codeNarcCallsCounter: 1,
+                before: `
+void foo(String a, String b) {
+    withEnv([
+        "A=\${a}",
+        "B=\${b}"]) {
+        doSomething()
+            }
+    doSomethingElse()
+}
+`,
+                after: `
+void foo(String a, String b) {
+    withEnv([
+        "A=\${a}",
+        "B=\${b}"]) {
+        doSomething()
+    }
+    doSomethingElse()
+}
+`,
+            },
+        ],
     ]);
 }
