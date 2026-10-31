@@ -194,7 +194,8 @@ class CodeNarcServer {
                 Files.createFile(path)
             }
             Files.write(path, token.getBytes('UTF-8'))
-            tokenFile.deleteOnExit()
+        // No deleteOnExit(): the JVM exits after the port is released, so a new server may
+        // already have written its own token at the same path. See deleteKillTokenFile().
         } catch (Exception e) {
             LOGGER.warn("Unable to persist the kill token to ${tokenFile}: --killserver from other processes will not work", e)
         }
@@ -364,9 +365,22 @@ class CodeNarcServer {
         latch.await()
     }
 
+    // Delete the token file only while it still holds this server's token: once the client sees
+    // the port free it may start a new server, which writes its own token at the same path, and
+    // deleting that one would leave the new server impossible to stop with --killserver.
+    private void deleteKillTokenFile() {
+        try {
+            if (killTokenFile?.exists() && killTokenFile.getText('UTF-8').trim() == killToken) {
+                killTokenFile.delete()
+            }
+        } catch (Exception e) {
+            LOGGER.debug("Unable to delete the kill token file ${killTokenFile}", e)
+        }
+    }
+
     private void stopServer() {
         LOGGER.info('Shutting down...')
-        killTokenFile?.delete()
+        deleteKillTokenFile()
         timer.cancel()
         analysisPool.shutdownNow()
         ex.shutdown()

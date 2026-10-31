@@ -64,7 +64,7 @@ Any **question**, **problem** or **enhancement request** ? Ask in the [**npm-gro
 | --noserver              | Boolean | npm-groovy-lint launches a microservice to avoid performance issues caused by loading java/groovy each time,that auto kills itself after 1h idle. Use this argument if you do not want to use this feature                                                                                                                                                                                                                                                                                                                        |
 | --returnrules           | Boolean | Return rules descriptions and URL if set                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | --javaexecutable        | String  | Override java executable to use  <br/>Default: java<br/>Example: C:\\Program Files\\Java\\jdk1.8.0_144\\bin\\java.exe                                                                                                                                                                                                                                                                                                                                                                                                             |
-| --javaoptions           | String  | Override java options to use  <br/>Default: "-Xms256m,-Xmx4096m"                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --javaoptions           | String  | Override java options to use  <br/>Default: "-Xms256m" and a max heap of half the available memory, between "-Xmx2048m" and "-Xmx4096m"                                                                                                                                                                                                                                                                                                                                                                                            |
 | -P<br/> --parallelism   | Int     | Number of threads used to analyse files in parallel (default: auto, max 4). Use 1 to disable                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | --insight               | Boolean | npm-groovy-lint collects anonymous usage statistics using [amplitude](https://www.npmjs.com/package/amplitude), in order to make new improvements based on how users use this package. <br/> Summary charts are available at [https://tinyurl.com/groovy-stats](https://tinyurl.com/groovy-stats).<br/> Analytics obviously does not receive sensitive information like your code, as you can see in analytics.js.<br/> If you want to enable anonymous usage statistics, use `--insight` option.                                 |
 | --codenarcargs          | String  | Use core CodeNarc arguments (all npm-groovy-lint arguments will be ignored)<br/> Doc: <http://codenarc.github.io/CodeNarc/codenarc-command-line.html><br/> Example: `npm-groovy-lint --codenarcargs -basedir="lib/example" -rulesetfiles="file:lib/example/RuleSet-Groovy.groovy" -maxPriority1Violations=0 -report="xml:ReportTestCodenarc.xml`                                                                                                                                                                                  |
@@ -479,9 +479,17 @@ Example
     console.log(JSON.stringify(linter.lintResult));
 ```
 
+## Performance
+
+npm-groovy-lint runs CodeNarc inside a local server (the "CodeNarc server") that stays alive between calls and stops itself after 1 hour idle, so only the first call pays the Java startup cost.
+
+- **Parallel analysis**: files are split across up to 4 threads inside the server. Use `--parallelism <n>` (`-P`) to change the number of threads, or `--parallelism 1` to analyse files one at a time.
+- **Result cache**: the server keeps the results of each file in memory, so re-linting a file that did not change returns instantly. The cache is only used for the default JSON output: it is skipped when CodeNarc must write a report itself (`--output` html or xml, or `--codenarcargs` reports). It is emptied when the server stops (`--killserver`), and never used with `--noserver`.
+- **Memory**: the server's max heap is half the memory available (the container limit when there is one), between 2048m and 4096m. Set it yourself with `--javaoptions`, for example `--javaoptions "-Xms256m,-Xmx1024m"`.
+
 ## Troubleshooting
 
-If you have issues with MegaLinter, you can [report it on the repository](https://github.com/nvuillam/npm-groovy-lint/issues)
+If you have issues with npm-groovy-lint, you can [report it on the repository](https://github.com/nvuillam/npm-groovy-lint/issues)
 
 To help reproducing, you can access advanced logs using the NODE_DEBUG env variable
 
@@ -490,7 +498,7 @@ Examples:
 - `NODE_DEBUG=npm-groovy-lint npm-groovy-lint ....`
 - `NODE_DEBUG=npm-groovy-lint,npm-groovy-lint-trace npm-groovy-lint ....`
 
-If you want to see what happens in CodeNarc Server, you can clone the repo and run locally `npm server:run` before running npm-groovy-lint: you'll see the live logs of the to CodeNarc Server for npm-groovy-lint.
+If you want to see what happens in CodeNarc Server, you can clone the repo and run locally `npm run server:run` before running npm-groovy-lint: you'll see the live logs of the to CodeNarc Server for npm-groovy-lint.
 
 ## Contribute
 

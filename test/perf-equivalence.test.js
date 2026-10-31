@@ -120,11 +120,8 @@ describe("Performance Stage 1", function () {
         const tmpDir = await copyFilesInTmpDir();
         const target = tmpDir + "/SampleFileSmall.groovy";
 
-        // Target the single file via a positional arg rather than the "files" option: "files"
-        // is read by codenarc-factory.js as options.file (singular), which optionsDefinition
-        // never populates, so "files" silently does nothing and the whole directory would be
-        // linted instead of just this file - making Object.keys(...)[0] below point at
-        // whichever file happens to sort first rather than the one this test edits.
+        // Target the single file via a positional arg, so Object.keys(...)[0] below is
+        // the file this test edits.
         const lint = async () => await new NpmGroovyLint({ path: tmpDir, _: [target], insight: false, failon: "none", output: "none" }, {}).run();
 
         const cold = await lint();
@@ -181,15 +178,11 @@ describe("Performance Stage 1", function () {
         // deliberately bypasses the cache entirely - see Request.process - so cache stats
         // cannot be observed on that call itself; this is how we know it would otherwise have
         // been a 100% cache hit, which is exactly the scenario the bug needs.
-        // cacheHits/cacheMisses are cumulative counters for the whole server process
-        // (ResultCache never resets them), not scoped to a single request, so compare the
-        // delta between these two consecutive calls rather than the raw totals.
+        // cacheHits/cacheMisses count the files of this request only.
         const stillCached = await lint({ output: "none" });
-        const hitsDelta = stillCached.cacheHits - warmup.cacheHits;
-        const missesDelta = stillCached.cacheMisses - warmup.cacheMisses;
         assert(
-            hitsDelta > 0 && missesDelta === 0,
-            `Expected the corpus to be fully served from the cache before requesting the report, got hitsDelta=${hitsDelta} missesDelta=${missesDelta}`,
+            stillCached.cacheHits > 0 && stillCached.cacheMisses === 0,
+            `Expected the corpus to be fully served from the cache before requesting the report, got cacheHits=${stillCached.cacheHits} cacheMisses=${stillCached.cacheMisses}`,
         );
 
         // This is the actual regression check: before the fix, a fully-cached basedir made

@@ -10,15 +10,17 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
- * Collects Groovy compilation errors without generating bytecode.
+ * Collects Groovy compilation errors.
  *
- * Compiles only to Phases.SEMANTIC_ANALYSIS: enough to surface both syntax errors
- * (raised at CONVERSION) and semantic errors such as a duplicate local variable or an
- * unresolvable superclass (raised by VariableScopeVisitor / ResolveVisitor at
- * SEMANTIC_ANALYSIS), while remaining far cheaper than GroovyClassLoader.parseClass which
- * runs the whole pipeline down to bytecode. Stopping at CONVERSION would silently drop the
- * semantic errors the old parseClass pipeline reported. Note the Node side filters out
- * "unable to resolve class" messages, since no user classpath is passed here.
+ * Compiles to Phases.CLASS_GENERATION, the phase GroovyClassLoader.parseClass (used before
+ * v19) stopped at, so it reports the same errors: syntax errors (CONVERSION), semantic errors
+ * such as a duplicate local variable or an unresolvable superclass (SEMANTIC_ANALYSIS),
+ * @CompileStatic / @TypeChecked type errors (INSTRUCTION_SELECTION), and class checks such as a
+ * missing abstract method implementation or a subclass of a final class (CLASS_GENERATION).
+ * Stopping earlier would silently drop the later ones. It is still cheaper than parseClass:
+ * the bytecode stays in memory and is never defined in a class loader, and files are compiled
+ * together in shared batches. Note the Node side filters out "unable to resolve class"
+ * messages, since no user classpath is passed here.
  */
 @CompileDynamic
 class SourceParser {
@@ -45,8 +47,42 @@ class SourceParser {
             return result
         }
 
+        batchesWithUniqueNames(absolutePaths).each { List<String> batch ->
+            parseBatch(batch, result)
+        }
+        return result
+    }
+
+    // Two files with the same base name (several Jenkinsfile, vars/*.groovy in different
+    // folders...) compile to the same script class name, and one shared CompilationUnit would
+    // fail on that "duplicate class definition" every time, forcing the slow per-file
+    // fallback on every request. Put such files in separate batches instead.
+    static List<List<String>> batchesWithUniqueNames(List<String> absolutePaths) {
+        List<List<String>> batches = []
+        List<Set<String>> namesByBatch = []
+        absolutePaths.each { String path ->
+            String name = baseName(path)
+            int index = namesByBatch.findIndexOf { Set<String> names -> !names.contains(name) }
+            if (index < 0) {
+                batches << []
+                namesByBatch << new HashSet<String>()
+                index = batches.size() - 1
+            }
+            batches[index] << path
+            namesByBatch[index] << name
+        }
+        return batches
+    }
+
+    private static String baseName(String path) {
+        String name = new File(path).name
+        int dot = name.lastIndexOf('.')
+        return dot > 0 ? name.substring(0, dot) : name
+    }
+
+    private static void parseBatch(List<String> batch, Map<String, List<String>> result) {
         try {
-            parseShared(absolutePaths)
+            parseShared(batch)
         } catch (Throwable t) {
             // The shared pass found at least one error (or failed outright). Groovy's
             // CompilationUnit does not reliably continue converting every source once any
@@ -63,16 +99,14 @@ class SourceParser {
             // The real error text is still captured safely by parseSingle() below, which runs
             // single-file and does not race.
             LOGGER.debug('Shared parse found errors ({}), falling back to per-file parse for full coverage', t.class.simpleName)
-            absolutePaths.each { path ->
+            batch.each { path ->
                 result.put(path, parseSingle(path))
             }
         }
-
-        return result
     }
 
-    // Compiles every file together in one CompilationUnit for speed. Returns normally only
-    // when the whole batch is free of syntax errors; any error must be handled by the caller
+    // Compiles every file of a batch together in one CompilationUnit for speed. Returns normally only
+    // when the whole batch is free of compilation errors; any error must be handled by the caller
     // via the per-file fallback (see parseFiles for why the errors collected here cannot be
     // trusted as complete).
     private static void parseShared(List<String> absolutePaths) {
@@ -80,7 +114,7 @@ class SourceParser {
         config.setTolerance(ERROR_TOLERANCE)
         CompilationUnit unit = new CompilationUnit(config, null, new GroovyClassLoader())
         absolutePaths.each { unit.addSource(new File(it)) }
-        unit.compile(Phases.SEMANTIC_ANALYSIS)
+        unit.compile(Phases.CLASS_GENERATION)
     }
 
     private static List<String> parseSingle(String path) {
@@ -89,7 +123,7 @@ class SourceParser {
         CompilationUnit unit = new CompilationUnit(config, null, new GroovyClassLoader())
         unit.addSource(new File(path))
         try {
-            unit.compile(Phases.SEMANTIC_ANALYSIS)
+            unit.compile(Phases.CLASS_GENERATION)
         } catch (MultipleCompilationErrorsException e) {
             return e.errorCollector.errors.collect { formatMessage(it) }
         } catch (Throwable t) {

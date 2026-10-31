@@ -20,6 +20,8 @@ class Request {
 
     private static final Pattern ARG_PATTERN = ~/^-([^=]+)=(.*)$/ // -name=value
     private static final Logger LOGGER = LoggerFactory.getLogger(Request)
+    // Thread-safe once configured: shared by every request instead of one per call.
+    private static final com.fasterxml.jackson.databind.ObjectMapper REPORT_MAPPER = new com.fasterxml.jackson.databind.ObjectMapper()
     static final List<String> HELP_ARGS = ['-help']
     static final List<String> VERSION_ARGS = ['-version']
 
@@ -274,8 +276,10 @@ class Request {
                 // report still carries the 'codeNarc' and 'rules' blocks Node requires.
                 template = ctx.cache.getTemplate(fingerprint)
             }
-            response.cacheHits = ctx.cache.hits
-            response.cacheMisses = ctx.cache.misses
+            // Counts for this request only: the cache's own counters are shared by every
+            // request the server ever handled, and concurrent requests would mix them up.
+            response.cacheHits = cached.size()
+            response.cacheMisses = toAnalyse.size()
         }
 
         response.partitionCount = outcome.partitionCount
@@ -379,9 +383,8 @@ class Request {
      */
     private void storeResults(List<String> reports, Map<String, String> keyByRelative,
                               Map<String, File> fileByRelative, String fingerprint, ResultCache cache) {
-        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper()
         reports.findAll { it }.each { String report ->
-            Map parsed = mapper.readValue(report, Map)
+            Map parsed = REPORT_MAPPER.readValue(report, Map)
             (parsed.packages ?: []).each { Map pkg ->
                 String pkgPath = pkg.path ?: ''
                 (pkg.files ?: []).each { Map file ->

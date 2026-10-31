@@ -6,7 +6,7 @@
 // recommended, stale-server detection, and the /kill endpoint authorization token
 // (nvuillam/npm-groovy-lint#607).
 import NpmGroovyLint from "../lib/groovy-lint.js";
-import { isStaleServerResponse } from "../lib/codenarc-caller.js";
+import { defaultJavaOptions, isStaleServerResponse } from "../lib/codenarc-caller.js";
 import { loadConfig } from "../lib/config.js";
 import { optionsDefinition } from "../lib/options.js";
 import assert from "assert";
@@ -123,11 +123,10 @@ describe("Review fixes", function () {
         assert(typeof runA.cacheHits === "number", "Expected cache statistics on the response (server run with cache enabled)");
         const runB = await lint(dirB);
         assert(runB.status === 0, `Run B status is 0 (${runB.status} returned)`);
-        // cacheHits/cacheMisses are cumulative for the server process: compare deltas.
-        const hitsDelta = runB.cacheHits - runA.cacheHits;
+        // cacheHits/cacheMisses count the files of this request only.
         assert(
-            hitsDelta === 0,
-            `Expected no cross-project cache hit with a classpath-dependent rule enabled, got ${hitsDelta} hit(s): ` +
+            runB.cacheHits === 0 && runB.cacheMisses > 0,
+            `Expected no cross-project cache hit with a classpath-dependent rule enabled, got ${runB.cacheHits} hit(s): ` +
                 "an identical file in a different basedir was served another project's cached results",
         );
     });
@@ -178,6 +177,38 @@ describe("Review fixes", function () {
         fs.rmSync(tmpDir, { recursive: true, force: true });
     });
 
+    it("(REVIEW:parse) class generation errors are reported as parse errors, like before v19", async function () {
+        beforeEachTestCase();
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ngl-classgen-"));
+        // Both errors are only raised at the CLASS_GENERATION phase: compiling to
+        // SEMANTIC_ANALYSIS misses them, while GroovyClassLoader.parseClass (v18) reported them.
+        fs.writeFileSync(path.join(tmpDir, "MissingAbstractMethod.groovy"), "class Worker implements Runnable {\n}\n");
+        fs.writeFileSync(path.join(tmpDir, "ExtendsFinal.groovy"), "final class Base {\n}\n\nclass Child extends Base {\n}\n");
+        // Two files with the same name in different folders compile to the same script class:
+        // they must not hide each other's errors nor be reported as a duplicate class.
+        for (const dir of ["a", "b"]) {
+            fs.mkdirSync(path.join(tmpDir, dir));
+            fs.writeFileSync(path.join(tmpDir, dir, "Jenkinsfile"), "pipeline {\n    agent any\n}\n");
+        }
+        const linter = await new NpmGroovyLint({ path: tmpDir, insight: false, failon: "none", output: "none" }, {}).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+        const errors = Object.values(linter.lintResult.files || {}).flatMap((f) => f.errors || []);
+        const parseMessages = errors.filter((e) => e.rule === "NglParseError").map((e) => String(e.msg));
+        assert(
+            parseMessages.some((msg) => msg.includes("must be declared abstract")),
+            `Expected an NglParseError about the missing abstract method, got: ${JSON.stringify(parseMessages, null, 2)}`,
+        );
+        assert(
+            parseMessages.some((msg) => msg.includes("not allowed to extend the final class")),
+            `Expected an NglParseError about extending a final class, got: ${JSON.stringify(parseMessages, null, 2)}`,
+        );
+        assert(
+            !parseMessages.some((msg) => msg.includes("duplicate class definition")),
+            `Two Jenkinsfile in different folders must not be reported as duplicate classes, got: ${JSON.stringify(parseMessages, null, 2)}`,
+        );
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+    });
+
     it("(REVIEW:config) the jenkinsfile add-on preset extends recommended, so standalone -c jenkinsfile is a full lint", async function () {
         const config = await loadConfig("jenkinsfile", "lint", null, []);
         const rules = config.rules || {};
@@ -218,8 +249,26 @@ describe("Review fixes", function () {
             !isStaleServerResponse({ exceptionType: "java.io.FileNotFoundException", errorMessage: "some/dir" }),
             "An ordinary server error must not be classified as a stale server",
         );
+        assert(
+            !isStaleServerResponse({
+                exceptionType: "com.fasterxml.jackson.databind.exc.MismatchedInputException",
+                errorMessage: "Cannot deserialize value of type `java.lang.Integer` from String",
+            }),
+            "A wrongly typed field sent to an up-to-date server must not restart the shared server",
+        );
         assert(!isStaleServerResponse({}), "An empty error payload must not be classified as a stale server");
         assert(!isStaleServerResponse(undefined), "A missing payload must not be classified as a stale server");
+    });
+
+    it("(REVIEW:server) the default JVM max heap follows the available memory, between 2048m and 4096m", function () {
+        const gb = 1024 * 1024 * 1024;
+        const maxHeap = (total, constrained) => defaultJavaOptions(total, constrained).find((arg) => arg.startsWith("-Xmx"));
+        assert.strictEqual(maxHeap(16 * gb, 0), "-Xmx4096m", "A large machine gets the 4096m cap");
+        assert.strictEqual(maxHeap(6 * gb, 0), "-Xmx3072m", "Half of the memory in between");
+        assert.strictEqual(maxHeap(2 * gb, 0), "-Xmx2048m", "Never below the pre-v19 default of 2048m");
+        assert.strictEqual(maxHeap(16 * gb, 5 * gb), "-Xmx2560m", "A container limit wins over the machine memory");
+        assert.strictEqual(maxHeap(16 * gb, 2 ** 62), "-Xmx4096m", "An 'unlimited' container value is ignored");
+        assert(defaultJavaOptions(16 * gb, 0).includes("-Xms256m"), "The initial heap stays at 256m");
     });
 
     // The two tests below run last in this file on purpose: the second one kills the shared
