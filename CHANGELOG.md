@@ -2,26 +2,68 @@
 
 ## Beta
 
-- Reduce npm supply-chain surface: production dependencies cut from 17 to 4 (82 to 27 installed packages), replaced by Node.js built-ins
-  - **axios** -> native `fetch` (the default `--serverhost` is now `http://127.0.0.1` instead of `http://localhost`, matching the loopback address the CodeNarc server actually listens on)
-  - **chalk** + **ansi-colors** -> `util.styleText`
-  - **debug** -> `util.debuglog` (**breaking**: debug logs are now activated with `NODE_DEBUG=npm-groovy-lint` instead of `DEBUG=npm-groovy-lint`)
-  - **fs-extra** -> `node:fs` / `node:fs/promises`
-  - **cli-progress** -> minimal built-in progress bar
-  - **import-fresh** -> require-cache eviction for CommonJS config files, cache-busted dynamic `import()` for ES module ones
-  - **strip-json-comments** -> small inlined comment stripper
-  - **uuid** (unused), **commondir**, **find-package-json**, **find-java-home** -> removed or inlined
-  - **glob** -> removed (build scripts use `fs.readdirSync` instead)
-- Reduce devDependencies too: remove **@babel/core**, **@babel/eslint-parser**, **@eslint/eslintrc**, **diff**, **handlebars**, **npm-run-all2**, **rimraf**, **which**, and replace **nyc** with **c8**
-- Upgrade to **eslint v10**
-- Add supply-chain guards: CI fails if the production dependency count grows beyond the committed baseline, and Renovate now applies a 7-day cooldown (`minimumReleaseAge`) before proposing new dependency versions
-- Minimum Node version is now **22.13.0** (first LTS release where `util.styleText` is stable)
-- Fix vulnerabilities reported by grype and trivy
-  - **js-yaml** 5.2.1 -> 5.2.3, **tar** 7.5.19 -> 7.5.22, **brace-expansion** -> 5.0.9
-  - Bundled jars: **jackson-core** / **jackson-databind** 2.22.0 -> 2.22.1, **logback-core** / **logback-classic** 1.5.25 -> 1.5.34
-- Upgrade MegaLinter CI to **v10** (custom flavor image rebuilt on MegaLinter 10.0.0, `REPOSITORY_GITLEAKS` replaced by `REPOSITORY_BETTERLEAKS`)
-- Add `.prettierrc.json` and `.prettierignore` so prettier uses the project conventions (tab width 4, print width 150) instead of its defaults, and leaves generated files alone
-- Remove unused imports and unnecessary semicolons from the Groovy server sources
+v19 is **3 to 18 times faster** and reports **fewer, more meaningful violations** by default. It has breaking changes: read the [migration guide](https://nvuillam.github.io/npm-groovy-lint/#migrating-from-v18-to-v19) before upgrading.
+
+### Breaking changes
+
+- **The default preset `recommended` reports likely mistakes only** (149 rules instead of nearly all 390 CodeNarc rules): bugs, dead code, security and concurrency hazards, misused APIs. Style and layout are no longer reported by default, so a lint finds fewer violations and a build that used to fail may now pass. `--fix` and `--format` still fix layout exactly as before. Get more rules back with `{ "extends": "advanced" }` or `{ "extends": "all" }` (see the migration guide).
+- **The `grails`, `tests` and `jenkinsfile` presets now include `recommended`**: `-c jenkinsfile` alone is a full lint, not only the Jenkinsfile-specific rules.
+- **`--files` is now applied.** It was silently ignored since v13 (every file under `--path` was linted), so scripts passing `--files` now lint only the matching files.
+- **Node.js 22.13 or higher is required** (was 22.0).
+- **Debug logs are enabled with `NODE_DEBUG=npm-groovy-lint`** instead of `DEBUG=npm-groovy-lint`.
+- **The default `--serverhost` is `http://127.0.0.1`** instead of `http://localhost`, the address the CodeNarc server actually listens on.
+- **`--killserver` from v18 cannot stop a v19 server**: stop the old server before upgrading, or run `--killserver` with v19, which stops both.
+
+### Performance
+
+Measured against v18.0.0 with the default configuration, on 40 files (about 29,000 lines):
+
+| Scenario                               | v18.0.0 | v19    | Speedup   |
+|----------------------------------------|---------|--------|-----------|
+| First run (starts Java and the server) | 88.6 s  | 24.7 s | **~3.6x** |
+| Run again, no file changed             | 62.6 s  | 3.5 s  | **~18x**  |
+| Run again, every file changed          | 57.8 s  | 8.2 s  | **~7x**   |
+
+Where it comes from:
+
+- **A smaller default rule set** (see Breaking changes). With `{ "extends": "all" }`, only the gains below apply.
+- **Parallel analysis**: files are analysed on up to 4 threads. Use `--parallelism 1` to analyse one file at a time.
+- **Result cache**: the CodeNarc server remembers the results of each file, so a file that did not change is not analysed again. The cache only holds results that cannot be wrong: it is skipped for HTML/XML reports, and a file edited during a lint is not cached.
+- **Faster parse error detection**, which still reports the same errors as v18.
+- **Memory**: the server's max heap is now half the available memory (the container limit when there is one), between 2048m (the v18 value) and 4096m. `--javaoptions` still overrides it.
+
+### New features
+
+- **Tiered presets**, like ESLint's `eslint:recommended`:
+  - `recommended` (default, 149 rules): what is most likely a mistake.
+  - `advanced` (344 rules): `recommended` plus style, Groovy idioms, design, naming, complexity thresholds, Javadoc and layout.
+  - `all` (390 rules): every CodeNarc rule, including those that do nothing until you configure them (`IllegalRegex`, `RequiredString`...).
+  - `format` (40 rules): layout only. This is what `--format` and `--fix` apply.
+  - `grails`, `tests` (JUnit and Spock) and `jenkinsfile`: add-ons for each framework.
+- **`extends` accepts a list of presets**, merged from left to right: `{ "extends": ["advanced", "grails", "tests"] }`. Your own `rules` always win.
+- **New `--parallelism` (`-P`) option** to choose the number of analysis threads (also applies with `--noserver`).
+- **API**: lint results include `cacheHits` / `cacheMisses`, the number of files of this lint served from the cache or analysed.
+- **New CodeNarc rules are opt-in**: a future CodeNarc release can no longer add rules to `recommended` without anyone noticing.
+
+### Fixes
+
+- `--fix` no longer crashes with `Cannot convert undefined or null to object` after fixing braces when your configuration does not enable `Indentation`.
+- `--fix` no longer sends npm-groovy-lint's own rules (`IndentationClosingBraces`, `IndentationComments`) to CodeNarc, which rejected them.
+- Upgrading while an old CodeNarc server is still running restarts it with the new version, instead of making every lint slow until the old server stops.
+
+### Security
+
+- **axios is no longer used** ([#616](https://github.com/nvuillam/npm-groovy-lint/issues/616)): it was replaced by Node.js's built-in `fetch`.
+- **Fewer dependencies**: 4 production dependencies instead of 17 (27 installed packages instead of 82), most replaced by Node.js built-ins (`chalk`, `ansi-colors`, `debug`, `fs-extra`, `cli-progress`, `import-fresh`, `strip-json-comments`, `uuid`, `commondir`, `find-package-json`, `find-java-home`, `glob`).
+- **Stopping the server requires a token** ([#607](https://github.com/nvuillam/npm-groovy-lint/pull/607)): another local user or process can no longer stop your CodeNarc server. The token is stored in a file only your OS user can read, so `--killserver` keeps working.
+- **Vulnerable dependencies upgraded**: js-yaml 5.2.3, tar 7.5.22, brace-expansion 5.0.9, and the bundled jars jackson-core / jackson-databind 2.22.4 and logback 1.5.34.
+
+### Maintenance (contributors)
+
+- CI fails if the number of production dependencies grows, and Renovate waits 7 days before proposing a new dependency version.
+- Fewer devDependencies (`@babel/*`, `@eslint/eslintrc`, `diff`, `handlebars`, `npm-run-all2`, `rimraf`, `which` removed; `nyc` replaced by `c8`), ESLint 10, MegaLinter 10.
+- Prettier configuration (`.prettierrc.json`, `.prettierignore`) matching the project conventions.
+- The build fails until each new CodeNarc rule is assigned a preset tier (`scripts/rule-tiers.js`).
 
 ## [18.0.0] 2026-06-30
 
