@@ -1,0 +1,53 @@
+name: Docker image test
+
+# Build the Docker image and check that it works, so a Dockerfile change is tested
+# before the "Build & Deploy" workflow publishes it.
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  docker_test:
+    name: Build & test Docker image
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Same npm package as the beta image published from main
+      - name: Build Docker image
+        run: docker build --build-arg NPM_GROOVY_LINT_VERSION=beta -t npm-groovy-lint:test .
+
+      - name: Image runs as a non-root user
+        run: |
+          IMAGE_USER="$(docker run --rm --entrypoint whoami npm-groovy-lint:test)"
+          echo "Image user: ${IMAGE_USER}"
+          test "${IMAGE_USER}" = "groovylint"
+
+      - name: Lint with the default image user
+        run: docker run --rm -v "$PWD/lib/example":/src:ro -w /src npm-groovy-lint:test --failon none
+
+      - name: Fix as the host user (README usage)
+        run: |
+          mkdir -p "$RUNNER_TEMP/fix"
+          printf 'def a = "hello" ;   \nprintln a' > "$RUNNER_TEMP/fix/Sample.groovy"
+          cp "$RUNNER_TEMP/fix/Sample.groovy" "$RUNNER_TEMP/Sample.orig.groovy"
+          docker run --rm -u "$(id -u):$(id -g)" -w=/tmp -v "$RUNNER_TEMP/fix":/tmp npm-groovy-lint:test --fix --failon none
+          echo "--- Fixed file:"
+          cat "$RUNNER_TEMP/fix/Sample.groovy"
+          if cmp -s "$RUNNER_TEMP/fix/Sample.groovy" "$RUNNER_TEMP/Sample.orig.groovy"; then
+            echo "::error::--fix did not update the mounted file"
+            exit 1
+          fi
