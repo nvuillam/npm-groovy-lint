@@ -266,13 +266,13 @@ class Request {
             // Partitions pass files with -sourcefiles, which CodeNarc analyses without
             // applying -excludes: leave the excluded ones out here. They stay in fileList,
             // so they are still reported (with no violations), as before.
-            List<String> analysable = removeExcludedFiles(toAnalyse)
-            if (analysable.isEmpty() && !toAnalyse.isEmpty()) {
+            List<String> notExcluded = removeExcludedFiles(toAnalyse)
+            if (notExcluded.isEmpty() && !toAnalyse.isEmpty()) {
                 // Every file is excluded: run CodeNarc on the caller's patterns anyway, so the
                 // merged report still carries the 'codeNarc' and 'rules' blocks Node requires.
                 outcome = AnalysisPartitioner.analysePatterns(codeNarcIncludes as List<String>, baseArgs)
             } else {
-                outcome = AnalysisPartitioner.analyse(analysable, baseArgs, parallelism, ctx.pool, handle)
+                outcome = AnalysisPartitioner.analyse(notExcluded, baseArgs, parallelism, ctx.pool, handle)
             }
         }
 

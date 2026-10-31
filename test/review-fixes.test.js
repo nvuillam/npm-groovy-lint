@@ -436,7 +436,9 @@ describe("Server file selection", function () {
         it(`(SERVER:files) ${mode}: --ignorepattern still excludes explicitly listed files`, async function () {
             this.timeout(300000);
             beforeEachTestCase();
-            const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ngl-sourcefiles-"));
+            // Real path: on macOS the temp folder is a symlink (/var -> /private/var), and the lint
+            // results use the real path of the current folder.
+            const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "ngl-sourcefiles-")));
             fs.mkdirSync(path.join(dir, "sub"));
             // An unused variable is reported by the default preset
             const content = "def unusedVariable = 1\nprintln 'hello'\n";
