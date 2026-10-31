@@ -44,6 +44,7 @@ Where it comes from:
 - **New `--parallelism` (`-P`) option** to choose the number of analysis threads (also applies with `--noserver`).
 - **API**: lint results include `cacheHits` / `cacheMisses`, the number of files of this lint served from the cache or analysed.
 - **New CodeNarc rules are opt-in**: a future CodeNarc release can no longer add rules to `recommended` without anyone noticing.
+- **Java 25 support** ([#610](https://github.com/nvuillam/npm-groovy-lint/issues/610)): npm-groovy-lint now runs with Java 17 to 25, instead of downloading a Java 24 runtime when only Java 25 is installed. The bundled Groovy is upgraded from 4.0.26 to 4.0.33.
 
 ### Fixes
 

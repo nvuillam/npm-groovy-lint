@@ -17,11 +17,12 @@ jobs:
       fail-fast: false
       # Curated matrix (instead of the full node x java x os product) to keep CI fast
       # while preserving meaningful coverage:
-      #   - Linux runs all 4 JDKs, including the out-of-range 11 & 25 that exercise
-      #     java-caller's JRE auto-download path (the path most sensitive to java-caller bumps).
+      #   - Linux runs the in-range JDKs 17, 21 & 25 (25 is the supported maximum), plus the
+      #     out-of-range 11 & 26 that exercise java-caller's JRE auto-download path (the path
+      #     most sensitive to java-caller bumps).
       #   - Both supported Node versions (22 & 24) are covered.
       #   - macOS and Windows each get one representative in-range JDK leg.
-      #   - Windows skips out-of-range JDKs (11 & 25): the JRE auto-download spawn fails there
+      #   - Windows skips out-of-range JDKs (11 & 26): the JRE auto-download spawn fails there
       #     (ENOENT under node 24) and hangs the suite.
       # NOTE: this is a pure `include` list with NO base matrix dimensions. A base
       # dimension (e.g. `java_distrib: [temurin]`) would make GitHub merge every include
@@ -29,11 +30,12 @@ jobs:
       # job. With include only, each entry becomes its own job.
       matrix:
         include:
-          # Linux - full JDK range on latest Node (incl. out-of-range auto-download 11 & 25)
+          # Linux - full JDK range on latest Node (incl. out-of-range auto-download 11 & 26)
           - { os: ubuntu-latest, node_version: "24", java_version: "11", java_distrib: temurin }
           - { os: ubuntu-latest, node_version: "24", java_version: "17", java_distrib: temurin }
           - { os: ubuntu-latest, node_version: "24", java_version: "21", java_distrib: temurin }
           - { os: ubuntu-latest, node_version: "24", java_version: "25", java_distrib: temurin }
+          - { os: ubuntu-latest, node_version: "24", java_version: "26", java_distrib: temurin }
           # Linux - older supported Node on the baseline JDK
           - { os: ubuntu-latest, node_version: "22", java_version: "17", java_distrib: temurin }
           # macOS - one representative in-range leg
