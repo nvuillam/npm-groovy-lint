@@ -19142,12 +19142,6 @@
                 },
                 "enabled": {
                   "type": "boolean"
-                },
-                "specificationClassNames": {
-                  "type": "string"
-                },
-                "specificationSuperclassNames": {
-                  "type": "string"
                 }
               }
             }
@@ -19180,12 +19174,6 @@
                 },
                 "enabled": {
                   "type": "boolean"
-                },
-                "specificationClassNames": {
-                  "type": "string"
-                },
-                "specificationSuperclassNames": {
-                  "type": "string"
                 }
               }
             }
