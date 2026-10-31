@@ -2,6 +2,8 @@
 
 ## Beta
 
+## [19.0.0] 2026-10-31
+
 v19 is **3 to 18 times faster** and reports **fewer, more meaningful violations** by default. It has breaking changes: read the [migration guide](https://nvuillam.github.io/npm-groovy-lint/#migrating-from-v18-to-v19) before upgrading.
 
 ### Breaking changes
