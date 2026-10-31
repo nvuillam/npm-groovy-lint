@@ -153,9 +153,74 @@ Any **question**, **problem** or **enhancement request** ? Ask in the [**npm-gro
     npm install -g npm-groovy-lint
 ```
 
-- If you have issues with v9, install previous version with `npm install -g npm-groovy-lint@8.2.0`
+- If you have issues with v19, install the previous version with `npm install -g npm-groovy-lint@18` and see [Migrating from v18 to v19](#migrating-from-v18-to-v19)
 - Node.js >= 22.13.0 is required to run this package. If you can't upgrade, you can use [nvm](https://github.com/nvm-sh/nvm) to have [different node versions on your computer](https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/)
 - Java 17 or higher is required. If you do not have a compatible Java version installed on your computer, npm-groovy-lint will install Java 17 for you, so the first run may be long.
+
+## Migrating from v18 to v19
+
+v19 is about 3 to 18 times faster, but it changes what a lint reports by default. Check these points when you upgrade.
+
+### 1. Stop the old CodeNarc server
+
+npm-groovy-lint keeps a CodeNarc server running in the background. Stop it **before** upgrading:
+
+```shell
+npm-groovy-lint --killserver
+npm install -g npm-groovy-lint@19
+```
+
+If you forgot, run `npm-groovy-lint --killserver` again with v19: it stops both old and new servers. A v18 `--killserver` cannot stop a v19 server, so don't mix versions in the same environment (kill the process by its PID, or let it stop by itself after 1 hour idle).
+
+### 2. Expect fewer violations by default
+
+The default preset, `recommended`, now reports only what is **most likely a mistake** (149 rules). v18 reported nearly every CodeNarc rule (390 rules), including style and layout. See [Rule presets](#rule-presets).
+
+What you may notice:
+
+- **Fewer violations, and builds that used to fail may now pass.** Style rules (`NoDef`, `*TypeRequired`, naming, `Unnecessary*`, size thresholds, Javadoc...) and layout rules (indentation, braces, spacing) are no longer reported by default.
+- **`--fix` and `--format` still fix layout exactly as before.** Layout is fixed, just not reported.
+- **Inline comments such as `// groovylint-disable-next-line NoDef`** still work. They simply have nothing to hide for rules that are no longer enabled.
+
+To get the old rules back, set `extends` in your `.groovylintrc.json`:
+
+| You want                                          | Set                                                 |
+|---------------------------------------------------|-----------------------------------------------------|
+| Layout violations reported too                    | `{ "extends": ["recommended", "format"] }`          |
+| Style and layout reported (Groovy idioms, naming) | `{ "extends": "advanced" }`                         |
+| The closest to the v18 default                    | `{ "extends": "all" }` (see below)                  |
+| Grails or JUnit/Spock rules                       | `{ "extends": ["recommended", "grails", "tests"] }` |
+
+v18's default was `all` with a few changes. To get it back as closely as possible:
+
+```json
+{
+    "extends": "all",
+    "rules": {
+        "convention.TrailingComma": "off",
+        "formatting.SpaceAroundMapEntryColon": "off",
+        "logging.Println": "off",
+        "unnecessary.UnnecessaryReturnKeyword": "off"
+    }
+}
+```
+
+### 3. Check your preset names
+
+- `recommended`, `all`, `format` and `recommended-jenkinsfile` still exist.
+- The `grails`, `tests` and `jenkinsfile` presets now **include `recommended`**. `-c jenkinsfile` alone is a full lint, not only the Jenkinsfile-specific rules.
+- `extends` accepts a list, merged from left to right: `{ "extends": ["advanced", "jenkinsfile"] }`.
+
+### 4. Check your command lines and environment
+
+| If you use                                | In v19                                                                                                                                                |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Node.js older than 22.13                  | Upgrade Node.js to 22.13 or higher                                                                                                                    |
+| `--files`                                 | It was silently ignored since v13: every file under `--path` was linted. It is now applied, so only matching files are linted                         |
+| `DEBUG=npm-groovy-lint` to get debug logs | Use `NODE_DEBUG=npm-groovy-lint` instead                                                                                                              |
+| `--serverhost http://localhost`           | The default is now `http://127.0.0.1`. Keep your value only if you really run the server elsewhere                                                    |
+| A machine or container with little memory | The server's max heap is now half the available memory, between 2048m (the v18 value) and 4096m. Set `--javaoptions "-Xms256m,-Xmx1024m"` to use less |
+| Many cores, and you want one thread       | Files are now analysed on up to 4 threads. Use `--parallelism 1` to analyse one file at a time                                                        |
 
 ## Configuration
 
