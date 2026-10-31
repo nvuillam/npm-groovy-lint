@@ -49,7 +49,7 @@
         "npm-groovy-lint": "lib/index.js"
     },
     "dependencies": {
-        "java-caller": "^6.0.0",
+        "java-caller": "^6.1.0",
         "js-yaml": "^5.0.0",
         "node-sarif-builder": "^5.0.0",
         "optionator": "^0.9.0"
