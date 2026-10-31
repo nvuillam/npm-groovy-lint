@@ -69,6 +69,7 @@ Where it comes from:
 - Prettier configuration (`.prettierrc.json`, `.prettierignore`) matching the project conventions.
 - The build fails until each new CodeNarc rule is assigned a preset tier (`scripts/rule-tiers.js`).
 - CI builds and tests the Docker image on every pull request, before it is published.
+- The beta and release Docker images install the exact npm-groovy-lint version just published, once npm serves it, instead of the `beta` / `latest` tag, which could still point to the previous version.
 - The MegaLinter Claude Code skills and agents come from the official [MegaLinter plugin](https://github.com/oxsecurity/megalinter) (enabled in `.claude/settings.json`) instead of local copies.
 
 ## [18.0.0] 2026-06-30

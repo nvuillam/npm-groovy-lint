@@ -26,6 +26,8 @@ concurrency:
 jobs:
   deploy_beta_to_npm:
     name: Deploy to NPM (beta)
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     permissions:
@@ -52,9 +54,14 @@ jobs:
       - run: BETAID="$(date -d @"$(git log -1 --pretty=%ct)" '+%Y%m%d%H%M')" && npm version prerelease --preid="beta-$BETAID"
         shell: bash
       - run: npm publish --tag beta
+      - name: Get published version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
 
   deploy_release_to_npm:
     name: Deploy to NPM (release)
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     if: ${{ github.event_name == 'release' }}
     runs-on: ubuntu-latest
     permissions:
@@ -79,6 +86,9 @@ jobs:
           git config --global user.name nvuillam
           git config --global user.email nicolas.vuillamy@gmail.com
       - run: npm publish
+      - name: Get published version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
 
   build_push_docker_beta:
     name: Build & Push Docker image (beta)
@@ -115,6 +125,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
+      - name: Wait until the published version is available on npm
+        # npm publish returns before every registry server serves the new version: without this
+        # wait, the image could install the previous version
+        env:
+          NPM_VERSION: ${{ needs.deploy_beta_to_npm.outputs.version }}
+        run: |
+          for attempt in $(seq 1 60); do
+            if [ "$(npm view "npm-groovy-lint@${NPM_VERSION}" version --prefer-online 2>/dev/null)" = "${NPM_VERSION}" ]; then
+              echo "npm-groovy-lint@${NPM_VERSION} is available on npm"
+              exit 0
+            fi
+            echo "Waiting for npm-groovy-lint@${NPM_VERSION} on npm (${attempt}/60)..."
+            sleep 10
+          done
+          echo "::error::npm-groovy-lint@${NPM_VERSION} is still not available on npm after 10 minutes"
+          exit 1
+
       - name: Get current date
         run: echo "BUILD_DATE=$(date -d @"$(git log -1 --pretty=%ct)" +'%Y-%m-%dT%H:%M:%SZ')" >> ${GITHUB_ENV}
 
@@ -128,7 +155,7 @@ jobs:
             BUILD_DATE=${{ env.BUILD_DATE }}
             BUILD_REVISION=${{ github.sha }}
             BUILD_VERSION=beta
-            NPM_GROOVY_LINT_VERSION=beta
+            NPM_GROOVY_LINT_VERSION=${{ needs.deploy_beta_to_npm.outputs.version }}
           load: false
           push: true
           tags: |
@@ -170,6 +197,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
+      - name: Wait until the published version is available on npm
+        # npm publish returns before every registry server serves the new version: without this
+        # wait, the image could install the previous version
+        env:
+          NPM_VERSION: ${{ needs.deploy_release_to_npm.outputs.version }}
+        run: |
+          for attempt in $(seq 1 60); do
+            if [ "$(npm view "npm-groovy-lint@${NPM_VERSION}" version --prefer-online 2>/dev/null)" = "${NPM_VERSION}" ]; then
+              echo "npm-groovy-lint@${NPM_VERSION} is available on npm"
+              exit 0
+            fi
+            echo "Waiting for npm-groovy-lint@${NPM_VERSION} on npm (${attempt}/60)..."
+            sleep 10
+          done
+          echo "::error::npm-groovy-lint@${NPM_VERSION} is still not available on npm after 10 minutes"
+          exit 1
+
       - name: Get current date
         run: echo "BUILD_DATE=$(date -d @"$(git log -1 --pretty=%ct)" +'%Y-%m-%dT%H:%M:%SZ')" >> ${GITHUB_ENV}
 
@@ -183,7 +227,7 @@ jobs:
             BUILD_DATE=${{ env.BUILD_DATE }}
             BUILD_REVISION=${{ github.sha }}
             BUILD_VERSION=${{ github.event.release.tag_name }}
-            NPM_GROOVY_LINT_VERSION=latest
+            NPM_GROOVY_LINT_VERSION=${{ needs.deploy_release_to_npm.outputs.version }}
           load: false
           push: true
           tags: |
