@@ -179,7 +179,7 @@ describe("Review fixes", function () {
 
     it("(REVIEW:parse) class generation errors are reported as parse errors, like before v19", async function () {
         beforeEachTestCase();
-        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ngl-classgen-"));
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ngl-class-generation-"));
         // Both errors are only raised at the CLASS_GENERATION phase: compiling to
         // SEMANTIC_ANALYSIS misses them, while GroovyClassLoader.parseClass (v18) reported them.
         fs.writeFileSync(path.join(tmpDir, "MissingAbstractMethod.groovy"), "class Worker implements Runnable {\n}\n");
