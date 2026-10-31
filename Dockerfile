@@ -21,4 +21,8 @@ LABEL maintainer="Nicolas Vuillamy <nicolas.vuillamy@gmail.com>" \
     org.opencontainers.image.vendor="Nicolas Vuillamy" \
     org.opencontainers.image.description="Analyze and fix your Groovy and Jenkinsfiles"
 
+# Run as a non-root user
+RUN addgroup -S -g 10001 groovylint && adduser -S -u 10001 -G groovylint groovylint
+USER 10001:10001
+
 ENTRYPOINT ["npm-groovy-lint"]

@@ -12,6 +12,8 @@
     "language": "en",
     "version": "0.2",
     "words": [
+        "addgroup",
+        "adduser",
         "Affero",
         "Appender",
         "Autofixable",

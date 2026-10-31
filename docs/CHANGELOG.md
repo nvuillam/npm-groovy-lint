@@ -44,6 +44,7 @@ Where it comes from:
 - **New `--parallelism` (`-P`) option** to choose the number of analysis threads (also applies with `--noserver`).
 - **API**: lint results include `cacheHits` / `cacheMisses`, the number of files of this lint served from the cache or analysed.
 - **New CodeNarc rules are opt-in**: a future CodeNarc release can no longer add rules to `recommended` without anyone noticing.
+- **Java 25 support** ([#610](https://github.com/nvuillam/npm-groovy-lint/issues/610)): npm-groovy-lint now runs with Java 17 to 25, instead of downloading a Java 24 runtime when only Java 25 is installed. The bundled Groovy is upgraded from 4.0.26 to 4.0.33.
 
 ### Fixes
 
@@ -57,6 +58,7 @@ Where it comes from:
 - **Fewer dependencies**: 4 production dependencies instead of 17 (27 installed packages instead of 82), most replaced by Node.js built-ins (`chalk`, `ansi-colors`, `debug`, `fs-extra`, `cli-progress`, `import-fresh`, `strip-json-comments`, `uuid`, `commondir`, `find-package-json`, `find-java-home`, `glob`).
 - **Stopping the server requires a token** ([#607](https://github.com/nvuillam/npm-groovy-lint/pull/607)): another local user or process can no longer stop your CodeNarc server. The token is stored in a file only your OS user can read, so `--killserver` keeps working.
 - **Vulnerable dependencies upgraded**: js-yaml 5.2.3, tar 7.5.22, brace-expansion 5.0.9, and the bundled jars jackson-core / jackson-databind 2.22.4 and logback 1.5.34.
+- **The Docker image runs as a non-root user** (`groovylint`). If you mount a folder without `-u "$(id -u):$(id -g)"` and use `--fix`, that folder must be writable by this user.
 
 ### Maintenance (contributors)
 
@@ -64,6 +66,8 @@ Where it comes from:
 - Fewer devDependencies (`@babel/*`, `@eslint/eslintrc`, `diff`, `handlebars`, `npm-run-all2`, `rimraf`, `which` removed; `nyc` replaced by `c8`), ESLint 10, MegaLinter 10.
 - Prettier configuration (`.prettierrc.json`, `.prettierignore`) matching the project conventions.
 - The build fails until each new CodeNarc rule is assigned a preset tier (`scripts/rule-tiers.js`).
+- CI builds and tests the Docker image on every pull request, before it is published.
+- The MegaLinter Claude Code skills and agents come from the official [MegaLinter plugin](https://github.com/oxsecurity/megalinter) (enabled in `.claude/settings.json`) instead of local copies.
 
 ## [18.0.0] 2026-06-30
 

@@ -31,7 +31,7 @@ jobs:
         uses: sdkman/sdkman-action@b1f9b696c79148b66d3d3a06f7ea801820318d0f
         with:
           candidate: groovy
-          version: 4.0.26
+          version: 4.0.33
 
       - name: Install dependencies and link
         run: |

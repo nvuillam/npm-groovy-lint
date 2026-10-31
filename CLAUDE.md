@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `npm-groovy-lint` is a Node.js (ESM) CLI + library that **lints, formats and auto-fixes** Groovy / Jenkinsfile / Gradle files. It is a wrapper around the Java tool [CodeNarc](http://codenarc.github.io/CodeNarc/): the Node side translates options, drives CodeNarc, parses its results, and adds a formatting/auto-fix engine that CodeNarc does not have. It also powers the VS Code "Groovy Lint" extension and the MegaLinter Groovy flavor.
 
-Requires **Node >= 22.13** and a **JDK 17–24** on PATH (Groovy is also needed to rebuild the server — see below).
+Requires **Node >= 22.13** and a **JDK 17–25** on PATH (Groovy is also needed to rebuild the server — see below).
 
 ## Commands
 
@@ -32,7 +32,7 @@ The expensive part — starting a JVM and loading CodeNarc — is amortized by r
 
 - `lib/index.js` — CLI entry (`bin`), thin wrapper that runs `NpmGroovyLint` and sets the exit code.
 - `lib/groovy-lint.js` — `NpmGroovyLint` class, the orchestrator: parse options → prepare CodeNarc call → run via the caller → parse results → optionally format/fix → produce output.
-- `lib/codenarc-caller.js` — owns the **server lifecycle and Java invocation** (start/keep-alive the server, HTTP calls, java fallback). Java version bounds (17–24) and jar path live here; locating the JDK is delegated to `java-caller`.
+- `lib/codenarc-caller.js` — owns the **server lifecycle and Java invocation** (start/keep-alive the server, HTTP calls, java fallback). Java version bounds (17–25) and jar path live here; locating the JDK is delegated to `java-caller`.
 - `lib/codenarc-factory.js` — converts npm-groovy-lint options into CodeNarc args (creating temp ruleset/files as needed) and parses the CodeNarc result back into the npm-groovy-lint error model.
 - `lib/config.js` — resolves `.groovylintrc.{json,js,yml}` / `package.json` config, and the built-in presets `recommended | recommended-jenkinsfile | all`.
 - `lib/options.js` — CLI option definitions (optionator).

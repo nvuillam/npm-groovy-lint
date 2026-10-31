@@ -22,7 +22,7 @@ The download targets and group/artifact IDs are codified in **`scripts/update-ja
 
 ## Prerequisites
 
-- **JDK 17–24** and **Groovy** (`groovyc`) on PATH. Check: `java -version`, `groovy --version`. CodeNarc 3.x targets Groovy 4 (`-groovy-4.0` jars), so keep the Groovy libs on the 4.x line.
+- **JDK 17–25** and **Groovy** (`groovyc`) on PATH. Check: `java -version`, `groovy --version`. CodeNarc 3.x targets Groovy 4 (`-groovy-4.0` jars), so keep the Groovy libs on the 4.x line.
 - Run from a feature branch, never `main`.
 
 ## Option A — bump everything to latest (broad)
