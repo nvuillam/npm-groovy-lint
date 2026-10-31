@@ -4,6 +4,7 @@ import os from "os";
 import path from "path";
 import { describe, beforeEach, afterEach, it } from "mocha";
 import { loadConfig } from "../lib/config.js";
+import NpmGroovyLint from "../lib/groovy-lint.js";
 
 // Validate that loadConfig reloads JS configs via import-fresh instead of a cached module
 describe("config import-fresh behavior", () => {
@@ -171,5 +172,110 @@ describe("config JSON comments", () => {
         // Blanking out the rest of the file would accept a config truncated mid-write as valid
         await writeConfig(`{ "customFlag": 3, "rules": {} } /* truncated`);
         await assert.rejects(() => loadConfig(tempDir), /Cannot read config file/);
+    });
+});
+
+describe("ruleset presets", () => {
+    const readPreset = async (name) => JSON.parse(await fs.readFile(`./lib/.groovylintrc-${name}.json`, "utf8"));
+    const categoriesOf = (preset) => new Set(Object.keys(preset.rules).map((ruleName) => ruleName.split(".")[0]));
+    const shortNames = (preset) => new Set(Object.keys(preset.rules).map((ruleName) => ruleName.split(".").pop()));
+
+    it("(CFG) recommended is an explicit rule list, not extends:all", async function () {
+        const recommended = await readPreset("recommended");
+        // Guards the root cause of the original 386-rule default: under `extends: all`,
+        // every rule a future CodeNarc release adds joins recommended silently.
+        assert(recommended.extends === undefined, `recommended must not extend another preset (extends: ${recommended.extends})`);
+        const ruleCount = Object.keys(recommended.rules).length;
+        assert(ruleCount > 100 && ruleCount < 220, `recommended should hold ~149 defect rules, found ${ruleCount}`);
+        assert(
+            Object.keys(recommended.rules).every((ruleName) => ruleName.includes(".")),
+            "every recommended rule must be listed as category.RuleName",
+        );
+    });
+
+    it("(CFG) recommended keeps the defect categories whole", async function () {
+        const recommended = await readPreset("recommended");
+        const all = await readPreset("all");
+        // These categories describe mistakes rather than preferences, so they are kept entire,
+        // including the rules that rarely fire.
+        for (const category of ["basic", "concurrency", "exceptions", "security", "serialization", "unused"]) {
+            const inAll = Object.keys(all.rules).filter((ruleName) => ruleName.startsWith(`${category}.`));
+            const missing = inAll.filter((ruleName) => recommended.rules[ruleName] === undefined);
+            assert(inAll.length > 0, `category ${category} not found in the all preset`);
+            assert.deepEqual(missing, [], `every ${category} rule must be in recommended`);
+        }
+    });
+
+    it("(CFG) recommended reports likely mistakes only, never layout", async function () {
+        const recommended = await readPreset("recommended");
+        const format = await readPreset("format");
+        const advanced = await readPreset("advanced");
+        // Layout belongs to the `format` preset, which --format and --fix apply on top of the
+        // lint ruleset, so `npm-groovy-lint --fix` still repairs it.
+        const layoutCategories = ["formatting", "braces"];
+        for (const category of layoutCategories) {
+            assert(!categoriesOf(recommended).has(category), `recommended must not carry ${category} rules`);
+            assert(categoriesOf(advanced).has(category), `advanced must carry ${category} rules`);
+        }
+        const inFormat = shortNames(format);
+        for (const ruleName of ["Indentation", "SpaceAroundOperator", "SpaceBeforeOpeningBrace", "ConsecutiveBlankLines"]) {
+            assert(inFormat.has(ruleName), `${ruleName} must stay in the format preset so --format and --fix still repair layout`);
+        }
+    });
+
+    it("(CFG) each tier is a superset of the previous one", async function () {
+        const [recommended, advanced, all] = await Promise.all([readPreset("recommended"), readPreset("advanced"), readPreset("all")]);
+        const notInAdvanced = Object.keys(recommended.rules).filter((ruleName) => advanced.rules[ruleName] === undefined);
+        assert.deepEqual(notInAdvanced, [], "advanced must contain every recommended rule");
+        const notInAll = Object.keys(advanced.rules).filter((ruleName) => all.rules[ruleName] === undefined);
+        assert.deepEqual(notInAll, [], "all must contain every advanced rule");
+        assert(Object.keys(advanced.rules).length > Object.keys(recommended.rules).length, "advanced must add rules on top of recommended");
+    });
+
+    it("(CFG) framework and inert rules stay out of the framework-agnostic tiers", async function () {
+        const [recommended, advanced, grails, tests] = await Promise.all([
+            readPreset("recommended"),
+            readPreset("advanced"),
+            readPreset("grails"),
+            readPreset("tests"),
+        ]);
+        for (const preset of [recommended, advanced]) {
+            for (const category of ["grails", "junit", "generic"]) {
+                assert(!categoriesOf(preset).has(category), `${category} rules must be opt-in, not part of a default tier`);
+            }
+        }
+        assert(shortNames(grails).has("GrailsMassAssignment"), "the grails preset must carry the grails rules");
+        assert(shortNames(tests).has("JUnitTestMethodWithoutAssert"), "the tests preset must carry the junit rules");
+        // The enhanced rules need CodeNarc compilation phase 4, which roughly doubles a run:
+        // available in advanced and tests, never in the default.
+        assert(shortNames(advanced).has("UnsafeImplementationAsMap"), "advanced must carry the enhanced rules");
+        assert(shortNames(tests).has("JUnitAssertEqualsConstantActualValue"), "tests must carry the enhanced JUnit rule");
+        assert(!shortNames(recommended).has("UnsafeImplementationAsMap"), "recommended must not carry the phase-4 rules");
+    });
+
+    it("(CFG) extends accepts a list of presets merged left to right", async function () {
+        const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "ngl-config-extends-"));
+        try {
+            const configFilePath = path.join(tempDir, ".groovylintrc.json");
+            await fs.writeFile(configFilePath, JSON.stringify({ extends: ["recommended", "grails", "tests"], rules: { "basic.DeadCode": "off" } }));
+            const config = await loadConfig(configFilePath);
+            assert(config.rules.EmptyCatchBlock !== undefined, "rules of the first base must be kept");
+            assert(config.rules.GrailsMassAssignment !== undefined, "rules of the grails add-on must be merged in");
+            assert(config.rules.JUnitTestMethodWithoutAssert !== undefined, "rules of the tests add-on must be merged in");
+            assert.equal(config.rules.DeadCode, "off", "the config's own rules must win over every base");
+            assert.equal(config.extends, undefined, "extends must be resolved away");
+        } finally {
+            await fs.rm(tempDir, { recursive: true, force: true });
+        }
+    });
+
+    it("(CFG) recommended-jenkinsfile composes recommended with the jenkinsfile add-on", async function () {
+        const linter = new NpmGroovyLint([process.execPath, "", "--no-insight"], { parseOptions: true });
+        const config = await linter.loadConfig("recommended-jenkinsfile");
+        // Single-quoted '${env.FOO}' is deliberate in a pipeline: the shell interpolates it
+        assert.equal(config.rules.GStringExpressionWithinString, "off");
+        assert.equal(config.rules.NoDef, "off");
+        assert.deepEqual(config.rules.UnusedVariable, { ignoreVariableNames: "_" });
+        assert(config.rules.EmptyCatchBlock !== undefined, "the jenkinsfile preset must still carry the recommended rules");
     });
 });
