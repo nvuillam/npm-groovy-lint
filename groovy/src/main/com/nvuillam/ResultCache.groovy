@@ -134,7 +134,7 @@ class ResultCache {
                 basedirArg = arg
                 return
             }
-            if (arg.startsWith('-includes=') || arg.startsWith('-report=')) {
+            if (arg.startsWith('-includes=') || arg.startsWith('-sourcefiles=') || arg.startsWith('-report=')) {
                 return // do not affect per-file results
             }
             sb.append(arg).append('|')

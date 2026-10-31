@@ -29,6 +29,7 @@ Where it comes from:
 - **A smaller default rule set** (see Breaking changes). With `{ "extends": "all" }`, only the gains below apply.
 - **Parallel analysis**: files are analysed on up to 4 threads. Use `--parallelism 1` to analyse one file at a time.
 - **Result cache**: the CodeNarc server remembers the results of each file, so a file that did not change is not analysed again. The cache only holds results that cannot be wrong: it is skipped for HTML/XML reports, and a file edited during a lint is not cached.
+- **CodeNarc reads only the files to lint**: it used to walk every folder under the base folder (`node_modules` included) to find them. Linting a single file in a large folder took minutes, it now takes seconds.
 - **Faster parse error detection**, which still reports the same errors as v18.
 - **Memory**: the server's max heap is now half the available memory (the container limit when there is one), between 2048m (the v18 value) and 4096m. `--javaoptions` still overrides it.
 
@@ -51,6 +52,7 @@ Where it comes from:
 - `--fix` no longer crashes with `Cannot convert undefined or null to object` after fixing braces when your configuration does not enable `Indentation`.
 - `--fix` no longer sends npm-groovy-lint's own rules (`IndentationClosingBraces`, `IndentationComments`) to CodeNarc, which rejected them.
 - Upgrading while an old CodeNarc server is still running restarts it with the new version, instead of making every lint slow until the old server stops.
+- The CodeNarc server answers requests sent without an `Accept-Encoding` header (e.g. with `curl`), instead of closing the connection without a response.
 
 ### Security
 

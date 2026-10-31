@@ -11,6 +11,7 @@ import { loadConfig } from "../lib/config.js";
 import { optionsDefinition } from "../lib/options.js";
 import assert from "assert";
 import fs from "node:fs";
+import http from "node:http";
 import * as os from "os";
 import * as path from "path";
 import { beforeEachTestCase, copyFilesInTmpDir, SAMPLE_FILE_SMALL } from "./helpers/common.js";
@@ -400,5 +401,94 @@ describe("Review fixes (round 2)", function () {
             `fixErrors() must keep status 1 while a failon-level non-borrowed violation remains, got ${linter.status}`,
         );
         fs.rmSync(tmpDir, { recursive: true, force: true });
+    });
+});
+
+describe("Server file selection", function () {
+    // Lint the given files (paths relative to dir) from dir, with the given extra CLI options
+    async function lintFiles(dir, files, extraOptions) {
+        const cwd = process.cwd();
+        process.chdir(dir);
+        try {
+            const linter = await new NpmGroovyLint(
+                [process.execPath, "", "--failon", "none", "--output", "none", "--no-insight", ...extraOptions, ...files],
+                {},
+            ).run();
+            assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+            return linter;
+        } finally {
+            process.chdir(cwd);
+        }
+    }
+
+    // Number of errors per file, keyed by the path relative to dir with "/" separators
+    function errorCounts(linter, dir) {
+        return Object.fromEntries(
+            Object.entries(linter.lintResult.files).map(([file, result]) => [
+                path.relative(dir, file).split(path.sep).join("/"),
+                (result.errors || []).length,
+            ]),
+        );
+    }
+
+    for (const noserver of [false, true]) {
+        const mode = noserver ? "--noserver" : "server";
+        it(`(SERVER:files) ${mode}: --ignorepattern still excludes explicitly listed files`, async function () {
+            this.timeout(300000);
+            beforeEachTestCase();
+            // Real path: on macOS the temp folder is a symlink (/var -> /private/var), and the lint
+            // results use the real path of the current folder.
+            const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "ngl-sourcefiles-")));
+            fs.mkdirSync(path.join(dir, "sub"));
+            // An unused variable is reported by the default preset
+            const content = "def unusedVariable = 1\nprintln 'hello'\n";
+            fs.writeFileSync(path.join(dir, "Root.groovy"), content);
+            fs.writeFileSync(path.join(dir, "sub", "Nested.groovy"), content);
+            const files = ["Root.groovy", "sub/Nested.groovy"];
+            const modeOptions = noserver ? ["--noserver"] : [];
+            try {
+                // CodeNarc gets the files with -sourcefiles, which ignores -excludes: the server must apply them.
+                // "**/" also matches a file at the base folder root, like CodeNarc's own matching does.
+                const rootExcluded = errorCounts(await lintFiles(dir, files, [...modeOptions, "--ignorepattern", "**/Root.groovy"]), dir);
+                assert.strictEqual(rootExcluded["Root.groovy"], 0, `Root.groovy is excluded: ${JSON.stringify(rootExcluded)}`);
+                assert(rootExcluded["sub/Nested.groovy"] > 0, `sub/Nested.groovy is linted: ${JSON.stringify(rootExcluded)}`);
+
+                const folderExcluded = errorCounts(await lintFiles(dir, files, [...modeOptions, "--ignorepattern", "sub/**"]), dir);
+                assert(folderExcluded["Root.groovy"] > 0, `Root.groovy is linted: ${JSON.stringify(folderExcluded)}`);
+                assert.strictEqual(folderExcluded["sub/Nested.groovy"], 0, `sub/Nested.groovy is excluded: ${JSON.stringify(folderExcluded)}`);
+
+                const allExcluded = errorCounts(await lintFiles(dir, files, [...modeOptions, "--ignorepattern", "**/*.groovy"]), dir);
+                assert.deepStrictEqual(allExcluded, { "Root.groovy": 0, "sub/Nested.groovy": 0 }, "Every file is excluded");
+            } finally {
+                fs.rmSync(dir, { recursive: true, force: true });
+            }
+        });
+    }
+
+    it("(SERVER:gzip) the server answers a request without an Accept-Encoding header", async function () {
+        this.timeout(300000);
+        beforeEachTestCase();
+        // Ensure a server is running.
+        const linter = await new NpmGroovyLint(
+            { path: "./lib/example/", files: "**/" + SAMPLE_FILE_SMALL, insight: false, failon: "none", output: "none" },
+            {},
+        ).run();
+        assert(linter.status === 0, `Linter status is 0 (${linter.status} returned)`);
+
+        // fetch() always sends Accept-Encoding: use node:http, which sends no such header (like curl).
+        // Before the fix, the gzip filter threw on the missing header and the server closed the
+        // connection without answering.
+        const serverOptions = optionsDefinition.parse({});
+        const { status, body } = await new Promise((resolve, reject) => {
+            const request = http.get(`${serverOptions.serverhost}:${serverOptions.serverport}/ping`, { timeout: 10000 }, (response) => {
+                let data = "";
+                response.on("data", (chunk) => (data += chunk));
+                response.on("end", () => resolve({ status: response.statusCode, body: data }));
+            });
+            request.on("timeout", () => request.destroy(new Error("ping timed out")));
+            request.on("error", reject);
+        });
+        assert.strictEqual(status, 200, `Expected /ping to answer 200, got ${status}`);
+        assert.strictEqual(JSON.parse(body).status, "running", `Unexpected /ping body: ${body}`);
     });
 });

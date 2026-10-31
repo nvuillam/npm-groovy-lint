@@ -9,6 +9,7 @@ import java.util.regex.Pattern
 import org.codehaus.groovy.ant.FileScanner
 import org.codenarc.CodeNarc
 import org.codenarc.util.CodeNarcVersion
+import org.codenarc.util.WildcardPattern
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -193,8 +194,8 @@ class Request {
         response.fileList = listFiles()
         response.parseErrors = parseFiles(response.fileList)
 
-        // Strip any -includes the caller supplied: partitions supply their own.
-        List<String> baseArgs = codeNarcArgs.findAll { !it.startsWith('-includes=') }
+        // Strip any -includes / -sourcefiles the caller supplied: partitions supply their own.
+        List<String> baseArgs = codeNarcArgs.findAll { !it.startsWith('-includes=') && !it.startsWith('-sourcefiles=') }
 
         List<String> relativePaths = response.fileList.collect { String absolute ->
             relativise(absolute)
@@ -213,13 +214,13 @@ class Request {
         // the same check to force a single partition for these requests.
         boolean nonMergeableReport = AnalysisPartitioner.hasNonMergeableReport(baseArgs)
 
-        // A path CodeNarc's comma-separated -includes cannot express: a comma in the path
+        // A path CodeNarc's comma-separated -sourcefiles cannot express: a comma in the path
         // (CodeNarc splits the value on commas), or a file that did not resolve under the
-        // canonical basedir (e.g. a symlink pointing outside it), whose absolute path is
-        // meaningless as an ant pattern relative to basedir. Rebuilding -includes from such
-        // paths would silently drop the file from the analysis, so fall back to the caller's
-        // own include/exclude patterns instead - the pre-partitioning behaviour - and skip
-        // the cache, whose per-file bookkeeping relies on the rebuilt includes.
+        // canonical basedir (e.g. a symlink pointing outside it), which CodeNarc cannot report
+        // under a basedir-relative path. Passing such paths with -sourcefiles would drop or
+        // misreport the file, so fall back to the caller's own include/exclude patterns
+        // instead - the pre-partitioning behaviour - and skip the cache, whose per-file
+        // bookkeeping relies on the basedir-relative paths.
         boolean unsafeIncludePaths = relativePaths.any { String relative -> isUnsafeIncludePath(relative) }
 
         boolean bypassCache = nonMergeableReport || unsafeIncludePaths
@@ -250,7 +251,7 @@ class Request {
         LOGGER.debug('Calling CodeNarc with base args: {}', baseArgs)
         AnalysisPartitioner.AnalysisOutcome outcome
         if (unsafeIncludePaths) {
-            LOGGER.debug('Includes cannot be rebuilt from file paths (comma or out-of-basedir path): using caller patterns {}',
+            LOGGER.debug('Files cannot be passed with -sourcefiles (comma or out-of-basedir path): using caller patterns {}',
                 codeNarcIncludes)
             outcome = AnalysisPartitioner.analysePatterns(codeNarcIncludes as List<String>, baseArgs)
         } else if (relativePaths.isEmpty() && nonMergeableReport) {
@@ -262,7 +263,17 @@ class Request {
             List<String> patterns = (codeNarcIncludes as List<String>) ?: ['**/__npm-groovy-lint-no-match__.groovy']
             outcome = AnalysisPartitioner.analysePatterns(patterns, baseArgs)
         } else {
-            outcome = AnalysisPartitioner.analyse(toAnalyse, baseArgs, parallelism, ctx.pool, handle)
+            // Partitions pass files with -sourcefiles, which CodeNarc analyses without
+            // applying -excludes: leave the excluded ones out here. They stay in fileList,
+            // so they are still reported (with no violations), as before.
+            List<String> notExcluded = removeExcludedFiles(toAnalyse)
+            if (notExcluded.isEmpty() && !toAnalyse.isEmpty()) {
+                // Every file is excluded: run CodeNarc on the caller's patterns anyway, so the
+                // merged report still carries the 'codeNarc' and 'rules' blocks Node requires.
+                outcome = AnalysisPartitioner.analysePatterns(codeNarcIncludes as List<String>, baseArgs)
+            } else {
+                outcome = AnalysisPartitioner.analyse(notExcluded, baseArgs, parallelism, ctx.pool, handle)
+            }
         }
 
         // Store freshly computed results before merging.
@@ -314,8 +325,31 @@ class Request {
     }
 
     /**
-     * True when this basedir-relative path cannot be safely put into a rebuilt
-     * comma-separated -includes value: it contains a comma (CodeNarc splits on commas), or
+     * Remove the files matching the -excludes patterns from basedir-relative paths.
+     *
+     * Partitions give CodeNarc their files with -sourcefiles, which CodeNarc analyses
+     * without applying -excludes. A list built by the ant scanner already applied them, so
+     * only an explicit file list needs this. Matches like CodeNarc's
+     * FilesystemSourceAnalyzer.matches(): CodeNarc's own WildcardPattern, tested on the
+     * file path under the basedir and on the basedir-relative path (so "**&#47;Foo.groovy"
+     * also excludes a Foo.groovy at the basedir root). A file outside the basedir is kept:
+     * it goes through the caller's patterns (analysePatterns), where CodeNarc applies
+     * -excludes itself.
+     */
+    private List<String> removeExcludedFiles(List<String> relativePaths) {
+        if (!fileList || !codeNarcExcludes) {
+            return relativePaths
+        }
+        WildcardPattern excludes = new WildcardPattern(codeNarcExcludes.join(','), false)
+        return relativePaths.findAll { String relative ->
+            String path = new File(codeNarcBaseDir, relative).path.replace('\\', '/')
+            return !excludes.matches(path) && !excludes.matches(relative)
+        }
+    }
+
+    /**
+     * True when this basedir-relative path cannot be safely put into a
+     * comma-separated -sourcefiles value: it contains a comma (CodeNarc splits on commas), or
      * it is not relative at all (relativise() fell back to the absolute path because the
      * file lives outside the canonical basedir).
      */

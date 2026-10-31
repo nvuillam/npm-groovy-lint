@@ -12,7 +12,8 @@ final class GzipFilter extends Filter {
 
     @Override
     void doFilter(HttpExchange exchange, Chain chain) throws IOException {
-        final String acceptEncoding = exchange.getRequestHeaders().getFirst('Accept-Encoding')
+        // A request without Accept-Encoding (e.g. curl) gets an uncompressed response
+        final String acceptEncoding = exchange.getRequestHeaders().getFirst('Accept-Encoding') ?: ''
         final List<String> acceptEncodings = acceptEncoding.tokenize(',')*.trim()
         chain.doFilter(acceptEncodings.contains('gzip') ? new GzipHttpExchange(exchange) : exchange)
     }

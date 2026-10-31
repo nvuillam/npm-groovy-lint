@@ -25,6 +25,10 @@ class AnalysisPartitioner {
     // Measured speedup plateaus at 4 threads; more threads add heap pressure for no gain.
     static final int MAX_PARTITIONS = 4
 
+    // CodeNarc arguments selecting what to analyse: exact files, or ant patterns
+    static final String SOURCE_FILES_ARG = '-sourcefiles='
+    static final String INCLUDES_ARG = '-includes='
+
     static class AnalysisOutcome {
 
         List<String> reports = []
@@ -126,7 +130,7 @@ class AnalysisPartitioner {
      * Analyse the given files, in parallel when it is safe and worthwhile.
      *
      * @param relativePaths file paths relative to the CodeNarc basedir
-     * @param codeNarcArgs the base CodeNarc arguments (without -includes)
+     * @param codeNarcArgs the base CodeNarc arguments (without -includes or -sourcefiles)
      * @param requested the caller's requested parallelism, or null for auto
      * @param pool the executor to run partitions on
      * @param handle registers the partitions' futures so a duplicate request can cancel
@@ -145,7 +149,7 @@ class AnalysisPartitioner {
         outcome.partitionCount = partitions
 
         if (partitions <= 1) {
-            CodeNarcRunResult result = runCodeNarc(relativePaths, codeNarcArgs)
+            CodeNarcRunResult result = runCodeNarc(SOURCE_FILES_ARG, relativePaths, codeNarcArgs)
             outcome.reports = [result.jsonReport]
             outcome.stdoutReport = result.stdoutReport
             return outcome
@@ -153,7 +157,7 @@ class AnalysisPartitioner {
 
         List<List<String>> batches = split(relativePaths, partitions)
         List<Future<CodeNarcRunResult>> futures = batches.collect { List<String> batch ->
-            pool.submit({ runCodeNarc(batch, codeNarcArgs) } as Callable<CodeNarcRunResult>)
+            pool.submit({ runCodeNarc(SOURCE_FILES_ARG, batch, codeNarcArgs) } as Callable<CodeNarcRunResult>)
         }
         handle?.register(futures)
 
@@ -210,7 +214,7 @@ class AnalysisPartitioner {
      * Decide how many partitions to use.
      *
      * Returns 1 when parallelism would be unsafe or pointless: an explicit request of 1,
-     * a single file, any path containing a comma (CodeNarc's -includes is comma separated,
+     * a single file, any path containing a comma (CodeNarc's -sourcefiles is comma separated,
      * so such a path cannot be expressed in a partition), or any report that is not
      * -report=json:stdout (see hasNonMergeableReport). The report condition is a hard
      * requirement, not just an optimisation: with N > 1 partitions, a file-destination
@@ -278,16 +282,16 @@ class AnalysisPartitioner {
 
     /**
      * Analyse using the caller's own ant include patterns verbatim, in a single CodeNarc
-     * run, instead of rebuilding -includes from individual file paths. Used by
-     * Request.process when a file path cannot be expressed in a rebuilt comma-separated
-     * -includes value (a comma in the path, or a file outside the canonical basedir) -
+     * run, instead of passing individual file paths with -sourcefiles. Used by
+     * Request.process when a file path cannot be expressed in a comma-separated
+     * -sourcefiles value (a comma in the path, or a file outside the canonical basedir) -
      * rebuilding would silently drop that file from the analysis, while the caller's
      * original patterns are exactly what matched it in the first place.
      */
     static AnalysisOutcome analysePatterns(List<String> includePatterns, List<String> codeNarcArgs) {
         AnalysisOutcome outcome = new AnalysisOutcome()
         outcome.partitionCount = 1
-        CodeNarcRunResult result = runCodeNarc(includePatterns, codeNarcArgs)
+        CodeNarcRunResult result = runCodeNarc(INCLUDES_ARG, includePatterns, codeNarcArgs)
         outcome.reports = [result.jsonReport]
         outcome.stdoutReport = result.stdoutReport
         return outcome
@@ -301,13 +305,23 @@ class AnalysisPartitioner {
         return batches.findAll { !it.isEmpty() }
     }
 
-    private static CodeNarcRunResult runCodeNarc(List<String> relativePaths, List<String> baseArgs) {
+    /**
+     * Run CodeNarc once.
+     *
+     * @param selectionArg SOURCE_FILES_ARG when paths are basedir-relative file paths, or
+     *        INCLUDES_ARG when they are ant patterns. Files go through -sourcefiles: CodeNarc
+     *        then reads exactly these files, while -includes makes it walk every folder under
+     *        the basedir (node_modules included) just to find them.
+     * @param paths the basedir-relative file paths, or the ant patterns
+     * @param baseArgs the base CodeNarc arguments (without -includes or -sourcefiles)
+     */
+    private static CodeNarcRunResult runCodeNarc(String selectionArg, List<String> paths, List<String> baseArgs) {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException('Cancelled before analysis')
         }
 
         List<String> args = new ArrayList<String>(baseArgs)
-        args.add("-includes=${relativePaths.join(',')}".toString())
+        args.add("${selectionArg}${paths.join(',')}".toString())
         args.add('-plugins=com.nvuillam.CapturePlugin')
 
         CodeNarc codeNarc = new CodeNarc()
