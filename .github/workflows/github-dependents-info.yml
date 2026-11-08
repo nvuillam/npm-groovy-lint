@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
 
       - name: GitHub Dependents Info
-        uses: nvuillam/github-dependents-info@74aece1119163a7e1c86ea58d5baf01d2bcd703e # v4.0.0
+        uses: nvuillam/github-dependents-info@1f9942cfd8b7efcdc6e74591ab9c629c76db2ecf # v4.1.0
         with:
           repo: ${{ github.repository }}
           outputrepo: ${{ github.repository }}
