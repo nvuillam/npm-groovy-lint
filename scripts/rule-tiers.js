@@ -168,6 +168,10 @@ export const RULE_CONFIG = {
     "formatting.BracesForMethod": "info",
     "formatting.BracesForTryCatchFinally": "info",
     "formatting.Indentation": { spacesPerIndentLevel: 4, severity: "info" },
+    // CodeNarc's default wants no space after the colon, so it flags `[key: value]`, the usual
+    // Groovy style: ask for one instead. The rule has no fixer, so the hand-maintained `format`
+    // preset keeps it "off" (as v18's default did) and --format never fails on it.
+    "formatting.SpaceAroundMapEntryColon": { characterAfterColonRegex: "\\s" },
     "groovyism.ExplicitCallToEqualsMethod": "info",
     "unused.UnusedArray": "error",
     "unused.UnusedObject": "error",
