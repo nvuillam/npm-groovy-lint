@@ -35,7 +35,7 @@
         "formatting.SpaceAfterSwitch": {},
         "formatting.SpaceAfterWhile": {},
         "formatting.SpaceAroundClosureArrow": {},
-        "formatting.SpaceAroundMapEntryColon": {},
+        "formatting.SpaceAroundMapEntryColon": "off",
         "formatting.SpaceAroundOperator": {},
         "formatting.SpaceBeforeClosingBrace": {},
         "formatting.SpaceBeforeOpeningBrace": {},

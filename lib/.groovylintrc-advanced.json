@@ -213,7 +213,9 @@
         "formatting.SpaceAfterSwitch": {},
         "formatting.SpaceAfterWhile": {},
         "formatting.SpaceAroundClosureArrow": {},
-        "formatting.SpaceAroundMapEntryColon": {},
+        "formatting.SpaceAroundMapEntryColon": {
+            "characterAfterColonRegex": "\\s"
+        },
         "formatting.SpaceAroundOperator": {},
         "formatting.SpaceBeforeClosingBrace": {},
         "formatting.SpaceBeforeOpeningBrace": {},
