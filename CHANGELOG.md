@@ -2,6 +2,8 @@
 
 ## Beta
 
+## [19.0.1] 2026-11-08
+
 - `--format` no longer reports `SpaceAroundMapEntryColon` on `[key: value]` maps and exits 0 again where v18 did ([#622](https://github.com/nvuillam/npm-groovy-lint/issues/622)). The rule has no fixer, so the `format` preset now keeps it `"off"`, as v18's default did. A user config that enables it still applies it.
 - The `advanced` preset accepts `[key: value]`, the usual Groovy style, and reports `[key:value]` instead: `SpaceAroundMapEntryColon` is set with `characterAfterColonRegex: "\\s"`. `all` still applies CodeNarc's default.
 
